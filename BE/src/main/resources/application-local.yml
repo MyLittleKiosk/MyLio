@@ -1,0 +1,34 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+  datasource:
+    url: jdbc:mysql://localhost:3307/mylio
+    username: mylio
+    password: mylio102mylio102
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+logging.level:
+  org.hibernate.SQL: debug
+  org.hibernate.type.descriptor.sql: trace
+
+logging:
+  level:
+    com.zaxxer.hikari.HikariConfig: DEBUG
+    com.ssafy.mylio: DEBUG
+    com.ssafy.mylio.global.config.WebClientConfig: DEBUG
+    com.zaxxer.hikari: TRACE
+
+app:
+  domain:
+    url: http://localhost:5173
+    cors-origins: http://localhost:5173
+  is-local: true
+  cookie-domain: localhost
