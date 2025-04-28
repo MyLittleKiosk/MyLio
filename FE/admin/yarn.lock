@@ -898,7 +898,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-actions@npm:8.6.12":
+"@storybook/addon-actions@npm:8.6.12, @storybook/addon-actions@npm:^8.6.12":
   version: 8.6.12
   resolution: "@storybook/addon-actions@npm:8.6.12"
   dependencies:
@@ -913,7 +913,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-backgrounds@npm:8.6.12":
+"@storybook/addon-backgrounds@npm:8.6.12, @storybook/addon-backgrounds@npm:^8.6.12":
   version: 8.6.12
   resolution: "@storybook/addon-backgrounds@npm:8.6.12"
   dependencies:
@@ -926,7 +926,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-controls@npm:8.6.12":
+"@storybook/addon-controls@npm:8.6.12, @storybook/addon-controls@npm:^8.6.12":
   version: 8.6.12
   resolution: "@storybook/addon-controls@npm:8.6.12"
   dependencies:
@@ -939,7 +939,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-docs@npm:8.6.12":
+"@storybook/addon-docs@npm:8.6.12, @storybook/addon-docs@npm:^8.6.12":
   version: 8.6.12
   resolution: "@storybook/addon-docs@npm:8.6.12"
   dependencies:
@@ -987,7 +987,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-measure@npm:8.6.12":
+"@storybook/addon-measure@npm:8.6.12, @storybook/addon-measure@npm:^8.6.12":
   version: 8.6.12
   resolution: "@storybook/addon-measure@npm:8.6.12"
   dependencies:
@@ -1008,7 +1008,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-outline@npm:8.6.12":
+"@storybook/addon-outline@npm:8.6.12, @storybook/addon-outline@npm:^8.6.12":
   version: 8.6.12
   resolution: "@storybook/addon-outline@npm:8.6.12"
   dependencies:
@@ -1020,7 +1020,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-toolbars@npm:8.6.12":
+"@storybook/addon-toolbars@npm:8.6.12, @storybook/addon-toolbars@npm:^8.6.12":
   version: 8.6.12
   resolution: "@storybook/addon-toolbars@npm:8.6.12"
   peerDependencies:
@@ -1029,7 +1029,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-viewport@npm:8.6.12":
+"@storybook/addon-viewport@npm:8.6.12, @storybook/addon-viewport@npm:^8.6.12":
   version: 8.6.12
   resolution: "@storybook/addon-viewport@npm:8.6.12"
   dependencies:
@@ -1709,8 +1709,16 @@ __metadata:
   dependencies:
     "@chromatic-com/storybook": "npm:3"
     "@eslint/js": "npm:^9.22.0"
+    "@storybook/addon-actions": "npm:^8.6.12"
+    "@storybook/addon-backgrounds": "npm:^8.6.12"
+    "@storybook/addon-controls": "npm:^8.6.12"
+    "@storybook/addon-docs": "npm:^8.6.12"
     "@storybook/addon-essentials": "npm:8.6.12"
+    "@storybook/addon-measure": "npm:^8.6.12"
     "@storybook/addon-onboarding": "npm:8.6.12"
+    "@storybook/addon-outline": "npm:^8.6.12"
+    "@storybook/addon-toolbars": "npm:^8.6.12"
+    "@storybook/addon-viewport": "npm:^8.6.12"
     "@storybook/blocks": "npm:8.6.12"
     "@storybook/react": "npm:8.6.12"
     "@storybook/react-vite": "npm:8.6.12"
@@ -1735,13 +1743,16 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^5.2.0"
     eslint-plugin-react-refresh: "npm:^0.4.19"
     eslint-plugin-storybook: "npm:^0.12.0"
+    filesize: "npm:^10.1.6"
     globals: "npm:^16.0.0"
     postcss: "npm:^8.5.3"
     prettier: "npm:^3.5.3"
     react: "npm:^19.0.0"
+    react-confetti: "npm:^6.4.0"
     react-dom: "npm:^19.0.0"
     react-router-dom: "npm:^7.5.2"
     storybook: "npm:8.6.12"
+    strip-ansi: "npm:^7.1.0"
     tailwindcss: "npm:^4.1.4"
     typescript: "npm:~5.7.2"
     typescript-eslint: "npm:^8.26.1"
@@ -3479,7 +3490,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filesize@npm:^10.0.12":
+"filesize@npm:^10.0.12, filesize@npm:^10.1.6":
   version: 10.1.6
   resolution: "filesize@npm:10.1.6"
   checksum: 10c0/9a196d64da4e947b8c0d294be09a3dfa7a634434a1fc5fb3465f1c9acc1237ea0363f245ba6e24477ea612754d942bc964d86e0e500905a72e9e0e17ae1bbdbc
@@ -5350,7 +5361,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-confetti@npm:^6.1.0":
+"react-confetti@npm:^6.1.0, react-confetti@npm:^6.4.0":
   version: 6.4.0
   resolution: "react-confetti@npm:6.4.0"
   dependencies:
