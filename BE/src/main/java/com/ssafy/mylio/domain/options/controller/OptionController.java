@@ -39,7 +39,7 @@ public class OptionController {
     }
 
     @GetMapping("/{option_id}")
-    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND})
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.OPTION_NOT_FOUND, ErrorCode.OPTION_STORE_NOT_MATCH})
     @Operation(summary = "옵션 상세 조회", description = "optionId로 특정 옵션을 조회합니다.")
     public ResponseEntity<CommonResponse<OptionResponseDto>> getOptionDetail(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
