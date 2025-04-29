@@ -1,15 +1,5 @@
+import { ClovaResponse } from '@/types/clova';
 import axios from 'axios';
-
-interface ClovaApiResult {
-  text: string;
-}
-
-// FastAPI 백엔드 응답 타입 정의
-export interface ClovaResponse {
-  status: string;
-  data: ClovaApiResult; // 실제 Clova API 응답 타입으로 지정
-  message: string;
-}
 
 // Clova API 클라이언트 설정
 const clovaClient = axios.create({
@@ -38,6 +28,7 @@ export const sendAudioToClova = async (
     const response = await clovaClient.post('/clova/stt', formData, {
       timeout: 30000,
     });
+
     return response.data;
   } catch (error) {
     console.error('FastAPI 백엔드 요청 중 오류 발생:', error);

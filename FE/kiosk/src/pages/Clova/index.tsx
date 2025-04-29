@@ -1,7 +1,8 @@
-import { sendAudioToClova, ClovaResponse } from '@/service/apis/clova';
+import { sendAudioToClova } from '@/service/apis/clova';
 import React, { useState } from 'react';
 import { useRecord } from '../../hooks/useAudioRecord';
 import { AxiosError } from 'axios';
+import { ClovaResponse } from '@/types/clova';
 
 const ClovaPage: React.FC = () => {
   const { isRecording, startRecording, audio, stopRecording } = useRecord();
@@ -34,17 +35,15 @@ const ClovaPage: React.FC = () => {
       // FastAPI 백엔드로 오디오 전송
       const result: ClovaResponse = await sendAudioToClova(audioBlob);
 
-      // 결과 처리 (단순화)
       // 백엔드가 반환한 데이터에서 직접 텍스트 추출
-      if (result.status === 'success' && result.data?.text) {
-        setRecognitionResult(result.data.text);
+      if (result.status === 'success' && result.text) {
+        setRecognitionResult(result.text);
       } else {
         // 백엔드 응답 메시지 또는 기본 메시지 표시
-        setRecognitionResult(
-          result.message || '인식 결과가 없거나 오류가 발생했습니다.'
-        );
+        setRecognitionResult('인식 결과가 없거나 오류가 발생했습니다.');
       }
     } catch (err) {
+      // 상황별 에러 문구 표현
       console.error('Clova 처리 중 오류 발생:', err);
       if (err instanceof AxiosError && err.response?.status === 422) {
         setError(
