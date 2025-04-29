@@ -66,7 +66,7 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen }: SideBarProps) => {
 
   return (
     <nav
-      className={`${isSideBarOpen ? 'w-[30%]' : 'w-[80px]'} p-2 h-dvh flex flex-col`}
+      className={`${isSideBarOpen ? 'w-[20%]' : 'w-[80px]'} p-2 h-dvh flex flex-col`}
     >
       <header className='h-[8%] flex justify-between items-center gap-2 font-preBold text-lg text-primary'>
         <div className='flex items-center gap-2'>
