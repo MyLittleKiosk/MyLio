@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import Layout from './components/layout';
 import Statistics from './pages/statistics';
 import Login from './pages/login';
+import MSWInit from '@components/common/MSWinit';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         </Route>
         <Route path='/login' element={<Login />} />
       </Routes>
+      <MSWInit />
     </>
   );
 }
