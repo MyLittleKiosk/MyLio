@@ -53,9 +53,37 @@ public class OptionService {
 
         return OptionListResponseDto.of(optionResponseDtoList);
     }
+
     private Store getStoreId(Integer storeId){
          return storeRepository.findById(storeId)
                 .orElseThrow(()-> new CustomException(ErrorCode.STORE_NOT_FOUND, "storeId", storeId));
+    }
+
+    private Options getOptionId(Integer optionId){
+        return optionsRepository.findById(optionId)
+                .orElseThrow(()-> new CustomException(ErrorCode.OPTION_NOT_FOUND, "optionId", optionId));
+    }
+
+    public OptionResponseDto getOptionDetail(Integer storeId, Integer optionId){
+        // 매장, 옵션 아이디 조회
+        Store store = getStoreId(storeId);
+        Options options = getOptionId(optionId);
+
+        // 매장의 옵션이 맞는지 조회
+        if(!options.getStore().getId().equals(storeId)){
+            throw new CustomException(ErrorCode.OPTION_STORE_NOT_MATCH, "optionId", optionId)
+                    .addParameter("storeId", storeId);
+        }
+
+        // 옵션 Id로 상세옵션 조회
+        List<OptionDetail> optionDetails = optionDetailRepository.findAllByOptionsId(options.getId());
+
+        // 상세 옵션 DTO로 변환
+        List<OptionDetailDto> optionDetailDto = optionDetails.stream()
+                .map(OptionDetailDto::of)
+                .toList();
+
+        return OptionResponseDto.of(options, optionDetailDto);
     }
 
 }

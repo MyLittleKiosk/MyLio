@@ -26,7 +26,11 @@ public enum ErrorCode {
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 메뉴입니다"),
 
     // Store
-    STORE_NOT_FOUND(HttpStatus.NOT_FOUND,"S001","존재하지 않는 매장입니다");
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND,"S001","존재하지 않는 매장입니다"),
+
+    // Option
+    OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "O001", "존재하지 않는 옵션입니다"),
+    OPTION_STORE_NOT_MATCH(HttpStatus.BAD_REQUEST,"O002","매장에 없는 옵션입니다");
 
 
     private final HttpStatus status;
