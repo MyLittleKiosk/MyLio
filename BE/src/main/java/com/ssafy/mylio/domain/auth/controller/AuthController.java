@@ -29,7 +29,7 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(summary = "슈퍼 / 관리자 로그인", description = "슈퍼 관리자, 관리자의 로그인 API 입니다.\n\n관리자 역할에 따라 다른 dto를 반환합니다.")
     @ApiErrorCodeExamples({ErrorCode.INTERNAL_SERVER_ERROR, ErrorCode.INVALID_CREDENTIALS})
-    public ResponseEntity<CommonResponse<LoginResponse>> socialLogin(
+    public ResponseEntity<CommonResponse<LoginResponse>> adminLogin(
             @Valid @RequestBody LoginRequestDto request){
         LoginResult result = authService.login(request);
 
