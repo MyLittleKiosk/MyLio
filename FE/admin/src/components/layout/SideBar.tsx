@@ -15,7 +15,7 @@ const SideBar = () => {
   const VERSION = '1.0.0';
   const AUTHORITY = '일반관리자';
 
-  const [isSideBarOpen, setIsSideBarOpen] = useState(false);
+  const [isSideBarOpen, setIsSideBarOpen] = useState(true);
 
   // 사이드바 너비 조정 애니메이션 완료 여부부
   const [isWidthAnimationComplete, setIsWidthAnimationComplete] =
@@ -29,7 +29,7 @@ const SideBar = () => {
 
   return (
     <motion.nav
-      animate={{ width: isSideBarOpen ? '30%' : '80px' }}
+      animate={{ width: isSideBarOpen ? '20%' : '80px' }}
       transition={{ duration: 0.2, ease: 'easeInOut' }}
       onAnimationComplete={() => {
         if (isSideBarOpen) {
@@ -69,13 +69,13 @@ const SideBar = () => {
             {ADMIN_NAVLIST.map((item) => (
               <Link key={item.title} to={item.link}>
                 <li className='flex items-center hover:bg-gray-100 rounded-md px-2 py-1'>
-                  <div className='w-[20px] h-[20px]'>
+                  <div className='w-5 h-5'>
                     <item.icons width={20} height={20} />
                   </div>
                   <div className='overflow-hidden'>
                     {isSideBarOpen && (
                       <motion.p
-                        initial={{ opacity: 0, y: 5 }}
+                        initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.125 }}
                       >
@@ -93,13 +93,13 @@ const SideBar = () => {
             {SUPERADMIN_NAVLIST.map((item) => (
               <Link key={item.title} to={item.link}>
                 <li className='flex items-center hover:bg-gray-100 rounded-md px-2 py-1'>
-                  <div className='w-[20px] h-[20px]'>
+                  <div className='w-5 h-5'>
                     <item.icons width={20} height={20} />
                   </div>
                   <div className='ml-4 overflow-hidden'>
                     {isWidthAnimationComplete && (
                       <motion.p
-                        initial={{ opacity: 0, y: 5 }}
+                        initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.125 }}
                       >
