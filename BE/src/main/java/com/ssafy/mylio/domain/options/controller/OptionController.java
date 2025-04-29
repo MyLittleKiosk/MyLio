@@ -46,7 +46,7 @@ public class OptionController {
     }
 
     @DeleteMapping("/{option_id}")
-    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.OPTION_NOT_FOUND})
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.OPTION_NOT_FOUND, ErrorCode.OPTION_STORE_NOT_MATCH})
     @Operation(summary = "옵션 삭제", description = "optionId로 특정 옵션을 삭제합니다.")
     public ResponseEntity<CommonResponse<Void>> deleteOption(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
