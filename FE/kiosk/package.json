@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "cypress:open": "cypress open --e2e"
   },
   "dependencies": {
     "@tanstack/eslint-plugin-query": "^5.74.7",
@@ -24,14 +25,27 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "3",
+    "@cypress/react": "^9.0.1",
     "@eslint/js": "^9.22.0",
+    "@storybook/addon-actions": "^8.6.12",
+    "@storybook/addon-backgrounds": "^8.6.12",
+    "@storybook/addon-controls": "^8.6.12",
+    "@storybook/addon-docs": "^8.6.12",
     "@storybook/addon-essentials": "8.6.12",
+    "@storybook/addon-measure": "^8.6.12",
     "@storybook/addon-onboarding": "8.6.12",
+    "@storybook/addon-outline": "^8.6.12",
+    "@storybook/addon-toolbars": "^8.6.12",
+    "@storybook/addon-viewport": "^8.6.12",
     "@storybook/blocks": "8.6.12",
     "@storybook/react": "8.6.12",
     "@storybook/react-vite": "8.6.12",
     "@storybook/test": "8.6.12",
+<<<<<<< HEAD
     "@tailwindcss/vite": "^4.1.4",
+=======
+    "@types/cypress": "^1.1.6",
+>>>>>>> d57cfd06c3a1e1a3ebc80717daf3b6a089f90259
     "@types/node": "^22.15.2",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
@@ -42,16 +56,24 @@
     "cypress": "^14.3.2",
     "eslint": "^9.22.0",
     "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-cypress": "^4.3.0",
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "eslint-plugin-storybook": "^0.12.0",
+    "filesize": "^10.1.6",
     "globals": "^16.0.0",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
+    "react-confetti": "^6.4.0",
     "storybook": "8.6.12",
+<<<<<<< HEAD
     "tailwindcss": "3.4.17",
+=======
+    "strip-ansi": "^7.1.0",
+    "tailwindcss": "^4.1.4",
+>>>>>>> d57cfd06c3a1e1a3ebc80717daf3b6a089f90259
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.26.1",
     "vite": "^6.3.1"

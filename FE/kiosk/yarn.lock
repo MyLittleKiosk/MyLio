@@ -257,6 +257,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@cypress/react@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "@cypress/react@npm:9.0.1"
+  peerDependencies:
+    "@types/react": ^18 || ^19
+    "@types/react-dom": ^18 || ^19
+    cypress: "*"
+    react: ^18 || ^19
+    react-dom: ^18 || ^19
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 10c0/34aadcc98eee89025cdfaebd403710c83be1823415be6484ba89c8dc682db372723dac017ac50069532ecdc34b999f973cdb4cfd2ee6922c880d086621c84fa1
+  languageName: node
+  linkType: hard
+
 "@cypress/request@npm:^3.0.8":
   version: 3.0.8
   resolution: "@cypress/request@npm:3.0.8"
@@ -944,7 +960,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-actions@npm:8.6.12":
+"@storybook/addon-actions@npm:8.6.12, @storybook/addon-actions@npm:^8.6.12":
   version: 8.6.12
   resolution: "@storybook/addon-actions@npm:8.6.12"
   dependencies:
@@ -959,7 +975,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-backgrounds@npm:8.6.12":
+"@storybook/addon-backgrounds@npm:8.6.12, @storybook/addon-backgrounds@npm:^8.6.12":
   version: 8.6.12
   resolution: "@storybook/addon-backgrounds@npm:8.6.12"
   dependencies:
@@ -972,7 +988,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-controls@npm:8.6.12":
+"@storybook/addon-controls@npm:8.6.12, @storybook/addon-controls@npm:^8.6.12":
   version: 8.6.12
   resolution: "@storybook/addon-controls@npm:8.6.12"
   dependencies:
@@ -985,7 +1001,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-docs@npm:8.6.12":
+"@storybook/addon-docs@npm:8.6.12, @storybook/addon-docs@npm:^8.6.12":
   version: 8.6.12
   resolution: "@storybook/addon-docs@npm:8.6.12"
   dependencies:
@@ -1033,7 +1049,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-measure@npm:8.6.12":
+"@storybook/addon-measure@npm:8.6.12, @storybook/addon-measure@npm:^8.6.12":
   version: 8.6.12
   resolution: "@storybook/addon-measure@npm:8.6.12"
   dependencies:
@@ -1054,7 +1070,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-outline@npm:8.6.12":
+"@storybook/addon-outline@npm:8.6.12, @storybook/addon-outline@npm:^8.6.12":
   version: 8.6.12
   resolution: "@storybook/addon-outline@npm:8.6.12"
   dependencies:
@@ -1066,7 +1082,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-toolbars@npm:8.6.12":
+"@storybook/addon-toolbars@npm:8.6.12, @storybook/addon-toolbars@npm:^8.6.12":
   version: 8.6.12
   resolution: "@storybook/addon-toolbars@npm:8.6.12"
   peerDependencies:
@@ -1075,7 +1091,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-viewport@npm:8.6.12":
+"@storybook/addon-viewport@npm:8.6.12, @storybook/addon-viewport@npm:^8.6.12":
   version: 8.6.12
   resolution: "@storybook/addon-viewport@npm:8.6.12"
   dependencies:
@@ -1610,6 +1626,15 @@ __metadata:
   dependencies:
     "@babel/types": "npm:^7.20.7"
   checksum: 10c0/5386f0af44f8746b063b87418f06129a814e16bb2686965a575e9d7376b360b088b89177778d8c426012abc43dd1a2d8ec3218bfc382280c898682746ce2ffbd
+  languageName: node
+  linkType: hard
+
+"@types/cypress@npm:^1.1.6":
+  version: 1.1.6
+  resolution: "@types/cypress@npm:1.1.6"
+  dependencies:
+    cypress: "npm:*"
+  checksum: 10c0/50925d0eccd88045c84816a38486472e9f46a35945639b312275769742f7b4348732f5233c86bd7fb816cf8f98b562ca06bc9e7704434bca19666cfbd331f288
   languageName: node
   linkType: hard
 
@@ -2730,7 +2755,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress@npm:^14.3.2":
+"cypress@npm:*, cypress@npm:^14.3.2":
   version: 14.3.2
   resolution: "cypress@npm:14.3.2"
   dependencies:
@@ -3363,6 +3388,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-cypress@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "eslint-plugin-cypress@npm:4.3.0"
+  dependencies:
+    globals: "npm:^15.15.0"
+  peerDependencies:
+    eslint: ">=9"
+  checksum: 10c0/76960cd9629f307a858b704629e12207dc80e13be719dd0fafe1f8e1b82617307677c5b027fe7a055b406d0c1ab70f2cb6a75643312dc44d3547eb983aa29083
+  languageName: node
+  linkType: hard
+
 "eslint-plugin-prettier@npm:^5.2.6":
   version: 5.2.6
   resolution: "eslint-plugin-prettier@npm:5.2.6"
@@ -3752,7 +3788,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filesize@npm:^10.0.12":
+"filesize@npm:^10.0.12, filesize@npm:^10.1.6":
   version: 10.1.6
   resolution: "filesize@npm:10.1.6"
   checksum: 10c0/9a196d64da4e947b8c0d294be09a3dfa7a634434a1fc5fb3465f1c9acc1237ea0363f245ba6e24477ea612754d942bc964d86e0e500905a72e9e0e17ae1bbdbc
@@ -4045,6 +4081,13 @@ __metadata:
   version: 14.0.0
   resolution: "globals@npm:14.0.0"
   checksum: 10c0/b96ff42620c9231ad468d4c58ff42afee7777ee1c963013ff8aabe095a451d0ceeb8dcd8ef4cbd64d2538cef45f787a78ba3a9574f4a634438963e334471302d
+  languageName: node
+  linkType: hard
+
+"globals@npm:^15.15.0":
+  version: 15.15.0
+  resolution: "globals@npm:15.15.0"
+  checksum: 10c0/f9ae80996392ca71316495a39bec88ac43ae3525a438b5626cd9d5ce9d5500d0a98a266409605f8cd7241c7acf57c354a48111ea02a767ba4f374b806d6861fe
   languageName: node
   linkType: hard
 
@@ -4793,9 +4836,18 @@ __metadata:
   resolution: "kiosk@workspace:."
   dependencies:
     "@chromatic-com/storybook": "npm:3"
+    "@cypress/react": "npm:^9.0.1"
     "@eslint/js": "npm:^9.22.0"
+    "@storybook/addon-actions": "npm:^8.6.12"
+    "@storybook/addon-backgrounds": "npm:^8.6.12"
+    "@storybook/addon-controls": "npm:^8.6.12"
+    "@storybook/addon-docs": "npm:^8.6.12"
     "@storybook/addon-essentials": "npm:8.6.12"
+    "@storybook/addon-measure": "npm:^8.6.12"
     "@storybook/addon-onboarding": "npm:8.6.12"
+    "@storybook/addon-outline": "npm:^8.6.12"
+    "@storybook/addon-toolbars": "npm:^8.6.12"
+    "@storybook/addon-viewport": "npm:^8.6.12"
     "@storybook/blocks": "npm:8.6.12"
     "@storybook/react": "npm:8.6.12"
     "@storybook/react-vite": "npm:8.6.12"
@@ -4804,6 +4856,7 @@ __metadata:
     "@tanstack/eslint-plugin-query": "npm:^5.74.7"
     "@tanstack/react-query": "npm:^5.74.7"
     "@tanstack/react-query-devtools": "npm:^5.74.7"
+    "@types/cypress": "npm:^1.1.6"
     "@types/node": "npm:^22.15.2"
     "@types/react": "npm:^19.0.10"
     "@types/react-dom": "npm:^19.0.4"
@@ -4816,19 +4869,27 @@ __metadata:
     eslint: "npm:^9.22.0"
     eslint-config-airbnb: "npm:^19.0.4"
     eslint-config-prettier: "npm:^10.1.2"
+    eslint-plugin-cypress: "npm:^4.3.0"
     eslint-plugin-prettier: "npm:^5.2.6"
     eslint-plugin-react: "npm:^7.37.5"
     eslint-plugin-react-hooks: "npm:^5.2.0"
     eslint-plugin-react-refresh: "npm:^0.4.19"
     eslint-plugin-storybook: "npm:^0.12.0"
+    filesize: "npm:^10.1.6"
     globals: "npm:^16.0.0"
     postcss: "npm:^8.5.3"
     prettier: "npm:^3.5.3"
     react: "npm:^19.0.0"
+    react-confetti: "npm:^6.4.0"
     react-dom: "npm:^19.0.0"
     react-router-dom: "npm:^7.5.2"
     storybook: "npm:8.6.12"
+<<<<<<< HEAD
     tailwindcss: "npm:3.4.17"
+=======
+    strip-ansi: "npm:^7.1.0"
+    tailwindcss: "npm:^4.1.4"
+>>>>>>> d57cfd06c3a1e1a3ebc80717daf3b6a089f90259
     typescript: "npm:~5.7.2"
     typescript-eslint: "npm:^8.26.1"
     vite: "npm:^6.3.1"
@@ -5917,7 +5978,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-confetti@npm:^6.1.0":
+"react-confetti@npm:^6.1.0, react-confetti@npm:^6.4.0":
   version: 6.4.0
   resolution: "react-confetti@npm:6.4.0"
   dependencies:
