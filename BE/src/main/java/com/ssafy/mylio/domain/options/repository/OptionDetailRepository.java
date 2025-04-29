@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface OptionDetailRepository extends JpaRepository<OptionDetail, Integer> {
     List<OptionDetail> findAllByOptionsIdIn(List<Integer> optionsIds);
+    List<OptionDetail> findAllByOptionsId(Integer optionsId);
 }
