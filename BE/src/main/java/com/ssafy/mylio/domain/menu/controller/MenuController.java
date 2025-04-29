@@ -1,6 +1,7 @@
 package com.ssafy.mylio.domain.menu.controller;
 
 
+import com.ssafy.mylio.domain.menu.dto.response.MenuDetailResponseDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuListResponseDto;
 import com.ssafy.mylio.domain.menu.service.MenuService;
 import com.ssafy.mylio.global.common.CustomPage;
@@ -38,5 +39,15 @@ public class MenuController {
 
         Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
         return CommonResponse.ok(menuService.getMenuList(storeId, categoryId, pageable));
+    }
+
+    @GetMapping("/{menuId}")
+    @Operation(summary = "메뉴 상세 조회", description = "메뉴 정보를 상세조회합니다.")
+    public ResponseEntity<CommonResponse<MenuDetailResponseDto>> getMenuDetail(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Integer menuId ) {
+
+        Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
+        return CommonResponse.ok(menuService.getMenuDetail(storeId, menuId));
     }
 }

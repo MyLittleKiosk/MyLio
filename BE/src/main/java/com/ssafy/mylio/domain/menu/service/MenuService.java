@@ -1,11 +1,14 @@
 package com.ssafy.mylio.domain.menu.service;
 
+import com.ssafy.mylio.domain.menu.dto.response.MenuDetailResponseDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuListResponseDto;
 import com.ssafy.mylio.domain.menu.entity.Menu;
 import com.ssafy.mylio.domain.menu.entity.MenuTagMap;
 import com.ssafy.mylio.domain.menu.repository.MenuRepository;
 import com.ssafy.mylio.domain.menu.repository.MenuTagMapRepository;
 import com.ssafy.mylio.global.common.CustomPage;
+import com.ssafy.mylio.global.error.code.ErrorCode;
+import com.ssafy.mylio.global.error.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -46,5 +49,15 @@ public class MenuService {
                 ));
 
         return new CustomPage<>(menuList.map(menu -> MenuListResponseDto.of(menu, menuIdToTags.getOrDefault(menu.getId(), Collections.emptyList()))));
+    }
+
+    public MenuDetailResponseDto getMenuDetail(Integer storeId, Integer menuId) {
+
+        // 메뉴 검증
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", menuId));
+
+        return MenuDetailResponseDto.of(menu, null, null, null, null);
+
     }
 }
