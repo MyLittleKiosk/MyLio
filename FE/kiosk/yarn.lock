@@ -4884,12 +4884,8 @@ __metadata:
     react-dom: "npm:^19.0.0"
     react-router-dom: "npm:^7.5.2"
     storybook: "npm:8.6.12"
-<<<<<<< HEAD
-    tailwindcss: "npm:3.4.17"
-=======
     strip-ansi: "npm:^7.1.0"
-    tailwindcss: "npm:^4.1.4"
->>>>>>> d57cfd06c3a1e1a3ebc80717daf3b6a089f90259
+    tailwindcss: "npm:3.4.17"
     typescript: "npm:~5.7.2"
     typescript-eslint: "npm:^8.26.1"
     vite: "npm:^6.3.1"
