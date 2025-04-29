@@ -1,13 +1,18 @@
+<<<<<<< HEAD
+import './App.css';
+=======
 import { useState } from 'react';
 import './App.css';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
+>>>>>>> d57cfd06c3a1e1a3ebc80717daf3b6a089f90259
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
+<<<<<<< HEAD
+      <div className='font-preExtraLight'>Pretendard ExtraLight</div>
+=======
       <div>
         <a href='https://vite.dev' target='_blank' rel='noreferrer'>
           <img src={viteLogo} className='logo' alt='Vite logo' />
@@ -28,6 +33,7 @@ function App() {
       <p className='read-the-docs'>
         Click on the Vite and React logos to learn more
       </p>
+>>>>>>> d57cfd06c3a1e1a3ebc80717daf3b6a089f90259
     </>
   );
 }
