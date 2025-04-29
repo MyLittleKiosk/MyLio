@@ -4,10 +4,13 @@ package com.ssafy.mylio.domain.auth.controller;
 import com.ssafy.mylio.domain.auth.dto.LoginResult;
 import com.ssafy.mylio.domain.auth.dto.request.AdminLoginRequestDto;
 import com.ssafy.mylio.domain.auth.dto.request.KioskLoginRequest;
+import com.ssafy.mylio.domain.auth.dto.request.LogoutRequest;
 import com.ssafy.mylio.domain.auth.dto.response.LoginResponse;
 import com.ssafy.mylio.domain.auth.service.AuthService;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
 import com.ssafy.mylio.global.common.response.CommonResponse;
+import com.ssafy.mylio.global.security.auth.UserPrincipal;
+import com.ssafy.mylio.global.util.AuthenticationUtil;
 import com.ssafy.mylio.global.util.CookieUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 
@@ -26,6 +30,7 @@ import com.ssafy.mylio.global.error.code.ErrorCode;
 @Tag(name = "인증", description="인증 & 인가 API")
 public class AuthController {
     private final AuthService authService;
+    private final AuthenticationUtil authenticationUtil;
 
     @PostMapping("/login")
     @Operation(summary = "슈퍼 / 관리자 로그인", description = "슈퍼 관리자, 관리자의 로그인 API 입니다.\n\n관리자 역할에 따라 다른 dto를 반환합니다.")
@@ -71,5 +76,23 @@ public class AuthController {
                 accessTokenCookie,
                 refreshTokenCookie
         );
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "공통 로그아웃",description="로그인된 사용자를 로그아웃 처리합니다.\n\n키오스크 로그인의 경우 body에 kiosk_id가 필수 입니다.")
+    public ResponseEntity<CommonResponse<Void>> logout(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestBody(required = false)LogoutRequest request
+            ){
+        Integer userId = authenticationUtil.getCurrentUserId(userPrincipal);
+        String userType = authenticationUtil.getCurrntUserType(userPrincipal);
+
+        authService.logout(userId,userType,request);
+
+        // 쿠키 삭제
+        ResponseCookie deleteAccessToken = CookieUtil.deleteAccessTokenCookie();
+        ResponseCookie deleteRefreshToken = CookieUtil.deleteRefreshTokenCookie();
+
+        return CommonResponse.okWithCookie(deleteAccessToken, deleteRefreshToken);
     }
 }
