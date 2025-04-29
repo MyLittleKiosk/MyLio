@@ -41,11 +41,8 @@
     "@storybook/react": "8.6.12",
     "@storybook/react-vite": "8.6.12",
     "@storybook/test": "8.6.12",
-<<<<<<< HEAD
     "@tailwindcss/vite": "^4.1.4",
-=======
     "@types/cypress": "^1.1.6",
->>>>>>> d57cfd06c3a1e1a3ebc80717daf3b6a089f90259
     "@types/node": "^22.15.2",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
@@ -68,12 +65,8 @@
     "prettier": "^3.5.3",
     "react-confetti": "^6.4.0",
     "storybook": "8.6.12",
-<<<<<<< HEAD
     "tailwindcss": "3.4.17",
-=======
     "strip-ansi": "^7.1.0",
-    "tailwindcss": "^4.1.4",
->>>>>>> d57cfd06c3a1e1a3ebc80717daf3b6a089f90259
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.26.1",
     "vite": "^6.3.1"
