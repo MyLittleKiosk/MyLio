@@ -37,7 +37,7 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen }: SideBarProps) => {
         />
       </header>
       <hr className='w-full' />
-      <div className='flex flex-col h-[80%]'>
+      <section className='flex flex-col h-[80%]'>
         {!ISADMIN && (
           <ul className='pt-2 flex flex-col gap-1 text-xs font-preMedium'>
             {ADMIN_NAVLIST.map((item) => (
@@ -62,7 +62,7 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen }: SideBarProps) => {
             ))}
           </ul>
         )}
-      </div>
+      </section>
 
       <hr className='w-full' />
       {isSideBarOpen && (
