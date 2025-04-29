@@ -9,6 +9,13 @@ const meta = {
     layout: 'fullscreen',
   },
   tags: ['autodocs'],
+  argTypes: {
+    isSideBarOpen: {
+      control: 'boolean',
+      defaultValue: true,
+    },
+  },
+  //내부 Link태그 사용을 위한 설정
   decorators: [
     (Story) => (
       <BrowserRouter>
@@ -21,4 +28,18 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+//사이드바 오픈 상태
+export const Default: Story = {
+  args: {
+    isSideBarOpen: true,
+    setIsSideBarOpen: () => {},
+  },
+};
+
+//사이드바 닫힌 상태
+export const Closed: Story = {
+  args: {
+    isSideBarOpen: false,
+    setIsSideBarOpen: () => {},
+  },
+};

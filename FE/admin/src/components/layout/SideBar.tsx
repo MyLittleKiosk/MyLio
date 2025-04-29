@@ -51,60 +51,73 @@ const superAdminNavList = [
   },
 ];
 
-const SideBar = () => {
+interface SideBarProps {
+  isSideBarOpen: boolean;
+  setIsSideBarOpen: (isSideBarOpen: boolean) => void;
+}
+
+const SideBar = ({ isSideBarOpen, setIsSideBarOpen }: SideBarProps) => {
+  //임시 데이터
+  //추후 로그인 구현 시 수정 필요
   const ISADMIN: boolean = true;
+  const LOGIN = '관리자';
+  const VERSION = '1.0.0';
+  const AUTHORITY = '일반관리자';
+
   return (
-    <nav className='w-[30%] p-2 h-dvh flex flex-col'>
-      <header className='h-[8%] flex justify-between items-center gap-2 font-preBold text-md'>
+    <nav
+      className={`${isSideBarOpen ? 'w-[30%]' : 'w-[80px]'} p-2 h-dvh flex flex-col`}
+    >
+      <header className='h-[8%] flex justify-between items-center gap-2 font-preBold text-lg text-primary'>
         <div className='flex items-center gap-2'>
           <img src={LOGO} alt='logo' className='w-10 h-10' />
-          <h1 className=''>MyLio</h1>
+          {isSideBarOpen && <h1>MyLio</h1>}
         </div>
         <IconBack
           width={16}
           height={16}
-          onClick={() => {}}
-          className='text-black hover:bg-gray-100 rounded-md cursor-pointer'
+          onClick={() => setIsSideBarOpen(!isSideBarOpen)}
+          className={`text-black hover:bg-gray-100 rounded-md cursor-pointer transform ${
+            isSideBarOpen ? 'rotate-180' : ''
+          }`}
         />
       </header>
       <hr className='w-full' />
-      <div className='flex flex-col h-[70%]'>
-        <ul className='pt-2 flex flex-col gap-1 text-xs font-preMedium'>
-          {adminNavList.map((item) => (
-            <Link key={item.title} to={item.link}>
-              <li className='flex gap-2 items-center hover:bg-gray-100 rounded-md px-2 py-1'>
-                <item.icons width={20} height={20} />
-                <p>{item.title}</p>
-              </li>
-            </Link>
-          ))}
-        </ul>
+      <div className='flex flex-col h-[80%]'>
+        {!ISADMIN && (
+          <ul className='pt-2 flex flex-col gap-1 text-xs font-preMedium'>
+            {adminNavList.map((item) => (
+              <Link key={item.title} to={item.link}>
+                <li className='flex gap-2 items-center hover:bg-gray-100 rounded-md px-2 py-1'>
+                  <item.icons width={20} height={20} />
+                  {isSideBarOpen && <p>{item.title}</p>}
+                </li>
+              </Link>
+            ))}
+          </ul>
+        )}
         {ISADMIN && (
-          <div className='flex flex-col pt-4'>
-            <p className='px-2 text-xs font-preSemiBold text-content'>
-              슈퍼어드민 메뉴
-            </p>
-            <ul className='h-[70%] pt-2 flex flex-col gap-1 text-xs font-preMedium'>
-              {superAdminNavList.map((item) => (
-                <Link key={item.title} to={item.link}>
-                  <li className='flex gap-2 items-center hover:bg-gray-100 rounded-md px-2 py-1'>
-                    <item.icons width={18} height={18} />
-                    <p>{item.title}</p>
-                  </li>
-                </Link>
-              ))}
-            </ul>
-          </div>
+          <ul className='pt-2 flex flex-col gap-1 text-xs font-preMedium'>
+            {superAdminNavList.map((item) => (
+              <Link key={item.title} to={item.link}>
+                <li className='flex gap-2 items-center hover:bg-gray-100 rounded-md px-2 py-1'>
+                  <item.icons width={18} height={18} />
+                  {isSideBarOpen && <p>{item.title}</p>}
+                </li>
+              </Link>
+            ))}
+          </ul>
         )}
       </div>
 
       <hr className='w-full' />
-      <footer className='h-[20%] font-preMedium text-xs text-content p-2 flex flex-col gap-1'>
-        <p>로그인 : 관리자</p>
-        <p>버전 : 1.0.0</p>
-        <p>권한 : 일반관리자</p>
-        <p>토글</p>
-      </footer>
+      {isSideBarOpen && (
+        <footer className='h-[10%] font-preMedium text-xs text-content p-2 flex flex-col gap-1'>
+          <p>로그인 : {LOGIN}</p>
+          <p>버전 : {VERSION}</p>
+          <p>권한 : {AUTHORITY}</p>
+        </footer>
+      )}
     </nav>
   );
 };
