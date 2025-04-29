@@ -11,13 +11,15 @@ import java.util.Map;
 @Getter
 @NoArgsConstructor
 public class UserPrincipal {
-    private Integer id;
+    private Integer userId;
+    private Integer storeId;
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
     @Builder
-    public UserPrincipal(Integer id, Collection<? extends GrantedAuthority> authorities) {
-        this.id = id;
+    public UserPrincipal(Integer userId,Integer storeId, Collection<? extends GrantedAuthority> authorities) {
+        this.userId = userId;
+        this.storeId = storeId;
         this.authorities = authorities;
     }
 }
