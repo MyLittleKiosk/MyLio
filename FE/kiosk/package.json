@@ -61,6 +61,7 @@
     "eslint-plugin-storybook": "^0.12.0",
     "filesize": "^10.1.6",
     "globals": "^16.0.0",
+    "msw": "^2.7.5",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "react-confetti": "^6.4.0",
@@ -69,11 +70,17 @@
     "tailwindcss": "3.4.17",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.26.1",
-    "vite": "^6.3.1"
+    "vite": "^6.3.1",
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "eslintConfig": {
     "extends": [
       "plugin:storybook/recommended"
+    ]
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
     ]
   }
 }
