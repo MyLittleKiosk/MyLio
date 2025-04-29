@@ -37,7 +37,15 @@ export function useRecord(): {
         },
       });
       streamRef.current = stream;
-      mediaRecorderRef.current = new MediaRecorder(stream);
+
+      try {
+        mediaRecorderRef.current = new MediaRecorder(stream);
+        console.log('Using default MediaRecorder.');
+      } catch (e) {
+        console.error('Error creating MediaRecorder:', e);
+        throw new Error('MediaRecorder 생성에 실패했습니다.');
+      }
+
       audioChunksRef.current = [];
       mediaRecorderRef.current.ondataavailable = (event: BlobEvent) => {
         if (event.data.size > 0) {

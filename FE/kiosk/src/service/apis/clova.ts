@@ -1,23 +1,19 @@
 import axios from 'axios';
 
-// API 응답 타입 정의
+interface ClovaApiResult {
+  text: string;
+}
+
+// FastAPI 백엔드 응답 타입 정의
 export interface ClovaResponse {
-  requestId: string;
   status: string;
+  data: ClovaApiResult; // 실제 Clova API 응답 타입으로 지정
   message: string;
 }
 
-export interface RecognitionResult {
-  requestId: string;
-  status: string;
-  text: string;
-  confidence: number;
-  timestamp: string;
-}
-
-// API 클라이언트 설정
+// Clova API 클라이언트 설정
 const clovaClient = axios.create({
-  baseURL: 'http://127.0.0.1:8000',
+  baseURL: 'http://localhost:8000',
 });
 
 /**
@@ -26,9 +22,9 @@ const clovaClient = axios.create({
  */
 
 /**
- * 오디오 데이터를 Clova API로 전송하여 처리합니다.
+ * 오디오 데이터를 FastAPI 백엔드로 전송하여 처리합니다.
  * @param audioBlob - 전송할 오디오 Blob 데이터
- * @returns API 응답 데이터
+ * @returns 백엔드 API 응답 데이터
  */
 export const sendAudioToClova = async (
   audioBlob: Blob
@@ -36,38 +32,15 @@ export const sendAudioToClova = async (
   try {
     // FormData를 사용하여 Blob 데이터 전송
     const formData = new FormData();
-    formData.append('audio', audioBlob, 'recording.wav');
+    formData.append('file', audioBlob, 'recording.wav');
 
     // Clova API 엔드포인트로 요청 전송
-    const response = await clovaClient.post(
-      '/api/clova/process-audio',
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-    );
+    const response = await clovaClient.post('/clova/stt', formData, {
+      timeout: 30000,
+    });
     return response.data;
   } catch (error) {
-    console.error('Clova API 요청 중 오류 발생:', error);
-    throw error;
-  }
-};
-
-/**
- * Clova API의 음성 인식 결과를 가져옵니다.
- * @param requestId - 처리 요청 ID
- * @returns 음성 인식 결과
- */
-export const getClovaRecognitionResult = async (
-  requestId: string
-): Promise<RecognitionResult> => {
-  try {
-    const response = await clovaClient.get(`/api/clova/result/${requestId}`);
-    return response.data;
-  } catch (error) {
-    console.error('Clova 결과 조회 중 오류 발생:', error);
+    console.error('FastAPI 백엔드 요청 중 오류 발생:', error);
     throw error;
   }
 };

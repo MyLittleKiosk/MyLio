@@ -1,9 +1,7 @@
-import {
-  getClovaRecognitionResult,
-  sendAudioToClova,
-} from '@/service/apis/clova';
+import { sendAudioToClova, ClovaResponse } from '@/service/apis/clova';
 import React, { useState } from 'react';
 import { useRecord } from '../../hooks/useAudioRecord';
+import { AxiosError } from 'axios';
 
 const ClovaPage: React.FC = () => {
   const { isRecording, startRecording, audio, stopRecording } = useRecord();
@@ -26,23 +24,39 @@ const ClovaPage: React.FC = () => {
       const response = await fetch(audio);
       const audioBlob = await response.blob();
 
-      // Clova API로 오디오 전송
-      const result = await sendAudioToClova(audioBlob);
+      // 오디오 데이터가 너무 작으면 오류 표시 (거의 껏다 킨 경우)
+      if (audioBlob.size < 1000) {
+        setError('녹음된 오디오가 너무 짧습니다. 더 긴 녹음을 시도해주세요.');
+        setIsProcessing(false);
+        return;
+      }
 
-      // 결과 처리
-      if (result.requestId) {
-        // 비동기 처리인 경우 결과 조회
-        const recognitionResult = await getClovaRecognitionResult(
-          result.requestId
-        );
-        setRecognitionResult(recognitionResult.text || '인식 결과가 없습니다.');
+      // FastAPI 백엔드로 오디오 전송
+      const result: ClovaResponse = await sendAudioToClova(audioBlob);
+
+      // 결과 처리 (단순화)
+      // 백엔드가 반환한 데이터에서 직접 텍스트 추출
+      if (result.status === 'success' && result.data?.text) {
+        setRecognitionResult(result.data.text);
       } else {
-        // 동기 처리인 경우 바로 결과 표시
-        setRecognitionResult(result.message || '인식 결과가 없습니다.');
+        // 백엔드 응답 메시지 또는 기본 메시지 표시
+        setRecognitionResult(
+          result.message || '인식 결과가 없거나 오류가 발생했습니다.'
+        );
       }
     } catch (err) {
       console.error('Clova 처리 중 오류 발생:', err);
-      setError('오디오 처리 중 오류가 발생했습니다.');
+      if (err instanceof AxiosError && err.response?.status === 422) {
+        setError(
+          '서버가 오디오 형식을 처리할 수 없습니다. 지원되는 형식은 WAV 또는 MP3입니다.'
+        );
+      } else if (err instanceof AxiosError && err.response?.status === 400) {
+        setError(
+          '지원되지 않는 파일 형식입니다. WAV 또는 MP3 형식으로 녹음해주세요.'
+        );
+      } else {
+        setError('오디오 처리 중 오류가 발생했습니다.');
+      }
     } finally {
       setIsProcessing(false);
     }
