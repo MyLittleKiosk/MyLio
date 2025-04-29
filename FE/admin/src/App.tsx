@@ -1,9 +1,17 @@
-import './App.css';
+import { Route, Routes } from 'react-router-dom';
+import Layout from './components/layout';
+import Statistics from './pages/statistics';
+import Login from './pages/login';
 
 function App() {
   return (
     <>
-      <div className='font-preExtraLight'>Pretendard ExtraLight</div>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path='/' element={<Statistics />} />
+        </Route>
+        <Route path='/login' element={<Login />} />
+      </Routes>
     </>
   );
 }
