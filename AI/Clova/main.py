@@ -4,9 +4,6 @@ import requests
 import os
 from dotenv import load_dotenv
 from typing import Dict, Any
-import json
-import ffmpeg
-import tempfile
 import urllib.parse
 
 # Load environment variables
