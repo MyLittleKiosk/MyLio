@@ -130,7 +130,7 @@ public class GlobalExceptionHandler {
 //                : "No Authentication";
         String userInfo = auth != null ?
                 auth.getPrincipal() instanceof UserPrincipal ?
-                        ((UserPrincipal) auth.getPrincipal()).getId() + " - " + auth.getAuthorities()
+                        ((UserPrincipal) auth.getPrincipal()).getUserId() + " - " + auth.getAuthorities()
                         : "No Authentication"
                 : "No Authentication";
 

@@ -11,11 +11,19 @@ import org.springframework.stereotype.Component;
 public class AuthenticationUtil {
 
     public Integer getCurrentUserId(UserPrincipal userPrincipal) {
-        if (userPrincipal == null || userPrincipal.getId() == null) {
+        if (userPrincipal == null || userPrincipal.getUserId() == null) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
 
-        return userPrincipal.getId();
+        return userPrincipal.getUserId();
+    }
+
+    public Integer getCurrntStoreId(UserPrincipal userPrincipal) {
+        if (userPrincipal == null || userPrincipal.getStoreId() == null) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
+        }
+
+        return userPrincipal.getStoreId();
     }
 }
 
