@@ -26,12 +26,11 @@ public class OptionDetailController {
     private final AuthenticationUtil authenticationUtil;
 
     @DeleteMapping("/{option_detail_id}")
-    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND})
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.OPTION_STORE_NOT_MATCH, ErrorCode.OPTION_DETAIL_NOT_FOUND})
     @Operation(summary = "옵션 상세 삭제", description = "상세 옵션을 삭제합니다.")
     public ResponseEntity<CommonResponse<Void>> deleteOptionDetail(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("option_detail_id") Integer optionDetailId) {
-
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         optionDetailService.deleteOptionDetail(storeId, optionDetailId);
         return CommonResponse.ok();
