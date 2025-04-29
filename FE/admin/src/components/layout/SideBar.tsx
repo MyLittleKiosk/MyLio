@@ -1,55 +1,10 @@
 import { Link } from 'react-router-dom';
 
 import LOGO from '../../assets/images/Character_HAo.png';
-import IconStatistic from '../../assets/icons/IconStatistic';
-import IconMenuList from '../../assets/icons/IconMenuList';
-import IconCart from '../../assets/icons/IconCart';
-import IconKiosk from '../../assets/icons/IconKiosk';
-import IconAccount from '../../assets/icons/IconAccount';
-import IconNutrient from '../../assets/icons/IconNutrient';
-import IconIngredient from '../../assets/icons/IconIngredient';
+
 import IconBack from '../../assets/icons/IconBack';
 
-const adminNavList = [
-  {
-    icons: IconStatistic,
-    title: '통계',
-    link: '/',
-  },
-  {
-    icons: IconMenuList,
-    title: '메뉴 관리',
-    link: '/',
-  },
-  {
-    icons: IconCart,
-    title: '주문 관리',
-    link: '/',
-  },
-  {
-    icons: IconKiosk,
-    title: '키오스크 관리',
-    link: '/',
-  },
-];
-
-const superAdminNavList = [
-  {
-    icons: IconAccount,
-    title: '계정 관리',
-    link: '/',
-  },
-  {
-    icons: IconIngredient,
-    title: '원재료 관리',
-    link: '/',
-  },
-  {
-    icons: IconNutrient,
-    title: '영양소 관리',
-    link: '/',
-  },
-];
+import { ADMIN_NAVLIST, SUPERADMIN_NAVLIST } from '@/datas/sideBarList';
 
 interface SideBarProps {
   isSideBarOpen: boolean;
@@ -86,7 +41,7 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen }: SideBarProps) => {
       <div className='flex flex-col h-[80%]'>
         {!ISADMIN && (
           <ul className='pt-2 flex flex-col gap-1 text-xs font-preMedium'>
-            {adminNavList.map((item) => (
+            {ADMIN_NAVLIST.map((item) => (
               <Link key={item.title} to={item.link}>
                 <li className='flex gap-2 items-center hover:bg-gray-100 rounded-md px-2 py-1'>
                   <item.icons width={20} height={20} />
@@ -98,7 +53,7 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen }: SideBarProps) => {
         )}
         {ISADMIN && (
           <ul className='pt-2 flex flex-col gap-1 text-xs font-preMedium'>
-            {superAdminNavList.map((item) => (
+            {SUPERADMIN_NAVLIST.map((item) => (
               <Link key={item.title} to={item.link}>
                 <li className='flex gap-2 items-center hover:bg-gray-100 rounded-md px-2 py-1'>
                   <item.icons width={18} height={18} />
