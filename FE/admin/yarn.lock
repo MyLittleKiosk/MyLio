@@ -250,6 +250,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@cypress/react@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "@cypress/react@npm:9.0.1"
+  peerDependencies:
+    "@types/react": ^18 || ^19
+    "@types/react-dom": ^18 || ^19
+    cypress: "*"
+    react: ^18 || ^19
+    react-dom: ^18 || ^19
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 10c0/34aadcc98eee89025cdfaebd403710c83be1823415be6484ba89c8dc682db372723dac017ac50069532ecdc34b999f973cdb4cfd2ee6922c880d086621c84fa1
+  languageName: node
+  linkType: hard
+
 "@cypress/request@npm:^3.0.8":
   version: 3.0.8
   resolution: "@cypress/request@npm:3.0.8"
@@ -1397,6 +1413,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cypress@npm:^1.1.6":
+  version: 1.1.6
+  resolution: "@types/cypress@npm:1.1.6"
+  dependencies:
+    cypress: "npm:*"
+  checksum: 10c0/50925d0eccd88045c84816a38486472e9f46a35945639b312275769742f7b4348732f5233c86bd7fb816cf8f98b562ca06bc9e7704434bca19666cfbd331f288
+  languageName: node
+  linkType: hard
+
 "@types/doctrine@npm:^0.0.9":
   version: 0.0.9
   resolution: "@types/doctrine@npm:0.0.9"
@@ -1708,6 +1733,7 @@ __metadata:
   resolution: "admin@workspace:."
   dependencies:
     "@chromatic-com/storybook": "npm:3"
+    "@cypress/react": "npm:^9.0.1"
     "@eslint/js": "npm:^9.22.0"
     "@storybook/addon-actions": "npm:^8.6.12"
     "@storybook/addon-backgrounds": "npm:^8.6.12"
@@ -1726,6 +1752,7 @@ __metadata:
     "@tanstack/eslint-plugin-query": "npm:^5.74.7"
     "@tanstack/react-query": "npm:^5.74.7"
     "@tanstack/react-query-devtools": "npm:^5.74.7"
+    "@types/cypress": "npm:^1.1.6"
     "@types/node": "npm:^22.15.2"
     "@types/react": "npm:^19.0.10"
     "@types/react-dom": "npm:^19.0.4"
@@ -1738,6 +1765,7 @@ __metadata:
     eslint: "npm:^9.22.0"
     eslint-config-airbnb: "npm:^19.0.4"
     eslint-config-prettier: "npm:^10.1.2"
+    eslint-plugin-cypress: "npm:^4.3.0"
     eslint-plugin-prettier: "npm:^5.2.6"
     eslint-plugin-react: "npm:^7.37.5"
     eslint-plugin-react-hooks: "npm:^5.2.0"
@@ -2499,7 +2527,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress@npm:^14.3.2":
+"cypress@npm:*, cypress@npm:^14.3.2":
   version: 14.3.2
   resolution: "cypress@npm:14.3.2"
   dependencies:
@@ -3098,6 +3126,17 @@ __metadata:
   bin:
     eslint-config-prettier: bin/cli.js
   checksum: 10c0/c22c8e29193cc8fd70becf1c2dd072513f2b3004a175c2a49404c79d1745ba4dc0edc2afd00d16b0e26d24f95813a0469e7445a25104aec218f6d84cdb1697e9
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-cypress@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "eslint-plugin-cypress@npm:4.3.0"
+  dependencies:
+    globals: "npm:^15.15.0"
+  peerDependencies:
+    eslint: ">=9"
+  checksum: 10c0/76960cd9629f307a858b704629e12207dc80e13be719dd0fafe1f8e1b82617307677c5b027fe7a055b406d0c1ab70f2cb6a75643312dc44d3547eb983aa29083
   languageName: node
   linkType: hard
 
@@ -3783,6 +3822,13 @@ __metadata:
   version: 14.0.0
   resolution: "globals@npm:14.0.0"
   checksum: 10c0/b96ff42620c9231ad468d4c58ff42afee7777ee1c963013ff8aabe095a451d0ceeb8dcd8ef4cbd64d2538cef45f787a78ba3a9574f4a634438963e334471302d
+  languageName: node
+  linkType: hard
+
+"globals@npm:^15.15.0":
+  version: 15.15.0
+  resolution: "globals@npm:15.15.0"
+  checksum: 10c0/f9ae80996392ca71316495a39bec88ac43ae3525a438b5626cd9d5ce9d5500d0a98a266409605f8cd7241c7acf57c354a48111ea02a767ba4f374b806d6861fe
   languageName: node
   linkType: hard
 

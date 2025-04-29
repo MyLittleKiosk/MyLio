@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "cypress:open": "cypress open --e2e --browser chrome"
   },
   "dependencies": {
     "@tanstack/eslint-plugin-query": "^5.74.7",
@@ -17,6 +18,7 @@
     "@tanstack/react-query-devtools": "^5.74.7",
     "axios": "^1.9.0",
     "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-cypress": "^4.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.5.2",
@@ -24,6 +26,7 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "3",
+    "@cypress/react": "^9.0.1",
     "@eslint/js": "^9.22.0",
     "@storybook/addon-actions": "^8.6.12",
     "@storybook/addon-backgrounds": "^8.6.12",
@@ -39,6 +42,7 @@
     "@storybook/react": "8.6.12",
     "@storybook/react-vite": "8.6.12",
     "@storybook/test": "8.6.12",
+    "@types/cypress": "^1.1.6",
     "@types/node": "^22.15.2",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
