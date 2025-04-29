@@ -1,10 +1,13 @@
 package com.ssafy.mylio.domain.menu.controller;
 
 
+import com.ssafy.mylio.domain.menu.dto.response.MenuDetailResponseDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuListResponseDto;
 import com.ssafy.mylio.domain.menu.service.MenuService;
+import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
 import com.ssafy.mylio.global.common.CustomPage;
 import com.ssafy.mylio.global.common.response.CommonResponse;
+import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.security.auth.UserPrincipal;
 import com.ssafy.mylio.global.util.AuthenticationUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,5 +41,16 @@ public class MenuController {
 
         Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
         return CommonResponse.ok(menuService.getMenuList(storeId, categoryId, pageable));
+    }
+
+    @GetMapping("/{menu_id}")
+    @Operation(summary = "메뉴 상세 조회", description = "메뉴 정보를 상세조회합니다.")
+    @ApiErrorCodeExamples({ErrorCode.MENU_NOT_FOUND})
+    public ResponseEntity<CommonResponse<MenuDetailResponseDto>> getMenuDetail(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable("menu_id") Integer menuId ) {
+
+        Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
+        return CommonResponse.ok(menuService.getMenuDetail(storeId, menuId));
     }
 }

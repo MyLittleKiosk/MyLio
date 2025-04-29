@@ -8,4 +8,5 @@ import java.util.List;
 public interface MenuTagMapRepository extends JpaRepository<MenuTagMap, Integer> {
 
     List<MenuTagMap> findByMenuIdIn(List<Integer> menuIds);
+    List<MenuTagMap> findAllByMenuId(Integer menuId);
 }
