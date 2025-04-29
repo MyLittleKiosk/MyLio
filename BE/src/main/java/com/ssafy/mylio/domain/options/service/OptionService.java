@@ -53,9 +53,14 @@ public class OptionService {
 
         return OptionListResponseDto.of(optionResponseDtoList);
     }
+
     private Store getStoreId(Integer storeId){
          return storeRepository.findById(storeId)
                 .orElseThrow(()-> new CustomException(ErrorCode.STORE_NOT_FOUND, "storeId", storeId));
+    }
+
+    public OptionResponseDto getOptionDetail(Integer storeId, Integer optionId){
+        return null;
     }
 
 }

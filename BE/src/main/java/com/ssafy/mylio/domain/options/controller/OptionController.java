@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,5 +36,15 @@ public class OptionController {
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
         return CommonResponse.ok(optionService.getOptionList(storeId));
+    }
+
+    @GetMapping("/{option_id}")
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND})
+    @Operation(summary = "옵션 상세 조회", description = "optionId로 특정 옵션을 조회합니다.")
+    public ResponseEntity<CommonResponse<OptionResponseDto>> getOptionDetail(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable("option_id") Integer optionId) {
+        Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
+        return CommonResponse.ok(optionService.getOptionDetail(storeId, optionId));
     }
 }
