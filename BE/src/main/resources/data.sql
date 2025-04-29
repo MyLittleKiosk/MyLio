@@ -96,4 +96,12 @@ INSERT INTO nutrition_value (id, store_id, menu_id, nutrition_id, value, status,
 
 -- 17. kiosk_session
 INSERT INTO kiosk_session (id, store_id, account_id, start_order_number, name, is_active, created_at, updated_at, started_at) VALUES
-    (1, 1, 1, 'A', '키오스크 A', true, NOW(),NOW(),NOW());
+    (1, 1, 7, 'A', '키오스크 A', true, NOW(),NOW(),NOW());
+
+-- 키오스크 B 추가
+INSERT INTO kiosk_session (id, store_id, account_id, start_order_number, name, is_active, created_at, updated_at, started_at)
+VALUES (2, 1, 7, 'B', '키오스크 B', false, NOW(), NOW(), NOW());
+
+-- 키오스크 C 추가
+INSERT INTO kiosk_session (id, store_id, account_id, start_order_number, name, is_active, created_at, updated_at, started_at)
+VALUES (3, 1, 7, 'C', '키오스크 C', false, NOW(), NOW(), NOW());
