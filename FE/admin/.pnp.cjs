@@ -78,12 +78,8 @@ const RAW_RUNTIME_STATE =
           ["react-dom", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:19.1.0"],\
           ["react-router-dom", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:7.5.2"],\
           ["storybook", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:8.6.12"],\
-<<<<<<< HEAD
-          ["tailwindcss", "npm:3.4.17"],\
-=======
           ["strip-ansi", "npm:7.1.0"],\
-          ["tailwindcss", "npm:4.1.4"],\
->>>>>>> d57cfd06c3a1e1a3ebc80717daf3b6a089f90259
+          ["tailwindcss", "npm:3.4.17"],\
           ["typescript", "patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=5786d5"],\
           ["typescript-eslint", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:8.31.0"],\
           ["vite", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:6.3.3"],\
@@ -3065,12 +3061,8 @@ const RAW_RUNTIME_STATE =
           ["react-dom", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:19.1.0"],\
           ["react-router-dom", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:7.5.2"],\
           ["storybook", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:8.6.12"],\
-<<<<<<< HEAD
-          ["tailwindcss", "npm:3.4.17"],\
-=======
           ["strip-ansi", "npm:7.1.0"],\
-          ["tailwindcss", "npm:4.1.4"],\
->>>>>>> d57cfd06c3a1e1a3ebc80717daf3b6a089f90259
+          ["tailwindcss", "npm:3.4.17"],\
           ["typescript", "patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=5786d5"],\
           ["typescript-eslint", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:8.31.0"],\
           ["vite", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:6.3.3"],\
