@@ -4,6 +4,7 @@ package com.ssafy.mylio.domain.menu.controller;
 import com.ssafy.mylio.domain.menu.dto.response.MenuDetailResponseDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuListResponseDto;
 import com.ssafy.mylio.domain.menu.service.MenuService;
+import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExample;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
 import com.ssafy.mylio.global.common.CustomPage;
 import com.ssafy.mylio.global.common.response.CommonResponse;
@@ -52,5 +53,17 @@ public class MenuController {
 
         Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
         return CommonResponse.ok(menuService.getMenuDetail(storeId, menuId));
+    }
+
+    @DeleteMapping("/{menu_id}")
+    @Operation(summary = "메뉴 삭제", description = "메뉴를 삭제합니다")
+    @ApiErrorCodeExamples({ErrorCode.MENU_NOT_FOUND})
+    public ResponseEntity<CommonResponse<Void>> deleteMenu(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable("menu_id") Integer menuId) {
+
+        Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
+        menuService.deleteMenu(storeId, menuId);
+        return CommonResponse.ok();
     }
 }
