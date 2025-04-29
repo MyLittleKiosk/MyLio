@@ -1,4 +1,4 @@
-import { iconProps } from '../../types/iconProps';
+import { iconProps } from '@/types/iconProps';
 
 const IconTime = ({ width, height }: iconProps) => {
   return (

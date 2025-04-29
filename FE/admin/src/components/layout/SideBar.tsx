@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom';
 
-import LOGO from '../../assets/images/Character_HAo.png';
-
-import IconBack from '../../assets/icons/IconBack';
+import LOGO from '@/assets/images/Character_HAo.png';
+import IconBack from '@/assets/icons/IconBack';
 
 import { ADMIN_NAVLIST, SUPERADMIN_NAVLIST } from '@/datas/sideBarList';
 

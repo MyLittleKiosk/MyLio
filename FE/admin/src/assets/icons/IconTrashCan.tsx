@@ -1,4 +1,4 @@
-import { iconProps } from '../../types/iconProps';
+import { iconProps } from '@/types/iconProps';
 
 const IconTrashCan = ({ width, height }: iconProps) => {
   return (

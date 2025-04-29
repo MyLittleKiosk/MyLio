@@ -1,4 +1,4 @@
-import { iconProps } from '../../types/iconProps';
+import { iconProps } from '@/types/iconProps';
 
 const IconCart = ({ width, height }: iconProps) => {
   return (

@@ -1,5 +1,5 @@
 // IconBack.tsx
-import { iconProps } from '../../types/iconProps';
+import { iconProps } from '@/types/iconProps';
 
 const IconBack = ({ width, height, onClick, className }: iconProps) => {
   return (
