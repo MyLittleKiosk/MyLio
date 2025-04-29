@@ -13,10 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -46,5 +43,16 @@ public class OptionController {
             @PathVariable("option_id") Integer optionId) {
         Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
         return CommonResponse.ok(optionService.getOptionDetail(storeId, optionId));
+    }
+
+    @DeleteMapping("/{option_id}")
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.OPTION_NOT_FOUND})
+    @Operation(summary = "옵션 삭제", description = "optionId로 특정 옵션을 삭제합니다.")
+    public ResponseEntity<CommonResponse<Void>> deleteOption(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable("option_id") Integer optionId) {
+        Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
+        optionService.deleteOption(storeId, optionId);
+        return CommonResponse.ok();
     }
 }
