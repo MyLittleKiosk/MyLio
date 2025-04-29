@@ -53,4 +53,14 @@ public class MenuController {
         Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
         return CommonResponse.ok(menuService.getMenuDetail(storeId, menuId));
     }
+
+    @PatchMapping("/{menu_id}")
+    @Operation(summary = "메뉴 업데이트", description = "메뉴 정보를 업데이트 합니다.")
+    @ApiErrorCodeExamples({ErrorCode.MENU_NOT_FOUND})
+    public ResponseEntity<CommonResponse<Void>> updateMenu(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable("menu_id") Integer menuId) {
+        Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal); // 이거 나중에 storeId로 바꾸기
+        return CommonResponse.ok();
+    }
 }

@@ -43,13 +43,14 @@ public class Menu extends BaseEntity {
     private MenuStatus status = MenuStatus.SELLING;
 
     public void update(Category category, String nameKr, String nameEn,
-                       String description, Integer price, String imageUrl) {
+                       String description, Integer price, String imageUrl, Store store) {
         this.category = category;
         this.nameKr = nameKr;
         this.nameEn = nameEn;
         this.description = description;
         this.price = price;
         this.imageUrl = imageUrl;
+        this.store = store;
     }
 
     public void updateStatus(MenuStatus status) {

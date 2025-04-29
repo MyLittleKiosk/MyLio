@@ -94,4 +94,8 @@ public class MenuService {
 
         return MenuDetailResponseDto.of(menu, tagsDto, nutritionDto, ingredientInfoDto, optionInfoDto);
     }
+
+    public void updateMenu(Integer storeId, Integer menuId) {
+
+    }
 }
