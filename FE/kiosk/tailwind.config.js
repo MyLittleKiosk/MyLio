@@ -38,6 +38,15 @@ export default {
         secondary: '#BECEFF',
         error: '#D44848',
       },
+      keyframes: {
+        ripple: {
+          '0%': { width: '0', height: '0', opacity: '0.5' },
+          '100%': { width: '500px', height: '500px', opacity: '0' },
+        },
+      },
+      animation: {
+        ripple: 'ripple 1s cubic-bezier(0, 0, 0.2, 1)',
+      },
     },
   },
   plugins: [],
