@@ -4,9 +4,11 @@ import com.ssafy.mylio.global.common.response.CommonResponse;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.Authentication;
@@ -151,6 +153,54 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * @ RequestParam, @PathVariable 등의 제약 조건(@Positive, @NotNull 등) 위반 시 발생하는 예외 처리
+     * 발생 조건: 단일 파라미터(@RequestParam 등) 유효성 검증 실패
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<CommonResponse<Object>> handleConstraintViolationException(
+            ConstraintViolationException e, HttpServletRequest request) {
+
+        String errorMessage = e.getConstraintViolations()
+                .stream()
+                .findFirst()
+                .map(violation -> violation.getInvalidValue() + " : " + violation.getMessage())
+                .orElse("잘못된 요청입니다.");
+
+        log.error("[ConstraintViolationException] {} {}: {}",
+                request.getMethod(),
+                request.getRequestURI(),
+                errorMessage
+        );
+
+        return CommonResponse.error(ErrorCode.INVALID_INPUT_VALUE, errorMessage);
+    }
+
+    /**
+     * @RequestParam 타입 변환 실패 시 발생하는 예외 처리
+     * 발생 조건: 잘못된 타입(문자→숫자 등) 요청이 들어올 때
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    protected ResponseEntity<CommonResponse<Object>> handleMethodArgumentTypeMismatchException(
+            MethodArgumentTypeMismatchException e, HttpServletRequest request) {
+
+        String errorMessage = String.format(
+                "잘못된 요청 파라미터 '%s': '%s' → 필요한 타입: %s",
+                e.getPropertyName(),
+                e.getValue(),
+                e.getRequiredType() != null ? e.getRequiredType().getSimpleName() : "알 수 없음"
+        );
+
+        log.error("[TypeMismatchException] {} {}: {}",
+                request.getMethod(),
+                request.getRequestURI(),
+                errorMessage
+        );
+
+        return CommonResponse.error(ErrorCode.INVALID_INPUT_VALUE, errorMessage);
+    }
+
+
+    /**
      * 기타 모든 처리되지 않은 예외를 처리하는 폴백 핸들러
      * 발생 조건: 위 핸들러에서 처리되지 않은 모든 예외 발생 시
      */
@@ -163,5 +213,6 @@ public class GlobalExceptionHandler {
                 e);
         return CommonResponse.error(ErrorCode.INTERNAL_SERVER_ERROR);
     }
+
 
 }
