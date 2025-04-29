@@ -23,7 +23,10 @@ public enum ErrorCode {
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "A004", "아이디 혹은 비밀번호가 일치하지 않습니다."),
 
     // Menu
-    MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 메뉴입니다");
+    MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 메뉴입니다"),
+
+    // Store
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND,"S001","존재하지 않는 매장입니다");
 
 
     private final HttpStatus status;
