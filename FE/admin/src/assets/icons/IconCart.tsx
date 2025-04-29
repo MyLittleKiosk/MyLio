@@ -1,6 +1,6 @@
 import { iconProps } from '@/types/iconProps';
 
-const IconCart = ({ width, height }: iconProps) => {
+const IconCart = ({ width = 20, height = 20 }: iconProps) => {
   return (
     <svg
       width={width}

@@ -1,6 +1,6 @@
 import { iconProps } from '@/types/iconProps';
 
-const IconTime = ({ width, height }: iconProps) => {
+const IconTime = ({ width = 20, height = 20 }: iconProps) => {
   return (
     <svg
       width={width}

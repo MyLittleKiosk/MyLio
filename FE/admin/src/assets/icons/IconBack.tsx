@@ -1,7 +1,12 @@
 // IconBack.tsx
 import { iconProps } from '@/types/iconProps';
 
-const IconBack = ({ width, height, onClick, className }: iconProps) => {
+const IconBack = ({
+  width = 20,
+  height = 20,
+  onClick,
+  className,
+}: iconProps) => {
   return (
     <svg
       width={width}

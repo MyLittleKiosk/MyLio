@@ -1,6 +1,6 @@
 import { iconProps } from '@/types/iconProps';
 
-const IconIngredient = ({ width, height }: iconProps) => {
+const IconIngredient = ({ width = 20, height = 20 }: iconProps) => {
   return (
     <svg
       version='1.0'
