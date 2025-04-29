@@ -49,7 +49,7 @@ public class AuthController {
     @ApiErrorCodeExamples({ErrorCode.INTERNAL_SERVER_ERROR, ErrorCode.INVALID_REFRESH_TOKEN})
     public ResponseEntity<CommonResponse<Void>> refreshToken(
             @CookieValue(name = "refresh_token",required = false) String refreshToken){
-        ResponseCookie accessTokenCookie = CookieUtil.makeAccessTokenCookie(authService.refreshToken(refreshToken));
+        ResponseCookie accessTokenCookie = CookieUtil.makeAccessTokenCookie(authService.getRefreshToken(refreshToken));
 
         return CommonResponse.okWithCookie(accessTokenCookie);
 
