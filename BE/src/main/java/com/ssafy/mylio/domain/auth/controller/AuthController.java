@@ -25,7 +25,7 @@ import com.ssafy.mylio.global.error.code.ErrorCode;
 
 @Slf4j
 @RestController
-@RequestMapping("/account")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 @Tag(name = "인증", description="인증 & 인가 API")
 public class AuthController {
