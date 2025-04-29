@@ -21,9 +21,18 @@ public enum ErrorCode {
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "A002", "유효하지 않은 리프레시 토큰입니다"),
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "A003", "유효하지 않은 액세스 토큰입니다"),
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "A004", "아이디 혹은 비밀번호가 일치하지 않습니다."),
+    INVALID_ROLE(HttpStatus.UNAUTHORIZED,"A005","권한이 없는 사용자입니다."),
 
     // Menu
-    MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 메뉴입니다");
+    MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 메뉴입니다"),
+
+    //Kiosk
+    KIOSK_SESSION_NOT_FOUND(HttpStatus.NOT_FOUND,"K001","존재하지 않는 키오스크 입니다."),
+    KIOSK_IN_USE(HttpStatus.CONFLICT,"K002","이미 사용중인 키오스크입니다."),
+
+    //Store
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND,"S001","Store 정보를 찾을 수 없습니다.");
+    ;
 
 
     private final HttpStatus status;
