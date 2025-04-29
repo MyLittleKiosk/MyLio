@@ -70,7 +70,7 @@ public class OptionService {
         Options options = getOptionId(optionId);
 
         // 매장의 옵션이 맞는지 조회
-        if(!options.getStore().getId().equals(store.getId())){
+        if(!options.getStore().getId().equals(storeId)){
             throw new CustomException(ErrorCode.OPTION_STORE_NOT_MATCH, "optionId", optionId)
                     .addParameter("storeId", storeId);
         }
