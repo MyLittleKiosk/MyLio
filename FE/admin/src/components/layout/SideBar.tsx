@@ -77,8 +77,8 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen }: SideBarProps) => {
           width={16}
           height={16}
           onClick={() => setIsSideBarOpen(!isSideBarOpen)}
-          className={`text-black hover:bg-gray-100 rounded-md cursor-pointer transform ${
-            isSideBarOpen ? 'rotate-180' : ''
+          className={`mr-2 text-black hover:bg-gray-100 rounded-md cursor-pointer transform ${
+            isSideBarOpen ? '' : 'rotate-180'
           }`}
         />
       </header>
