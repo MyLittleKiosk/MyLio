@@ -1,5 +1,6 @@
 package com.ssafy.mylio.domain.options.entity;
 
+import com.ssafy.mylio.domain.menu.entity.MenuStatus;
 import com.ssafy.mylio.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -24,8 +25,16 @@ public class OptionDetail extends BaseEntity {
     @Column(name = "additional_price")
     private Integer additionalPrice;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private OptionDetailStatus status = OptionDetailStatus.REGISTERED;
+
     public void update(String value, Integer additionalPrice) {
         this.value = value;
         this.additionalPrice = additionalPrice;
+    }
+
+    public void delete() {
+        this.status = OptionDetailStatus.DELETED;
     }
 }
