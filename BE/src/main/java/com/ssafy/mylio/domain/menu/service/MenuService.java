@@ -64,9 +64,7 @@ public class MenuService {
 
     public MenuDetailResponseDto getMenuDetail(Integer storeId, Integer menuId) {
 
-        // 존재하는 메뉴인지 검증
-        Menu menu = menuRepository.findById(menuId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", menuId));
+        Menu menu = getMenuId(menuId);
 
         // 메뉴 아이디로 태그 조회
         List<MenuTagMapDto> tagsDto = menuTagMapRepository.findAllByMenuId(menu.getId())
@@ -98,11 +96,13 @@ public class MenuService {
 
     @Transactional
     public void deleteMenu(Integer storeId, Integer menuId) {
-
-        // 메뉴 검증
-        Menu menu = menuRepository.findById(menuId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", menuId));
-
+        Menu menu = getMenuId(menuId);
         menu.updateStatus(MenuStatus.DELETED);
+    }
+
+    private Menu getMenuId(Integer menuId) {
+        // 메뉴 검증
+        return menuRepository.findById(menuId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", menuId));
     }
 }
