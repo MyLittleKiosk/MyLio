@@ -1,8 +1,6 @@
 package com.ssafy.mylio.domain.menu.dto.response;
 
 import com.ssafy.mylio.domain.menu.entity.Menu;
-import com.ssafy.mylio.domain.menu.entity.MenuStatus;
-import com.ssafy.mylio.domain.menu.entity.MenuTagMap;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
