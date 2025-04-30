@@ -24,7 +24,7 @@ public class OptionDetailService {
         OptionDetail optionDetail = optionDetailRepository.findById(optionDetailId)
                 .orElseThrow(()-> new CustomException(ErrorCode.OPTION_DETAIL_NOT_FOUND, "optionDetailId", optionDetailId));
 
-        if (!optionDetail.getOptions().getStore().getId().equals(store.getId())) {
+        if (!optionDetail.getOptions().getStore().getId().equals(storeId)) {
             throw new CustomException(ErrorCode.OPTION_STORE_NOT_MATCH, "optionDetailId", optionDetailId);
         }
 
