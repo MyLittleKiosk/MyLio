@@ -24,7 +24,7 @@ const Input = ({
   disabled = false,
 }: InputProps) => {
   return (
-    <div className='flex gap-2 items-center'>
+    <div className={`flex gap-2 items-center ${className}`}>
       {label && <label className='text-md font-preSemiBold'>{label}</label>}
       <input
         id={id}
@@ -32,7 +32,7 @@ const Input = ({
         type={type}
         value={value}
         onChange={onChange}
-        className={`${className} ${error ? 'border-2 border-error' : 'border border-subContent'} rounded-md p-2 font-preRegular`}
+        className={` ${error ? 'border-2 border-error' : 'border border-subContent'} rounded-md p-2 font-preRegular`}
         disabled={disabled}
       />
     </div>

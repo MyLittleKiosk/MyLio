@@ -45,34 +45,21 @@ export const WithoutLabel: Story = {
 
 export const NumberInput: Story = {
   args: {
-    label: 'Number',
-    id: 'numberinput',
-    placeholder: 'placeholder',
+    ...WithLabel.args,
     type: 'number',
-    value: '',
-    onChange: () => {},
   },
 };
 
 export const Error: Story = {
   args: {
-    label: 'Error',
-    id: 'errorinput',
-    placeholder: 'placeholder',
-    type: 'text',
-    value: '123',
+    ...WithLabel.args,
     error: true,
   },
 };
 
 export const Disabled: Story = {
   args: {
-    label: 'Disabled',
-    id: 'disabledinput',
-    placeholder: 'placeholder',
-    type: 'text',
-    value: '',
-    onChange: () => {},
+    ...WithLabel.args,
     disabled: true,
   },
 };
