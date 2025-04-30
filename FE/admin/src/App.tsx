@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import Layout from './components/layout';
-import Statistics from './pages/statistics';
-import Login from './pages/login';
+import Statistics from './pages/Statistics';
+import Login from './pages/Login';
 import MSWInit from '@components/common/MSWinit';
 
 function App() {
