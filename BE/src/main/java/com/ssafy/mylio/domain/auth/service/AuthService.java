@@ -120,6 +120,7 @@ public class AuthService {
         }
 
         if (account.getStatus() == BasicStatus.DELETED) {
+
             throw new CustomException(ErrorCode.INVALID_CREDENTIALS)
                     .addParameter("accountStatus",account.getStatus().getCode());
         }
@@ -137,6 +138,7 @@ public class AuthService {
                 .orElseThrow(() -> new CustomException(ErrorCode.KIOSK_SESSION_NOT_FOUND)
                         .addParameter("StoreId",storeId)
                         .addParameter("kioskId",request.getKioskId()));
+
 
 
         //키오스크 상태 확인
