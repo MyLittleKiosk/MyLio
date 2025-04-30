@@ -36,7 +36,7 @@ public class OptionDetailController {
     }
 
     @PostMapping("/{option_id}")
-    @ApiErrorCodeExamples({})
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.OPTION_NOT_FOUND, ErrorCode.OPTION_STORE_NOT_MATCH})
     @Operation(summary = "옵션 상세 추가", description = "optionId에 해당하는 상세 옵션을 추가합니다.")
     public ResponseEntity<CommonResponse<Void>> addOptionDetail(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
