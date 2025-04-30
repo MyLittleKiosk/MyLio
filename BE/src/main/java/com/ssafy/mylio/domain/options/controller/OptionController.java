@@ -73,7 +73,7 @@ public class OptionController {
     }
 
     @PatchMapping("/{option_id}")
-    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND})
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.OPTION_NOT_FOUND, ErrorCode.OPTION_STORE_NOT_MATCH})
     @Operation(summary = "옵션 수정", description = "optionId로 옵션을 수정합니다 (그룹옵션)")
     public ResponseEntity<CommonResponse<Void>> updateOption(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
