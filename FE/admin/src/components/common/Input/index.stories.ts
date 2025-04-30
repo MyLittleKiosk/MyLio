@@ -7,14 +7,14 @@ const meta: Meta<typeof Input> = {
   tags: ['autodocs'],
   argTypes: {
     label: { control: 'text' },
-    id: { control: 'text' },
+    id: { control: 'text', table: { disable: true } },
     placeholder: { control: 'text' },
     type: { control: 'text' },
     value: { control: 'text' },
-    onChange: { action: 'changed' },
-    className: { control: 'text' },
     error: { control: 'boolean' },
     disabled: { control: 'boolean' },
+    onChange: { action: 'changed', table: { disable: true } },
+    className: { control: 'text', table: { disable: true } },
   },
 } satisfies Meta<typeof Input>;
 
@@ -22,44 +22,12 @@ export default meta;
 
 type Story = StoryObj<typeof Input>;
 
-export const WithLabel: Story = {
+export const Default: Story = {
   args: {
     label: 'Label',
     id: 'withlabelinput',
     placeholder: 'placeholder',
     type: 'text',
     value: '',
-    onChange: () => {},
-  },
-};
-
-export const WithoutLabel: Story = {
-  args: {
-    id: 'withoutlabelinput',
-    placeholder: 'placeholder',
-    type: 'text',
-    value: '',
-    onChange: () => {},
-  },
-};
-
-export const NumberInput: Story = {
-  args: {
-    ...WithLabel.args,
-    type: 'number',
-  },
-};
-
-export const Error: Story = {
-  args: {
-    ...WithLabel.args,
-    error: true,
-  },
-};
-
-export const Disabled: Story = {
-  args: {
-    ...WithLabel.args,
-    disabled: true,
   },
 };

@@ -7,14 +7,14 @@ const meta = {
   component: Button,
   tags: ['autodocs'],
   argTypes: {
-    type: { control: 'select' },
     text: { control: 'text' },
     disabled: { control: 'boolean' },
     error: { control: 'boolean' },
     cancel: { control: 'boolean' },
-    className: { control: 'text' },
-    onClick: { action: 'clicked' },
-    icon: { control: 'text' },
+    icon: { control: 'object', table: { disable: true } },
+    onClick: { action: 'clicked', table: { disable: true } },
+    className: { control: 'text', table: { disable: true } },
+    type: { control: 'select', table: { disable: true } },
   },
 } satisfies Meta<typeof Button>;
 
@@ -30,26 +30,6 @@ export const Default: Story = {
   },
 };
 
-export const Cancel: Story = {
-  args: {
-    ...Default.args,
-    cancel: true,
-  },
-};
-
-export const Disabled: Story = {
-  args: {
-    ...Default.args,
-    disabled: true,
-  },
-};
-
-export const Error: Story = {
-  args: {
-    ...Default.args,
-    error: true,
-  },
-};
 export const OnlyIcon: Story = {
   args: {
     ...Default.args,

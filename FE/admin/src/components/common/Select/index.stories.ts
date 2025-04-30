@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react';
 import Select from '.';
 
-const meta = {
+const meta: Meta<typeof Select> = {
   title: 'Components/Common/Select',
   component: Select,
   tags: ['autodocs'],
@@ -10,10 +10,10 @@ const meta = {
     label: { control: 'text' },
     selected: { control: 'text' },
     placeholder: { control: 'text' },
-    className: { control: 'text' },
     error: { control: 'boolean' },
     disabled: { control: 'boolean' },
-    onChange: { action: 'changed' },
+    onChange: { action: 'changed', table: { disable: true } },
+    className: { control: 'text', table: { disable: true } },
   },
 } satisfies Meta<typeof Select>;
 
@@ -31,21 +31,6 @@ export const Default: Story = {
     label: 'Label',
     selected: 'option1',
     placeholder: '옵션을 선택해주세요',
-    onChange: () => {},
     disabled: false,
-  },
-};
-
-export const Error: Story = {
-  args: {
-    ...Default.args,
-    error: true,
-  },
-};
-
-export const Disabled: Story = {
-  args: {
-    ...Default.args,
-    disabled: true,
   },
 };
