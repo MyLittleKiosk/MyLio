@@ -1,6 +1,7 @@
 package com.ssafy.mylio.domain.options.dto.request;
 
 import com.ssafy.mylio.domain.options.entity.OptionDetail;
+import com.ssafy.mylio.domain.options.entity.Options;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,10 +20,11 @@ public class OptionDetailRequestDto {
     @NotNull(message = "additional_price는 필수입니다.")
     private Integer additionalPrice;
 
-    public OptionDetail toEntity(){
+    public OptionDetail toEntity(Options options){
         return OptionDetail.builder()
                 .value(this.value)
                 .additionalPrice(this.additionalPrice)
+                .options(options)
                 .build();
     }
 }
