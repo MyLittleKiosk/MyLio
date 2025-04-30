@@ -66,7 +66,7 @@ public class SwaggerConfig {
 //        devServer.setDescription("개발용 서버입니다.");
 
         Server prodServer = new Server();
-        prodServer.setUrl("https://k12b102.p.ssafy.io");
+        prodServer.setUrl("https://k12b102.p.ssafy.io/api");
         prodServer.setDescription("실 운용 서버입니다.(개발자용 토큰 사용 불가)");
 
         Server localServer = new Server();

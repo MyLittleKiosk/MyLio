@@ -1,9 +1,9 @@
 package com.ssafy.mylio.global.common.status;
 
 public enum TrackableStatus implements EntityStatus {
-    REGISTERED("registered", "등록됨"),
-    UPDATED("updated", "수정됨"),
-    DELETED("deleted", "삭제됨");
+    REGISTERED("REGISTERED", "등록됨"),
+    UPDATED("UPDATED", "수정됨"),
+    DELETED("DELETED", "삭제됨");
 
     private final String code;
     private final String description;

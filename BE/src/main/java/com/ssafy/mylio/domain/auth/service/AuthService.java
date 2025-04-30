@@ -1,4 +1,5 @@
 package com.ssafy.mylio.domain.auth.service;
+
 import com.ssafy.mylio.domain.account.entity.Account;
 import com.ssafy.mylio.domain.account.entity.AccountRole;
 import com.ssafy.mylio.domain.account.repository.AccountRepository;
@@ -7,6 +8,7 @@ import com.ssafy.mylio.domain.auth.dto.request.LoginRequestDto;
 import com.ssafy.mylio.domain.auth.dto.response.LoginResponse;
 import com.ssafy.mylio.domain.auth.dto.response.StoreInfoResponseDto;
 import com.ssafy.mylio.domain.auth.dto.response.SuperInfoResponseDto;
+import com.ssafy.mylio.global.common.status.BasicStatus;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
 import com.ssafy.mylio.global.security.jwt.JwtTokenProvider;
@@ -25,17 +27,22 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthRedisService authRedisService;
 
-    @Transactional
-    public LoginResult login(LoginRequestDto request){
+
+    public LoginResult login(LoginRequestDto request) {
         Account account = accountRepository.findById(request.getId())
-                .orElseThrow(()-> new CustomException(ErrorCode.INVALID_CREDENTIALS));
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_CREDENTIALS));
 
         // 비밀번호 검증예정
         //if(!passwordEncoder.match)
-        if(!request.getPassword().equals(account.getPassword())){
+        if (!request.getPassword().equals(account.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
         }
 
+        //삭제된 user
+        if (account.getStatus() == BasicStatus.DELETED) {
+            throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
+
+        }
         Integer storeId = (account.getRole() == AccountRole.SUPER)
                 ? null
                 : account.getStore().getId();
@@ -60,11 +67,11 @@ public class AuthService {
                 ? SuperInfoResponseDto.of(account)
                 : StoreInfoResponseDto.of(account);
 
-        return LoginResult.of(responseDto,accessToken,refreshToken);
+        return LoginResult.of(responseDto, accessToken, refreshToken);
 
     }
 
-    public String refreshToken(String refreshToken) {
+    public String getRefreshToken(String refreshToken) {
         // 1. Refresh 토큰 유효성 검증
         TokenValidationResult validationResult = jwtTokenProvider.validateToken(refreshToken);
         if (!validationResult.isValid()) {
@@ -83,7 +90,7 @@ public class AuthService {
         }
 
         // 3. 새로운 Access 토큰 발급
-        return jwtTokenProvider.createAccessToken(userId,storeId, userType);
+        return jwtTokenProvider.createAccessToken(userId, storeId, userType);
     }
 
 }
