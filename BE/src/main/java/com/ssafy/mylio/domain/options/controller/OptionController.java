@@ -1,6 +1,7 @@
 package com.ssafy.mylio.domain.options.controller;
 
 import com.ssafy.mylio.domain.options.dto.request.OptionRequestDto;
+import com.ssafy.mylio.domain.options.dto.request.OptionUpdateRequestDto;
 import com.ssafy.mylio.domain.options.dto.response.OptionListResponseDto;
 import com.ssafy.mylio.domain.options.dto.response.OptionResponseDto;
 import com.ssafy.mylio.domain.options.service.OptionService;
@@ -68,6 +69,18 @@ public class OptionController {
             @Valid @RequestBody OptionRequestDto optionRequestDto) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         optionService.addOption(storeId, optionRequestDto);
+        return CommonResponse.ok();
+    }
+
+    @PatchMapping("/{option_id}")
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND})
+    @Operation(summary = "옵션 수정", description = "optionId로 옵션을 수정합니다 (그룹옵션)")
+    public ResponseEntity<CommonResponse<Void>> updateOption(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Valid @RequestBody OptionUpdateRequestDto optionUpdateRequestDto,
+            @PathVariable("option_id") Integer optionId) {
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+        optionService.updateOption(storeId, optionId, optionUpdateRequestDto);
         return CommonResponse.ok();
     }
 }

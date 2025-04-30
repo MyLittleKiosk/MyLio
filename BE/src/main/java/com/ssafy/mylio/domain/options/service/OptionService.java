@@ -1,6 +1,7 @@
 package com.ssafy.mylio.domain.options.service;
 
 import com.ssafy.mylio.domain.options.dto.request.OptionRequestDto;
+import com.ssafy.mylio.domain.options.dto.request.OptionUpdateRequestDto;
 import com.ssafy.mylio.domain.options.dto.response.OptionDetailDto;
 import com.ssafy.mylio.domain.options.dto.response.OptionListResponseDto;
 import com.ssafy.mylio.domain.options.dto.response.OptionResponseDto;
@@ -110,6 +111,11 @@ public class OptionService {
         Store store = getStoreId(storeId);
         Options options = optionRequestDto.toEntity(store);
         optionsRepository.save(options);
+    }
+
+    @Transactional
+    public void updateOption(Integer storeId, Integer optionId, OptionUpdateRequestDto optionUpdateRequestDto){
+
     }
 
 }
