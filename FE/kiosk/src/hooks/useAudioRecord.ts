@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 
 /**
- * useRecord 커스텀 훅은 브라우저에서 오디오 녹음을 시작하고, 녹음이 완료되면 오디오 Blob URL을 반환합니다.
- * @function useRecord
+ * useAudioRecord 커스텀 훅은 브라우저에서 오디오 녹음을 시작하고, 녹음이 완료되면 오디오 Blob URL을 반환합니다.
+ * @function useAudioRecord
  * @returns {Object} 녹음 상태와 관련된 함수 및 데이터를 포함하는 객체.
  * @property {boolean} isRecording - 현재 녹음 중인지 여부를 나타냅니다. 녹음 중이면 true, 그렇지 않으면 false입니다.
  * @property {() => Promise<void>} startRecording - 녹음을 시작하는 비동기 함수입니다.
@@ -12,7 +12,7 @@ import { useRef, useState } from 'react';
  * @property {() => void} stopRecording - 녹음을 중지하는 함수입니다.
  *   녹음이 중지되면, 현재까지 수집된 오디오 청크를 기반으로 Blob이 생성되고, 해당 Blob의 URL이 상태에 저장됩니다.
  */
-export function useRecord(): {
+export function useAudioRecord(): {
   isRecording: boolean;
   startRecording: () => Promise<void>;
   audio: string;
