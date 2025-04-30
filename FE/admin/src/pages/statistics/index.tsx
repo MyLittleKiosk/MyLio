@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
-import Input from '@/components/common/Input';
-import Modal from '@/components/common/Modal';
+
+import Input from '@components/common/Input';
+import Modal from '@components/common/Modal';
+import Select from '@components/common/Select';
+import Button from '@components/common/Button';
+
 import useModalStore from '@/stores/useModalStore';
-import Select from '@/components/common/Select';
+
+import IconAccount from '@/assets/icons/IconAccount.tsx';
 
 const Statistics = () => {
   const { openModal } = useModalStore();
 
   const [inputValue, setInputValue] = useState('');
   const [selectedValue, setSelectedValue] = useState('');
+
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     setInputValue(event.target.value);
   }
@@ -20,12 +26,13 @@ const Statistics = () => {
   return (
     <>
       <div className='w-full p-2'>
-        <button
+        <Button
           onClick={() => openModal(<div className='w-12 h-10'>Modal</div>)}
-          className='bg-primary text-white px-4 py-2 rounded-md mb-2'
-        >
-          Open Modal
-        </button>
+          type='button'
+          text='Open Modal'
+          className='mb-2'
+          icon={<IconAccount fillColor='white' />}
+        />
 
         <Input
           label='Label'
