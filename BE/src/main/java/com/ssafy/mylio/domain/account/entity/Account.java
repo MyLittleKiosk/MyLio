@@ -22,6 +22,9 @@ public class Account extends BaseEntity {
     @Column(name = "username", nullable = false, length = 100)
     private String username;
 
+    @Column(name = "email", nullable = false, length = 100)
+    private String email;
+
     @Column(name = "password", nullable = false, length = 255)
     private String password;
 

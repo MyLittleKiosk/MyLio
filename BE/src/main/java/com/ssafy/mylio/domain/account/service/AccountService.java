@@ -43,6 +43,7 @@ public class AccountService {
         // 엔티티 생성
         Account account = Account.builder()
                 .store(store)
+                .email(request.getEmail())
                 .username(request.getUserName())
                 .password(encodedPassword)
                 .role(AccountRole.STORE)

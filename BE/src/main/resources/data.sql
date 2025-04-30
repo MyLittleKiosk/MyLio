@@ -1,12 +1,7 @@
 -- 관리자 계정 추가
-INSERT INTO `account` (id, store_id, username, password, role,created_at,updated_at,status)
+INSERT INTO `account` (id, store_id, email,username, password, role,created_at,updated_at,status)
 VALUES
-    (1, NULL, '전아현', 'qwer1234', 'SUPER',NOW(),NOW(), 'REGISTERED'),
-    (2, NULL, '신지혜', 'qwer1234', 'SUPER',NOW(),NOW(), 'REGISTERED'),
-    (3, NULL, '이병조', 'qwer1234', 'SUPER',NOW(),NOW(), 'REGISTERED'),
-    (4, NULL, '이하영', 'qwer1234', 'SUPER',NOW(),NOW(), 'REGISTERED'),
-    (5, NULL, '이해루', 'qwer1234', 'SUPER',NOW(),NOW(), 'REGISTERED'),
-    (6, NULL, '강성엽', 'qwer1234', 'SUPER',NOW(),NOW(), 'REGISTERED');
+    (1, NULL,'test1@ssafy.io', '전아현', 'qwer1234', 'SUPER',NOW(),NOW(), 'REGISTERED');
 
 
 INSERT INTO store (id, name, status, address, created_at, updated_at) VALUES
@@ -14,9 +9,9 @@ INSERT INTO store (id, name, status, address, created_at, updated_at) VALUES
                                                                           (2, '싸피 다방 판교점', 'REGISTERED', '경기 성남시', NOW(), NOW());
 
 -- 2. account
-INSERT INTO account (id, store_id, username, password, role, status, created_at, updated_at) VALUES
-                                                                                                 (7, 1, '강남점', 'qwer1234', 'STORE', 'REGISTERED', NOW(), NOW()),
-                                                                                                 (8, 2, 'admin2', 'ssafycoffee', 'STORE', 'REGISTERED', NOW(), NOW());
+INSERT INTO account (id, store_id, email,username, password, role, status, created_at, updated_at) VALUES
+                                                                                                 (2, 1,'test2@ssafy.io', '강남점', 'qwer1234', 'STORE', 'REGISTERED', NOW(), NOW()),
+                                                                                                 (3, 2,'test3ssafy.io', 'admin2', 'ssafycoffee', 'STORE', 'REGISTERED', NOW(), NOW());
 
 -- 3. category
 INSERT INTO category (id, store_id, name_kr, name_en, status, created_at, updated_at) VALUES
@@ -96,12 +91,12 @@ INSERT INTO nutrition_value (id, store_id, menu_id, nutrition_id, value, status,
 
 -- 17. kiosk_session
 INSERT INTO kiosk_session (id, store_id, account_id, start_order_number, name, is_active, created_at, updated_at, started_at) VALUES
-    (1, 1, 7, 'A', '키오스크 A', true, NOW(),NOW(),NOW());
+    (1, 1, 2, 'A', '키오스크 A', true, NOW(),NOW(),NOW());
 
 -- 키오스크 B 추가
 INSERT INTO kiosk_session (id, store_id, account_id, start_order_number, name, is_active, created_at, updated_at, started_at)
-VALUES (2, 1, 7, 'B', '키오스크 B', false, NOW(), NOW(), NOW());
+VALUES (2, 1, 2, 'B', '키오스크 B', false, NOW(), NOW(), NOW());
 
 -- 키오스크 C 추가
 INSERT INTO kiosk_session (id, store_id, account_id, start_order_number, name, is_active, created_at, updated_at, started_at)
-VALUES (3, 1, 7, 'C', '키오스크 C', false, NOW(), NOW(), NOW());
+VALUES (3, 1, 2, 'C', '키오스크 C', false, NOW(), NOW(), NOW());
