@@ -18,9 +18,9 @@ import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
 import com.ssafy.mylio.global.security.jwt.JwtTokenProvider;
 import com.ssafy.mylio.global.security.jwt.TokenValidationResult;
-import com.ssafy.mylio.global.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +33,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthRedisService authRedisService;
     private final KioskRepository kioskRepository;
+    private final PasswordEncoder passwordEncoder;
 
 
     public LoginResult login(AdminLoginRequestDto request) {
@@ -40,7 +41,7 @@ public class AuthService {
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_CREDENTIALS));
 
         //pw 검증
-        if (!PasswordUtil.matches(request.getPassword(),account.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(),account.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_CREDENTIALS)
                     .addParameter("accountId",account.getId());
         }
@@ -109,7 +110,7 @@ public class AuthService {
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_CREDENTIALS));
 
         //pw 검증
-        if (!PasswordUtil.matches(request.getPassword(),account.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(),account.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_CREDENTIALS)
                     .addParameter("accountId",account.getId());
         }
@@ -187,7 +188,6 @@ public class AuthService {
 
         session.updateActive(false);
         kioskRepository.save(session);
-
     }
 
 }
