@@ -33,10 +33,10 @@ public class Account extends BaseEntity {
     @Column(name = "status", nullable = false)
     private BasicStatus status = BasicStatus.REGISTERED;
 
-    public void update(String username, String password, AccountRole role) {
+    public void update(String username, String password, BasicStatus status) {
         this.username = username;
         this.password = password;
-        this.role = role;
+        this.status = status;
     }
 
     public void delete() {
