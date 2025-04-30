@@ -17,7 +17,7 @@ const SideBar = () => {
 
   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
 
-  // 사이드바 너비 조정 애니메이션 완료 여부부
+  // 사이드바 너비 조정 애니메이션 완료 여부
   const [isWidthAnimationComplete, setIsWidthAnimationComplete] =
     useState(false);
 
@@ -38,41 +38,42 @@ const SideBar = () => {
       }}
       className={`p-2 h-dvh flex flex-col`}
     >
-      <header className='h-[8%] flex justify-between items-center gap-2 font-preBold text-lg text-primary'>
-        <div className='flex items-center gap-2'>
-          <div className='w-10 h-10'>
-            <img src={LOGO} alt='logo' className='w-10 h-10' />
+      <header className='min-h-[50px] h-[8%] flex justify-between items-center gap-2 font-preBold text-lg text-primary'>
+        <div className='flex-1 h-full flex items-center gap-2 min-w-0'>
+          <div className='w-8 flex-shrink-0'>
+            <img src={LOGO} alt='logo' className='w-full h-full' />
           </div>
           {isWidthAnimationComplete && (
             <motion.h1
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.125 }}
+              className='truncate'
             >
               MyLio
             </motion.h1>
           )}
         </div>
-        <IconBack
-          width={16}
-          height={16}
-          onClick={() => setIsSideBarOpen(!isSideBarOpen)}
-          className={`mr-2 text-black hover:bg-gray-100 rounded-md cursor-pointer transform transition-transform ${
-            isSideBarOpen ? '' : 'rotate-180'
-          }`}
-        />
+        <div className='w-8 flex-shrink-0'>
+          <IconBack
+            onClick={() => setIsSideBarOpen(!isSideBarOpen)}
+            className={`text-content hover:bg-gray-100 rounded-md cursor-pointer ${
+              isSideBarOpen ? '' : 'rotate-180'
+            }`}
+          />
+        </div>
       </header>
       <hr className='w-full' />
-      <section className='flex flex-col h-[80%]'>
+      <section className='flex flex-col h-[80%] min-h-[120px]'>
         {!ISADMIN && (
           <ul className='pt-2 flex flex-col gap-1 text-xs font-preMedium'>
             {ADMIN_NAVLIST.map((item) => (
               <Link key={item.title} to={item.link}>
                 <li className='flex items-center hover:bg-gray-100 rounded-md px-2 py-1'>
-                  <div className='w-5 h-5'>
+                  <div className='w-5 h-5 flex items-center justify-center'>
                     <item.icons width={20} height={20} />
                   </div>
-                  <div className='overflow-hidden'>
+                  <div className='ml-4'>
                     {isSideBarOpen && (
                       <motion.p
                         initial={{ opacity: 0, y: 12 }}
@@ -96,7 +97,7 @@ const SideBar = () => {
                   <div className='w-5 h-5'>
                     <item.icons width={20} height={20} />
                   </div>
-                  <div className='ml-4 overflow-hidden'>
+                  <div className='ml-4'>
                     {isWidthAnimationComplete && (
                       <motion.p
                         initial={{ opacity: 0, y: 12 }}
@@ -116,7 +117,7 @@ const SideBar = () => {
 
       <hr className='w-full' />
       {isWidthAnimationComplete && (
-        <footer className='h-[10%] font-preMedium text-xs text-content p-2 flex flex-col gap-1'>
+        <footer className='h-[10%] min-h-[80px] font-preMedium text-xs text-content p-2 flex flex-col justify-center gap-1'>
           <p>로그인 : {LOGIN}</p>
           <p>버전 : {VERSION}</p>
           <p>권한 : {AUTHORITY}</p>
