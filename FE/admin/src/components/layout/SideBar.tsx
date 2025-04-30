@@ -10,7 +10,7 @@ import { ADMIN_NAVLIST, SUPERADMIN_NAVLIST } from '@/datas/sideBarList';
 const SideBar = () => {
   //임시 데이터
   //추후 로그인 구현 시 수정 필요
-  const ISADMIN: boolean = true;
+  const ISSUPERADMIN: boolean = false;
   const LOGIN = '관리자';
   const VERSION = '1.0.0';
   const AUTHORITY = '일반관리자';
@@ -70,7 +70,7 @@ const SideBar = () => {
       </header>
       <hr className='w-full' />
       <section className='flex flex-col h-[80%] min-h-[120px]'>
-        {!ISADMIN && (
+        {!ISSUPERADMIN && (
           <ul className='pt-2 flex flex-col gap-1 text-xs font-preMedium'>
             {ADMIN_NAVLIST.map((item) => (
               <Link key={item.title} to={item.link}>
@@ -94,7 +94,7 @@ const SideBar = () => {
             ))}
           </ul>
         )}
-        {ISADMIN && (
+        {ISSUPERADMIN && (
           <ul className='pt-2 flex flex-col gap-1 text-xs font-preMedium'>
             {SUPERADMIN_NAVLIST.map((item) => (
               <Link key={item.title} to={item.link}>

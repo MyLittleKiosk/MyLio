@@ -15,7 +15,7 @@ const ADMIN_NAVLIST = [
   {
     icons: IconMenuList,
     title: '메뉴 관리',
-    link: '/',
+    link: '/menus',
   },
   {
     icons: IconCart,
