@@ -60,7 +60,7 @@ public class OptionController {
     }
 
     @PostMapping
-    @ApiErrorCodeExamples({})
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND})
     @Operation(summary = "옵션 추가", description = "옵션을 추가합니다 (그룹옵션)")
     public ResponseEntity<CommonResponse<Void>> addOption(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
