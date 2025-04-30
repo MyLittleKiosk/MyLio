@@ -11,4 +11,7 @@ import java.util.Optional;
 public interface AccountRepository extends JpaRepository<Account,Integer> {
     @EntityGraph(attributePaths = "store")
     Optional<Account> findWithStoreById(Integer id);
+
+    @EntityGraph(attributePaths = "store")
+    Optional<Account> findWithStoreByEmail(String email);
 }

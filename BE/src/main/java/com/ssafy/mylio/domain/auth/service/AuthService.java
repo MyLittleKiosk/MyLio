@@ -18,6 +18,7 @@ import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
 import com.ssafy.mylio.global.security.jwt.JwtTokenProvider;
 import com.ssafy.mylio.global.security.jwt.TokenValidationResult;
+import com.ssafy.mylio.global.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,20 +36,19 @@ public class AuthService {
 
 
     public LoginResult login(AdminLoginRequestDto request) {
-        Account account = accountRepository.findById(request.getId())
+        Account account = accountRepository.findWithStoreByEmail(request.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_CREDENTIALS));
 
-        // 비밀번호 검증예정
-        //if(!passwordEncoder.match)
-        if (!request.getPassword().equals(account.getPassword())) {
+        //pw 검증
+        if (!PasswordUtil.matches(request.getPassword(),account.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_CREDENTIALS)
-                    .addParameter("accountId",request.getId());
+                    .addParameter("accountId",account.getId());
         }
 
         //삭제된 user
         if (account.getStatus() == BasicStatus.DELETED) {
             throw new CustomException(ErrorCode.INVALID_CREDENTIALS)
-                    .addParameter("accountId",request.getId())
+                    .addParameter("accountId",account.getId())
                     .addParameter("userType",account.getStatus().getCode());
 
         }
@@ -105,8 +105,14 @@ public class AuthService {
 
     @Transactional
     public LoginResult kioskLogin(KioskLoginRequest request){
-        Account account = accountRepository.findWithStoreById(request.getId())
+        Account account = accountRepository.findWithStoreByEmail(request.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_CREDENTIALS));
+
+        //pw 검증
+        if (!PasswordUtil.matches(request.getPassword(),account.getPassword())) {
+            throw new CustomException(ErrorCode.INVALID_CREDENTIALS)
+                    .addParameter("accountId",account.getId());
+        }
 
         //Store 계정만 접근 가능
         if (account.getRole() != AccountRole.STORE) {
@@ -125,11 +131,6 @@ public class AuthService {
                     .addParameter("accountStatus",account.getStatus().getCode());
         }
 
-        if (!request.getPassword().equals(account.getPassword())) {
-            log.debug("비밀번호 불일치");
-            throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
-        }
-
         Integer storeId = account.getStore().getId();
 
         //키오스크 조회
@@ -138,8 +139,6 @@ public class AuthService {
                 .orElseThrow(() -> new CustomException(ErrorCode.KIOSK_SESSION_NOT_FOUND)
                         .addParameter("StoreId",storeId)
                         .addParameter("kioskId",request.getKioskId()));
-
-
 
         //키오스크 상태 확인
         if(session.getIsActive()){
