@@ -41,12 +41,15 @@ public class AuthService {
         // 비밀번호 검증예정
         //if(!passwordEncoder.match)
         if (!request.getPassword().equals(account.getPassword())) {
-            throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
+            throw new CustomException(ErrorCode.INVALID_CREDENTIALS)
+                    .addParameter("accountId",request.getId());
         }
 
         //삭제된 user
         if (account.getStatus() == BasicStatus.DELETED) {
-            throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
+            throw new CustomException(ErrorCode.INVALID_CREDENTIALS)
+                    .addParameter("accountId",request.getId())
+                    .addParameter("userType",account.getStatus().getCode());
 
         }
 
@@ -105,22 +108,21 @@ public class AuthService {
         Account account = accountRepository.findWithStoreById(request.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_CREDENTIALS));
 
-        log.info("accountid : {}", account.getId());
         //Store 계정만 접근 가능
         if (account.getRole() != AccountRole.STORE) {
-            log.debug("role : {}", account.getRole().getCode());
-            throw new CustomException(ErrorCode.INVALID_ROLE);
+            throw new CustomException(ErrorCode.INVALID_ROLE)
+                    .addParameter("role",account.getRole().getCode());
         }
 
-        log.info("storetid : {}", account.getStore());
         // null 체크 추가
         if (account.getStore() == null) {
             throw new CustomException(ErrorCode.STORE_NOT_FOUND);
         }
 
         if (account.getStatus() == BasicStatus.DELETED) {
-            log.debug("삭제여부 : {}", account.getStatus().getCode());
-            throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
+
+            throw new CustomException(ErrorCode.INVALID_CREDENTIALS)
+                    .addParameter("accountStatus",account.getStatus().getCode());
         }
 
         if (!request.getPassword().equals(account.getPassword())) {
@@ -133,14 +135,16 @@ public class AuthService {
         //키오스크 조회
         KioskSession session = kioskRepository
                 .findByStoreIdAndId(storeId, request.getKioskId())
-                .orElseThrow(() -> new CustomException(ErrorCode.KIOSK_SESSION_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.KIOSK_SESSION_NOT_FOUND)
+                        .addParameter("StoreId",storeId)
+                        .addParameter("kioskId",request.getKioskId()));
 
 
-        log.info("accountid : {}", account.getId());
 
         //키오스크 상태 확인
-        if (session.getIsActive()) {
-            throw new CustomException(ErrorCode.KIOSK_IN_USE);
+        if(session.getIsActive()){
+            throw new CustomException(ErrorCode.KIOSK_IN_USE)
+                    .addParameter("sessionStatus",session.getIsActive());
         }
 
         session.updateActive(true);
