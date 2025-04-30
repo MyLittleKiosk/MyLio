@@ -27,37 +27,26 @@ public class AccountService {
     private final StoreRepository storeRepository;
 
     @Transactional
-    public AccountCreateResponseDto createAccount(String userType, AccountCreateRequest request) {
+    public void createAccount(String userType, AccountCreateRequest request) {
         //역할이 SUPER가 아닌 경우 불가
         if (!userType.equals(AccountRole.SUPER.getCode())) {
             throw new CustomException(ErrorCode.INVALID_ROLE)
                     .addParameter("userType",userType);
         }
 
-        Integer storeId = request.getStoreId();
-        //store 검증
-        if (storeId == null) {
-            log.debug("storeId is null");
-            throw new CustomException(ErrorCode.STORE_NOT_FOUND);
-        }
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
-
-        AccountRole role = AccountRole.STORE;
+        //Store 정보 저장
+        Store store = saveStoreInfo(request);
 
         // 엔티티 생성
         Account account = Account.builder()
                 .store(store)
                 .username(request.getUserName())
-                .password(request.getPassword())
-                .role(role)
+                .password(request.getEmail())
+                .role(AccountRole.STORE)
                 .status(BasicStatus.REGISTERED)
                 .build();
         //저장
-        Account saved = accountRepository.save(account);
-
-        return AccountCreateResponseDto.of(account);
-
+        accountRepository.save(account);
     }
     @Transactional
     public AccountModifyResponse modifyAccount(Integer userId, String userType, AccountModifyRequestDto request){
@@ -81,5 +70,23 @@ public class AccountService {
         accountRepository.save(account);
 
         return AccountModifyResponse.of(account);
+    }
+
+    private Store saveStoreInfo(AccountCreateRequest request){
+        Store store = Store.builder()
+                .name(request.getStoreName())
+                .status(BasicStatus.REGISTERED)
+                .address(request.getAddress())
+                .build();
+        store = storeRepository.save(store);
+
+        Integer storeId = store.getId();
+        log.info("store id {}",storeId);
+        //store 검증
+        if (store == null || store.getId() == null) {
+            log.error("Failed to save store: {}", request.getStoreName());
+            throw new CustomException(ErrorCode.STORE_NOT_FOUND,"",request.getStoreName());
+        }
+        return store;
     }
 }

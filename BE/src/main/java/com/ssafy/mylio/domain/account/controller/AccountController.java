@@ -2,7 +2,6 @@ package com.ssafy.mylio.domain.account.controller;
 
 import com.ssafy.mylio.domain.account.dto.request.AccountCreateRequest;
 import com.ssafy.mylio.domain.account.dto.request.AccountModifyRequestDto;
-import com.ssafy.mylio.domain.account.dto.response.AccountCreateResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountModifyResponse;
 import com.ssafy.mylio.domain.account.service.AccountService;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
@@ -29,11 +28,12 @@ public class AccountController {
     @PostMapping
     @Operation(summary = "관리자 계정 생성",description = "관리자 계정을 생성합니다.")
     @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE,ErrorCode.STORE_NOT_FOUND,ErrorCode.STORE_NOT_FOUND})
-    public ResponseEntity<CommonResponse<AccountCreateResponseDto>> createAccount(
+    public ResponseEntity<CommonResponse<Void>> createAccount(
             @Valid @RequestBody AccountCreateRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal){
         String userType = authenticationUtil.getCurrntUserType(userPrincipal);
-        return CommonResponse.ok(accountService.createAccount(userType,request));
+        accountService.createAccount(userType,request);
+        return CommonResponse.ok();
 
     }
 
