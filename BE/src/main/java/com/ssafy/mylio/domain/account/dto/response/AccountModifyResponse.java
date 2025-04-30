@@ -24,6 +24,9 @@ public class AccountModifyResponse {
     @Schema(example="REGISTERED")
     private String status;
 
+    @Schema(example="qwer1234")
+    private String password;
+
 
     public static AccountModifyResponse of(Account account){
         return AccountModifyResponse.builder()
@@ -32,6 +35,7 @@ public class AccountModifyResponse {
                 .userName(account.getUsername())
                 .role(account.getRole().getCode())
                 .status(account.getStatus().getCode())
+                .password(account.getPassword())
                 .build();
     }
 
