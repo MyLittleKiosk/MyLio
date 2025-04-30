@@ -11,6 +11,7 @@ import com.ssafy.mylio.global.security.auth.UserPrincipal;
 import com.ssafy.mylio.global.util.AuthenticationUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
 import org.springframework.http.ResponseEntity;
@@ -64,7 +65,7 @@ public class OptionController {
     @Operation(summary = "옵션 추가", description = "옵션을 추가합니다 (그룹옵션)")
     public ResponseEntity<CommonResponse<Void>> addOption(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @Validated @RequestBody OptionRequestDto optionRequestDto) {
+            @Valid @RequestBody OptionRequestDto optionRequestDto) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         optionService.addOption(storeId, optionRequestDto);
         return CommonResponse.ok();
