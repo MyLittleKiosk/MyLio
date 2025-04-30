@@ -1,5 +1,6 @@
 package com.ssafy.mylio.domain.options.controller;
 
+import com.ssafy.mylio.domain.options.dto.request.OptionRequestDto;
 import com.ssafy.mylio.domain.options.dto.response.OptionListResponseDto;
 import com.ssafy.mylio.domain.options.dto.response.OptionResponseDto;
 import com.ssafy.mylio.domain.options.service.OptionService;
@@ -11,8 +12,10 @@ import com.ssafy.mylio.global.util.AuthenticationUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,6 +56,17 @@ public class OptionController {
             @PathVariable("option_id") Integer optionId) {
         Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
         optionService.deleteOption(storeId, optionId);
+        return CommonResponse.ok();
+    }
+
+    @PostMapping
+    @ApiErrorCodeExamples({})
+    @Operation(summary = "옵션 추가", description = "옵션을 추가합니다 (그룹옵션)")
+    public ResponseEntity<CommonResponse<Void>> addOption(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Validated @RequestBody OptionRequestDto optionRequestDto) {
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+        optionService.addOption(storeId, optionRequestDto);
         return CommonResponse.ok();
     }
 }
