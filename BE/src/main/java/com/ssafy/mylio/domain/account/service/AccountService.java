@@ -2,7 +2,6 @@ package com.ssafy.mylio.domain.account.service;
 
 import com.ssafy.mylio.domain.account.dto.request.AccountCreateRequest;
 import com.ssafy.mylio.domain.account.dto.request.AccountModifyRequestDto;
-import com.ssafy.mylio.domain.account.dto.response.AccountCreateResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountModifyResponse;
 import com.ssafy.mylio.domain.account.entity.Account;
 import com.ssafy.mylio.domain.account.entity.AccountRole;
@@ -14,6 +13,7 @@ import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,38 +25,32 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountService {
     private final AccountRepository accountRepository;
     private final StoreRepository storeRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public AccountCreateResponseDto createAccount(String userType, AccountCreateRequest request) {
+    public void createAccount(String userType, AccountCreateRequest request) {
         //역할이 SUPER가 아닌 경우 불가
         if (!userType.equals(AccountRole.SUPER.getCode())) {
             throw new CustomException(ErrorCode.INVALID_ROLE)
                     .addParameter("userType",userType);
         }
 
-        Integer storeId = request.getStoreId();
-        //store 검증
-        if (storeId == null) {
-            log.debug("storeId is null");
-            throw new CustomException(ErrorCode.STORE_NOT_FOUND);
-        }
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+        //Store 정보 저장
+        Store store = saveStoreInfo(request);
 
-        AccountRole role = AccountRole.STORE;
-
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(request.getEmail());
         // 엔티티 생성
         Account account = Account.builder()
                 .store(store)
+                .email(request.getEmail())
                 .username(request.getUserName())
-                .password(request.getPassword())
-                .role(role)
+                .password(encodedPassword)
+                .role(AccountRole.STORE)
                 .status(BasicStatus.REGISTERED)
                 .build();
         //저장
-        Account saved = accountRepository.save(account);
-
-        return AccountCreateResponseDto.of(account);
+        accountRepository.save(account);
 
     }
     @Transactional
@@ -81,5 +75,23 @@ public class AccountService {
         accountRepository.save(account);
 
         return AccountModifyResponse.of(account);
+    }
+
+    private Store saveStoreInfo(AccountCreateRequest request){
+        Store store = Store.builder()
+                .name(request.getStoreName())
+                .status(BasicStatus.REGISTERED)
+                .address(request.getAddress())
+                .build();
+        store = storeRepository.save(store);
+
+        Integer storeId = store.getId();
+        log.info("store id {}",storeId);
+        //store 검증
+        if (store == null || store.getId() == null) {
+            log.error("Failed to save store: {}", request.getStoreName());
+            throw new CustomException(ErrorCode.STORE_NOT_FOUND,"",request.getStoreName());
+        }
+        return store;
     }
 }
