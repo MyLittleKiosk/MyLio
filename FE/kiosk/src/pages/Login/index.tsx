@@ -13,6 +13,7 @@ const Login = () => {
             <input
               className='w-full rounded-md border border-gray-300 px-3 py-3 max-w-sm'
               type='text'
+              inputMode='text'
             />
           </div>
           <div>

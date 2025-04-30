@@ -1,8 +1,14 @@
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 import Login from '@/pages/Login';
-import MSWInit from './components/common/MSWInit';
-
+import MSWInit from '@/components/common/MSWInit';
+import Confirm from '@/pages/Confirm';
+import Order from '@/pages/Order';
+import SelectPay from '@/pages/SelectPay';
+import Detail from '@/pages/Detail';
+import Pay from '@/pages/Pay';
+import Main from '@/pages/Main';
+import OrderLayout from '@/pages/OrderLayout';
 function App() {
   return (
     <>
@@ -10,8 +16,13 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<Login />} />
-          <Route path='/kiosk' element={<Outlet />}>
-            <Route index element={<div>홈페이지</div>} />
+          <Route path='/kiosk' element={<OrderLayout />}>
+            <Route path='main' element={<Main />} />
+            <Route path='order' element={<Order />} />
+            <Route path='pay' element={<Pay />} />
+            <Route path='select-pay' element={<SelectPay />} />
+            <Route path='confirm' element={<Confirm />} />
+            <Route path='detail' element={<Detail />} />
           </Route>
         </Routes>
       </BrowserRouter>
