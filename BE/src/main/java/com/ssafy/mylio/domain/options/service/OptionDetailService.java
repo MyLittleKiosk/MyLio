@@ -1,6 +1,7 @@
 package com.ssafy.mylio.domain.options.service;
 
 import com.ssafy.mylio.domain.options.dto.request.OptionDetailRequestDto;
+import com.ssafy.mylio.domain.options.dto.request.OptionDetailUpdateRequestDto;
 import com.ssafy.mylio.domain.options.entity.OptionDetail;
 import com.ssafy.mylio.domain.options.entity.Options;
 import com.ssafy.mylio.domain.options.repository.OptionDetailRepository;
@@ -50,6 +51,20 @@ public class OptionDetailService {
 
         OptionDetail optionDetail = optionDetailRequestDto.toEntity(options);
         optionDetailRepository.save(optionDetail);
+    }
+
+    @Transactional
+    public void updateOptionDetail(Integer storeId, Integer optionDetailId, OptionDetailUpdateRequestDto optionDetailUpdateDto){
+        Store store = getStoreId(storeId);
+        OptionDetail optionDetail = optionDetailRepository.findById(optionDetailId)
+                .orElseThrow(()-> new CustomException(ErrorCode.OPTION_DETAIL_NOT_FOUND, "optionDetailId", optionDetailId));
+
+        if(!optionDetail.getOptions().getStore().getId().equals(storeId)){
+            throw new CustomException(ErrorCode.OPTION_STORE_NOT_MATCH, "optionDetailId", optionDetailId)
+                    .addParameter("storeId", storeId);
+        }
+
+        optionDetail.update(optionDetailUpdateDto.getValue(), optionDetailUpdateDto.getAdditionalPrice(), optionDetailUpdateDto.getStatus());
     }
 
     private Store getStoreId(Integer storeId){

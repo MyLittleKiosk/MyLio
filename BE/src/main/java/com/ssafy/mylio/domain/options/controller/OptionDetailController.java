@@ -1,6 +1,7 @@
 package com.ssafy.mylio.domain.options.controller;
 
 import com.ssafy.mylio.domain.options.dto.request.OptionDetailRequestDto;
+import com.ssafy.mylio.domain.options.dto.request.OptionDetailUpdateRequestDto;
 import com.ssafy.mylio.domain.options.service.OptionDetailService;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
 import com.ssafy.mylio.global.common.response.CommonResponse;
@@ -44,6 +45,18 @@ public class OptionDetailController {
             @Validated @RequestBody OptionDetailRequestDto optionDetailRequestDto) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         optionDetailService.addOptionDetail(storeId, optionId, optionDetailRequestDto);
+        return CommonResponse.ok();
+    }
+
+    @PatchMapping("/{option_detail_id}")
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.OPTION_DETAIL_NOT_FOUND, ErrorCode.OPTION_STORE_NOT_MATCH })
+    @Operation(summary = "옵션 상세 수정", description = "optionDetailId에 해당하는 상세 옵션을 수정합니다")
+    public ResponseEntity<CommonResponse<Void>> updateOptionDetail(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable("option_detail_id") Integer optionDetailId,
+            @Validated @RequestBody OptionDetailUpdateRequestDto optionDetailUpdateRequestDto) {
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+        optionDetailService.updateOptionDetail(storeId, optionDetailId, optionDetailUpdateRequestDto);
         return CommonResponse.ok();
     }
 
