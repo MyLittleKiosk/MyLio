@@ -35,7 +35,8 @@ public enum ErrorCode {
 
     // Option
     OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "O001", "존재하지 않는 옵션입니다"),
-    OPTION_STORE_NOT_MATCH(HttpStatus.BAD_REQUEST,"O002","매장에 없는 옵션입니다");
+    OPTION_STORE_NOT_MATCH(HttpStatus.BAD_REQUEST,"O002","매장에 없는 옵션입니다"),
+    OPTION_DETAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "O003", "존재하지 않는 상세옵션입니다");
 
 
     private final HttpStatus status;
