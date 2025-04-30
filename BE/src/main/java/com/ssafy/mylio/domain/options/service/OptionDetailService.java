@@ -1,5 +1,6 @@
 package com.ssafy.mylio.domain.options.service;
 
+import com.ssafy.mylio.domain.options.dto.request.OptionDetailRequestDto;
 import com.ssafy.mylio.domain.options.entity.OptionDetail;
 import com.ssafy.mylio.domain.options.repository.OptionDetailRepository;
 import com.ssafy.mylio.domain.store.entity.Store;
@@ -29,6 +30,11 @@ public class OptionDetailService {
         }
 
         optionDetail.delete();
+    }
+
+    @Transactional
+    public void addOptionDetail(Integer storeId, Integer optionId, OptionDetailRequestDto optionDetailRequestDto){
+
     }
 
     private Store getStoreId(Integer storeId){
