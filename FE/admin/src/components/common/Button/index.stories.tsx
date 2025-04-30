@@ -14,7 +14,7 @@ const meta = {
     icon: { control: 'object', table: { disable: true } },
     onClick: { action: 'clicked', table: { disable: true } },
     className: { control: 'text', table: { disable: true } },
-    type: { control: 'select', table: { disable: true } },
+    buttonType: { control: 'select', table: { disable: true } },
   },
 } satisfies Meta<typeof Button>;
 
@@ -25,7 +25,7 @@ type Story = StoryObj<typeof meta>;
 //텍스트만 있는 버튼
 export const Default: Story = {
   args: {
-    type: 'button',
+    buttonType: 'button',
     text: 'Button',
   },
 };
