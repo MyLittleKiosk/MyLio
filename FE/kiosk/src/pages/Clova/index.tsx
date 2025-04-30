@@ -5,16 +5,14 @@ import { useState } from 'react';
 import { useAudioRecord } from '../../hooks/useAudioRecord';
 
 const ClovaPage = () => {
-  const { isRecording, startRecording, audio, stopRecording } =
-    useAudioRecord();
+  const { isRecording, startRecording, stopRecording } = useAudioRecord();
   const [recognitionResult, setRecognitionResult] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentAudio, setCurrentAudio] = useState<string | null>(null);
 
   // 녹음된 오디오를 Clova로 전송하는 함수
-  async function handleSendToClova(audioUrl: string) {
-    if (!audioUrl) {
+  async function handleSendToClova(audioBlob: Blob) {
+    if (!audioBlob) {
       setError('녹음된 오디오가 없습니다.');
       return;
     }
@@ -23,9 +21,7 @@ const ClovaPage = () => {
       setIsProcessing(true);
       setError(null);
 
-      // Blob URL에서 실제 Blob 데이터 가져오기
-      const response = await fetch(audioUrl);
-      const audioBlob = await response.blob();
+      // Blob URL에서 실제 Blob 데이터 가져오
 
       console.log('오디오 Blob 정보:', {
         size: audioBlob.size,
@@ -102,7 +98,6 @@ const ClovaPage = () => {
   async function handlePressStart() {
     setError(null);
     // 새 녹음 시작 전에 이전 오디오 상태 초기화
-    setCurrentAudio(null);
     await startRecording();
   }
 
@@ -112,9 +107,6 @@ const ClovaPage = () => {
       try {
         // 녹음 중지하고 URL 받기
         const audioUrl = await stopRecording();
-
-        // 새 오디오 URL 저장
-        setCurrentAudio(audioUrl);
 
         console.log('녹음 완료, 오디오 URL:', audioUrl);
 
@@ -132,7 +124,6 @@ const ClovaPage = () => {
   }
 
   // 오디오 재생을 위한 소스 선택 (현재 녹음된 오디오 우선)
-  const audioSource = currentAudio || audio;
 
   return (
     <div className='flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100'>
@@ -159,25 +150,21 @@ const ClovaPage = () => {
             </button>
           </div>
 
-          {audioSource && (
-            <div className='mb-4'>
-              <p className='text-sm font-medium mb-2'>녹음된 오디오:</p>
-              <audio controls src={audioSource} className='w-full' />
-              {isProcessing ? (
-                <p className='text-xs text-blue-500 mt-1'>
-                  음성을 처리하는 중...
-                </p>
-              ) : (
-                <button
-                  onClick={() => handleSendToClova(audioSource)}
-                  className='text-xs text-blue-500 mt-1 underline'
-                  disabled={isProcessing}
-                >
-                  다시 분석하기
-                </button>
-              )}
-            </div>
-          )}
+          <div className='mb-4'>
+            <p className='text-sm font-medium mb-2'>녹음된 오디오:</p>
+            {isProcessing ? (
+              <p className='text-xs text-blue-500 mt-1'>
+                음성을 처리하는 중...
+              </p>
+            ) : (
+              <button
+                className='text-xs text-blue-500 mt-1 underline'
+                disabled={isProcessing}
+              >
+                다시 분석하기
+              </button>
+            )}
+          </div>
         </div>
 
         {isProcessing && (
