@@ -1,5 +1,6 @@
 package com.ssafy.mylio.domain.options.controller;
 
+import com.ssafy.mylio.domain.options.dto.request.OptionDetailRequestDto;
 import com.ssafy.mylio.domain.options.service.OptionDetailService;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
 import com.ssafy.mylio.global.common.response.CommonResponse;
@@ -11,10 +12,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/option_detail")
@@ -35,4 +34,17 @@ public class OptionDetailController {
         optionDetailService.deleteOptionDetail(storeId, optionDetailId);
         return CommonResponse.ok();
     }
+
+    @PostMapping("/{option_id}")
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.OPTION_NOT_FOUND, ErrorCode.OPTION_STORE_NOT_MATCH})
+    @Operation(summary = "옵션 상세 추가", description = "optionId에 해당하는 상세 옵션을 추가합니다.")
+    public ResponseEntity<CommonResponse<Void>> addOptionDetail(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable("option_id") Integer optionId,
+            @Validated @RequestBody OptionDetailRequestDto optionDetailRequestDto) {
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+        optionDetailService.addOptionDetail(storeId, optionId, optionDetailRequestDto);
+        return CommonResponse.ok();
+    }
+
 }
