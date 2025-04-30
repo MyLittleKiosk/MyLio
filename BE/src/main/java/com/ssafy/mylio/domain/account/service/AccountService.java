@@ -27,8 +27,8 @@ public class AccountService {
     public AccountCreateResponseDto createAccount(String userType, AccountCreateRequest request) {
         //역할이 SUPER가 아닌 경우 불가
         if (!userType.equals(AccountRole.SUPER.getCode())) {
-            log.debug("userType : {}", userType);
-            throw new CustomException(ErrorCode.INVALID_ROLE);
+            throw new CustomException(ErrorCode.INVALID_ROLE)
+                    .addParameter("userType",userType);
         }
 
         Integer storeId = request.getStoreId();
