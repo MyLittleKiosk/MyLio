@@ -1,5 +1,6 @@
 package com.ssafy.mylio.domain.options.service;
 
+import com.ssafy.mylio.domain.options.dto.request.OptionRequestDto;
 import com.ssafy.mylio.domain.options.dto.response.OptionDetailDto;
 import com.ssafy.mylio.domain.options.dto.response.OptionListResponseDto;
 import com.ssafy.mylio.domain.options.dto.response.OptionResponseDto;
@@ -102,6 +103,13 @@ public class OptionService {
 
         // 옵션 STATUS DELETED로 변경
         options.delete();
+    }
+
+    @Transactional
+    public void addOption(Integer storeId, OptionRequestDto optionRequestDto){
+        Store store = getStoreId(storeId);
+        Options options = optionRequestDto.toEntity(store);
+        optionsRepository.save(options);
     }
 
 }

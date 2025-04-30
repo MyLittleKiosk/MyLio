@@ -4,6 +4,7 @@ import com.ssafy.mylio.domain.store.entity.Store;
 import com.ssafy.mylio.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -25,6 +26,7 @@ public class Options extends BaseEntity {
     @Column(name = "option_name_en", nullable = false, length = 100)
     private String optionNameEn;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private OptionStatus status = OptionStatus.REGISTERED;
