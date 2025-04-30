@@ -1,11 +1,16 @@
 package com.ssafy.mylio.test;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
+@RequestMapping("/test")
 public class TestController {
-    public static void main(String[] args) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String rawPassword = "qwer1234";
-        String hashed = encoder.encode(rawPassword);
-        System.out.println("secret password: " + hashed);
+
+    @GetMapping
+    public ResponseEntity<String> test(){
+        return ResponseEntity.ok("test 성공");
     }
+
 }
