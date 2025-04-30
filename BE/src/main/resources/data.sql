@@ -1,7 +1,7 @@
 -- 관리자 계정 추가
 INSERT INTO `account` (id, store_id, email,username, password, role,created_at,updated_at,status)
 VALUES
-    (1, NULL,'test1@ssafy.io', '전아현', 'qwer1234', 'SUPER',NOW(),NOW(), 'REGISTERED');
+    (1, NULL,'test1@ssafy.io', '전아현', '$2a$10$kJJYLA3v7N6hxuGJ49IDz.ZdLTa0Dk2okd.iNUUPXVzKy17cm9XB6', 'SUPER',NOW(),NOW(), 'REGISTERED');
 
 
 INSERT INTO store (id, name, status, address, created_at, updated_at) VALUES
@@ -10,8 +10,8 @@ INSERT INTO store (id, name, status, address, created_at, updated_at) VALUES
 
 -- 2. account
 INSERT INTO account (id, store_id, email,username, password, role, status, created_at, updated_at) VALUES
-                                                                                                 (2, 1,'test2@ssafy.io', '강남점', 'qwer1234', 'STORE', 'REGISTERED', NOW(), NOW()),
-                                                                                                 (3, 2,'test3ssafy.io', 'admin2', 'ssafycoffee', 'STORE', 'REGISTERED', NOW(), NOW());
+                                                                                                 (2, 1,'test2@ssafy.io', '강남점', '$2a$10$kJJYLA3v7N6hxuGJ49IDz.ZdLTa0Dk2okd.iNUUPXVzKy17cm9XB6', 'STORE', 'REGISTERED', NOW(), NOW()),
+                                                                                                 (3, 2,'test3@ssafy.io', 'admin2', '$2a$10$kJJYLA3v7N6hxuGJ49IDz.ZdLTa0Dk2okd.iNUUPXVzKy17cm9XB6', 'STORE', 'REGISTERED', NOW(), NOW());
 
 -- 3. category
 INSERT INTO category (id, store_id, name_kr, name_en, status, created_at, updated_at) VALUES
