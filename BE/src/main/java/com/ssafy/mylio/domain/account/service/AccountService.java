@@ -11,7 +11,6 @@ import com.ssafy.mylio.domain.store.entity.Store;
 import com.ssafy.mylio.global.common.status.BasicStatus;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
-import com.ssafy.mylio.global.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountService {
     private final AccountRepository accountRepository;
     private final StoreRepository storeRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public void createAccount(String userType, AccountCreateRequest request) {
@@ -39,7 +39,7 @@ public class AccountService {
         Store store = saveStoreInfo(request);
 
         // 비밀번호 암호화
-        String encodedPassword = PasswordUtil.encode(request.getEmail());
+        String encodedPassword = passwordEncoder.encode(request.getEmail());
         // 엔티티 생성
         Account account = Account.builder()
                 .store(store)
