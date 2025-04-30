@@ -33,15 +33,15 @@ const Modal = () => {
       y: 0,
       transition: {
         duration: 0.3,
-        ease: 'easeOut',
+        ease: 'easeInOut',
       },
     },
     exit: {
       opacity: 0,
       y: 150,
       transition: {
-        duration: 0.3,
-        ease: 'easeIn',
+        duration: 0.15,
+        ease: 'easeInOut',
       },
     },
   };
