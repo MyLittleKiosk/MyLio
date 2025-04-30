@@ -44,7 +44,6 @@ public class OptionDetailService {
                 .orElseThrow(()-> new CustomException(ErrorCode.OPTION_NOT_FOUND, "optionId", optionId));
 
         if(!options.getStore().getId().equals(storeId)){
-
             throw new CustomException(ErrorCode.OPTION_STORE_NOT_MATCH, "optionId", optionId)
                     .addParameter("storeId", storeId);
         }

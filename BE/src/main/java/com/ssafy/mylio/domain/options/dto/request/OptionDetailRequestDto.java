@@ -1,6 +1,7 @@
 package com.ssafy.mylio.domain.options.dto.request;
 
 import com.ssafy.mylio.domain.options.entity.OptionDetail;
+import com.ssafy.mylio.domain.options.entity.OptionDetailStatus;
 import com.ssafy.mylio.domain.options.entity.Options;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
