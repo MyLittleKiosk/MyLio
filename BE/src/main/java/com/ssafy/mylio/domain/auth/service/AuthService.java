@@ -104,7 +104,7 @@ public class AuthService {
     }
 
     @Transactional
-    public LoginResult kioskLogin(KioskLoginRequest request) {
+    public LoginResult kioskLogin(KioskLoginRequest request){
         Account account = accountRepository.findWithStoreById(request.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_CREDENTIALS));
 

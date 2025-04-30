@@ -3,6 +3,7 @@ package com.ssafy.mylio.domain.account.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
@@ -17,6 +18,7 @@ public class AccountCreateRequest {
 
     @Schema(example="qwer1234")
     @NotBlank(message = "비밀번호는 필수 입니다.")
+    @Size(min = 8, max = 16)
     private String password;
 
 }
