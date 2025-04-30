@@ -42,4 +42,7 @@ public class KioskSession extends BaseEntity {
         this.name = name;
         this.isActive = isActive;
     }
+    public void updateActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
 }
