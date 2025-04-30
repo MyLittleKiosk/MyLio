@@ -4,6 +4,7 @@ import com.ssafy.mylio.domain.menu.dto.response.MenuDetailResponseDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuListResponseDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuTagMapDto;
 import com.ssafy.mylio.domain.menu.entity.Menu;
+import com.ssafy.mylio.domain.menu.entity.MenuStatus;
 import com.ssafy.mylio.domain.menu.entity.MenuTagMap;
 import com.ssafy.mylio.domain.menu.repository.MenuRepository;
 import com.ssafy.mylio.domain.menu.repository.MenuTagMapRepository;
@@ -63,9 +64,7 @@ public class MenuService {
 
     public MenuDetailResponseDto getMenuDetail(Integer storeId, Integer menuId) {
 
-        // 존재하는 메뉴인지 검증
-        Menu menu = menuRepository.findById(menuId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", menuId));
+        Menu menu = getMenuId(menuId);
 
         // 메뉴 아이디로 태그 조회
         List<MenuTagMapDto> tagsDto = menuTagMapRepository.findAllByMenuId(menu.getId())
@@ -93,5 +92,17 @@ public class MenuService {
                 .toList();
 
         return MenuDetailResponseDto.of(menu, tagsDto, nutritionDto, ingredientInfoDto, optionInfoDto);
+    }
+
+    @Transactional
+    public void deleteMenu(Integer storeId, Integer menuId) {
+        Menu menu = getMenuId(menuId);
+        menu.updateStatus(MenuStatus.DELETED);
+    }
+
+    private Menu getMenuId(Integer menuId) {
+        // 메뉴 검증
+        return menuRepository.findById(menuId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", menuId));
     }
 }
