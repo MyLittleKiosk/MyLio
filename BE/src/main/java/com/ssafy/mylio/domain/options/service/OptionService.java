@@ -13,6 +13,7 @@ import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -84,6 +85,22 @@ public class OptionService {
                 .toList();
 
         return OptionResponseDto.of(options, optionDetailDto);
+    }
+
+    @Transactional
+    public void deleteOption(Integer storeId, Integer optionId){
+        // 매장, 옵션 아이디 조회
+        Store store = getStoreId(storeId);
+        Options options = getOptionId(optionId);
+
+        // 매장의 옵션이 맞는지 조회
+        if(!options.getStore().getId().equals(storeId)){
+            throw new CustomException(ErrorCode.OPTION_STORE_NOT_MATCH, "optionId", optionId)
+                    .addParameter("storeId", storeId);
+        }
+
+        // 옵션 STATUS DELETED로 변경
+        options.delete();
     }
 
 }
