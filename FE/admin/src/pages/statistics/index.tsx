@@ -28,7 +28,7 @@ const Statistics = () => {
       <div className='w-full p-2'>
         <Button
           onClick={() => openModal(<div className='w-12 h-10'>Modal</div>)}
-          type='button'
+          buttonType='button'
           text='Open Modal'
           className='mb-2'
           icon={<IconAccount fillColor='white' />}
@@ -36,10 +36,10 @@ const Statistics = () => {
 
         <Input
           label='Label'
-          id='input'
+          inputId='input'
           placeholder='placeholder'
-          type='text'
-          value={inputValue}
+          inputType='text'
+          inputValue={inputValue}
           onChange={handleInputChange}
           error={false}
           className='mb-3'

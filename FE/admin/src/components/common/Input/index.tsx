@@ -2,10 +2,10 @@ import React from 'react';
 
 interface InputProps {
   label?: string;
-  id: string;
+  inputId: string;
   placeholder: string;
-  type: string;
-  value: string;
+  inputType: string;
+  inputValue: string;
   className?: string;
   error?: boolean;
   disabled?: boolean;
@@ -14,10 +14,10 @@ interface InputProps {
 
 const Input = ({
   label,
-  id,
+  inputId,
   placeholder,
-  type,
-  value,
+  inputType,
+  inputValue,
   onChange,
   className,
   error = false,
@@ -27,10 +27,10 @@ const Input = ({
     <div className={`flex gap-2 items-center ${className}`}>
       {label && <label className='text-md font-preSemiBold'>{label}</label>}
       <input
-        id={id}
+        id={inputId}
         placeholder={placeholder}
-        type={type}
-        value={value}
+        type={inputType}
+        value={inputValue}
         onChange={onChange}
         className={` ${error ? 'border-2 border-error' : 'border border-subContent'} rounded-md p-2 font-preRegular`}
         disabled={disabled}

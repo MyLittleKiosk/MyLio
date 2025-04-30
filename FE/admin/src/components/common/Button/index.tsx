@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface ButtonProps {
-  type: 'button' | 'submit' | 'reset';
+  buttonType: 'button' | 'submit' | 'reset';
   text?: string;
   cancel?: boolean;
   disabled?: boolean;
@@ -12,7 +12,7 @@ interface ButtonProps {
 }
 
 const Button = ({
-  type,
+  buttonType,
   text,
   disabled = false,
   cancel = false,
@@ -23,7 +23,7 @@ const Button = ({
 }: ButtonProps) => {
   return (
     <button
-      type={type}
+      type={buttonType}
       className={`${className} ${error && 'bg-error text-white'} ${disabled && 'bg-subContent text-white pointer-events-none'} ${cancel && 'bg-subContent text-black'} flex items-center gap-2 bg-primary text-white rounded-md px-4 py-2 font-preRegular hover:opacity-70`}
       disabled={disabled}
       onClick={onClick}
