@@ -8,6 +8,7 @@ interface InputProps {
   value: string;
   className?: string;
   error?: boolean;
+  disabled?: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -20,6 +21,7 @@ const Input = ({
   onChange,
   className,
   error = false,
+  disabled = false,
 }: InputProps) => {
   return (
     <div className='flex gap-2 items-center'>
@@ -31,6 +33,7 @@ const Input = ({
         value={value}
         onChange={onChange}
         className={`${className} ${error ? 'border-2 border-error' : 'border border-subContent'} rounded-md p-2 font-preRegular`}
+        disabled={disabled}
       />
     </div>
   );

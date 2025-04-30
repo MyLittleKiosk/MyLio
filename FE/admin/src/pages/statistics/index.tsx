@@ -30,6 +30,7 @@ const Statistics = () => {
           value={inputValue}
           onChange={handleInputChange}
           error={false}
+          disabled
         />
       </div>
       <Modal />

@@ -13,8 +13,10 @@ const meta: Meta<typeof Input> = {
     value: { control: 'text' },
     onChange: { action: 'changed' },
     className: { control: 'text' },
+    error: { control: 'boolean' },
+    disabled: { control: 'boolean' },
   },
-};
+} satisfies Meta<typeof Input>;
 
 export default meta;
 
@@ -49,5 +51,28 @@ export const NumberInput: Story = {
     type: 'number',
     value: '',
     onChange: () => {},
+  },
+};
+
+export const Error: Story = {
+  args: {
+    label: 'Error',
+    id: 'errorinput',
+    placeholder: 'placeholder',
+    type: 'text',
+    value: '123',
+    error: true,
+  },
+};
+
+export const Disabled: Story = {
+  args: {
+    label: 'Disabled',
+    id: 'disabledinput',
+    placeholder: 'placeholder',
+    type: 'text',
+    value: '',
+    onChange: () => {},
+    disabled: true,
   },
 };
