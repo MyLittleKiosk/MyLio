@@ -5,3 +5,6 @@
 __pycache__/
 *.pyc
 
+# SSL
+localhost-key.pem
+localhost.pem
