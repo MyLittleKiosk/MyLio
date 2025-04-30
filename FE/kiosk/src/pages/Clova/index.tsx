@@ -13,7 +13,7 @@ const ClovaPage = () => {
   const [currentAudio, setCurrentAudio] = useState<string | null>(null);
 
   // 녹음된 오디오를 Clova로 전송하는 함수
-  const handleSendToClova = async (audioUrl: string) => {
+  async function handleSendToClova(audioUrl: string) {
     if (!audioUrl) {
       setError('녹음된 오디오가 없습니다.');
       return;
@@ -96,18 +96,18 @@ const ClovaPage = () => {
     } finally {
       setIsProcessing(false);
     }
-  };
+  }
 
   // 버튼을 누르고 있는 동안 녹음하는 핸들러
-  const handlePressStart = async () => {
+  async function handlePressStart() {
     setError(null);
     // 새 녹음 시작 전에 이전 오디오 상태 초기화
     setCurrentAudio(null);
     await startRecording();
-  };
+  }
 
   // 버튼을 떼면 녹음 중지 및 Clova로 자동 전송
-  const handlePressEnd = async () => {
+  async function handlePressEnd() {
     if (isRecording) {
       try {
         // 녹음 중지하고 URL 받기
@@ -129,7 +129,7 @@ const ClovaPage = () => {
         setError('녹음을 중지하는 중 오류가 발생했습니다.');
       }
     }
-  };
+  }
 
   // 오디오 재생을 위한 소스 선택 (현재 녹음된 오디오 우선)
   const audioSource = currentAudio || audio;
