@@ -6,7 +6,7 @@ import lombok.Getter;
 import jakarta.validation.constraints.NotBlank;
 
 @Getter
-public class LoginRequestDto {
+public class AdminLoginRequestDto {
     @Schema(example = "1", description = "계정 ID (account.id)")
     @NotNull(message = "아이디는 필수 입력값입니다.")
     private Integer id;
