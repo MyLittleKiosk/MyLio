@@ -107,6 +107,7 @@ public class JwtTokenProvider {
         UserPrincipal userPrincipal = UserPrincipal.builder()
                 .userId(userId)
                 .storeId(storeId)
+                .userType(userType)
                 .authorities(Collections.singletonList(new SimpleGrantedAuthority(SecurityConstants.ROLE_PREFIX + userType)))
                 .build();
 

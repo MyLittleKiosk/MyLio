@@ -6,6 +6,7 @@ import com.ssafy.mylio.domain.account.repository.AccountRepository;
 import com.ssafy.mylio.domain.auth.dto.LoginResult;
 import com.ssafy.mylio.domain.auth.dto.request.AdminLoginRequestDto;
 import com.ssafy.mylio.domain.auth.dto.request.KioskLoginRequest;
+import com.ssafy.mylio.domain.auth.dto.request.LogoutRequest;
 import com.ssafy.mylio.domain.auth.dto.response.KioskLoginResponseDto;
 import com.ssafy.mylio.domain.auth.dto.response.LoginResponse;
 import com.ssafy.mylio.domain.auth.dto.response.StoreInfoResponseDto;
@@ -51,6 +52,7 @@ public class AuthService {
                     .addParameter("userType",account.getStatus().getCode());
 
         }
+
         Integer storeId = (account.getRole() == AccountRole.SUPER)
                 ? null
                 : account.getStore().getId();
@@ -102,7 +104,7 @@ public class AuthService {
     }
 
     @Transactional
-    public LoginResult kioskLogin(KioskLoginRequest request){
+    public LoginResult kioskLogin(KioskLoginRequest request) {
         Account account = accountRepository.findWithStoreById(request.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_CREDENTIALS));
 
@@ -118,6 +120,7 @@ public class AuthService {
         }
 
         if (account.getStatus() == BasicStatus.DELETED) {
+
             throw new CustomException(ErrorCode.INVALID_CREDENTIALS)
                     .addParameter("accountStatus",account.getStatus().getCode());
         }
@@ -137,6 +140,7 @@ public class AuthService {
                         .addParameter("kioskId",request.getKioskId()));
 
 
+
         //키오스크 상태 확인
         if(session.getIsActive()){
             throw new CustomException(ErrorCode.KIOSK_IN_USE)
@@ -154,9 +158,37 @@ public class AuthService {
 
         authRedisService.saveRefreshToken(account.getId(), refreshToken);
 
-        LoginResponse response = KioskLoginResponseDto.of(account,session,AccountRole.KIOSK);
+        LoginResponse response = KioskLoginResponseDto.of(account, session, AccountRole.KIOSK);
 
-        return LoginResult.of(response,accessToken,refreshToken);
+        return LoginResult.of(response, accessToken, refreshToken);
+    }
+
+    @Transactional
+    public void logout(Integer userId, String userType, LogoutRequest request) {
+        //토큰 삭제
+        authRedisService.deleteRefreshToken(userId);
+
+        //Super , admin인 경우 추작업 없이 끝
+        if (!userType.equals(AccountRole.KIOSK.getCode())) {
+            return;
+        }
+
+        if(request == null){
+            log.debug("kioskId is null");
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+        //Kiosk인 경우 상태 false로 변경
+        Integer kioskId = request.getKioskId();
+        if (kioskId == null) {
+            log.debug("kioskId is null");
+            throw new CustomException(ErrorCode.KIOSK_SESSION_NOT_FOUND);
+        }
+        KioskSession session = kioskRepository.findById(kioskId)
+                .orElseThrow(() -> new CustomException(ErrorCode.KIOSK_SESSION_NOT_FOUND));
+
+        session.updateActive(false);
+        kioskRepository.save(session);
+
     }
 
 }
