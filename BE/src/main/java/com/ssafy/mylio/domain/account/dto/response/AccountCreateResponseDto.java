@@ -24,12 +24,16 @@ public class AccountCreateResponseDto {
     @Schema(example="REGISTERED")
     private String status;
 
+    @Schema(example="qwer1234")
+    private String password;
+
     public static AccountCreateResponseDto of(Account account){
         return AccountCreateResponseDto.builder()
                 .userId(account.getId())
                 .storeId(account.getStore().getId())
                 .userName(account.getUsername())
                 .role(account.getRole().getCode())
+                .password(account.getPassword())
                 .status(account.getStatus().getCode())
                 .build();
     }
