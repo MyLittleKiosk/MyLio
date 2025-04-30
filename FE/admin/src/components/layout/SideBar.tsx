@@ -19,7 +19,7 @@ const SideBar = () => {
 
   // 사이드바 너비 조정 애니메이션 완료 여부
   const [isWidthAnimationComplete, setIsWidthAnimationComplete] =
-    useState(false);
+    useState(true);
 
   useEffect(() => {
     if (!isSideBarOpen) {
@@ -29,8 +29,13 @@ const SideBar = () => {
 
   return (
     <motion.nav
-      animate={{ width: isSideBarOpen ? '20%' : '80px' }}
-      transition={{ duration: 0.2, ease: 'easeInOut' }}
+      initial={false}
+      layout
+      animate={{ width: isSideBarOpen ? '180px' : '70px' }}
+      transition={{
+        width: { duration: 1, ease: 'easeInOut' },
+        layout: { duration: 1, ease: 'easeInOut' },
+      }}
       onAnimationComplete={() => {
         if (isSideBarOpen) {
           setIsWidthAnimationComplete(true);
@@ -39,7 +44,7 @@ const SideBar = () => {
       className={`p-2 h-dvh flex flex-col`}
     >
       <header className='min-h-[50px] h-[8%] flex justify-between items-center gap-2 font-preBold text-lg text-primary'>
-        <div className='flex-1 h-full flex items-center gap-2 min-w-0'>
+        <div className='h-full flex items-center gap-2 min-w-0'>
           <div className='w-8 flex-shrink-0'>
             <img src={LOGO} alt='logo' className='w-full h-full' />
           </div>
@@ -54,12 +59,12 @@ const SideBar = () => {
             </motion.h1>
           )}
         </div>
-        <div className='w-8 flex-shrink-0'>
+        <div className='ml-4 w-5 h-5'>
           <IconBack
-            onClick={() => setIsSideBarOpen(!isSideBarOpen)}
             className={`text-content hover:bg-gray-100 rounded-md cursor-pointer ${
               isSideBarOpen ? '' : 'rotate-180'
             }`}
+            onClick={() => setIsSideBarOpen(!isSideBarOpen)}
           />
         </div>
       </header>
@@ -115,9 +120,12 @@ const SideBar = () => {
         )}
       </section>
 
-      <hr className='w-full' />
+      {isWidthAnimationComplete && <hr className='w-full' />}
+
       {isWidthAnimationComplete && (
-        <footer className='h-[10%] min-h-[80px] font-preMedium text-xs text-content p-2 flex flex-col justify-center gap-1'>
+        <footer
+          className={`h-[10%] min-h-[80px] font-preMedium text-xs text-content p-2 flex flex-col justify-center gap-1`}
+        >
           <p>로그인 : {LOGIN}</p>
           <p>버전 : {VERSION}</p>
           <p>권한 : {AUTHORITY}</p>
