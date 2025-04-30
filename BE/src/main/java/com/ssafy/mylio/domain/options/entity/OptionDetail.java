@@ -4,6 +4,7 @@ import com.ssafy.mylio.domain.menu.entity.MenuStatus;
 import com.ssafy.mylio.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -25,6 +26,7 @@ public class OptionDetail extends BaseEntity {
     @Column(name = "additional_price")
     private Integer additionalPrice;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private OptionDetailStatus status = OptionDetailStatus.REGISTERED;
