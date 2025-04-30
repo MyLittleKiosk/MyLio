@@ -35,3 +35,7 @@ dist-ssr
 # env
 .env
 *storybook.log
+
+# ssl
+localhost-key.pem
+localhost.pem
