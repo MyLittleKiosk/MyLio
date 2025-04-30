@@ -1,7 +1,9 @@
 package com.ssafy.mylio.domain.account.controller;
 
 import com.ssafy.mylio.domain.account.dto.request.AccountCreateRequest;
+import com.ssafy.mylio.domain.account.dto.request.AccountModifyRequestDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountCreateResponseDto;
+import com.ssafy.mylio.domain.account.dto.response.AccountModifyResponse;
 import com.ssafy.mylio.domain.account.service.AccountService;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
 import com.ssafy.mylio.global.common.response.CommonResponse;
@@ -14,10 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/account")
@@ -27,9 +26,9 @@ public class AccountController {
     private final AuthenticationUtil authenticationUtil;
     private final AccountService accountService;
 
-    @PostMapping("")
+    @PostMapping
     @Operation(summary = "관리자 계정 생성",description = "관리자 계정을 생성합니다.")
-    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND,ErrorCode.INVALID_ROLE})
+    @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE,ErrorCode.STORE_NOT_FOUND,ErrorCode.STORE_NOT_FOUND})
     public ResponseEntity<CommonResponse<AccountCreateResponseDto>> createAccount(
             @Valid @RequestBody AccountCreateRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal){
@@ -37,4 +36,17 @@ public class AccountController {
         return CommonResponse.ok(accountService.createAccount(userType,request));
 
     }
+
+    @PatchMapping
+    @Operation(summary = "관리자 계정 수정", description = "관리자 계정을 수정합니다.")
+    @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE,ErrorCode.ACOUNT_NOT_FOUND})
+    public ResponseEntity<CommonResponse<AccountModifyResponse>> modifyAccount(
+            @Valid @RequestBody AccountModifyRequestDto request,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+            ){
+        Integer userId = authenticationUtil.getCurrentUserId(userPrincipal);
+        String userType = authenticationUtil.getCurrntUserType(userPrincipal);
+        return CommonResponse.ok(accountService.modifyAccount(userId,userType,request));
+    }
+
 }
