@@ -94,4 +94,11 @@ public class AccountService {
         }
         return store;
     }
+
+    public void deleteAccount(Integer userId, String userType){
+        //userType 검증
+        //usrID로 매장 계정 정보 가져오기
+        //매장 삭제하기
+        //계정 삭제하기
+    }
 }
