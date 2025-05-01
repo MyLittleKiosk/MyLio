@@ -25,9 +25,9 @@ const Table = <T extends object>({
               ))}
             </tr>
           </thead>
-          <tbody className='divide-y divide-gray-200'>
+          <tbody className='divide-y divide-subContent'>
             {data.map((row, rowIndex) => (
-              <tr key={rowIndex} className='hover:bg-gray-50'>
+              <tr key={rowIndex} className='hover:bg-subContent/50'>
                 {columns.map((column, colIndex) => (
                   <td
                     key={colIndex}
