@@ -182,7 +182,7 @@ public class AccountService {
         Account account = accountRepository.findById(userId)
                 .orElseThrow(()-> new CustomException(ErrorCode.ACOUNT_NOT_FOUND,"userId",userId));
 
-        //현재 아이디 맞는지 조회
+        //현재 비밀번호가 맞는지 조회
         if(!passwordEncoder.matches(request.getNowPw(), account.getPassword())){
             throw new CustomException(ErrorCode.FORBIDDEN_AUTH);
         }
