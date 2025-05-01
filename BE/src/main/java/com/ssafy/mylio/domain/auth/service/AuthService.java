@@ -55,7 +55,7 @@ public class AuthService {
         }
 
         Integer storeId = (account.getRole() == AccountRole.SUPER)
-                ? null
+                ? 0
                 : account.getStore().getId();
         //JWT 토큰 생성
         String accessToken = jwtTokenProvider.createAccessToken(

@@ -1,5 +1,7 @@
 package com.ssafy.mylio.domain.options.service;
 
+import com.ssafy.mylio.domain.options.dto.request.OptionRequestDto;
+import com.ssafy.mylio.domain.options.dto.request.OptionUpdateRequestDto;
 import com.ssafy.mylio.domain.options.dto.response.OptionDetailDto;
 import com.ssafy.mylio.domain.options.dto.response.OptionListResponseDto;
 import com.ssafy.mylio.domain.options.dto.response.OptionResponseDto;
@@ -28,7 +30,7 @@ public class OptionService {
     private final OptionDetailRepository optionDetailRepository;
     private final StoreRepository storeRepository;
 
-    public OptionListResponseDto getOptionList(Integer storeId){
+    public OptionListResponseDto getOptionList(Integer storeId) {
 
         Store store = getStoreId(storeId);
 
@@ -56,23 +58,23 @@ public class OptionService {
         return OptionListResponseDto.of(optionResponseDtoList);
     }
 
-    private Store getStoreId(Integer storeId){
-         return storeRepository.findById(storeId)
-                .orElseThrow(()-> new CustomException(ErrorCode.STORE_NOT_FOUND, "storeId", storeId));
+    private Store getStoreId(Integer storeId) {
+        return storeRepository.findById(storeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND, "storeId", storeId));
     }
 
-    private Options getOptionId(Integer optionId){
+    private Options getOptionId(Integer optionId) {
         return optionsRepository.findById(optionId)
-                .orElseThrow(()-> new CustomException(ErrorCode.OPTION_NOT_FOUND, "optionId", optionId));
+                .orElseThrow(() -> new CustomException(ErrorCode.OPTION_NOT_FOUND, "optionId", optionId));
     }
 
-    public OptionResponseDto getOptionDetail(Integer storeId, Integer optionId){
+    public OptionResponseDto getOptionDetail(Integer storeId, Integer optionId) {
         // 매장, 옵션 아이디 조회
         Store store = getStoreId(storeId);
         Options options = getOptionId(optionId);
 
         // 매장의 옵션이 맞는지 조회
-        if(!options.getStore().getId().equals(storeId)){
+        if (!options.getStore().getId().equals(storeId)) {
             throw new CustomException(ErrorCode.OPTION_STORE_NOT_MATCH, "optionId", optionId)
                     .addParameter("storeId", storeId);
         }
@@ -89,19 +91,43 @@ public class OptionService {
     }
 
     @Transactional
-    public void deleteOption(Integer storeId, Integer optionId){
+    public void deleteOption(Integer storeId, Integer optionId) {
         // 매장, 옵션 아이디 조회
         Store store = getStoreId(storeId);
         Options options = getOptionId(optionId);
 
         // 매장의 옵션이 맞는지 조회
-        if(!options.getStore().getId().equals(storeId)){
+        if (!options.getStore().getId().equals(storeId)) {
             throw new CustomException(ErrorCode.OPTION_STORE_NOT_MATCH, "optionId", optionId)
                     .addParameter("storeId", storeId);
         }
 
         // 옵션 STATUS DELETED로 변경
         options.delete();
+    }
+
+    @Transactional
+    public void addOption(Integer storeId, OptionRequestDto optionRequestDto) {
+        Store store = getStoreId(storeId);
+        Options options = optionRequestDto.toEntity(store);
+        optionsRepository.save(options);
+    }
+
+    @Transactional
+    public void updateOption(Integer storeId, Integer optionId, OptionUpdateRequestDto optionUpdateRequestDto) {
+        Store store = getStoreId(storeId);
+        Options options = getOptionId(optionId);
+
+        // 매장의 옵션이 맞는지 조회
+        if (!options.getStore().getId().equals(storeId)) {
+            throw new CustomException(ErrorCode.OPTION_STORE_NOT_MATCH, "optionId", optionId)
+                    .addParameter("storeId", storeId);
+        }
+
+        // 옵션 수정
+        options.update(optionUpdateRequestDto.getOptionNameKr(),
+                optionUpdateRequestDto.getOptionNameEn(),
+                optionUpdateRequestDto.getStatus());
     }
 
 }
