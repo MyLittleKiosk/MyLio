@@ -1,5 +1,6 @@
 package com.ssafy.mylio.domain.category.service;
 
+import com.ssafy.mylio.domain.category.dto.request.CategoryAddRequestDto;
 import com.ssafy.mylio.domain.category.dto.response.CategoryResponseDto;
 import com.ssafy.mylio.domain.category.entity.Category;
 import com.ssafy.mylio.domain.category.repository.CategoryRepository;
@@ -29,6 +30,16 @@ public class CategoryService {
         // 카테고리 조회
         Page<Category> categoryList = categoryRepository.findAllByStoreId(storeId, pageable);
         return new CustomPage<>(categoryList.map(CategoryResponseDto::of));
+    }
+
+    @Transactional
+    public void addCategory(Integer storeId, CategoryAddRequestDto categoryAddRequestDto){
+        // store 검증
+        Store store = getStoreId(storeId);
+
+        // Entity로 변환
+        Category category = categoryAddRequestDto.toEntity(store);
+        categoryRepository.save(category);
     }
 
     private Store getStoreId(Integer storeId){

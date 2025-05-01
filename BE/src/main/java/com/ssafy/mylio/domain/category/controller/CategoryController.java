@@ -1,5 +1,6 @@
 package com.ssafy.mylio.domain.category.controller;
 
+import com.ssafy.mylio.domain.category.dto.request.CategoryAddRequestDto;
 import com.ssafy.mylio.domain.category.dto.response.CategoryResponseDto;
 import com.ssafy.mylio.domain.category.service.CategoryService;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
@@ -10,6 +11,7 @@ import com.ssafy.mylio.global.security.auth.UserPrincipal;
 import com.ssafy.mylio.global.util.AuthenticationUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -17,9 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -39,5 +39,16 @@ public class CategoryController {
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         return CommonResponse.ok(categoryService.getCategoryList(storeId, pageable));
+    }
+
+    @PostMapping
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND})
+    @Operation(summary = "카테고리 등록", description = "카테고리를 등록합니다")
+    public ResponseEntity<CommonResponse<Void>> addCategory(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Valid @RequestBody CategoryAddRequestDto categoryAddRequestDto) {
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+        categoryService.addCategory(storeId, categoryAddRequestDto);
+        return CommonResponse.ok();
     }
 }
