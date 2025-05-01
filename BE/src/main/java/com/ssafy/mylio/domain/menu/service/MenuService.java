@@ -1,18 +1,38 @@
 package com.ssafy.mylio.domain.menu.service;
 
+import com.ssafy.mylio.domain.category.entity.Category;
+import com.ssafy.mylio.domain.category.repository.CategoryRepository;
+import com.ssafy.mylio.domain.menu.dto.request.MenuPostRequestDto;
+import com.ssafy.mylio.domain.menu.dto.request.TagRequestDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuDetailResponseDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuListResponseDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuTagMapDto;
 import com.ssafy.mylio.domain.menu.entity.Menu;
+import com.ssafy.mylio.domain.menu.entity.MenuStatus;
 import com.ssafy.mylio.domain.menu.entity.MenuTagMap;
 import com.ssafy.mylio.domain.menu.repository.MenuRepository;
 import com.ssafy.mylio.domain.menu.repository.MenuTagMapRepository;
 import com.ssafy.mylio.domain.menuIngredient.dto.response.IngredientInfoDto;
+import com.ssafy.mylio.domain.menuIngredient.entity.IngredientTemplate;
+import com.ssafy.mylio.domain.menuIngredient.entity.MenuIngredient;
+import com.ssafy.mylio.domain.menuIngredient.repository.IngredientTemplateRepository;
 import com.ssafy.mylio.domain.menuIngredient.repository.MenuIngredientRepository;
+import com.ssafy.mylio.domain.nutrition.dto.request.NutritionValuePostRequestDto;
 import com.ssafy.mylio.domain.nutrition.dto.response.NutritionInfoDto;
+import com.ssafy.mylio.domain.nutrition.entity.NutritionTemplate;
+import com.ssafy.mylio.domain.nutrition.entity.NutritionValue;
 import com.ssafy.mylio.domain.nutrition.repository.NutritionRepository;
+import com.ssafy.mylio.domain.nutrition.repository.NutritionTemplateRepository;
+import com.ssafy.mylio.domain.options.dto.request.MenuOptionMapRequestDto;
 import com.ssafy.mylio.domain.options.dto.response.OptionInfoDto;
+import com.ssafy.mylio.domain.options.entity.MenuOptionMap;
+import com.ssafy.mylio.domain.options.entity.OptionDetail;
+import com.ssafy.mylio.domain.options.entity.Options;
 import com.ssafy.mylio.domain.options.repository.MenuOptionRepository;
+import com.ssafy.mylio.domain.options.repository.OptionDetailRepository;
+import com.ssafy.mylio.domain.options.repository.OptionsRepository;
+import com.ssafy.mylio.domain.store.entity.Store;
+import com.ssafy.mylio.domain.store.repository.StoreRepository;
 import com.ssafy.mylio.global.common.CustomPage;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
@@ -37,6 +57,13 @@ public class MenuService {
     private final MenuIngredientRepository menuIngredientRepository;
     private final NutritionRepository nutritionRepository;
     private final MenuOptionRepository menuOptionRepository;
+    private final StoreRepository storeRepository;
+    private final CategoryRepository categoryRepository;
+    private final NutritionTemplateRepository nutritionTemplateRepository;
+    private final IngredientTemplateRepository ingredientTemplateRepository;
+    private final OptionDetailRepository optionDetailRepository;
+    private final OptionsRepository optionsRepository;
+
 
     public CustomPage<MenuListResponseDto> getMenuList(Integer storeId, Integer categoryId, Pageable pageable) {
         // 메뉴 리스트 조회
@@ -63,9 +90,7 @@ public class MenuService {
 
     public MenuDetailResponseDto getMenuDetail(Integer storeId, Integer menuId) {
 
-        // 존재하는 메뉴인지 검증
-        Menu menu = menuRepository.findById(menuId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", menuId));
+        Menu menu = getMenu(menuId);
 
         // 메뉴 아이디로 태그 조회
         List<MenuTagMapDto> tagsDto = menuTagMapRepository.findAllByMenuId(menu.getId())
@@ -97,5 +122,78 @@ public class MenuService {
 
     public void updateMenu(Integer storeId, Integer menuId) {
 
+    }
+    @Transactional
+    public void deleteMenu(Integer storeId, Integer menuId) {
+        Menu menu = getMenu(menuId);
+        menu.updateStatus(MenuStatus.DELETED);
+    }
+
+    @Transactional
+    public void addMenu(Integer storeId, MenuPostRequestDto menuPostRequestDto) {
+        // Store 조회
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND, "storeId", storeId));
+
+        // 카테고리 조회
+        Category category = categoryRepository.findById(menuPostRequestDto.getCategoryId())
+                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND, "categoryId", menuPostRequestDto.getCategoryId())
+                        .addParameter("storeId", storeId));
+
+        // 메뉴 등록
+        Menu menu = menuPostRequestDto.toEntity(store, category);
+        menuRepository.save(menu);
+
+        // Tag 매핑
+        if (menuPostRequestDto.getTags() != null) {
+            for (TagRequestDto tagRequestDto : menuPostRequestDto.getTags()) {
+                MenuTagMap menuTagMap = tagRequestDto.toEntity(menu, store);
+                menuTagMapRepository.save(menuTagMap);
+            }
+        }
+
+        // 영양정보 매핑
+        if (menuPostRequestDto.getNutritionInfo() != null) {
+            for (NutritionValuePostRequestDto nutritionDto : menuPostRequestDto.getNutritionInfo()) {
+                NutritionTemplate nutritionTemplate = nutritionTemplateRepository.findById(nutritionDto.getNutritionTemplateId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.NUTRITION_TEMPLATE_NOT_FOUND, "nutritionTemplateId", nutritionDto.getNutritionTemplateId()));
+                NutritionValue nutritionValue = nutritionDto.toEntity(store, menu, nutritionTemplate);
+                nutritionRepository.save(nutritionValue);
+            }
+        }
+
+        // 원재료 매핑
+        if (menuPostRequestDto.getIngredientInfo() != null) {
+            for (Integer ingredientId : menuPostRequestDto.getIngredientInfo()) {
+                IngredientTemplate ingredientTemplate = ingredientTemplateRepository.findById(ingredientId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.INGREDIENT_TEMPLATE_NOT_FOUND, "ingredientId", ingredientId));
+                MenuIngredient menuIngredient = MenuIngredient.builder()
+                        .store(store)
+                        .menu(menu)
+                        .ingredient(ingredientTemplate)
+                        .build();
+
+                menuIngredientRepository.save(menuIngredient);
+            }
+        }
+
+        // 옵션 매핑
+        if(menuPostRequestDto.getOptionInfo()!= null){
+            for(MenuOptionMapRequestDto optionDto :menuPostRequestDto.getOptionInfo()){
+                Options options = optionsRepository.findById(optionDto.getOptionId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.OPTION_NOT_FOUND, "optionsId", optionDto.getOptionId()));
+                OptionDetail optionDetail = optionDetailRepository.findById(optionDto.getOptionDetailId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.OPTION_DETAIL_NOT_FOUND, "optionDetailId", optionDto.getOptionDetailId()));
+                MenuOptionMap menuOptionMap = optionDto.toEntity(menu, options, optionDetail);
+                menuOptionRepository.save(menuOptionMap);
+            }
+        }
+
+    }
+
+    private Menu getMenu(Integer menuId) {
+        // 메뉴 검증
+        return menuRepository.findById(menuId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", menuId));
     }
 }

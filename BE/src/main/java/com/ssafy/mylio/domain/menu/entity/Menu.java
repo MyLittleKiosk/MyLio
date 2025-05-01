@@ -5,6 +5,7 @@ import com.ssafy.mylio.domain.store.entity.Store;
 import com.ssafy.mylio.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -38,6 +39,7 @@ public class Menu extends BaseEntity {
     @Column(name = "image_url", length = 255)
     private String imageUrl;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private MenuStatus status = MenuStatus.SELLING;

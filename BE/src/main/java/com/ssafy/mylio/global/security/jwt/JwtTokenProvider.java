@@ -13,6 +13,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+import static io.jsonwebtoken.Jwts.SIG; // ⚠️ 이 import 중요!
+
 
 import javax.crypto.SecretKey;
 import java.util.Collections;
@@ -32,33 +34,43 @@ public class JwtTokenProvider {
     }
 
     // 기존 토큰 생성 메소드 유지
-    public String createToken(String userId, String userType, long validityTime) {
+    public String createToken(Integer userId,Integer storeId, String userType, long validityTime) {
         Date now = new Date();
 
         return Jwts.builder()
-                .subject(userId)
+                .subject(Integer.toString(userId))
                 .claim(SecurityConstants.ROLE_NAME, userType)
+                .claim("storeId", storeId)
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + validityTime))
-                .signWith(getSigningKey())
+                .signWith(getSigningKey(), SIG.HS256)  // 추천 방식
                 .compact();
     }
 
     // Refresh Token 생성
-    public String createAccessToken(String userId, String userType) {
+    public String createAccessToken(Integer userId,Integer storeId, String userType) {
         long accessTokenValidTime = SecurityConstants.ACCESS_TOKEN_VALIDITY_SECONDS * 1000L;
-        return createToken(userId, userType, accessTokenValidTime);
+        return createToken(userId, storeId,userType, accessTokenValidTime);
     }
 
     // Refresh Token 생성
-    public String createRefreshToken(String userId, String userType) {
+    public String createRefreshToken(Integer userId,Integer storeId, String userType) {
         long refreshTokenValidTime = SecurityConstants.REFRESH_TOKEN_VALIDITY_SECONDS * 1000L;
-        return createToken(userId, userType, refreshTokenValidTime);
+        return createToken(userId, storeId,userType, refreshTokenValidTime);
     }
 
     // 토큰에서 회원 정보 추출
     public Integer getUserId(String token) {
         return Integer.parseInt(extractAllClaims(token).getSubject());
+    }
+
+    // 토큰에서 storeId 정보 추출
+    public Integer getStoreId(String token) {
+        Integer storeId= extractAllClaims(token).get("storeId", Integer.class);
+        if (storeId == null) {
+            return null; // 또는 Optional.empty() 처리도 가능
+        }
+        return storeId;
     }
 
     public String getUserType(String token) {
@@ -89,10 +101,13 @@ public class JwtTokenProvider {
     // Spring Security 인증 객체 생성
     public Authentication getAuthentication(String token) {
         Integer userId = getUserId(token);
+        Integer storeId = getStoreId(token);
         String userType = getUserType(token);
 
         UserPrincipal userPrincipal = UserPrincipal.builder()
-                .id(userId)
+                .userId(userId)
+                .storeId(storeId)
+                .userType(userType)
                 .authorities(Collections.singletonList(new SimpleGrantedAuthority(SecurityConstants.ROLE_PREFIX + userType)))
                 .build();
 

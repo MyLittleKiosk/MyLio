@@ -1,9 +1,11 @@
 package com.ssafy.mylio.domain.menu.controller;
 
 
+import com.ssafy.mylio.domain.menu.dto.request.MenuPostRequestDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuDetailResponseDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuListResponseDto;
 import com.ssafy.mylio.domain.menu.service.MenuService;
+import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExample;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
 import com.ssafy.mylio.global.common.CustomPage;
 import com.ssafy.mylio.global.common.response.CommonResponse;
@@ -49,9 +51,31 @@ public class MenuController {
     public ResponseEntity<CommonResponse<MenuDetailResponseDto>> getMenuDetail(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("menu_id") Integer menuId ) {
-
         Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
         return CommonResponse.ok(menuService.getMenuDetail(storeId, menuId));
+    }
+
+    @DeleteMapping("/{menu_id}")
+    @Operation(summary = "메뉴 삭제", description = "메뉴를 삭제합니다")
+    @ApiErrorCodeExamples({ErrorCode.MENU_NOT_FOUND})
+    public ResponseEntity<CommonResponse<Void>> deleteMenu(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable("menu_id") Integer menuId) {
+        Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
+        menuService.deleteMenu(storeId, menuId);
+        return CommonResponse.ok();
+    }
+
+    @PostMapping
+    @Operation(summary = "메뉴 등록", description = "새로운 메뉴를 등록합니다")
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.CATEGORY_NOT_FOUND, ErrorCode.NUTRITION_TEMPLATE_NOT_FOUND,
+            ErrorCode.INGREDIENT_TEMPLATE_NOT_FOUND, ErrorCode.OPTION_NOT_FOUND, ErrorCode.OPTION_DETAIL_NOT_FOUND})
+    public ResponseEntity<CommonResponse<Void>> addMenu(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestBody MenuPostRequestDto menuPostRequestDto) {
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+        menuService.addMenu(storeId, menuPostRequestDto);
+        return CommonResponse.ok();
     }
 
     @PatchMapping("/{menu_id}")
@@ -61,6 +85,4 @@ public class MenuController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("menu_id") Integer menuId) {
         Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal); // 이거 나중에 storeId로 바꾸기
-        return CommonResponse.ok();
-    }
 }
