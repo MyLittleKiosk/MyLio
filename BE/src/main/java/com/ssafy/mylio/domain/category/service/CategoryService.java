@@ -1,6 +1,7 @@
 package com.ssafy.mylio.domain.category.service;
 
 import com.ssafy.mylio.domain.category.dto.request.CategoryAddRequestDto;
+import com.ssafy.mylio.domain.category.dto.request.CategoryUpdateRequestDto;
 import com.ssafy.mylio.domain.category.dto.response.CategoryResponseDto;
 import com.ssafy.mylio.domain.category.entity.Category;
 import com.ssafy.mylio.domain.category.repository.CategoryRepository;
@@ -40,6 +41,11 @@ public class CategoryService {
         // Entity로 변환
         Category category = categoryAddRequestDto.toEntity(store);
         categoryRepository.save(category);
+    }
+
+    @Transactional
+    public void updateCategory(Integer storeId, Integer categoryId, CategoryUpdateRequestDto categoryUpdateDto) {
+
     }
 
     private Store getStoreId(Integer storeId){
