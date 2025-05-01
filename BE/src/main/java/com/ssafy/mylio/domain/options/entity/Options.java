@@ -31,9 +31,10 @@ public class Options extends BaseEntity {
     @Column(name = "status", nullable = false)
     private OptionStatus status = OptionStatus.REGISTERED;
 
-    public void update(String optionNameKr, String optionNameEn) {
+    public void update(String optionNameKr, String optionNameEn, String status) {
         this.optionNameKr = optionNameKr;
         this.optionNameEn = optionNameEn;
+        this.status = OptionStatus.fromCode(status);
     }
 
     public void delete(){this.status = OptionStatus.DELETED;}
