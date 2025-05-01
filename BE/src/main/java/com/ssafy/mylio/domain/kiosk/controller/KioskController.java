@@ -54,7 +54,7 @@ public class KioskController {
 
     @PatchMapping("/{kiosk_id}")
     @Operation(summary = "키오스크 수정", description = "매장 관리자가 키오스크를 수정합니다.")
-    @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE,ErrorCode.STORE_NOT_FOUND,ErrorCode.KIOSK_NOT_FOUND})
+    @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE,ErrorCode.ACOUNT_NOT_FOUND,ErrorCode.KIOSK_NOT_FOUND})
     public ResponseEntity<CommonResponse<KioskCreateResponseDto>> modifyKiosk(
             @PathVariable("kiosk_id") Integer kioskId,
             @Valid @RequestBody KioskCreateRequestDto request,
