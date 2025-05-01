@@ -13,7 +13,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class MenuPostRequestDto {
+public class MenuRequestDto {
 
     @Schema(example = "https://mylio/latte.jpg")
     private String imageUrl;
