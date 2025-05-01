@@ -47,47 +47,37 @@ public class CategoryService {
 
     @Transactional
     public void updateCategory(Integer storeId, Integer categoryId, CategoryUpdateRequestDto categoryUpdateDto) {
-        // store 조회
-        Store store = getStoreId(storeId);
-
-        // 카테고리 Id 조회
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(()-> new CustomException(ErrorCode.CATEGORY_NOT_FOUND, "categoryId", categoryId));
-
-        // 매장에 있는 카테고리인지 조회
-        if(!category.getStore().getId().equals(storeId)) {
-            log.warn("매장에 없는 카테고리입니다, categoryId : {}, storeId : {}", categoryId, storeId);
-            throw new CustomException(ErrorCode.CATEGORY_STORE_NOT_MATCH, "categoryId", categoryId)
-                    .addParameter("storeId", storeId);
-        }
-        
+        Category category = getValidCategory(storeId, categoryId); // 카테고리 검증 및 조회
         // 카테고리 업데이트
         category.update(categoryUpdateDto.getNameKr(), categoryUpdateDto.getNameEn(), categoryUpdateDto.getStatus());
     }
 
     @Transactional
     public void deleteCategory(Integer storeId, Integer categoryId) {
-        // store 조회
-        Store store = getStoreId(storeId);
-
-        // 카테고리 Id 조회
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(()-> new CustomException(ErrorCode.CATEGORY_NOT_FOUND, "categoryId", categoryId));
-
-        // 매장에 있는 카테고리인지 조회
-        if(!category.getStore().getId().equals(storeId)) {
-            log.warn("매장에 없는 카테고리입니다, categoryId : {}, storeId : {}", categoryId, storeId);
-            throw new CustomException(ErrorCode.CATEGORY_STORE_NOT_MATCH, "categoryId", categoryId)
-                    .addParameter("storeId", storeId);
-        }
-
-        // 카테고리 삭제
-        category.delete();
+        Category category = getValidCategory(storeId, categoryId); // 카테고리 검증 및 조회
+        category.delete(); // 카테고리 삭제
     }
 
     private Store getStoreId(Integer storeId){
         return storeRepository.findById(storeId)
                 .orElseThrow(()-> new CustomException(ErrorCode.STORE_NOT_FOUND, "storeId", storeId));
+    }
+
+    private Category getValidCategory(Integer storeId, Integer categoryId) {
+        getStoreId(storeId);
+
+        // 카테고리 Id 조회
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND, "categoryId", categoryId));
+
+        // 매장에 있는 카테고리인지 조회
+        if (!category.getStore().getId().equals(storeId)) {
+            log.warn("매장에 없는 카테고리입니다, categoryId : {}, storeId : {}", categoryId, storeId);
+            throw new CustomException(ErrorCode.CATEGORY_STORE_NOT_MATCH, "categoryId", categoryId)
+                    .addParameter("storeId", storeId);
+        }
+
+        return category;
     }
 
 }
