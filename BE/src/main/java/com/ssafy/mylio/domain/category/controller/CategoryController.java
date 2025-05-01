@@ -66,7 +66,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{category_id}")
-    @ApiErrorCodeExamples({})
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.CATEGORY_NOT_FOUND, ErrorCode.CATEGORY_STORE_NOT_MATCH})
     @Operation(summary = "카테고리 삭제", description = "category_id로 카테고리를 삭제합니다")
     public ResponseEntity<CommonResponse<Void>> deleteCategory(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
