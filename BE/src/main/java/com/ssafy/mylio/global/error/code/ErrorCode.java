@@ -15,7 +15,7 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C003", "서버 내부 오류가 발생했습니다"),
     UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "C004", "로그인이 필요한 서비스입니다"),
     FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN, "C005", "접근 권한이 없습니다"),
-
+    FORBIDDEN_AUTH(HttpStatus.FORBIDDEN,"C006","인증되지 않은 사용자입니다."),
     // Auth
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "A001", "리프레시 토큰이 존재하지 않습니다"),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "A002", "유효하지 않은 리프레시 토큰입니다"),
