@@ -52,7 +52,7 @@ public class AccountController {
     }
 
     @PatchMapping("/pw")
-    @Operation(summary = "매장 관리자 비밀번호 찾기")
+    @Operation(summary = "매장 관리자 비밀번호 재발급")
     @ApiErrorCodeExamples({ErrorCode.FORBIDDEN_AUTH,ErrorCode.ACOUNT_NOT_FOUND})
     public ResponseEntity<CommonResponse<String>> findPassword(
             @Valid @RequestBody PasswordRequestDto request
