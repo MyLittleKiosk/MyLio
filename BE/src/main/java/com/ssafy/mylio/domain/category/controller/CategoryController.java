@@ -64,4 +64,15 @@ public class CategoryController {
         categoryService.updateCategory(storeId, categoryId, categoryUpdateRequestDto);
         return CommonResponse.ok();
     }
+
+    @DeleteMapping("/{category_id}")
+    @ApiErrorCodeExamples({})
+    @Operation(summary = "카테고리 삭제", description = "category_id로 카테고리를 삭제합니다")
+    public ResponseEntity<CommonResponse<Void>> deleteCategory(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable("category_id") Integer categoryId) {
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+        categoryService.deleteCategory(storeId, categoryId);
+        return CommonResponse.ok();
+    }
 }

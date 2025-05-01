@@ -65,6 +65,11 @@ public class CategoryService {
         category.update(categoryUpdateDto.getNameKr(), categoryUpdateDto.getNameEn(), categoryUpdateDto.getStatus());
     }
 
+    @Transactional
+    public void deleteCategory(Integer storeId, Integer categoryId) {
+
+    }
+
     private Store getStoreId(Integer storeId){
         return storeRepository.findById(storeId)
                 .orElseThrow(()-> new CustomException(ErrorCode.STORE_NOT_FOUND, "storeId", storeId));
