@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 public class NutritionValuePostRequestDto {
 
     @Schema(example = "1")
-    private Integer nutritionId;
+    private Integer nutritionTemplateId;
     @Schema(example = "12")
     private BigDecimal nutritionValue;
 
