@@ -3,6 +3,7 @@ package com.ssafy.mylio.domain.account.service;
 import com.ssafy.mylio.domain.account.dto.request.AccountCreateRequest;
 import com.ssafy.mylio.domain.account.dto.request.AccountModifyRequestDto;
 import com.ssafy.mylio.domain.account.dto.request.PasswordRequestDto;
+import com.ssafy.mylio.domain.account.dto.request.ModifyPasswordRequest;
 import com.ssafy.mylio.domain.account.dto.response.AccountDetailResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountListResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountModifyResponse;
@@ -164,7 +165,7 @@ public class AccountService {
             sb.append(chars.charAt(randomIndex));
         }
         return sb.toString();
-    
+
     }
 
     public CustomPage<AccountListResponseDto> getAccountList(String userType, String keyword, Pageable pageable){
@@ -194,5 +195,23 @@ public class AccountService {
                         .addParameter("storeId", storeId));
 
         return AccountDetailResponseDto.of(account,store);
+    }
+
+    @Transactional
+    public void modifyPW(Integer userId, String userType, ModifyPasswordRequest request){
+
+        //계정 조회
+        Account account = accountRepository.findById(userId)
+                .orElseThrow(()-> new CustomException(ErrorCode.ACOUNT_NOT_FOUND,"userId",userId));
+
+        //현재 비밀번호가 맞는지 조회
+        if(!passwordEncoder.matches(request.getNowPw(), account.getPassword())){
+            throw new CustomException(ErrorCode.FORBIDDEN_AUTH);
+        }
+
+        //새로운 비밀번호 암호화 후 저장
+        String encodedPW = passwordEncoder.encode(request.getNewPw());
+
+        account.update(encodedPW);
     }
 }
