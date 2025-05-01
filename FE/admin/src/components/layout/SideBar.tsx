@@ -16,6 +16,7 @@ const SideBar = () => {
   const AUTHORITY = '일반관리자';
 
   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
+  const [currentPath, setCurrentPath] = useState('');
 
   // 사이드바 너비 조정 애니메이션 완료 여부
   const [isWidthAnimationComplete, setIsWidthAnimationComplete] =
@@ -73,8 +74,14 @@ const SideBar = () => {
         {!ISSUPERADMIN && (
           <ul className='pt-2 flex flex-col gap-1 text-xs font-preMedium'>
             {ADMIN_NAVLIST.map((item) => (
-              <Link key={item.title} to={item.link}>
-                <li className='flex items-center hover:bg-gray-100 rounded-md px-2 py-1'>
+              <Link
+                key={item.title}
+                to={item.link}
+                onClick={() => setCurrentPath(item.link)}
+              >
+                <li
+                  className={`flex items-center hover:bg-subContent rounded-md px-2 py-1 ${currentPath === item.link && 'bg-subContent'}`}
+                >
                   <div className='w-5 h-5 flex items-center justify-center'>
                     <item.icons width={20} height={20} />
                   </div>
@@ -97,8 +104,14 @@ const SideBar = () => {
         {ISSUPERADMIN && (
           <ul className='pt-2 flex flex-col gap-1 text-xs font-preMedium'>
             {SUPERADMIN_NAVLIST.map((item) => (
-              <Link key={item.title} to={item.link}>
-                <li className='flex items-center hover:bg-gray-100 rounded-md px-2 py-1'>
+              <Link
+                key={item.title}
+                to={item.link}
+                onClick={() => setCurrentPath(item.link)}
+              >
+                <li
+                  className={`flex items-center hover:bg-subContent rounded-md px-2 py-1 ${currentPath === item.link && 'bg-subContent'}`}
+                >
                   <div className='w-5 h-5'>
                     <item.icons width={20} height={20} />
                   </div>
