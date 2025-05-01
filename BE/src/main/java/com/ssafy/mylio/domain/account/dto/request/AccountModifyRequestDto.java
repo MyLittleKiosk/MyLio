@@ -8,25 +8,21 @@ import lombok.Getter;
 
 @Getter
 public class AccountModifyRequestDto {
-    @Schema(example="1", description = "매장 관리자 ID (account.id)")
-    @NotNull(message = "storeId는 필수 입력값입니다.")
-    private Integer userId;
-
-    @Schema(example = "1", description = "매장 ID (store.id)")
-    @NotNull(message = "storeId는 필수 입력값입니다.")
-    private Integer storeId;
 
     @Schema(example = "마리오")
     @NotBlank(message = "user_name은 필수입니다.")
     private String userName;
 
-    @Schema(example="qwer1234")
-    @NotBlank(message = "비밀번호는 필수 입니다.")
-    @Size(min = 8, max = 16)
-    private String password;
+    @Schema(example="qwer@ssafy.io")
+    @NotBlank(message = "이메일은 필수 입니다.")
+    private String email;
 
-    @Schema(example="REGISTERED")
-    @NotBlank(message = "상태값은 필수입니다.")
-    private String status;
+    @Schema(example = "싸피 다방")
+    @NotBlank(message = "매장 이름은 필수입니다.")
+    private String storeName;
+
+    @Schema(example = "경기도 다낭")
+    @NotBlank(message = "매장 주소는 필수입니다.")
+    private String address;
 
 }
