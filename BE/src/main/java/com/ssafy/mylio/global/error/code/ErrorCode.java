@@ -15,7 +15,7 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C003", "서버 내부 오류가 발생했습니다"),
     UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "C004", "로그인이 필요한 서비스입니다"),
     FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN, "C005", "접근 권한이 없습니다"),
-
+    FORBIDDEN_AUTH(HttpStatus.FORBIDDEN,"C006","인증되지 않은 사용자입니다."),
     // Auth
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "A001", "리프레시 토큰이 존재하지 않습니다"),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "A002", "유효하지 않은 리프레시 토큰입니다"),
@@ -41,7 +41,12 @@ public enum ErrorCode {
     INVALID_OPTION_STATUS(HttpStatus.BAD_REQUEST,"O004","존재하지 않는 옵션 STATUS 입니다"),
 
     //Account
-    ACOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "U001","존재하지 않는 계정 정보입니다.");
+    ACOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "U001","존재하지 않는 계정 정보입니다."),
+
+    // Category
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CG001", "존재하지 않는 카테고리입니다"),
+    CATEGORY_STORE_NOT_MATCH(HttpStatus.BAD_REQUEST,"CG002","매장에 없는 카테고리입니다"),
+    INVALID_CATEGORY_STATUS(HttpStatus.BAD_REQUEST,"CG003","존재하지 않는 카테고리 STATUS 입니다");
 
     private final HttpStatus status;
     private final String code;

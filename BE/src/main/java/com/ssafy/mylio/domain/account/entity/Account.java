@@ -41,6 +41,10 @@ public class Account extends BaseEntity {
         this.email = email;
     }
 
+    public void update(String password){
+        this.password = password;
+    }
+
     public void delete() {
         this.status = BasicStatus.DELETED;
     }
