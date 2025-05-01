@@ -2,9 +2,11 @@ package com.ssafy.mylio.domain.account.controller;
 
 import com.ssafy.mylio.domain.account.dto.request.AccountCreateRequest;
 import com.ssafy.mylio.domain.account.dto.request.AccountModifyRequestDto;
+import com.ssafy.mylio.domain.account.dto.response.AccountListResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountModifyResponse;
 import com.ssafy.mylio.domain.account.service.AccountService;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
+import com.ssafy.mylio.global.common.CustomPage;
 import com.ssafy.mylio.global.common.response.CommonResponse;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.security.auth.UserPrincipal;
@@ -13,6 +15,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +52,18 @@ public class AccountController {
         Integer userId = authenticationUtil.getCurrentUserId(userPrincipal);
         String userType = authenticationUtil.getCurrntUserType(userPrincipal);
         return CommonResponse.ok(accountService.modifyAccount(userId,userType,request));
+    }
+
+    @GetMapping
+    @Operation(summary ="계정 전체 및 검색 조회", description = "사용자 이름, 이메일, 매장 이름으로 검색합니다.")
+    @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE})
+    public ResponseEntity<CommonResponse<CustomPage<AccountListResponseDto>>> getAccessList(
+            @RequestParam(required = false) String keyword,
+            @PageableDefault(size = 10, page = 0,sort = "username", direction  = Sort.Direction.ASC) Pageable pageable,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+        String userType = authenticationUtil.getCurrntUserType(userPrincipal);
+        return CommonResponse.ok(accountService.getAccountList(userType, keyword, pageable));
     }
 
 }
