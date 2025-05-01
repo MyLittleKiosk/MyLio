@@ -29,7 +29,8 @@ public enum ErrorCode {
     //Kiosk
     KIOSK_SESSION_NOT_FOUND(HttpStatus.NOT_FOUND,"K001","존재하지 않는 키오스크 입니다."),
     KIOSK_IN_USE(HttpStatus.CONFLICT,"K002","이미 사용중인 키오스크입니다."),
-    ALREADY_EXIST_KIOSK(HttpStatus.CONFLICT,"K002","이미 등록된 키오스크 이름입니다."),
+    ALREADY_EXIST_KIOSK(HttpStatus.CONFLICT,"K003","이미 등록된 키오스크 이름입니다."),
+    KIOSK_NOT_FOUND(HttpStatus.NOT_FOUND,"K004","존재하지 않는 키오스크입니다."),
 
     // Store
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND,"S001","존재하지 않는 매장입니다"),
