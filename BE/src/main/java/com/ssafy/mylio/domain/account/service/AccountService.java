@@ -2,6 +2,7 @@ package com.ssafy.mylio.domain.account.service;
 
 import com.ssafy.mylio.domain.account.dto.request.AccountCreateRequest;
 import com.ssafy.mylio.domain.account.dto.request.AccountModifyRequestDto;
+import com.ssafy.mylio.domain.account.dto.response.AccountDetailResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountListResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountModifyResponse;
 import com.ssafy.mylio.domain.account.entity.Account;
@@ -109,5 +110,23 @@ public class AccountService {
         Page<Account> accounts = accountRepository.searchAccounts(keyword, pageable);
         Page<AccountListResponseDto> dtoPage = accounts.map(AccountListResponseDto::of);
         return new CustomPage<>(dtoPage);
+    }
+
+    public AccountDetailResponseDto getAccountDetail(Integer userId, Integer storeId, String userType){
+        //역할이 STORE가 아닌 경우 불가
+        if (!userType.equals(AccountRole.STORE.getCode())) {
+            throw new CustomException(ErrorCode.INVALID_ROLE)
+                    .addParameter("userType",userType);
+        }
+
+        Account account = accountRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ACOUNT_NOT_FOUND)
+                        .addParameter("userId",userId));
+
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND)
+                        .addParameter("storeId", storeId));
+
+        return AccountDetailResponseDto.of(account,store);
     }
 }

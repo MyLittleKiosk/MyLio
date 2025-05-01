@@ -2,6 +2,7 @@ package com.ssafy.mylio.domain.account.controller;
 
 import com.ssafy.mylio.domain.account.dto.request.AccountCreateRequest;
 import com.ssafy.mylio.domain.account.dto.request.AccountModifyRequestDto;
+import com.ssafy.mylio.domain.account.dto.response.AccountDetailResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountListResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountModifyResponse;
 import com.ssafy.mylio.domain.account.service.AccountService;
@@ -64,6 +65,19 @@ public class AccountController {
 
         String userType = authenticationUtil.getCurrntUserType(userPrincipal);
         return CommonResponse.ok(accountService.getAccountList(userType, keyword, pageable));
+    }
+
+    @GetMapping("/detail")
+    @Operation(summary = "계정 상세 조회" , description = "매장 관리자가 본인의 계정정보를 확인합니다.")
+    @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE,ErrorCode.INVALID_ROLE,ErrorCode.STORE_NOT_FOUND})
+    public ResponseEntity<CommonResponse<AccountDetailResponseDto>> getAccountDetail(
+            @AuthenticationPrincipal UserPrincipal userPrincipal){
+
+        Integer userId = authenticationUtil.getCurrentUserId(userPrincipal);
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+        String userType = authenticationUtil.getCurrntUserType(userPrincipal);
+
+        return CommonResponse.ok(accountService.getAccountDetail(userId,storeId,userType));
     }
 
 }
