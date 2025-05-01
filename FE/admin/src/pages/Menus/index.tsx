@@ -10,6 +10,7 @@ import CATEGORY_LIST from '@/datas/categoryList';
 import STORE_LIST from '@/datas/storeList';
 
 import IconAdd from '@/assets/icons/IconAdd';
+
 import { Category } from '@/types/categories';
 import { Store } from '@/types/stores';
 
@@ -91,11 +92,12 @@ const Menus = () => {
           className='w-[11%] items-center justify-center'
         />
       </div>
-      <article className='w-full flex flex-col gap-2 border border-subContent rounded-md p-4'>
-        <h2 className='text-xl font-preBold'>메뉴 목록</h2>
-        <p className='text-sm font-preRegular'>총 6개의 메뉴가 있습니다.</p>
-        <Table columns={MENU_COLUMNS} data={MENU_LIST.data.content} />
-      </article>
+      <Table
+        title='메뉴 목록'
+        description='총 6개의 메뉴가 있습니다.'
+        columns={MENU_COLUMNS}
+        data={MENU_LIST.data.content}
+      />
     </section>
   );
 };

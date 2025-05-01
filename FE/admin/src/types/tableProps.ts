@@ -7,6 +7,8 @@ interface Column<T> {
 }
 
 interface TableProps<T> {
+  title: string;
+  description: string;
   columns: Column<T>[];
   data: T[];
   className?: string;
