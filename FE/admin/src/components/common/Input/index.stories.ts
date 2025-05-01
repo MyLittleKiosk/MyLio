@@ -7,10 +7,10 @@ const meta: Meta<typeof Input> = {
   tags: ['autodocs'],
   argTypes: {
     label: { control: 'text' },
-    id: { control: 'text', table: { disable: true } },
+    inputId: { control: 'text', table: { disable: true } },
     placeholder: { control: 'text' },
-    type: { control: 'text' },
-    value: { control: 'text' },
+    inputType: { control: 'text' },
+    inputValue: { control: 'text' },
     error: { control: 'boolean' },
     disabled: { control: 'boolean' },
     onChange: { action: 'changed', table: { disable: true } },
@@ -25,9 +25,9 @@ type Story = StoryObj<typeof Input>;
 export const Default: Story = {
   args: {
     label: 'Label',
-    id: 'withlabelinput',
+    inputId: 'withlabelinput',
     placeholder: 'placeholder',
-    type: 'text',
-    value: '',
+    inputType: 'text',
+    inputValue: '',
   },
 };
