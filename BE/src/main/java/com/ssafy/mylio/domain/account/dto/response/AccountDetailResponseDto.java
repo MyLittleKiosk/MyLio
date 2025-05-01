@@ -21,12 +21,16 @@ public class AccountDetailResponseDto {
     @Schema(example = "싸피다방", description = "매장 이름입니다.")
     private String storeName;
 
+    @Schema(example = "경기도 다낭시", description = "매장 주소입니다.")
+    private String address;
+
     public static AccountDetailResponseDto of(Account account, Store store){
         return AccountDetailResponseDto.builder()
                 .accountId(account.getId())
                 .userName(account.getUsername())
                 .email(account.getEmail())
                 .storeName(store.getName())
+                .address(store.getAddress())
                 .build();
     }
 
