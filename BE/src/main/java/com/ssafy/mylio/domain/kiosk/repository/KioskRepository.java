@@ -9,5 +9,7 @@ import java.util.Optional;
 @Repository
 public interface KioskRepository extends JpaRepository<KioskSession,Integer> {
     Optional<KioskSession> findByStoreIdAndId(Integer storeId, Integer id);
+
+    Optional<KioskSession> findByStoreIdAndName(Integer storeId, String name);
 }
 

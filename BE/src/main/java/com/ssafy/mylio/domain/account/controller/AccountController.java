@@ -51,11 +51,11 @@ public class AccountController {
     public ResponseEntity<CommonResponse<AccountModifyResponse>> modifyAccount(
             @Valid @RequestBody AccountModifyRequestDto request,
             @AuthenticationPrincipal UserPrincipal userPrincipal
-    ) {
+    ){
         Integer userId = authenticationUtil.getCurrentUserId(userPrincipal);
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         String userType = authenticationUtil.getCurrntUserType(userPrincipal);
-        return CommonResponse.ok(accountService.modifyAccount(userId, userType, request));
+        return CommonResponse.ok(accountService.modifyAccount(userId,storeId,userType,request));
     }
 
     @DeleteMapping("{account_id}")
@@ -75,7 +75,7 @@ public class AccountController {
     @ApiErrorCodeExamples({ErrorCode.FORBIDDEN_AUTH,ErrorCode.ACOUNT_NOT_FOUND})
     public ResponseEntity<CommonResponse<String>> findPassword(
             @Valid @RequestBody PasswordRequestDto request
-            ){
+    ){
         return CommonResponse.ok(accountService.findPassword(request));
     }
 
