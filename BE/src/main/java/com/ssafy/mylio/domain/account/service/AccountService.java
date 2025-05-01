@@ -95,10 +95,26 @@ public class AccountService {
         return store;
     }
 
-    public void deleteAccount(Integer userId, String userType){
-        //userType 검증
+    @Transactional
+    public void deleteAccount(Integer accountId, String userType){
+        //Super 권한만 가능
+        if(!userType.equals(AccountRole.SUPER.getCode())){
+            throw new CustomException(ErrorCode.INVALID_ROLE)
+                    .addParameter("userType",userType);
+        }
         //usrID로 매장 계정 정보 가져오기
+        Account account = accountRepository.findWithStoreById(accountId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ACOUNT_NOT_FOUND));
         //매장 삭제하기
+        Store store = storeRepository.findById(account.getStore().getId())
+                .orElseThrow(()-> new CustomException(ErrorCode.STORE_NOT_FOUND));
+
+        if(store.getStatus() == BasicStatus.DELETED){
+            throw new CustomException(ErrorCode.STORE_DELETED,"storeId",store.getId());
+        }
+
+        store.delete();
         //계정 삭제하기
+        account.delete();
     }
 }

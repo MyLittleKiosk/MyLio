@@ -32,6 +32,7 @@ public enum ErrorCode {
 
     // Store
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND,"S001","존재하지 않는 매장입니다"),
+    STORE_DELETED(HttpStatus.NOT_FOUND,"D001","이미 삭제된 계정입니다."),
 
     // Option
     OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "O001", "존재하지 않는 옵션입니다"),
