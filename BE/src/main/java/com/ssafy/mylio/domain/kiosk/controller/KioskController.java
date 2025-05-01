@@ -51,4 +51,18 @@ public class KioskController {
 
         return CommonResponse.ok();
     }
+
+    @PatchMapping("/{kiosk_id}")
+    @Operation(summary = "키오스크 수정", description = "매장 관리자가 키오스크를 수정합니다.")
+    @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE,ErrorCode.STORE_NOT_FOUND,ErrorCode.KIOSK_NOT_FOUND})
+    public ResponseEntity<CommonResponse<KioskCreateResponseDto>> modifyKiosk(
+            @PathVariable("kiosk_id") Integer kioskId,
+            @Valid @RequestBody KioskCreateRequestDto request,
+            @AuthenticationPrincipal UserPrincipal userPrincipal){
+        Integer userId = authenticationUtil.getCurrentUserId(userPrincipal);
+        String userType = authenticationUtil.getCurrntUserType(userPrincipal);
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+
+        return CommonResponse.ok(kioskService.modifyKiosk(kioskId,userId,userType,storeId,request));
+    }
 }
