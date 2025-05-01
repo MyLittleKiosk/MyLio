@@ -45,7 +45,13 @@ public enum ErrorCode {
     // Category
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CG001", "존재하지 않는 카테고리입니다"),
     CATEGORY_STORE_NOT_MATCH(HttpStatus.BAD_REQUEST,"CG002","매장에 없는 카테고리입니다"),
-    INVALID_CATEGORY_STATUS(HttpStatus.BAD_REQUEST,"CG003","존재하지 않는 카테고리 STATUS 입니다");
+    INVALID_CATEGORY_STATUS(HttpStatus.BAD_REQUEST,"CG003","존재하지 않는 카테고리 STATUS 입니다"),
+
+    // Nutrition
+    NUTRITION_TEMPLATE_NOT_FOUND(HttpStatus.NOT_FOUND, "N001", "존재하지 않는 영양정보 템플릿입니다"),
+
+    // Ingredient
+    INGREDIENT_TEMPLATE_NOT_FOUND(HttpStatus.NOT_FOUND, "I001", "존재하지 않는 원재료 템플릿입니다");
 
     private final HttpStatus status;
     private final String code;
