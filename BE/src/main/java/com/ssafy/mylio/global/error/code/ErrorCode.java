@@ -40,7 +40,12 @@ public enum ErrorCode {
     INVALID_OPTION_STATUS(HttpStatus.BAD_REQUEST,"O004","존재하지 않는 옵션 STATUS 입니다"),
 
     //Account
-    ACOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "U001","존재하지 않는 계정 정보입니다.");
+    ACOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "U001","존재하지 않는 계정 정보입니다."),
+
+    // Category
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CG001", "존재하지 않는 카테고리입니다"),
+    CATEGORY_STORE_NOT_MATCH(HttpStatus.BAD_REQUEST,"CG002","매장에 없는 카테고리입니다"),
+    INVALID_CATEGORY_STATUS(HttpStatus.BAD_REQUEST,"CG003","존재하지 않는 카테고리 STATUS 입니다");
 
     private final HttpStatus status;
     private final String code;

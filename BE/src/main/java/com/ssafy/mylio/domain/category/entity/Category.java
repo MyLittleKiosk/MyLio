@@ -2,6 +2,8 @@ package com.ssafy.mylio.domain.category.entity;
 
 import com.ssafy.mylio.domain.store.entity.Store;
 import com.ssafy.mylio.global.common.entity.BaseEntity;
+import com.ssafy.mylio.global.error.code.ErrorCode;
+import com.ssafy.mylio.global.error.exception.CustomException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -31,12 +33,21 @@ public class Category extends BaseEntity {
     private CategoryStatus status = CategoryStatus.REGISTERED;
 
     public enum CategoryStatus {
-        REGISTERED, HIDDEN, DELETED
+        REGISTERED, HIDDEN, DELETED;
+
+        public static CategoryStatus from (String value){
+            try {
+                return CategoryStatus.valueOf(value.toUpperCase().trim());
+            } catch (Exception e) {
+                throw new CustomException(ErrorCode.INVALID_CATEGORY_STATUS, "status", value);
+            }
+        }
     }
 
-    public void update(String nameKr, String nameEn) {
+    public void update(String nameKr, String nameEn, String status) {
         this.nameKr = nameKr;
         this.nameEn = nameEn;
+        this.status = CategoryStatus.from(status);
     }
 
     public void hide() {
