@@ -11,11 +11,13 @@ import com.ssafy.mylio.global.common.CustomPage;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -45,7 +47,22 @@ public class CategoryService {
 
     @Transactional
     public void updateCategory(Integer storeId, Integer categoryId, CategoryUpdateRequestDto categoryUpdateDto) {
+        // store 조회
+        Store store = getStoreId(storeId);
 
+        // 카테고리 Id 조회
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(()-> new CustomException(ErrorCode.CATEGORY_NOT_FOUND, "categoryId", categoryId));
+
+        // 매장에 있는 카테고리인지 조회
+        if(!category.getStore().getId().equals(storeId)) {
+            log.warn("매장에 없는 카테고리입니다, categoryId : {}, storeId : {}", categoryId, storeId);
+            throw new CustomException(ErrorCode.CATEGORY_STORE_NOT_MATCH, "categoryId", categoryId)
+                    .addParameter("storeId", storeId);
+        }
+        
+        // 카테고리 업데이트
+        category.update(categoryUpdateDto.getNameKr(), categoryUpdateDto.getNameEn(), categoryUpdateDto.getStatus());
     }
 
     private Store getStoreId(Integer storeId){

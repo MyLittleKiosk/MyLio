@@ -54,7 +54,7 @@ public class CategoryController {
     }
 
     @PatchMapping("/{category_id}")
-    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND})
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.CATEGORY_NOT_FOUND, ErrorCode.CATEGORY_STORE_NOT_MATCH, ErrorCode.INVALID_CATEGORY_STATUS})
     @Operation(summary = "카테고리 수정", description = "category_id로 카테고리를 수정합니다")
     public ResponseEntity<CommonResponse<Void>> updateCategory(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
