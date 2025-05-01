@@ -28,7 +28,7 @@ public class CategoryService {
 
     public CustomPage<CategoryResponseDto> getCategoryList(Integer storeId, Pageable pageable){
         // store 검증
-        Store store = getStoreId(storeId);
+        Store store = getStore(storeId);
 
         // 카테고리 조회
         Page<Category> categoryList = categoryRepository.findAllByStoreId(storeId, pageable);
@@ -38,7 +38,7 @@ public class CategoryService {
     @Transactional
     public void addCategory(Integer storeId, CategoryAddRequestDto categoryAddRequestDto){
         // store 검증
-        Store store = getStoreId(storeId);
+        Store store = getStore(storeId);
 
         // Entity로 변환
         Category category = categoryAddRequestDto.toEntity(store);
@@ -58,13 +58,13 @@ public class CategoryService {
         category.delete(); // 카테고리 삭제
     }
 
-    private Store getStoreId(Integer storeId){
+    private Store getStore(Integer storeId){
         return storeRepository.findById(storeId)
                 .orElseThrow(()-> new CustomException(ErrorCode.STORE_NOT_FOUND, "storeId", storeId));
     }
 
     private Category getValidCategory(Integer storeId, Integer categoryId) {
-        getStoreId(storeId);
+        getStore(storeId);
 
         // 카테고리 Id 조회
         Category category = categoryRepository.findById(categoryId)
