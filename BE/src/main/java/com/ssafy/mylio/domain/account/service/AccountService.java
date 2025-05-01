@@ -2,20 +2,25 @@ package com.ssafy.mylio.domain.account.service;
 
 import com.ssafy.mylio.domain.account.dto.request.AccountCreateRequest;
 import com.ssafy.mylio.domain.account.dto.request.AccountModifyRequestDto;
+import com.ssafy.mylio.domain.account.dto.response.AccountDetailResponseDto;
+import com.ssafy.mylio.domain.account.dto.response.AccountListResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountModifyResponse;
 import com.ssafy.mylio.domain.account.entity.Account;
 import com.ssafy.mylio.domain.account.entity.AccountRole;
 import com.ssafy.mylio.domain.account.repository.AccountRepository;
 import com.ssafy.mylio.domain.store.repository.StoreRepository;
 import com.ssafy.mylio.domain.store.entity.Store;
+import com.ssafy.mylio.global.common.CustomPage;
 import com.ssafy.mylio.global.common.status.BasicStatus;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Pageable;
 
 
 @Slf4j
@@ -93,5 +98,35 @@ public class AccountService {
             throw new CustomException(ErrorCode.STORE_NOT_FOUND,"",request.getStoreName());
         }
         return store;
+    }
+
+
+    public CustomPage<AccountListResponseDto> getAccountList(String userType, String keyword, Pageable pageable){
+        //역할이 SUPER가 아닌 경우 불가
+        if (!userType.equals(AccountRole.SUPER.getCode())) {
+            throw new CustomException(ErrorCode.INVALID_ROLE)
+                    .addParameter("userType",userType);
+        }
+        Page<Account> accounts = accountRepository.searchAccounts(keyword, pageable);
+        Page<AccountListResponseDto> dtoPage = accounts.map(AccountListResponseDto::of);
+        return new CustomPage<>(dtoPage);
+    }
+
+    public AccountDetailResponseDto getAccountDetail(Integer userId, Integer storeId, String userType){
+        //역할이 STORE가 아닌 경우 불가
+        if (!userType.equals(AccountRole.STORE.getCode())) {
+            throw new CustomException(ErrorCode.INVALID_ROLE)
+                    .addParameter("userType",userType);
+        }
+
+        Account account = accountRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ACOUNT_NOT_FOUND)
+                        .addParameter("userId",userId));
+
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND)
+                        .addParameter("storeId", storeId));
+
+        return AccountDetailResponseDto.of(account,store);
     }
 }
