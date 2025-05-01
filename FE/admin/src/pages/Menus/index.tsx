@@ -3,33 +3,39 @@ import React, { useState } from 'react';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
+import Table from '@/components/common/Table';
 
-import MENU_LIST from '@/datas/menuList';
+import { MENU_COLUMNS, MENU_LIST } from '@/datas/menuList.tsx';
 import CATEGORY_LIST from '@/datas/categoryList';
 import STORE_LIST from '@/datas/storeList';
 
-import IconEdit from '@/assets/icons/IconEdit';
 import IconAdd from '@/assets/icons/IconAdd';
-import IconTrashCan from '@/assets/icons/IconTrashCan';
-
-const TABLE_HEAD_CLASSNAME =
-  'px-4 py-3 text-left text-sm font-preLight text-content';
+import { Category } from '@/types/categories';
+import { Store } from '@/types/stores';
 
 const Menus = () => {
   const [searchValue, setSearchValue] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedStore, setSelectedStore] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
+  const [selectedStore, setSelectedStore] = useState<Store | null>(null);
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
     setSearchValue(e.target.value);
   }
 
   function handleCategoryChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    setSelectedCategory(e.target.value);
+    const selected = CATEGORY_LIST.data.content.find(
+      (category) => category.name_kr === e.target.value
+    );
+    setSelectedCategory(selected || null);
   }
 
   function handleStoreChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    setSelectedStore(e.target.value);
+    const selected = STORE_LIST.data.stores.find(
+      (store) => store.store_name === e.target.value
+    );
+    setSelectedStore(selected || null);
   }
 
   return (
@@ -60,21 +66,23 @@ const Menus = () => {
           onChange={handleSearchChange}
           className='w-[65%]'
         />
-        <Select<(typeof CATEGORY_LIST.data.content)[0]>
+        <Select<Category>
           options={CATEGORY_LIST.data.content}
           selected={selectedCategory}
           onChange={handleCategoryChange}
           placeholder='모든 카테고리'
           className='w-[11%]'
           getOptionLabel={(option) => option.name_kr}
+          getOptionValue={(option) => option.name_kr}
         />
-        <Select<(typeof STORE_LIST.data.stores)[0]>
+        <Select<Store>
           options={STORE_LIST.data.stores}
           selected={selectedStore}
           onChange={handleStoreChange}
           placeholder='모든 점포'
           className='w-[11%]'
           getOptionLabel={(option) => option.store_name}
+          getOptionValue={(option) => option.store_name}
         />
         <Button
           buttonType='button'
@@ -86,64 +94,7 @@ const Menus = () => {
       <article className='w-full flex flex-col gap-2 border border-subContent rounded-md p-4'>
         <h2 className='text-xl font-preBold'>메뉴 목록</h2>
         <p className='text-sm font-preRegular'>총 6개의 메뉴가 있습니다.</p>
-        <div className='overflow-x-auto'>
-          <table className='w-full border-collapse'>
-            <thead className='border-b border-subContent'>
-              <tr>
-                <th className={TABLE_HEAD_CLASSNAME}>이미지</th>
-                <th className={TABLE_HEAD_CLASSNAME}>메뉴명</th>
-                <th className={TABLE_HEAD_CLASSNAME}>카테고리</th>
-                <th className={TABLE_HEAD_CLASSNAME}>가격</th>
-                <th className={TABLE_HEAD_CLASSNAME}>점포</th>
-                <th className={TABLE_HEAD_CLASSNAME}>태그</th>
-                <th className={TABLE_HEAD_CLASSNAME}>설명</th>
-                <th className={TABLE_HEAD_CLASSNAME}>편집</th>
-                <th className={TABLE_HEAD_CLASSNAME}>삭제</th>
-              </tr>
-            </thead>
-            <tbody className='divide-y divide-gray-200'>
-              {MENU_LIST.data.content.map((menu) => (
-                <tr key={menu.menu_id} className='hover:bg-gray-50'>
-                  <td className='px-4 py-3'>
-                    <img
-                      src={menu.image_url}
-                      alt='메뉴 이미지'
-                      className='w-10 h-10 rounded-md object-cover'
-                    />
-                  </td>
-                  <td className='px-4 py-3 text-sm font-preRegular'>
-                    {menu.name_kr}
-                  </td>
-                  <td className='px-4 py-3 text-sm font-preRegular'>
-                    {menu.category}
-                  </td>
-                  <td className='px-4 py-3 text-sm font-preRegular'>
-                    ₩{menu.price.toLocaleString()}
-                  </td>
-                  <td className='px-4 py-3 text-sm font-preRegular'>
-                    {menu.store_name}
-                  </td>
-                  <td className='px-4 py-3 text-sm font-preRegular'>
-                    {menu.tags}
-                  </td>
-                  <td className='px-4 py-3 text-sm font-preRegular max-w-xs truncate'>
-                    {menu.description}
-                  </td>
-                  <td className='px-4 py-3'>
-                    <button className='p-1 hover:bg-gray-100 rounded-md'>
-                      <IconEdit />
-                    </button>
-                  </td>
-                  <td className='px-4 py-3'>
-                    <button className='p-1 hover:bg-gray-100 rounded-md'>
-                      <IconTrashCan fillColor='#D44848' />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Table columns={MENU_COLUMNS} data={MENU_LIST.data.content} />
       </article>
     </section>
   );

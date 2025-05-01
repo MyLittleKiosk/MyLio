@@ -3,22 +3,17 @@ import React from 'react';
 interface SelectProps<T> {
   label?: string;
   options: T[];
-  selected: string;
+  selected: T | null;
   placeholder: string;
   className?: string;
   error?: boolean;
   disabled?: boolean;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   getOptionLabel: (option: T) => string;
-  getOptionValue?: (option: T) => string | number;
+  getOptionValue: (option: T) => string;
 }
 
-// 최소한의 옵션 타입 제약 설정
-interface BaseOption {
-  [key: string]: string | number | boolean | undefined;
-}
-
-const Select = <T extends BaseOption>({
+const Select = <T,>({
   options,
   label,
   selected,
@@ -28,7 +23,7 @@ const Select = <T extends BaseOption>({
   disabled = false,
   onChange,
   getOptionLabel,
-  getOptionValue = (option: T) => getOptionLabel(option),
+  getOptionValue,
 }: SelectProps<T>) => {
   return (
     <div className={`${className} flex items-center`}>
@@ -40,7 +35,7 @@ const Select = <T extends BaseOption>({
           <select
             className={`w-full ${error ? 'border-2 border-error' : 'border border-subContent'} rounded-md p-2 font-preRegular`}
             onChange={onChange}
-            value={selected}
+            value={selected ? getOptionValue(selected) : ''}
             disabled={disabled}
           >
             <option value='' className='font-preRegular'>
@@ -57,7 +52,7 @@ const Select = <T extends BaseOption>({
         <select
           className={`w-full ${error ? 'border-2 border-error' : 'border border-subContent'} rounded-md p-2 font-preRegular`}
           onChange={onChange}
-          value={selected}
+          value={selected ? getOptionValue(selected) : ''}
           disabled={disabled}
         >
           <option value='' className='font-preRegular'>

@@ -1,4 +1,62 @@
-import { MenuList } from '@/types/menus';
+import { Menu, MenuList } from '@/types/menus';
+import { Column } from '@/types/tableProps';
+
+import IconTrashCan from '@/assets/icons/IconTrashCan';
+import IconEdit from '@/assets/icons/IconEdit';
+
+const MENU_COLUMNS: Column<Menu>[] = [
+  {
+    header: '이미지',
+    accessor: (menu) => (
+      <img
+        src={menu.image_url}
+        alt='메뉴 이미지'
+        className='w-10 h-10 rounded-md object-cover'
+      />
+    ),
+  },
+  {
+    header: '메뉴명',
+    accessor: 'name_kr' as keyof Menu,
+  },
+  {
+    header: '카테고리',
+    accessor: 'category' as keyof Menu,
+  },
+  {
+    header: '가격',
+    accessor: 'price' as keyof Menu,
+  },
+  {
+    header: '점포',
+    accessor: 'store_name' as keyof Menu,
+  },
+  {
+    header: '태그',
+    accessor: 'tags' as keyof Menu,
+  },
+  {
+    header: '설명',
+    accessor: 'description' as keyof Menu,
+    className: 'px-4 py-3 text-sm font-preRegular max-w-xs truncate',
+  },
+  {
+    header: '편집',
+    accessor: () => (
+      <button className='p-1 hover:bg-gray-100 rounded-md'>
+        <IconEdit />
+      </button>
+    ),
+  },
+  {
+    header: '삭제',
+    accessor: () => (
+      <button className='p-1 hover:bg-gray-100 rounded-md'>
+        <IconTrashCan fillColor='#D44848' />
+      </button>
+    ),
+  },
+];
 
 const MENU_LIST: MenuList = {
   success: true,
@@ -94,4 +152,4 @@ const MENU_LIST: MenuList = {
   timestamp: '2024-12-04 16:10:22',
 };
 
-export default MENU_LIST;
+export { MENU_COLUMNS, MENU_LIST };
