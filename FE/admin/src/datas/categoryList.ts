@@ -1,4 +1,6 @@
-const CATEGORY_LIST = {
+import { CategoryList } from '@/types/categories';
+
+const CATEGORY_LIST: CategoryList = {
   success: true,
   data: {
     content: [

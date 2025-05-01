@@ -1,4 +1,6 @@
-const STORE_LIST = {
+import { StoreList } from '@/types/stores';
+
+const STORE_LIST: StoreList = {
   success: true,
   data: {
     stores: [
