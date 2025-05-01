@@ -64,6 +64,7 @@ export function useAudioRecord(): {
         streamRef.current.getTracks().forEach((track) => {
           track.stop();
         });
+        streamRef.current = null;
       }
 
       if (mediaRecorderRef.current) {
@@ -74,6 +75,7 @@ export function useAudioRecord(): {
           resolve(audioBlob);
         };
         mediaRecorderRef.current.stop();
+        mediaRecorderRef.current = null;
       }
       setIsRecording(false);
     });
