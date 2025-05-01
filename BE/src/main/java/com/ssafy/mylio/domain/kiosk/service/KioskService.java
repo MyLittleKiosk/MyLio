@@ -136,4 +136,18 @@ public class KioskService {
 
         return new CustomPage<>(dtoPage);
     }
+
+    public KioskResponseDto getKioskDetail(Integer kioskId,String userType, Integer storeId){
+        //역할이 STORE 아닌 경우 불가
+        if (!userType.equals(AccountRole.STORE.getCode())) {
+            throw new CustomException(ErrorCode.INVALID_ROLE)
+                    .addParameter("userType",userType);
+        }
+
+        //그 이름으로 등록된 키오스크가 있는지 조회 없으면 에러
+        KioskSession kiosk = kioskRepository.findByStoreIdAndId(storeId,kioskId)
+                .orElseThrow(()-> new CustomException(ErrorCode.KIOSK_SESSION_NOT_FOUND,"kioskId",kioskId));
+
+        return KioskResponseDto.of(kiosk);
+    }
 }
