@@ -14,13 +14,11 @@ import lombok.Getter;
 public class CategoryAddRequestDto {
 
     @Schema(example = "음료")
-    @NotNull(message = "nameKr 값은 필수입니다")
-    @NotBlank(message = "카테고리를 입력해야합니다")
+    @NotBlank(message = "nameKr 값은 필수입니다")
     private String nameKr;
 
     @Schema(example = "beverage")
-    @NotNull(message = "nameEn 값은 필수입니다")
-    @NotBlank(message = "카테고리를 입력해야합니다")
+    @NotBlank(message = "nameEn 값은 필수입니다")
     private String nameEn;
 
     public Category toEntity(Store store) {
