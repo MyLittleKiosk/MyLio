@@ -70,7 +70,8 @@ public class MenuController {
 
     @PostMapping
     @Operation(summary = "메뉴 등록", description = "새로운 메뉴를 등록합니다")
-    @ApiErrorCodeExamples({})
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.CATEGORY_NOT_FOUND, ErrorCode.NUTRITION_TEMPLATE_NOT_FOUND,
+            ErrorCode.INGREDIENT_TEMPLATE_NOT_FOUND, ErrorCode.OPTION_NOT_FOUND, ErrorCode.OPTION_DETAIL_NOT_FOUND})
     public ResponseEntity<CommonResponse<Void>> addMenu(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody MenuPostRequestDto menuPostRequestDto) {
