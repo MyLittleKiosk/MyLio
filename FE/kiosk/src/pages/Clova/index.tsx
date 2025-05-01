@@ -1,3 +1,4 @@
+import VoiceAnimation from '@/components/Chat/VoiceAnimation';
 import { sendAudioToClova } from '@/service/apis/clova';
 import { ClovaResponse } from '@/types/clova';
 import { AxiosError } from 'axios';
@@ -5,7 +6,8 @@ import { useState } from 'react';
 import { useAudioRecord } from '../../hooks/useAudioRecord';
 
 const ClovaPage = () => {
-  const { isRecording, startRecording, stopRecording } = useAudioRecord();
+  const { isRecording, startRecording, stopRecording, volume } =
+    useAudioRecord();
   const [recognitionResult, setRecognitionResult] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -146,8 +148,17 @@ const ClovaPage = () => {
               }`}
               disabled={isProcessing}
             >
-              {isRecording ? '말하는 중...' : '눌러서 말하기'}
+              {isRecording ? (
+                <div>
+                  <span>말하는 중...</span>
+                </div>
+              ) : (
+                '눌러서 말하기'
+              )}
             </button>
+          </div>
+          <div className='flex justify-center'>
+            <VoiceAnimation isRecording={isRecording} volume={volume} />
           </div>
 
           <div className='mb-4'>
