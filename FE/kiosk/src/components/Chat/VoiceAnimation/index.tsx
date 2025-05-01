@@ -8,7 +8,7 @@ interface Props {
 const BAR_COUNT = 20;
 const MIN_HEIGHT = 0.2; // 최소 높이 비율
 
-function VoiceAnimation({ isRecording, volume }: Props) {
+const VoiceAnimation = ({ isRecording, volume }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null); // 애니메이션 박스의 DOM 요소 참조
   const barRefs = useRef<Array<HTMLDivElement | null>>(
     Array(BAR_COUNT).fill(0)
@@ -60,6 +60,6 @@ function VoiceAnimation({ isRecording, volume }: Props) {
       ))}
     </div>
   );
-}
+};
 
 export default VoiceAnimation;
