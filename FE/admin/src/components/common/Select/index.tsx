@@ -25,6 +25,23 @@ const Select = <T,>({
   getOptionLabel,
   getOptionValue,
 }: SelectProps<T>) => {
+  const selectElement = (
+    <select
+      className={`w-full ${error ? 'border-2 border-error' : 'border border-subContent'} rounded-md p-2 font-preRegular`}
+      onChange={onChange}
+      value={selected ? getOptionValue(selected) : ''}
+      disabled={disabled}
+    >
+      <option value='' className='font-preRegular'>
+        {placeholder}
+      </option>
+      {options.map((option, index) => (
+        <option key={index} value={getOptionValue(option)}>
+          {getOptionLabel(option)}
+        </option>
+      ))}
+    </select>
+  );
   return (
     <div className={`${className} flex items-center`}>
       {label ? (
@@ -32,38 +49,10 @@ const Select = <T,>({
           <span className='text-md font-preSemiBold whitespace-nowrap'>
             {label}
           </span>
-          <select
-            className={`w-full ${error ? 'border-2 border-error' : 'border border-subContent'} rounded-md p-2 font-preRegular`}
-            onChange={onChange}
-            value={selected ? getOptionValue(selected) : ''}
-            disabled={disabled}
-          >
-            <option value='' className='font-preRegular'>
-              {placeholder}
-            </option>
-            {options.map((option, index) => (
-              <option key={index} value={getOptionValue(option)}>
-                {getOptionLabel(option)}
-              </option>
-            ))}
-          </select>
+          {selectElement}
         </label>
       ) : (
-        <select
-          className={`w-full ${error ? 'border-2 border-error' : 'border border-subContent'} rounded-md p-2 font-preRegular`}
-          onChange={onChange}
-          value={selected ? getOptionValue(selected) : ''}
-          disabled={disabled}
-        >
-          <option value='' className='font-preRegular'>
-            {placeholder}
-          </option>
-          {options.map((option, index) => (
-            <option key={index} value={getOptionValue(option)}>
-              {getOptionLabel(option)}
-            </option>
-          ))}
-        </select>
+        selectElement
       )}
     </div>
   );

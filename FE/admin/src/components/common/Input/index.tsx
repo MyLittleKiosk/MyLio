@@ -23,6 +23,20 @@ const Input = ({
   error = false,
   disabled = false,
 }: InputProps) => {
+  const inputElement = (
+    <input
+      id={inputId}
+      placeholder={placeholder}
+      type={inputType}
+      value={inputValue}
+      onChange={onChange}
+      className={`${
+        error ? 'border-2 border-error' : 'border border-subContent'
+      } rounded-md p-2 font-preRegular w-full`}
+      disabled={disabled}
+    />
+  );
+
   return (
     <div className={`${className} flex items-center`}>
       {label ? (
@@ -30,30 +44,10 @@ const Input = ({
           <span className='text-md font-preSemiBold whitespace-nowrap'>
             {label}
           </span>
-          <input
-            id={inputId}
-            placeholder={placeholder}
-            type={inputType}
-            value={inputValue}
-            onChange={onChange}
-            className={`${
-              error ? 'border-2 border-error' : 'border border-subContent'
-            } rounded-md p-2 font-preRegular w-full`}
-            disabled={disabled}
-          />
+          {inputElement}
         </label>
       ) : (
-        <input
-          id={inputId}
-          placeholder={placeholder}
-          type={inputType}
-          value={inputValue}
-          onChange={onChange}
-          className={`${
-            error ? 'border-2 border-error' : 'border border-subContent'
-          } rounded-md p-2 font-preRegular w-full`}
-          disabled={disabled}
-        />
+        inputElement
       )}
     </div>
   );
