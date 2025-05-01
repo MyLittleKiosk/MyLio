@@ -23,6 +23,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import com.ssafy.mylio.domain.account.dto.request.ModifyPasswordRequest;
 
 @RestController
 @RequestMapping("/account")
@@ -91,4 +92,16 @@ public class AccountController {
         return CommonResponse.ok(accountService.getAccountDetail(userId,storeId,userType));
     }
 
+    @PatchMapping("/changepw")
+    @Operation(summary = "비밀번호 수정", description = "매장관리자가 본인의 비밀번호를 수정합니디.")
+    @ApiErrorCodeExamples({ErrorCode.ACOUNT_NOT_FOUND,ErrorCode.FORBIDDEN_AUTH})
+    public ResponseEntity<CommonResponse<Void>> modifyPassword(
+            @Valid @RequestBody ModifyPasswordRequest request,
+            @AuthenticationPrincipal UserPrincipal userPrincipal){
+        Integer userId = authenticationUtil.getCurrentUserId(userPrincipal);
+        String userType = authenticationUtil.getCurrntUserType(userPrincipal);
+
+        accountService.modifyPW(userId,userType,request);
+        return CommonResponse.ok();
+    }
 }
