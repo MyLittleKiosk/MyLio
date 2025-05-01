@@ -6,6 +6,7 @@ import com.ssafy.mylio.global.common.entity.BaseEntity;
 import com.ssafy.mylio.global.common.status.TrackableStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -34,6 +35,7 @@ public class NutritionValue extends BaseEntity {
     @Column(name = "value", nullable = false, precision = 10, scale = 2)
     private BigDecimal value;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private TrackableStatus status = TrackableStatus.REGISTERED;

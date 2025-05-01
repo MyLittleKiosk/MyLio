@@ -1,6 +1,7 @@
 package com.ssafy.mylio.domain.menu.controller;
 
 
+import com.ssafy.mylio.domain.menu.dto.request.MenuPostRequestDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuDetailResponseDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuListResponseDto;
 import com.ssafy.mylio.domain.menu.service.MenuService;
@@ -64,6 +65,18 @@ public class MenuController {
 
         Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
         menuService.deleteMenu(storeId, menuId);
+        return CommonResponse.ok();
+    }
+
+    @PostMapping
+    @Operation(summary = "메뉴 등록", description = "새로운 메뉴를 등록합니다")
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.CATEGORY_NOT_FOUND, ErrorCode.NUTRITION_TEMPLATE_NOT_FOUND,
+            ErrorCode.INGREDIENT_TEMPLATE_NOT_FOUND, ErrorCode.OPTION_NOT_FOUND, ErrorCode.OPTION_DETAIL_NOT_FOUND})
+    public ResponseEntity<CommonResponse<Void>> addMenu(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestBody MenuPostRequestDto menuPostRequestDto) {
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+        menuService.addMenu(storeId, menuPostRequestDto);
         return CommonResponse.ok();
     }
 }
