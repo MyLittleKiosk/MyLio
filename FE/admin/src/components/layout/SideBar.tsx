@@ -42,7 +42,7 @@ const SideBar = () => {
           setIsWidthAnimationComplete(true);
         }
       }}
-      className={`p-2 h-dvh flex flex-col`}
+      className={`p-2 flex flex-col`}
     >
       <header className='min-h-[50px] h-[8%] flex justify-between items-center gap-2 font-preBold text-lg text-primary'>
         <div className='h-full flex items-center gap-2 min-w-0'>
