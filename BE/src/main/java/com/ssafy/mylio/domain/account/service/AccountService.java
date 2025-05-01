@@ -2,6 +2,7 @@ package com.ssafy.mylio.domain.account.service;
 
 import com.ssafy.mylio.domain.account.dto.request.AccountCreateRequest;
 import com.ssafy.mylio.domain.account.dto.request.AccountModifyRequestDto;
+import com.ssafy.mylio.domain.account.dto.request.PasswordRequestDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountModifyResponse;
 import com.ssafy.mylio.domain.account.entity.Account;
 import com.ssafy.mylio.domain.account.entity.AccountRole;
@@ -16,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.security.SecureRandom;
 
 
 @Slf4j
@@ -93,5 +96,46 @@ public class AccountService {
             throw new CustomException(ErrorCode.STORE_NOT_FOUND,"",request.getStoreName());
         }
         return store;
+    }
+
+    @Transactional
+    public String findPassword(PasswordRequestDto request){
+        //이메일이랑 이름으로 조회(시큐리티 설정하기)
+        Account account = accountRepository.findWithStoreByEmail(request.getEmail())
+                .orElseThrow(() -> new CustomException(ErrorCode.FORBIDDEN_AUTH,"username",request.getUsername())
+                        .addParameter("email",request.getEmail()));
+
+        //이름이 틀린 경우 접근 불가
+        if(!account.getUsername().equals(request.getUsername())){
+            throw new CustomException(ErrorCode.FORBIDDEN_AUTH,"username",request.getUsername())
+                    .addParameter("email",request.getEmail());
+        }
+
+        //삭제된 계정일경우 접근 불가
+        if(account.getStatus() == BasicStatus.DELETED){
+            throw new CustomException(ErrorCode.ACOUNT_NOT_FOUND,"status",BasicStatus.DELETED.getCode());
+        }
+
+        //비밀번호 8자리 난수로 생성
+        String newPassword = generateRandomPassword();
+
+        //암호화 후 db 저장
+        String encodedPW = passwordEncoder.encode(newPassword);
+        account.update(encodedPW);
+
+        //비밀번호 전달
+        return newPassword;
+    }
+
+    private String generateRandomPassword() {
+        final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < 8; i++) {
+            int randomIndex = random.nextInt(chars.length());
+            sb.append(chars.charAt(randomIndex));
+        }
+        return sb.toString();
     }
 }

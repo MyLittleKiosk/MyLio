@@ -2,6 +2,7 @@ package com.ssafy.mylio.domain.account.controller;
 
 import com.ssafy.mylio.domain.account.dto.request.AccountCreateRequest;
 import com.ssafy.mylio.domain.account.dto.request.AccountModifyRequestDto;
+import com.ssafy.mylio.domain.account.dto.request.PasswordRequestDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountModifyResponse;
 import com.ssafy.mylio.domain.account.service.AccountService;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
@@ -50,4 +51,12 @@ public class AccountController {
         return CommonResponse.ok(accountService.modifyAccount(userId,storeId,userType,request));
     }
 
+    @PatchMapping("/pw")
+    @Operation(summary = "매장 관리자 비밀번호 찾기")
+    @ApiErrorCodeExamples({ErrorCode.FORBIDDEN_AUTH,ErrorCode.ACOUNT_NOT_FOUND})
+    public ResponseEntity<CommonResponse<String>> findPassword(
+            @Valid @RequestBody PasswordRequestDto request
+            ){
+        return CommonResponse.ok(accountService.findPassword(request));
+    }
 }
