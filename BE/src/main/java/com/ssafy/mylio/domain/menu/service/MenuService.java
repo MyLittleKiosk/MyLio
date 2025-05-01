@@ -1,5 +1,6 @@
 package com.ssafy.mylio.domain.menu.service;
 
+import com.ssafy.mylio.domain.menu.dto.request.MenuPostRequestDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuDetailResponseDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuListResponseDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuTagMapDto;
@@ -98,6 +99,11 @@ public class MenuService {
     public void deleteMenu(Integer storeId, Integer menuId) {
         Menu menu = getMenuId(menuId);
         menu.updateStatus(MenuStatus.DELETED);
+    }
+
+    @Transactional
+    public void addMenu(Integer storeId, MenuPostRequestDto menuPostRequestDto){
+
     }
 
     private Menu getMenuId(Integer menuId) {
