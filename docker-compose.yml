@@ -29,7 +29,7 @@ services:
     networks:
       - app-network
     volumes:
-      -	/home/ubuntu/MyLio/mylio_data:/var/lib/mysql mysql
+      -	/home/ubuntu/MyLio/mylio_data:/var/lib/mysql
 
   redis:
     image: redis
