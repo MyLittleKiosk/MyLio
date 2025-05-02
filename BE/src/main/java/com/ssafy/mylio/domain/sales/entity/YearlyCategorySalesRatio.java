@@ -10,25 +10,24 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Entity
 @Getter
+@Table(name = "yearly_category_sales_ratio")
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "daily_category_sales_ratio")
-public class DailyCategorySalesRatio extends BaseEntity {
+public class YearlyCategorySalesRatio extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @Column(name = "stat_date", nullable = false)
-    private LocalDate statDate;
+    @Column(name = "year", nullable = false)
+    private Integer year;
 
     @Column(name = "ratio", nullable = false, precision = 5, scale = 2)
     private BigDecimal ratio;
