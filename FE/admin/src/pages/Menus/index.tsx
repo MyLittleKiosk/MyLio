@@ -4,6 +4,8 @@ import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
+import Modal from '@/components/common/Modal';
+import AddMenuModal from '@/components/menus/AddMenuModal';
 
 import { MENU_NAV_LIST } from '@/datas/menuList';
 import CATEGORY_LIST from '@/datas/categoryList';
@@ -13,9 +15,7 @@ import IconAdd from '@/assets/icons/IconAdd';
 
 import { Category } from '@/types/categories';
 import { Store } from '@/types/stores';
-import Modal from '@/components/common/Modal';
 import useModalStore from '@/stores/useModalStore';
-import AddMenuModal from '@/components/menus/AddMenuModal';
 
 const Menus = () => {
   const { openModal } = useModalStore();

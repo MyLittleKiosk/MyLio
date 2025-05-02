@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import StepOne from './StepOne';
-import StepTwo from './StepTwo';
+
+import StepOne from '@/components/menus/AddMenuModal/StepOne';
+import StepTwo from '@/components/menus/AddMenuModal/StepTwo';
 import Button from '@/components/common/Button';
 import ModalHeader from '@/components/common/Modal/ModalHeader';
 
