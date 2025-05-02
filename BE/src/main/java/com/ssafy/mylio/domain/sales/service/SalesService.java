@@ -1,7 +1,9 @@
 package com.ssafy.mylio.domain.sales.service;
 
 import com.ssafy.mylio.domain.account.entity.AccountRole;
+import com.ssafy.mylio.domain.order.repository.OrderRepository;
 import com.ssafy.mylio.domain.sales.dto.request.CategorySalesResponseDto;
+import com.ssafy.mylio.domain.sales.dto.response.DailySalesResponseDto;
 import com.ssafy.mylio.domain.sales.dto.response.SalesResponse;
 import com.ssafy.mylio.domain.sales.entity.MonthlyCategorySalesRatio;
 import com.ssafy.mylio.domain.sales.entity.YearlyCategorySalesRatio;
@@ -17,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +34,7 @@ public class SalesService {
     private final YearlyCategorySalesRatioRepository yearlyCategorySalesRatioRepository;
     private final MonthlySalesSummaryRepository monthlySalesRepo;
     private final DailySalesSummaryRepository dailySalesRepo;
-
+    private final OrderRepository orderRepository;
     public CategorySalesResponseDto getCategorySales(Integer storeId, Integer year, Integer month){
         Store store = getStore(storeId);
 
@@ -93,4 +97,17 @@ public class SalesService {
                 .toList();
     }
 
+    public DailySalesResponseDto getDailySales(Integer storeId, String userType){
+        //역할이 STORE가 아니면 불가
+        if (!userType.equals(AccountRole.STORE.getCode())) {
+            throw new CustomException(ErrorCode.INVALID_ROLE)
+                    .addParameter("userType",userType);
+        }
+
+        Integer totalSales = orderRepository.getTodayTotalSales(storeId);
+        Integer totalOrders = orderRepository.getTodayOrderCount(storeId);
+
+        return DailySalesResponseDto.of(totalSales, totalOrders);
+
+    }
 }
