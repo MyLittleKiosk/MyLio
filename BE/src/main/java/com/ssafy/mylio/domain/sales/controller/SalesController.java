@@ -39,7 +39,7 @@ public class SalesController {
     }
 
     @GetMapping
-    @ApiErrorCodeExamples({})
+    @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE})
     @Operation(summary = "매출 통계",description = "년도별, 월별을 기준으로 매출 통계를 조회합니다.")
     ResponseEntity<CommonResponse<List<SalesResponse>>> getSalesStatistics(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
