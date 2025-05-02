@@ -1,9 +1,16 @@
 package com.ssafy.mylio.domain.sales.service;
 
 import com.ssafy.mylio.domain.sales.dto.response.CategorySalesResponseDto;
+import com.ssafy.mylio.domain.account.entity.AccountRole;
+import com.ssafy.mylio.domain.order.repository.OrderRepository;
+import com.ssafy.mylio.domain.sales.dto.request.CategorySalesResponseDto;
+import com.ssafy.mylio.domain.sales.dto.response.DailySalesResponseDto;
+import com.ssafy.mylio.domain.sales.dto.response.SalesResponse;
 import com.ssafy.mylio.domain.sales.entity.MonthlyCategorySalesRatio;
 import com.ssafy.mylio.domain.sales.entity.YearlyCategorySalesRatio;
+import com.ssafy.mylio.domain.sales.repository.DailySalesSummaryRepository;
 import com.ssafy.mylio.domain.sales.repository.MonthlyCategorySalesRatioRepository;
+import com.ssafy.mylio.domain.sales.repository.MonthlySalesSummaryRepository;
 import com.ssafy.mylio.domain.sales.repository.YearlyCategorySalesRatioRepository;
 import com.ssafy.mylio.domain.store.entity.Store;
 import com.ssafy.mylio.domain.store.repository.StoreRepository;
@@ -13,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +33,9 @@ public class SalesService {
     private final StoreRepository storeRepository;
     private final MonthlyCategorySalesRatioRepository monthlyCategorySalesRatioRepository;
     private final YearlyCategorySalesRatioRepository yearlyCategorySalesRatioRepository;
-
+    private final MonthlySalesSummaryRepository monthlySalesRepo;
+    private final DailySalesSummaryRepository dailySalesRepo;
+    private final OrderRepository orderRepository;
     public CategorySalesResponseDto getCategorySales(Integer storeId, Integer year, Integer month){
         Store store = getStore(storeId);
 
@@ -62,4 +73,42 @@ public class SalesService {
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND, "storeId", storeId));
     }
 
+    public List<SalesResponse> getSalesStatistics(String userType, int storeId, int year, Integer month){
+        //역할이 STORE가 아니면 불가
+        if (!userType.equals(AccountRole.STORE.getCode())) {
+            throw new CustomException(ErrorCode.INVALID_ROLE)
+                    .addParameter("userType",userType);
+        }
+
+        //월이 없으면 년도 조회
+        if(month == null){
+            return monthlySalesRepo.findByStoreIdAndYear(storeId, year).stream()
+                    .map(e -> SalesResponse.builder()
+                            .type(e.getMonth())       // 1~12
+                            .total(e.getTotalSales())
+                            .build())
+                    .toList();
+        }
+        //월별 조회
+        return dailySalesRepo.findByStoreIdAndYearAndMonth(storeId, year, month).stream()
+                .map(e -> SalesResponse.builder()
+                        .type(e.getStatDate().getDayOfMonth()) // 1~31
+                        .total(e.getTotalSales())
+                        .build())
+                .toList();
+    }
+
+    public DailySalesResponseDto getDailySales(Integer storeId, String userType){
+        //역할이 STORE가 아니면 불가
+        if (!userType.equals(AccountRole.STORE.getCode())) {
+            throw new CustomException(ErrorCode.INVALID_ROLE)
+                    .addParameter("userType",userType);
+        }
+
+        Integer totalSales = orderRepository.getTodayTotalSales(storeId);
+        Integer totalOrders = orderRepository.getTodayOrderCount(storeId);
+
+        return DailySalesResponseDto.of(totalSales, totalOrders);
+
+    }
 }
