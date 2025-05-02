@@ -3,7 +3,7 @@ import { Link, Outlet } from 'react-router-dom';
 const OrderLayout = () => {
   return (
     // 배경 색은 추후 변경 예정
-    <div className='flex flex-col h-screen bg-gradient-to-b from-primary to-white justify-between'>
+    <div className='flex flex-col h-dvh bg-gradient-to-b from-primary to-white justify-between'>
       <nav>
         <ul>
           <li>
