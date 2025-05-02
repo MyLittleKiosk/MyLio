@@ -14,10 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/kiosk")
@@ -41,4 +38,17 @@ public class KioskController {
         return CommonResponse.ok(kioskService.createKiosk(userId,userType,storeId,request));
     }
 
+    @DeleteMapping("/{kiosk_id}")
+    @Operation(summary = "키오스크 삭제", description = "매장 관리자가 키오스크를 삭제합니다.")
+    @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE,ErrorCode.STORE_NOT_FOUND,ErrorCode.KIOSK_NOT_FOUND})
+    public ResponseEntity<CommonResponse<Void>> deleteKiosk(
+            @PathVariable("kiosk_id") Integer kioskId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal){
+        String userType = authenticationUtil.getCurrntUserType(userPrincipal);
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+
+        kioskService.deleteKiosk(kioskId,storeId,userType);
+
+        return CommonResponse.ok();
+    }
 }

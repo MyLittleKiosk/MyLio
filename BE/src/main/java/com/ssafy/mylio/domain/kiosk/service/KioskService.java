@@ -67,4 +67,26 @@ public class KioskService {
 
         return KioskCreateResponseDto.of(kioskSession);
     }
+
+    @Transactional
+    public void deleteKiosk(Integer kioskId, Integer storeId, String userType){
+        //역할이 STORE 아닌 경우 불가
+        if (!userType.equals(AccountRole.STORE.getCode())) {
+            throw new CustomException(ErrorCode.INVALID_ROLE)
+                    .addParameter("userType",userType);
+        }
+
+        //Store 찾기 에 등록된 kiosk가 맞는지 검증
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+
+        // StoreId와 kioskId로 키오스크 찾기
+        KioskSession kioskSession = kioskRepository.findByStoreIdAndId(storeId, kioskId)
+                .orElseThrow(() -> new CustomException(ErrorCode.KIOSK_NOT_FOUND)
+                        .addParameter("kioskId", kioskId)
+                        .addParameter("storeId", storeId));
+
+        //키오스크 삭제
+        kioskRepository.delete(kioskSession);
+    }
 }
