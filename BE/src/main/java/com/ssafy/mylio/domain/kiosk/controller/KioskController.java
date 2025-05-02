@@ -28,7 +28,7 @@ public class KioskController {
     private final AuthenticationUtil authenticationUtil;
     private final KioskService kioskService;
 
-    @PostMapping()
+    @PostMapping
     @Operation(summary = "키오스크 등록", description = "매장 관리자가 키오스크를 등록합니다.")
     @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE,ErrorCode.ACOUNT_NOT_FOUND,ErrorCode.STORE_NOT_FOUND,ErrorCode.ALREADY_EXIST_KIOSK})
     public ResponseEntity<CommonResponse<KioskResponseDto>> createKiosk(
@@ -70,7 +70,7 @@ public class KioskController {
         return CommonResponse.ok(kioskService.modifyKiosk(kioskId,userId,userType,storeId,request));
     }
 
-    @GetMapping()
+    @GetMapping
     @Operation(summary = "키오스크 전체 조회 및 검색", description = "키오스크 이름으로 키오스크 계정을 조회합니다.")
     @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE})
     public ResponseEntity<CommonResponse<CustomPage<KioskResponseDto>>> getKioskList(
