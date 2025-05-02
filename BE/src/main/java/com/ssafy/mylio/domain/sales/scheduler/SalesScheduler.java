@@ -2,6 +2,7 @@ package com.ssafy.mylio.domain.sales.scheduler;
 
 import com.ssafy.mylio.domain.sales.service.CategorySalesService;
 import com.ssafy.mylio.domain.sales.service.PaymentSalesService;
+import com.ssafy.mylio.domain.sales.service.TotalSalesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,6 +18,7 @@ public class SalesScheduler {
 
     private final CategorySalesService categorySalesService;
     private final PaymentSalesService paymentSalesService;
+    private final TotalSalesService totalSalesService;
 
     @Scheduled(cron = "0 0 0 * * *")
     public void getSalesByCategory (){
@@ -39,6 +41,18 @@ public class SalesScheduler {
             log.info("결제방법 통계 스케줄러 완료: {}", LocalDateTime.now());
         } catch (Exception e){
             log.error("결제방법 통계 생성 중 오류 발생: {}", e.getMessage(), e);
+        }
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void getSalesSummary() {
+        log.info("일,월,연도 통계 스케줄러 시작 : {}", LocalDateTime.now());
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        try{
+            totalSalesService.createSalesSummary(yesterday);
+            log.info("일,월,연도  통계 스케줄러 완료: {}", LocalDateTime.now());
+        } catch (Exception e){
+            log.error("일,월,연도  통계 생성 중 오류 발생: {}", e.getMessage(), e);
         }
     }
 
