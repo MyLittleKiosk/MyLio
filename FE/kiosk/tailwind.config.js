@@ -38,6 +38,9 @@ export default {
         secondary: '#BECEFF',
         error: '#D44848',
       },
+      backgroundImage: {
+        jihyegra: 'linear-gradient(to top, #b73abb, #d0579a, #e46e80)',
+      },
       keyframes: {
         ripple: {
           '0%': { width: '0', height: '0', opacity: '0.5' },
