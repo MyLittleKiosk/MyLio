@@ -70,7 +70,7 @@ services:
 
   fastapi-app:
     build:
-      context: ./AI
+      context: ./AI/Clova
       dockerfile: Dockerfile
     image: ${FASTAPI_IMAGE_NAME}
     container_name: ${FASTAPI_CONTAINER_NAME}
