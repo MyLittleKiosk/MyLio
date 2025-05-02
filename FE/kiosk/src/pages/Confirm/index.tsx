@@ -1,6 +1,6 @@
 import { CONFIRM_RESPONSE } from '@/service/mock/dummies/Order';
 import { formatNumber } from '@/utils/formatNumber';
-import { useMemo } from 'react';
+
 const Confirm = () => {
   return (
     <section className='flex flex-col w-full h-full ps-10 pt-10'>
