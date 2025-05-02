@@ -1,19 +1,10 @@
 import { Menu, MenuList } from '@/types/menus';
 import { Column } from '@/types/tableProps';
 
-import IconTrashCan from '@/assets/icons/IconTrashCan';
-import IconEdit from '@/assets/icons/IconEdit';
-
 const MENU_COLUMNS: Column<Menu>[] = [
   {
     header: '이미지',
-    accessor: (menu) => (
-      <img
-        src={menu.image_url}
-        alt='메뉴 이미지'
-        className='w-10 h-10 rounded-md object-cover'
-      />
-    ),
+    accessor: 'image_url' as keyof Menu,
   },
   {
     header: '메뉴명',
@@ -42,19 +33,11 @@ const MENU_COLUMNS: Column<Menu>[] = [
   },
   {
     header: '편집',
-    accessor: () => (
-      <button className='p-1 hover:bg-gray-100 rounded-md'>
-        <IconEdit />
-      </button>
-    ),
+    accessor: 'edit' as keyof Menu,
   },
   {
     header: '삭제',
-    accessor: () => (
-      <button className='p-1 hover:bg-gray-100 rounded-md'>
-        <IconTrashCan fillColor='#D44848' />
-      </button>
-    ),
+    accessor: 'delete' as keyof Menu,
   },
 ];
 

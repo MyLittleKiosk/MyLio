@@ -1,3 +1,5 @@
+import IconEdit from '@/assets/icons/IconEdit';
+import IconTrashCan from '@/assets/icons/IconTrashCan';
 import { TableProps } from '@/types/tableProps';
 
 const Table = <T extends object>({
@@ -35,11 +37,25 @@ const Table = <T extends object>({
                       column.className || 'px-4 py-3 text-sm font-preRegular'
                     }
                   >
-                    {typeof column.accessor === 'function'
-                      ? column.accessor(row)
-                      : column.accessor === 'price'
-                        ? `₩${String(row[column.accessor as keyof T]).toLocaleString()}`
-                        : String(row[column.accessor as keyof T])}
+                    {column.accessor === 'image_url' ? (
+                      <img
+                        src={String(row[column.accessor as keyof T])}
+                        alt='메뉴 이미지'
+                        className='w-10 h-10 rounded-md object-cover'
+                      />
+                    ) : column.accessor === 'edit' ? (
+                      <button className='p-1 hover:bg-gray-100 rounded-md'>
+                        <IconEdit />
+                      </button>
+                    ) : column.accessor === 'delete' ? (
+                      <button className='p-1 hover:bg-gray-100 rounded-md'>
+                        <IconTrashCan fillColor='#D44848' />
+                      </button>
+                    ) : column.accessor === 'price' ? (
+                      `₩${String(row[column.accessor as keyof T]).toLocaleString()}`
+                    ) : (
+                      String(row[column.accessor as keyof T])
+                    )}
                   </td>
                 ))}
               </tr>
