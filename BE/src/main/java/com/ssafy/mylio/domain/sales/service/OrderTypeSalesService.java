@@ -1,7 +1,5 @@
 package com.ssafy.mylio.domain.sales.service;
 
-import com.ssafy.mylio.domain.category.entity.Category;
-import com.ssafy.mylio.domain.order.entity.OrderItem;
 import com.ssafy.mylio.domain.order.entity.OrderStatus;
 import com.ssafy.mylio.domain.order.entity.Orders;
 import com.ssafy.mylio.domain.order.repository.OrdersRepository;
