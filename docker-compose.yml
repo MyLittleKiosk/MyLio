@@ -33,7 +33,7 @@ services:
 
   redis:
     image: redis
-    container_name: ${REDIS_CONTIANER_NAME}
+    container_name: ${REDIS_CONTAINER_NAME}
     restart: always
     environment:
       REDIS_PORT: ${REDIS_PORT}
