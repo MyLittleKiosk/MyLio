@@ -27,6 +27,7 @@ interface UseMenuAddReturn {
   handleCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleTagInputChange: (type: 'KR' | 'EN', value: string) => void;
   handleTagAdd: () => void;
+  handleTagDelete: (tagKR: string) => void;
   handleIngredientAdd: (ingredientId: string) => void;
   handleIngredientChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleIngredientRemove: (ingredient: string) => void;
@@ -141,6 +142,13 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     setTagValueEN('');
   };
 
+  function handleTagDelete(tagKR: string) {
+    setMenuAddData((prev) => ({
+      ...prev,
+      tags: prev.tags.filter((tag) => tag.tag_kr !== tagKR),
+    }));
+  }
+
   const handleIngredientAdd = (ingredientId: string) => {
     setMenuAddData((prev) => ({
       ...prev,
@@ -214,6 +222,7 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     handleCategoryChange,
     handleTagInputChange,
     handleTagAdd,
+    handleTagDelete,
     handleIngredientChange,
     handleNutrientChange,
     handleIngredientAdd,

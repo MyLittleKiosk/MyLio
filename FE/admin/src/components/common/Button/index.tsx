@@ -9,6 +9,7 @@ interface ButtonProps {
   className?: string;
   icon?: React.ReactNode;
   onClick?: () => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLButtonElement>) => void;
 }
 
 const Button = ({
@@ -20,6 +21,7 @@ const Button = ({
   className,
   icon,
   onClick,
+  onKeyDown,
 }: ButtonProps) => {
   return (
     <button
@@ -27,6 +29,7 @@ const Button = ({
       className={`${className} ${error && 'bg-error text-white'} ${disabled && 'bg-subContent text-white pointer-events-none'} ${cancel && 'bg-subContent text-black'} flex items-center gap-2 bg-primary text-white rounded-md px-4 py-2 font-preRegular hover:opacity-70`}
       disabled={disabled}
       onClick={onClick}
+      onKeyDown={onKeyDown}
     >
       {icon}
       {text}

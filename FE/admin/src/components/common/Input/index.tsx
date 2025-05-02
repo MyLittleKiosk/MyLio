@@ -10,6 +10,7 @@ interface InputProps {
   error?: boolean;
   disabled?: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const Input = ({
@@ -22,6 +23,7 @@ const Input = ({
   className,
   error = false,
   disabled = false,
+  onKeyDown,
 }: InputProps) => {
   const inputElement = (
     <input
@@ -34,6 +36,7 @@ const Input = ({
         error ? 'border-2 border-error' : 'border border-subContent'
       } rounded-md p-2 font-preRegular w-full`}
       disabled={disabled}
+      onKeyDown={onKeyDown}
     />
   );
 
