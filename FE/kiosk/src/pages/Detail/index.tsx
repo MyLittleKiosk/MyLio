@@ -1,4 +1,5 @@
 import { DETAIL_RESPONSE } from '@/service/mock/dummies/Order';
+import { formatNumber } from '@/utils/formatNumber';
 
 const Detail = () => {
   return (
@@ -11,7 +12,7 @@ const Detail = () => {
         />
         <div className='font-bold text-xl flex flex-col gap-4'>
           <h1>{DETAIL_RESPONSE.detail.name}</h1>
-          <span>\{DETAIL_RESPONSE.detail.price}</span>
+          <span>{formatNumber(DETAIL_RESPONSE.detail.price)}원</span>
         </div>
       </div>
       <div>
