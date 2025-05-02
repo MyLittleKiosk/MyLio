@@ -9,7 +9,6 @@ import NUTRIENT_LIST from '@/datas/NutrientList';
 
 interface UseMenuAddReturn {
   menuAddData: MenuAdd;
-  nextStep: number;
   selectedCategory: Category | null;
   tagValueKR: string;
   tagValueEN: string;
@@ -22,7 +21,6 @@ interface UseMenuAddReturn {
   }[];
   selectedIngredient: Ingredient | null;
   selectedNutrient: Nutrient | null;
-  setNextStep: (step: number) => void;
   setNutritionValue: (value: number) => void;
   handleCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleTagInputChange: (type: 'KR' | 'EN', value: string) => void;
@@ -52,7 +50,6 @@ const initialMenuData: MenuAdd = {
 };
 
 export const useMenuAdd = (): UseMenuAddReturn => {
-  const [nextStep, setNextStep] = useState<number>(1);
   const [menuAddData, setMenuAddData] = useState<MenuAdd>(initialMenuData);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
@@ -202,12 +199,10 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     setNutritionValue(0);
     setSelectedIngredientList([]);
     setSelectedNutrientList([]);
-    setNextStep(1);
   };
 
   return {
     menuAddData,
-    nextStep,
     selectedCategory,
     tagValueKR,
     tagValueEN,
@@ -217,7 +212,6 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     selectedIngredientList,
     selectedNutrientList,
     setMenuAddData,
-    setNextStep,
     setNutritionValue,
     handleCategoryChange,
     handleTagInputChange,

@@ -9,7 +9,7 @@ import INGREDIENT_LIST from '@/datas/IngredientList';
 import NUTRIENT_LIST from '@/datas/NutrientList';
 import OPTION_LIST from '@/datas/optionList';
 
-import { useMenuAdd } from '@/hooks/useMenuAdd';
+import { useMenuAdd } from '@/components/menus/AddMenuModal/useMenuAdd';
 
 import OptionTable from '@/components/menus/AddMenuModal/OptionTable';
 

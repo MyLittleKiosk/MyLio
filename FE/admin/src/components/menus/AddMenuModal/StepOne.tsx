@@ -6,7 +6,7 @@ import IconAdd from '@/assets/icons/IconAdd';
 
 import CATEGORY_LIST from '@/datas/categoryList';
 
-import { useMenuAdd } from '@/hooks/useMenuAdd';
+import { useMenuAdd } from '@/components/menus/AddMenuModal/useMenuAdd';
 import IconTrashCan from '@/assets/icons/IconTrashCan';
 
 /**
