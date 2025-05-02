@@ -146,3 +146,44 @@ export const MenuResponse = {
     },
   ],
 };
+
+export const DETAIL_RESPONSE = {
+  detail: {
+    id: 1,
+    name: '아이스 아메리카노',
+    price: 3000,
+    image: '/src/assets/images/defaultDrink.png',
+    nutrition: {
+      saturatedFat: {
+        name: '포화지방',
+        value: 0,
+        unit: 'g',
+      },
+      sodium: {
+        name: '나트륨',
+        value: 5,
+        unit: 'mg',
+      },
+      caffeine: {
+        name: '카페인',
+        value: 150,
+        unit: 'mg',
+      },
+      protein: {
+        name: '단백질',
+        value: 1,
+        unit: 'g',
+      },
+      sugar: {
+        name: '당류',
+        value: 0,
+        unit: 'g',
+      },
+      calorie: {
+        name: '칼로리',
+        value: 5,
+        unit: 'kcal',
+      },
+    },
+  },
+};

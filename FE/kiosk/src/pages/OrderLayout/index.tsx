@@ -13,6 +13,9 @@ const OrderLayout = () => {
             <Link to='/kiosk/order'>ORDER</Link>
           </li>
           <li>
+            <Link to='/kiosk/detail'>DETAIL</Link>
+          </li>
+          <li>
             <Link to='/kiosk/pay'>PAY</Link>
           </li>
           <li>
