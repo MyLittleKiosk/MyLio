@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx-lb
+    restart: always
+    ports:
+      - "80:80"
+      - "433:433"
+    volumes:
+      - /home/ubuntu/MyLio/nginx/conf.d:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: ${MYSQL_CONTAINER_NAME}
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      LANG: C.UTF-8
+    ports:
+      - "${MYSQL_PORT}:${MYSQL_CONTAINER_PORT}"
+    networks:
+      - app-network
+    volumes:
+      -	/home/ubuntu/MyLio/mylio_data:/var/lib/mysql mysql
+
+  redis:
+    image: redis
+    container_name: ${REDIS_CONTIANER_NAME}
+    restart: always
+    environment:
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    networks:
+      - app-network
+
+  spring-app:
+    build:
+      context: ./BE
+      dockerfile: Dockerfile
+    image: ${SPRING_IMAGE_NAME}
+    container_name: ${SPRING_CONTAINER_NAME}
+    restart: always
+    ports:
+      - "${SPRING_PORT}:${SPRING_CONTAINER_PORT}"
+    environment:
+      #my sql
+      MYSQL_CONTAINER_NAME: ${MYSQL_CONTAINER_NAME}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_URL: ${MYSQL_URL}
+
+      #redis 설정
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+
+      OPEN_AI_KEY: ${OPEN_AI_KEY}
+    networks:
+      - app-network
+
+  fastapi-app:
+    build:
+      context: ./AI
+      dockerfile: Dockerfile
+    image: ${FASTAPI_IMAGE_NAME}
+    container_name: ${FASTAPI_CONTAINER_NAME}
+    ports:
+      - "${FASTAPI_PORT}:${FASTAPI_CONTAINER_PORT}"
+    restart: always
+    networks:
+      - app-network
+
+  react-admin:
+    build:
+      context: ./FE/admin
+      dockerfile: Dockerfile
+    ports:
+      - "${ADMIN_PORT}:${ADMIN_CONTAINER_PORT}"
+    networks:
+      - app-network
+
+  react-kiosk:
+    build:
+      context: ./FE/kiosk
+      dockerfile: Dockerfile
+    ports:
+      - "${KIOSK_PORT}:${KIOSK_CONTAINER_PORT}"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
