@@ -1,9 +1,10 @@
 package com.ssafy.mylio.domain.sales.controller;
 
-import com.ssafy.mylio.domain.sales.dto.request.MonthlyCategorySalesResponseDto;
+import com.ssafy.mylio.domain.sales.dto.request.CategorySalesResponseDto;
 import com.ssafy.mylio.domain.sales.service.SalesService;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
 import com.ssafy.mylio.global.common.response.CommonResponse;
+import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.security.auth.UserPrincipal;
 import com.ssafy.mylio.global.util.AuthenticationUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,10 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/sales")
@@ -25,10 +23,10 @@ public class SalesController {
     private final SalesService salesService;
     private final AuthenticationUtil authenticationUtil;
 
-    @PostMapping("/by_category")
-    @ApiErrorCodeExamples({})
+    @GetMapping("/by_category")
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND})
     @Operation(summary = "카테고리 별 매출 통계", description = "카테고리를 기준으로 매출 통계를 조회합니다")
-    ResponseEntity<CommonResponse<MonthlyCategorySalesResponseDto>> getCategoryStatistics(
+    ResponseEntity<CommonResponse<CategorySalesResponseDto>> getCategoryStatistics(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam(value = "year") Integer year,
             @RequestParam(value = "month", required = false) Integer month) {

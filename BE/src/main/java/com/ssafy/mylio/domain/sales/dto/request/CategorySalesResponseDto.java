@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class MonthlyCategorySalesResponseDto {
+public class CategorySalesResponseDto {
     private List<CategoryRatioDto> ratioByCategory;
 
     @Data
@@ -18,10 +18,10 @@ public class MonthlyCategorySalesResponseDto {
         private String categoryName;
         private BigDecimal ratio;
 
-        public static CategoryRatioDto of(MonthlyCategorySalesRatio monthlyCategorySalesRatio){
+        public static CategoryRatioDto of(String categoryName, BigDecimal ratio) {
             return CategoryRatioDto.builder()
-                    .categoryName(monthlyCategorySalesRatio.getCategory().getNameKr())
-                    .ratio(monthlyCategorySalesRatio.getRatio())
+                    .categoryName(categoryName)
+                    .ratio(ratio)
                     .build();
         }
     }
