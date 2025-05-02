@@ -123,7 +123,7 @@ VALUES
 -- 기본 계정 생성 (관리자 및 키오스크)
 INSERT INTO account (store_id, email, username, password, role, status, created_at, updated_at)
 VALUES
-    (3, 'admin@megacoffee.com', '관리자', '$2a$10$kJJYLA3v7N6hxuGJ49IDz.ZdLTa0Dk2okd.iNUUPXVzKy17cm9XB6', 'SUPER', 'REGISTERED', NOW(), NOW());
+    (3, 'admin@megacoffee.com', '관리자', '$2a$10$kJJYLA3v7N6hxuGJ49IDz.ZdLTa0Dk2okd.iNUUPXVzKy17cm9XB6', 'STORE', 'REGISTERED', NOW(), NOW());
 
 
 -- 영양성분 템플릿 데이터
