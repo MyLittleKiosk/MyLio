@@ -1,7 +1,9 @@
 package com.ssafy.mylio.domain.sales.controller;
 
 import com.ssafy.mylio.domain.sales.dto.request.CategorySalesResponseDto;
+import com.ssafy.mylio.domain.sales.dto.response.SalesResponse;
 import com.ssafy.mylio.domain.sales.service.SalesService;
+import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExample;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
 import com.ssafy.mylio.global.common.response.CommonResponse;
 import com.ssafy.mylio.global.error.code.ErrorCode;
@@ -13,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/sales")
@@ -32,5 +36,19 @@ public class SalesController {
             @RequestParam(value = "month", required = false) Integer month) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         return CommonResponse.ok(salesService.getCategorySales(storeId, year, month));
+    }
+
+    @GetMapping
+    @ApiErrorCodeExamples({})
+    @Operation(summary = "매출 통계",description = "년도별, 월별을 기준으로 매출 통계를 조회합니다.")
+    ResponseEntity<CommonResponse<List<SalesResponse>>> getSalesStatistics(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestParam("year") Integer year,
+            @RequestParam(value = "month",required = false) Integer month){
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+        String userType = authenticationUtil.getCurrntUserType(userPrincipal);
+        List<SalesResponse> response = salesService.getSalesStatistics(userType, storeId, year, month);
+
+        return CommonResponse.ok(response);
     }
 }
