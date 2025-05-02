@@ -152,4 +152,26 @@ const MENU_LIST: MenuList = {
   timestamp: '2024-12-04 16:10:22',
 };
 
-export { MENU_COLUMNS, MENU_LIST };
+const MENU_NAV_LIST = [
+  {
+    title: '메뉴',
+    columns: MENU_COLUMNS,
+    data: MENU_LIST,
+  },
+  {
+    title: '카테고리',
+    columns: MENU_COLUMNS,
+    data: MENU_LIST,
+  },
+  {
+    title: '태그',
+    columns: MENU_COLUMNS,
+    data: MENU_LIST,
+  },
+  {
+    title: '옵션',
+    columns: MENU_COLUMNS,
+    data: MENU_LIST,
+  },
+];
+export { MENU_COLUMNS, MENU_LIST, MENU_NAV_LIST };

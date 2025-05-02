@@ -5,7 +5,7 @@ import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
 
-import { MENU_COLUMNS, MENU_LIST } from '@/datas/menuList.tsx';
+import { MENU_NAV_LIST } from '@/datas/menuList.tsx';
 import CATEGORY_LIST from '@/datas/categoryList';
 import STORE_LIST from '@/datas/storeList';
 
@@ -15,6 +15,7 @@ import { Category } from '@/types/categories';
 import { Store } from '@/types/stores';
 
 const Menus = () => {
+  const [selectedNav, setSelectedNav] = useState(MENU_NAV_LIST[0]);
   const [searchValue, setSearchValue] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
@@ -44,18 +45,19 @@ const Menus = () => {
       <h1 className='text-2xl font-preBold h-[5%]'>메뉴 관리</h1>
       <nav className='bg-subContent/50 rounded-md p-2 w-fit'>
         <ul className='flex items-center justify-center gap-2 text-sm font-preMedium'>
-          <li className='cursor-pointer hover:bg-white rounded-md px-2 py-1'>
-            메뉴
-          </li>
-          <li className='cursor-pointer hover:bg-white rounded-md px-2 py-1'>
-            카테고리
-          </li>
-          <li className='cursor-pointer hover:bg-white rounded-md px-2 py-1'>
-            태그
-          </li>
-          <li className='cursor-pointer hover:bg-white rounded-md px-2 py-1'>
-            옵션
-          </li>
+          {MENU_NAV_LIST.map((navItem, index) => {
+            return (
+              <li
+                key={index}
+                onClick={() => setSelectedNav(navItem)}
+                className={`cursor-pointer hover:bg-white rounded-md px-2 py-1 ${
+                  selectedNav.title === navItem.title && 'bg-white'
+                }`}
+              >
+                {navItem.title}
+              </li>
+            );
+          })}
         </ul>
       </nav>
       <div className='flex gap-2 max-h-[10%] w-full justify-between'>
@@ -95,8 +97,8 @@ const Menus = () => {
       <Table
         title='메뉴 목록'
         description='총 6개의 메뉴가 있습니다.'
-        columns={MENU_COLUMNS}
-        data={MENU_LIST.data.content}
+        columns={selectedNav.columns}
+        data={selectedNav.data.data.content}
       />
     </section>
   );
