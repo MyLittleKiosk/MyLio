@@ -108,7 +108,7 @@ export function useAudioRecord(): {
     if (!analyserRef.current || !dataArrayRef.current) return;
 
     analyserRef.current.getByteTimeDomainData(dataArrayRef.current); // 마이크에서 들어오는 파형 데이터를 Uint8Array 형식으로 읽어옴
-    console.log(dataArrayRef.current);
+
     // 진폭 차이 계산, 128 -> 음이 없는 상태
     let sum = 0;
     for (let i = 0; i < dataArrayRef.current.length; i++) {
