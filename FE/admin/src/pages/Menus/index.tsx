@@ -5,7 +5,7 @@ import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
 
-import { MENU_NAV_LIST } from '@/datas/menuList.tsx';
+import { MENU_NAV_LIST } from '@/datas/menuList';
 import CATEGORY_LIST from '@/datas/categoryList';
 import STORE_LIST from '@/datas/storeList';
 
