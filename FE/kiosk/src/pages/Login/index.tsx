@@ -5,7 +5,9 @@ const Login = () => {
     <>
       <div className='flex flex-col items-center justify-center h-screen bg-primary gap-3'>
         <section className='flex flex-col gap-3 max-w-md bg-white p-10 rounded-md'>
-          <h1 className='text-7xl font-bold text-primary text-center'>MaLio</h1>
+          <h1 className='text-7xl font-preBold text-primary text-center'>
+            MaLio
+          </h1>
           <div className='flex flex-col'>
             <label htmlFor='id' className='text-sm text-gray-500'>
               아이디
