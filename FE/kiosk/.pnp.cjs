@@ -58,6 +58,7 @@ const RAW_RUNTIME_STATE =
           ["@vitejs/plugin-react", "virtual:278db3dbe626b853fb1dba5ce80c510aa6cc3e4f7aa0ae1fd442463fe1cb93c3199bf97984e367db98f873580f474bf708b80fc17ee60d8a933ef570edd8ce6e#npm:4.4.1"],\
           ["autoprefixer", "virtual:278db3dbe626b853fb1dba5ce80c510aa6cc3e4f7aa0ae1fd442463fe1cb93c3199bf97984e367db98f873580f474bf708b80fc17ee60d8a933ef570edd8ce6e#npm:10.4.21"],\
           ["axios", "npm:1.9.0"],\
+          ["clsx", "npm:2.1.1"],\
           ["cypress", "npm:14.3.2"],\
           ["eslint", "virtual:278db3dbe626b853fb1dba5ce80c510aa6cc3e4f7aa0ae1fd442463fe1cb93c3199bf97984e367db98f873580f474bf708b80fc17ee60d8a933ef570edd8ce6e#npm:9.25.1"],\
           ["eslint-config-airbnb", "virtual:278db3dbe626b853fb1dba5ce80c510aa6cc3e4f7aa0ae1fd442463fe1cb93c3199bf97984e367db98f873580f474bf708b80fc17ee60d8a933ef570edd8ce6e#npm:19.0.4"],\
@@ -4007,6 +4008,15 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["clsx", [\
+      ["npm:2.1.1", {\
+        "packageLocation": "./.yarn/cache/clsx-npm-2.1.1-96125b98be-c4c8eb865f.zip/node_modules/clsx/",\
+        "packageDependencies": [\
+          ["clsx", "npm:2.1.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["color-convert", [\
       ["npm:2.0.1", {\
         "packageLocation": "./.yarn/cache/color-convert-npm-2.0.1-79730e935b-37e1150172.zip/node_modules/color-convert/",\
@@ -6708,6 +6718,7 @@ const RAW_RUNTIME_STATE =
           ["@vitejs/plugin-react", "virtual:278db3dbe626b853fb1dba5ce80c510aa6cc3e4f7aa0ae1fd442463fe1cb93c3199bf97984e367db98f873580f474bf708b80fc17ee60d8a933ef570edd8ce6e#npm:4.4.1"],\
           ["autoprefixer", "virtual:278db3dbe626b853fb1dba5ce80c510aa6cc3e4f7aa0ae1fd442463fe1cb93c3199bf97984e367db98f873580f474bf708b80fc17ee60d8a933ef570edd8ce6e#npm:10.4.21"],\
           ["axios", "npm:1.9.0"],\
+          ["clsx", "npm:2.1.1"],\
           ["cypress", "npm:14.3.2"],\
           ["eslint", "virtual:278db3dbe626b853fb1dba5ce80c510aa6cc3e4f7aa0ae1fd442463fe1cb93c3199bf97984e367db98f873580f474bf708b80fc17ee60d8a933ef570edd8ce6e#npm:9.25.1"],\
           ["eslint-config-airbnb", "virtual:278db3dbe626b853fb1dba5ce80c510aa6cc3e4f7aa0ae1fd442463fe1cb93c3199bf97984e367db98f873580f474bf708b80fc17ee60d8a933ef570edd8ce6e#npm:19.0.4"],\
