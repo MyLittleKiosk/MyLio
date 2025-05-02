@@ -24,16 +24,16 @@ const OptionTable = ({
     <table className='w-full border-collapse'>
       <thead className='border-b border-subContent'>
         <tr>
-          <th className='px-4 py-3 text-left text-sm font-preLight text-content text-center'>
+          <th className='px-4 py-3 text-sm font-preLight text-content text-center'>
             추가 여부
           </th>
-          <th className='px-4 py-3 text-left text-sm font-preLight text-content text-center'>
+          <th className='px-4 py-3 text-sm font-preLight text-content text-center'>
             이름
           </th>
-          <th className='px-4 py-3 text-left text-sm font-preLight text-content text-center'>
+          <th className='px-4 py-3 text-sm font-preLight text-content text-center'>
             세부 옵션
           </th>
-          <th className='px-4 py-3 text-left text-sm font-preLight text-content text-center'>
+          <th className='px-4 py-3 text-sm font-preLight text-content text-center'>
             필수 여부
           </th>
         </tr>
