@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Step1 from './Step1';
-import Step2 from './Step2';
+import StepOne from './StepOne';
+import StepTwo from './StepTwo';
 import Button from '@/components/common/Button';
 import ModalHeader from '@/components/common/Modal/ModalHeader';
 
@@ -24,8 +24,8 @@ const AddMenuModal = () => {
       />
 
       <form onSubmit={handleSubmit}>
-        {nextStep === 1 && <Step1 />}
-        {nextStep === 2 && <Step2 />}
+        {nextStep === 1 && <StepOne />}
+        {nextStep === 2 && <StepTwo />}
 
         <div className='w-full mt-8 flex justify-end gap-2'>
           {nextStep === 1 && (

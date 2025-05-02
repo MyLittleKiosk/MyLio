@@ -13,7 +13,14 @@ import { useMenuAdd } from '@/hooks/useMenuAdd';
 
 import OptionTable from './OptionTable';
 
-const Step2 = () => {
+/**
+ * 메뉴 추가 페이지 2단계 컴포넌트
+ * 원재료, 영양성분, 옵션 그룹 입력 컴포넌트
+ *
+ * @returns 원재료, 영양성분, 옵션 그룹 입력 컴포넌트
+ */
+
+const StepTwo = () => {
   const {
     nutritionValue,
     selectedIngredientList,
@@ -184,4 +191,4 @@ const Step2 = () => {
   );
 };
 
-export default Step2;
+export default StepTwo;

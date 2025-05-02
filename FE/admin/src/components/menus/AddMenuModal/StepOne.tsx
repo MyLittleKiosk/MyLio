@@ -7,14 +7,23 @@ import IconAdd from '@/assets/icons/IconAdd';
 import CATEGORY_LIST from '@/datas/categoryList';
 
 import { useMenuAdd } from '@/hooks/useMenuAdd';
+import IconTrashCan from '@/assets/icons/IconTrashCan';
 
-const Step1 = () => {
+/**
+ * 메뉴 추가 페이지 1단계 컴포넌트
+ * 메뉴명, 카테고리, 가격, 설명, 태그, 이미지 입력 폼
+ *
+ * @returns 메뉴명, 카테고리, 가격, 설명, 태그, 이미지 입력 폼 컴포넌트
+ */
+
+const StepOne = () => {
   const {
     menuAddData,
     selectedCategory,
     tagValueKR,
     setMenuAddData,
     handleTagAdd,
+    handleTagDelete,
     handleCategoryChange,
     handleTagInputChange,
   } = useMenuAdd();
@@ -73,6 +82,11 @@ const Step1 = () => {
             label='태그'
             inputValue={tagValueKR}
             onChange={(e) => handleTagInputChange('KR', e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleTagAdd();
+              }
+            }}
           />
           <Button
             buttonType='button'
@@ -86,9 +100,11 @@ const Step1 = () => {
             return (
               <div
                 key={data.tag_kr}
-                className='px-2 py-1 border border-subContent rounded-full'
+                className='flex gap-1 text-sm font-preRegular items-center px-2 py-1 border border-subContent rounded-full cursor-pointer hover:bg-subContent/50'
+                onClick={() => handleTagDelete(data.tag_kr)}
               >
                 {data.tag_kr}
+                <IconTrashCan width={12} height={12} />
               </div>
             );
           })}
@@ -112,4 +128,4 @@ const Step1 = () => {
   );
 };
 
-export default Step1;
+export default StepOne;
