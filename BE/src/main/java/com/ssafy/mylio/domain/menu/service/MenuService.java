@@ -2,7 +2,7 @@ package com.ssafy.mylio.domain.menu.service;
 
 import com.ssafy.mylio.domain.category.entity.Category;
 import com.ssafy.mylio.domain.category.repository.CategoryRepository;
-import com.ssafy.mylio.domain.menu.dto.request.MenuPostRequestDto;
+import com.ssafy.mylio.domain.menu.dto.request.MenuRequestDto;
 import com.ssafy.mylio.domain.menu.dto.request.TagRequestDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuDetailResponseDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuListResponseDto;
@@ -127,31 +127,78 @@ public class MenuService {
     }
 
     @Transactional
-    public void addMenu(Integer storeId, MenuPostRequestDto menuPostRequestDto) {
+    public void addMenu(Integer storeId, MenuRequestDto menuPostRequestDto) {
         // Store 조회
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND, "storeId", storeId));
+        Store store = getStore(storeId);
 
         // 카테고리 조회
-        Category category = categoryRepository.findById(menuPostRequestDto.getCategoryId())
-                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND, "categoryId", menuPostRequestDto.getCategoryId())
-                        .addParameter("storeId", storeId));
+        Category category = getCategory(storeId, menuPostRequestDto.getCategoryId());
 
         // 메뉴 등록
         Menu menu = menuPostRequestDto.toEntity(store, category);
         menuRepository.save(menu);
 
+        // 메뉴 연관관계 Entity 등록
+        saveMenuMappings(menu, store, menuPostRequestDto);
+    }
+
+
+    @Transactional
+    public void updateMenu(Integer storeId, Integer menuId, MenuRequestDto menuUpdateDto) {
+        Store store = getStore(storeId);
+        Category category = getCategory(storeId, menuUpdateDto.getCategoryId());
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(()-> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", menuId)
+                        .addParameter("storeId", storeId));
+
+        // 메뉴 업데이트
+        menu.update(category,
+                menuUpdateDto.getNameKr(),
+                menuUpdateDto.getNameEn(),
+                menuUpdateDto.getDescription(),
+                menuUpdateDto.getPrice(),
+                menuUpdateDto.getImageUrl(),
+                store);
+        
+        // 메뉴 연관 엔티티 삭제
+        menuTagMapRepository.deleteByMenu(menu);
+        nutritionRepository.deleteByMenu(menu);
+        menuIngredientRepository.deleteByMenu(menu);
+        menuOptionRepository.deleteByMenu(menu);
+
+        // 메뉴 연관 엔티티 재등록
+        saveMenuMappings(menu, store, menuUpdateDto);
+    }
+
+    private Menu getMenu(Integer menuId) {
+        // 메뉴 검증
+        return menuRepository.findById(menuId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", menuId));
+    }
+
+    private Store getStore(Integer storeId) {
+        return  storeRepository.findById(storeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND, "storeId", storeId));
+    }
+
+    private Category getCategory(Integer storeId, Integer categoryId){
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND, "categoryId", categoryId)
+                        .addParameter("storeId", storeId));
+    }
+
+    private void saveMenuMappings(Menu menu, Store store, MenuRequestDto menuRequestDto){
         // Tag 매핑
-        if (menuPostRequestDto.getTags() != null) {
-            for (TagRequestDto tagRequestDto : menuPostRequestDto.getTags()) {
+        if (menuRequestDto.getTags() != null) {
+            for (TagRequestDto tagRequestDto : menuRequestDto.getTags()) {
                 MenuTagMap menuTagMap = tagRequestDto.toEntity(menu, store);
                 menuTagMapRepository.save(menuTagMap);
             }
         }
 
         // 영양정보 매핑
-        if (menuPostRequestDto.getNutritionInfo() != null) {
-            for (NutritionValuePostRequestDto nutritionDto : menuPostRequestDto.getNutritionInfo()) {
+        if (menuRequestDto.getNutritionInfo() != null) {
+            for (NutritionValuePostRequestDto nutritionDto : menuRequestDto.getNutritionInfo()) {
                 NutritionTemplate nutritionTemplate = nutritionTemplateRepository.findById(nutritionDto.getNutritionTemplateId())
                         .orElseThrow(() -> new CustomException(ErrorCode.NUTRITION_TEMPLATE_NOT_FOUND, "nutritionTemplateId", nutritionDto.getNutritionTemplateId()));
                 NutritionValue nutritionValue = nutritionDto.toEntity(store, menu, nutritionTemplate);
@@ -160,8 +207,8 @@ public class MenuService {
         }
 
         // 원재료 매핑
-        if (menuPostRequestDto.getIngredientInfo() != null) {
-            for (Integer ingredientId : menuPostRequestDto.getIngredientInfo()) {
+        if (menuRequestDto.getIngredientInfo() != null) {
+            for (Integer ingredientId : menuRequestDto.getIngredientInfo()) {
                 IngredientTemplate ingredientTemplate = ingredientTemplateRepository.findById(ingredientId)
                         .orElseThrow(() -> new CustomException(ErrorCode.INGREDIENT_TEMPLATE_NOT_FOUND, "ingredientId", ingredientId));
                 MenuIngredient menuIngredient = MenuIngredient.builder()
@@ -175,8 +222,8 @@ public class MenuService {
         }
 
         // 옵션 매핑
-        if(menuPostRequestDto.getOptionInfo()!= null){
-            for(MenuOptionMapRequestDto optionDto :menuPostRequestDto.getOptionInfo()){
+        if(menuRequestDto.getOptionInfo()!= null){
+            for(MenuOptionMapRequestDto optionDto :menuRequestDto.getOptionInfo()){
                 Options options = optionsRepository.findById(optionDto.getOptionId())
                         .orElseThrow(() -> new CustomException(ErrorCode.OPTION_NOT_FOUND, "optionsId", optionDto.getOptionId()));
                 OptionDetail optionDetail = optionDetailRepository.findById(optionDto.getOptionDetailId())
@@ -185,12 +232,5 @@ public class MenuService {
                 menuOptionRepository.save(menuOptionMap);
             }
         }
-
-    }
-
-    private Menu getMenu(Integer menuId) {
-        // 메뉴 검증
-        return menuRepository.findById(menuId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", menuId));
     }
 }
