@@ -7,24 +7,20 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.CurrentTimestamp;
-
-import java.time.LocalDate;
 
 @Entity
 @Getter
+@Table(name = "yearly_sales_summary")
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "daily_sales_summary")
-public class DailySalesSummary extends BaseEntity {
+public class YearlySalesSummary extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-    @Column(name = "stat_date", nullable = false)
-    @CurrentTimestamp
-    private LocalDate statDate;
+    @Column(name = "year", nullable = false)
+    private Integer year;
 
     @Column(name = "total_sales", nullable = false)
     private Integer totalSales;
