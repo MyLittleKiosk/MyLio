@@ -84,6 +84,7 @@ services:
     build:
       context: ./FE/admin
       dockerfile: Dockerfile
+    image: ${ADMIN_IMAGE_NAME}
     ports:
       - "${ADMIN_PORT}:${ADMIN_CONTAINER_PORT}"
     networks:
@@ -93,6 +94,7 @@ services:
     build:
       context: ./FE/kiosk
       dockerfile: Dockerfile
+    image: ${KIOSK_IMAGE_NAME}
     ports:
       - "${KIOSK_PORT}:${KIOSK_CONTAINER_PORT}"
     networks:
