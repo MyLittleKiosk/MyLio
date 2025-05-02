@@ -47,7 +47,7 @@ public class CategorySalesService {
            // 월별 통계 생성
            createMonthlyCategorySales(store, date);
            // 연도별 통계 생성
-           createYearlyCategorySales();
+           createYearlyCategorySales(store, date);
        }
     }
 
