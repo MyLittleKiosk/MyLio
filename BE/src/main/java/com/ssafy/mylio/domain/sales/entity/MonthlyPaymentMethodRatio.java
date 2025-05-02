@@ -31,7 +31,7 @@ public class MonthlyPaymentMethodRatio extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "method", nullable = false)
-    private PaymentStatus method;
+    private PaymentMethod method;
 
     @Column(name = "ratio", nullable = false, precision = 5, scale = 2)
     private BigDecimal ratio;
