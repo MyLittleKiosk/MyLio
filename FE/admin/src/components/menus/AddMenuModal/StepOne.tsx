@@ -1,13 +1,14 @@
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
+import { useMenuAdd } from '@/components/menus/AddMenuModal/useMenuAdd';
 
 import IconAdd from '@/assets/icons/IconAdd';
 
 import CATEGORY_LIST from '@/datas/categoryList';
 
-import { useMenuAdd } from '@/components/menus/AddMenuModal/useMenuAdd';
 import IconTrashCan from '@/assets/icons/IconTrashCan';
+import IconImage from '@/assets/icons/IconImage';
 
 /**
  * 메뉴 추가 페이지 1단계 컴포넌트
@@ -111,18 +112,68 @@ const StepOne = () => {
         </div>
       </div>
 
-      <div className='flex gap-2'>
-        <Input
-          inputId='이미지'
-          placeholder='이미지를 업로드하세요.'
-          inputType='file'
-          label='이미지'
-          onChange={(e) => {
-            setMenuAddData({ ...menuAddData, image_url: e.target.value });
-          }}
-          inputValue={menuAddData.image_url}
-        />
-        <img src={menuAddData.image_url} alt='메뉴 이미지' />
+      <div className='flex gap-4 w-full'>
+        <label
+          htmlFor='imageFile'
+          className='min-w-[80px] max-w-[100px] text-md font-preSemiBold whitespace-nowrap'
+        >
+          이미지
+        </label>
+        <div className='flex flex-col gap-2 font-preRegular'>
+          <div className='flex gap-2 items-center'>
+            <div className='flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-content2 rounded-lg bg-gray-50 hover:bg-subContent/50 transition-colors'>
+              {menuAddData.image_url ? (
+                <img
+                  src={menuAddData.image_url}
+                  alt='메뉴 이미지'
+                  className='w-full h-full object-contain'
+                />
+              ) : (
+                <div className='flex flex-col items-center justify-center p-6'>
+                  <IconImage />
+                </div>
+              )}
+
+              <input
+                type='file'
+                id='imageFile'
+                className='hidden'
+                accept='image/*'
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    // 파일 크기 체크 (2MB = 2 * 1024 * 1024 bytes)
+                    const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+                    if (file.size > maxSize) {
+                      alert('이미지 크기는 2MB 이하여야 합니다.');
+                      e.target.value = ''; // 파일 선택 초기화
+                      return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                      setMenuAddData({
+                        ...menuAddData,
+                        image_url: e.target?.result as string,
+                      });
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              />
+            </div>
+            <button
+              type='button'
+              onClick={() => document.getElementById('imageFile')?.click()}
+              className='h-10 mt-2 px-4 py-2 bg-white border border-subContent rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50'
+            >
+              이미지 업로드
+            </button>
+          </div>
+          <p className='text-xs text-content font-preMedium'>
+            권장 크기: 500×500 픽셀, 최대 2MB
+          </p>
+        </div>
       </div>
     </div>
   );
