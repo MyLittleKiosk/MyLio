@@ -24,6 +24,6 @@ export const Default: Story = {
     title: '메뉴 목록',
     description: '총 6개의 메뉴가 있습니다.',
     columns: MENU_COLUMNS,
-    data: MENU_LIST.data.content,
+    data: MENU_LIST.content,
   },
 };

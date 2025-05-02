@@ -5,12 +5,7 @@ interface Store {
 }
 
 interface StoreList {
-  success: boolean;
-  data: {
-    stores: Store[];
-  };
-  error: string | null;
-  timestamp: string;
+  stores: Store[];
 }
 
 export type { Store, StoreList };

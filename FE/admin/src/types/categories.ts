@@ -5,17 +5,13 @@ interface Category {
 }
 
 interface CategoryList {
-  success: boolean;
-  data: {
-    content: Category[];
-    page_number: number;
-    total_pages: number;
-    total_elements: number;
-    page_size: number;
-    first: boolean;
-    last: boolean;
-  };
-  timestamp: string;
+  content: Category[];
+  page_number: number;
+  total_pages: number;
+  total_elements: number;
+  page_size: number;
+  first: boolean;
+  last: boolean;
 }
 
 export type { Category, CategoryList };

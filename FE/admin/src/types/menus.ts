@@ -12,18 +12,14 @@ interface Menu {
 }
 
 interface MenuList {
-  success: boolean;
-  data: {
-    content: Menu[];
-    page_number: number;
-    total_pages: number;
-    total_elements: number;
-    page_size: number;
-    first: boolean;
-    last: boolean;
-    error: string | null;
-  };
-  timestamp: string;
+  content: Menu[];
+  page_number: number;
+  total_pages: number;
+  total_elements: number;
+  page_size: number;
+  first: boolean;
+  last: boolean;
+  error: string | null;
 }
 
 export type { Menu, MenuList };

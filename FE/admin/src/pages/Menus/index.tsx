@@ -27,14 +27,14 @@ const Menus = () => {
   }
 
   function handleCategoryChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const selected = CATEGORY_LIST.data.content.find(
+    const selected = CATEGORY_LIST.content.find(
       (category) => category.name_kr === e.target.value
     );
     setSelectedCategory(selected || null);
   }
 
   function handleStoreChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const selected = STORE_LIST.data.stores.find(
+    const selected = STORE_LIST.stores.find(
       (store) => store.store_name === e.target.value
     );
     setSelectedStore(selected || null);
@@ -70,7 +70,7 @@ const Menus = () => {
           className='w-[65%]'
         />
         <Select<Category>
-          options={CATEGORY_LIST.data.content}
+          options={CATEGORY_LIST.content}
           selected={selectedCategory}
           onChange={handleCategoryChange}
           placeholder='모든 카테고리'
@@ -79,7 +79,7 @@ const Menus = () => {
           getOptionValue={(option) => option.name_kr}
         />
         <Select<Store>
-          options={STORE_LIST.data.stores}
+          options={STORE_LIST.stores}
           selected={selectedStore}
           onChange={handleStoreChange}
           placeholder='모든 점포'
@@ -98,7 +98,7 @@ const Menus = () => {
         title='메뉴 목록'
         description='총 6개의 메뉴가 있습니다.'
         columns={selectedNav.columns}
-        data={selectedNav.data.data.content}
+        data={selectedNav.data.content}
       />
     </section>
   );
