@@ -2,7 +2,7 @@ import { MenuResponse } from '@/service/mock/dummies/Order';
 
 const Menus = () => {
   return (
-    <section className='flex flex-col w-full h-full px-10 pt-10'>
+    <section className='flex flex-col w-full h-full ps-10 pt-10'>
       <h1 className='text-2xl font-bold inline-block'>메뉴</h1>
       <div className='w-full items-start mb-4'>
         <span className='font-bold text-gray-500 text-sm'>

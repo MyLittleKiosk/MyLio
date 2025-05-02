@@ -187,3 +187,208 @@ export const DETAIL_RESPONSE = {
     },
   },
 };
+
+export const CONFIRM_RESPONSE = {
+  confirm: [
+    {
+      id: 1,
+      name: '아이스 아메리카노',
+      price: 3000,
+      image: '/src/assets/images/defaultDrink.png',
+      options: [
+        {
+          name: '아이스',
+          price: 0,
+        },
+        {
+          name: '라지',
+          price: 700,
+        },
+        {
+          name: '휘핑크림',
+          price: 500,
+        },
+      ],
+    },
+    {
+      id: 2,
+      name: '아이스 라떼',
+      price: 4000,
+      image: '/src/assets/images/defaultDrink.png',
+      options: [
+        {
+          name: '아이스',
+          price: 0,
+        },
+        {
+          name: '라지',
+          price: 700,
+        },
+        {
+          name: '휘핑크림',
+          price: 500,
+        },
+      ],
+    },
+    {
+      id: 3,
+      name: '카페모카',
+      price: 4500,
+      image: '/src/assets/images/defaultDrink.png',
+      options: [
+        {
+          name: '아이스',
+          price: 0,
+        },
+        {
+          name: '라지',
+          price: 700,
+        },
+        {
+          name: '휘핑크림',
+          price: 500,
+        },
+      ],
+    },
+    {
+      id: 4,
+      name: '카라멜 마끼아또',
+      price: 4800,
+      image: '/src/assets/images/defaultDrink.png',
+      options: [
+        {
+          name: '아이스',
+          price: 0,
+        },
+        {
+          name: '라지',
+          price: 700,
+        },
+        {
+          name: '휘핑크림',
+          price: 500,
+        },
+      ],
+    },
+    {
+      id: 5,
+      name: '바닐라 라떼',
+      price: 4300,
+      image: '/src/assets/images/defaultDrink.png',
+      options: [
+        {
+          name: '아이스',
+          price: 0,
+        },
+        {
+          name: '라지',
+          price: 700,
+        },
+        {
+          name: '휘핑크림',
+          price: 500,
+        },
+      ],
+    },
+    {
+      id: 6,
+      name: '헤이즐넛 라떼',
+      price: 4300,
+      image: '/src/assets/images/defaultDrink.png',
+      options: [
+        {
+          name: '아이스',
+          price: 0,
+        },
+        {
+          name: '라지',
+          price: 700,
+        },
+        {
+          name: '휘핑크림',
+          price: 500,
+        },
+      ],
+    },
+    {
+      id: 7,
+      name: '녹차 라떼',
+      price: 4200,
+      image: '/src/assets/images/defaultDrink.png',
+      options: [
+        {
+          name: '아이스',
+          price: 0,
+        },
+        {
+          name: '라지',
+          price: 700,
+        },
+        {
+          name: '휘핑크림',
+          price: 500,
+        },
+      ],
+    },
+    {
+      id: 8,
+      name: '초코 라떼',
+      price: 4200,
+      image: '/src/assets/images/defaultDrink.png',
+      options: [
+        {
+          name: '아이스',
+          price: 0,
+        },
+        {
+          name: '라지',
+          price: 700,
+        },
+        {
+          name: '휘핑크림',
+          price: 500,
+        },
+      ],
+    },
+    {
+      id: 9,
+      name: '티라미수 라떼',
+      price: 4800,
+      image: '/src/assets/images/defaultDrink.png',
+      options: [
+        {
+          name: '아이스',
+          price: 0,
+        },
+        {
+          name: '라지',
+          price: 700,
+        },
+        {
+          name: '휘핑크림',
+          price: 500,
+        },
+      ],
+    },
+    {
+      id: 10,
+      name: '돌체 라떼',
+      price: 4500,
+      image: '/src/assets/images/defaultDrink.png',
+      options: [
+        {
+          name: '아이스',
+          price: 0,
+        },
+        {
+          name: '라지',
+          price: 700,
+        },
+        {
+          name: '휘핑크림',
+          price: 500,
+        },
+      ],
+    },
+  ],
+};
