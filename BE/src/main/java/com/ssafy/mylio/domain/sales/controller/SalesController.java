@@ -1,6 +1,6 @@
 package com.ssafy.mylio.domain.sales.controller;
 
-import com.ssafy.mylio.domain.sales.dto.request.CategorySalesResponseDto;
+import com.ssafy.mylio.domain.sales.dto.response.CategorySalesResponseDto;
 import com.ssafy.mylio.domain.sales.service.SalesService;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
 import com.ssafy.mylio.global.common.response.CommonResponse;
