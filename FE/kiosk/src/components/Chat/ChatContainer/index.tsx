@@ -7,7 +7,7 @@ interface Props {
   gptChat: string;
   isRecording: boolean;
   volume: number;
-  isExpand: boolean;
+  isExpand: boolean; // 하단 컨텐츠가 있으면 true로 받아옴
 }
 
 const ChatContainer = ({
