@@ -1,0 +1,10 @@
+# Environment
+.env
+
+# Python
+__pycache__/
+*.pyc
+
+# SSL
+localhost-key.pem
+localhost.pem

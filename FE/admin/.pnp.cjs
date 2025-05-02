@@ -70,6 +70,7 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-react-refresh", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:0.4.20"],\
           ["eslint-plugin-storybook", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:0.12.0"],\
           ["filesize", "npm:10.1.6"],\
+          ["framer-motion", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:12.9.2"],\
           ["globals", "npm:16.0.0"],\
           ["msi", "npm:0.0.0"],\
           ["msw", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:2.7.5"],\
@@ -3237,6 +3238,7 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-react-refresh", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:0.4.20"],\
           ["eslint-plugin-storybook", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:0.12.0"],\
           ["filesize", "npm:10.1.6"],\
+          ["framer-motion", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:12.9.2"],\
           ["globals", "npm:16.0.0"],\
           ["msi", "npm:0.0.0"],\
           ["msw", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:2.7.5"],\
@@ -5607,6 +5609,39 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["framer-motion", [\
+      ["npm:12.9.2", {\
+        "packageLocation": "./.yarn/cache/framer-motion-npm-12.9.2-1ecd2affdd-467a486675.zip/node_modules/framer-motion/",\
+        "packageDependencies": [\
+          ["framer-motion", "npm:12.9.2"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:12.9.2", {\
+        "packageLocation": "./.yarn/__virtual__/framer-motion-virtual-984c16c7bb/0/cache/framer-motion-npm-12.9.2-1ecd2affdd-467a486675.zip/node_modules/framer-motion/",\
+        "packageDependencies": [\
+          ["@emotion/is-prop-valid", null],\
+          ["@types/emotion__is-prop-valid", null],\
+          ["@types/react", "npm:19.1.2"],\
+          ["@types/react-dom", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:19.1.2"],\
+          ["framer-motion", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:12.9.2"],\
+          ["motion-dom", "npm:12.9.1"],\
+          ["motion-utils", "npm:12.8.3"],\
+          ["react", "npm:19.1.0"],\
+          ["react-dom", "virtual:7f0f7e8da996c6611fedc2eefcfbfbb5bbcfc606eeb73b9ab6c24d9bc872ef307681a74dfe14e363f41c7441fb3a075cca0714dd0d46f39b526685692269b78e#npm:19.1.0"],\
+          ["tslib", "npm:2.8.1"]\
+        ],\
+        "packagePeers": [\
+          "@emotion/is-prop-valid",\
+          "@types/emotion__is-prop-valid",\
+          "@types/react-dom",\
+          "@types/react",\
+          "react-dom",\
+          "react"\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["fs-extra", [\
       ["npm:9.1.0", {\
         "packageLocation": "./.yarn/cache/fs-extra-npm-9.1.0-983c2ddb4c-9b808bd884.zip/node_modules/fs-extra/",\
@@ -7236,6 +7271,25 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/mkdirp-npm-3.0.1-f94bfa769e-9f2b975e92.zip/node_modules/mkdirp/",\
         "packageDependencies": [\
           ["mkdirp", "npm:3.0.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["motion-dom", [\
+      ["npm:12.9.1", {\
+        "packageLocation": "./.yarn/cache/motion-dom-npm-12.9.1-89cd9f29b4-008875fbbf.zip/node_modules/motion-dom/",\
+        "packageDependencies": [\
+          ["motion-dom", "npm:12.9.1"],\
+          ["motion-utils", "npm:12.8.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["motion-utils", [\
+      ["npm:12.8.3", {\
+        "packageLocation": "./.yarn/cache/motion-utils-npm-12.8.3-61080f4165-94eb9e1692.zip/node_modules/motion-utils/",\
+        "packageDependencies": [\
+          ["motion-utils", "npm:12.8.3"]\
         ],\
         "linkType": "HARD"\
       }]\
