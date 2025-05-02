@@ -83,4 +83,16 @@ public class KioskController {
         return CommonResponse.ok(kioskService.getKioskList(storeId,userType,keyword,pageable));
 
     }
+
+    @GetMapping("/{kiosk_id}")
+    @Operation(summary = "키오스크 상세 조회", description = "매장 관리자가 키오스크 정보를 조회합니다..")
+    @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE,ErrorCode.KIOSK_NOT_FOUND})
+    public ResponseEntity<CommonResponse<KioskResponseDto>> getKioskDetail(
+            @PathVariable("kiosk_id") Integer kioskId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal){
+        String userType = authenticationUtil.getCurrntUserType(userPrincipal);
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+
+        return CommonResponse.ok(kioskService.getKioskDetail(kioskId,userType,storeId));
+    }
 }
