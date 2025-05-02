@@ -3,7 +3,7 @@ import SideBar from './SideBar';
 
 const Layout = () => {
   return (
-    <div className='flex w-full h-dvh'>
+    <div className='flex w-full h-full'>
       <SideBar />
       <Outlet />
     </div>
