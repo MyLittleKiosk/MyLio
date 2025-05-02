@@ -1,6 +1,5 @@
-package com.ssafy.mylio.domain.sales.dto.request;
+package com.ssafy.mylio.domain.sales.dto.response;
 
-import com.ssafy.mylio.domain.sales.entity.MonthlyCategorySalesRatio;
 import lombok.Builder;
 import lombok.Data;
 
