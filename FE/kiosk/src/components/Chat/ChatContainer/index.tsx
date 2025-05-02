@@ -82,7 +82,7 @@ const ChatContainer = ({
         </motion.div>
         <motion.p
           className={clsx(
-            'font-bold whitespace-pre-line break-keep',
+            'font-preBold whitespace-pre-line break-keep',
             isExpand ? 'text-xl text-center' : 'text-lg text-start'
           )}
           variants={textVariants}
@@ -98,7 +98,7 @@ const ChatContainer = ({
       </motion.div>
       <motion.div
         className={clsx(
-          'font-semibold text-center text-gray-400 break-keep',
+          'font-preSemiBold text-center text-gray-400 break-keep',
           handleUserChatFontSize()
         )}
         layout

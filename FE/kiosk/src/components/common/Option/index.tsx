@@ -7,7 +7,7 @@ interface OptionProps {
 
 const Option = ({ optionName, price }: OptionProps) => {
   return (
-    <div className='px-3 py-2  rounded-md bg-primary text-white font-bold text-sm '>
+    <div className='px-3 py-2  rounded-md bg-primary text-white font-preBold text-sm '>
       {optionName} (+{formatNumber(price)}원)
     </div>
   );

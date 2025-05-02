@@ -10,20 +10,20 @@ const Detail = () => {
           src={DETAIL_RESPONSE.detail.image}
           alt='drink'
         />
-        <div className='font-bold text-xl flex flex-col gap-4'>
+        <div className='font-preBold text-xl flex flex-col gap-4'>
           <h1>{DETAIL_RESPONSE.detail.name}</h1>
           <span>{formatNumber(DETAIL_RESPONSE.detail.price)}원</span>
         </div>
       </div>
       <div>
-        <span className='text-xs text-gray-500 font-bold'>
+        <span className='text-xs text-gray-500 font-preBold'>
           *1회 제공량 기준: 24oz
         </span>
         <div className='grid grid-cols-2 gap-x-9 gap-y-4 border-t-2 border-b-2 border-black py-4'>
           {Object.values(DETAIL_RESPONSE.detail.nutrition).map((item) => (
             <div
               key={item.name}
-              className='flex items-center gap-2 justify-between font-bold text-xs'
+              className='flex items-center gap-2 justify-between font-preBold text-xs'
             >
               <span>{`${item.name}(${item.unit})`}</span>
               <span className='font-normal'>{item.value}</span>

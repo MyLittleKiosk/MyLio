@@ -3,9 +3,9 @@ import { MenuResponse } from '@/service/mock/dummies/Order';
 const Menus = () => {
   return (
     <section className='flex flex-col w-full h-full ps-10 pt-10'>
-      <h1 className='text-2xl font-bold inline-block'>메뉴</h1>
+      <h1 className='text-2xl font-preBold inline-block'>메뉴</h1>
       <div className='w-full items-start mb-4'>
-        <span className='font-bold text-gray-500 text-sm'>
+        <span className='font-preBold text-gray-500 text-sm'>
           총 {MenuResponse.menu.length}개의 메뉴
         </span>
       </div>
@@ -22,7 +22,7 @@ const Menus = () => {
                 className='w-[90px] h-[90px]'
               />
               <div className='flex flex-col items-center h-[100px] justify-center'>
-                <h1 className='text-sm font-bold'>{item.name}</h1>
+                <h1 className='text-sm font-preBold'>{item.name}</h1>
               </div>
             </div>
           );

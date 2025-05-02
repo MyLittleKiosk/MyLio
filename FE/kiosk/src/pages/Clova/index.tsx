@@ -145,7 +145,7 @@ const ClovaPage = () => {
         isExpand={true}
       />
       <div className='w-full max-w-md p-6 bg-white rounded-lg shadow-md'>
-        <h1 className='text-2xl font-bold text-center mb-6'>
+        <h1 className='text-2xl font-preBold text-center mb-6'>
           Clova 음성 인식 테스트
         </h1>
 

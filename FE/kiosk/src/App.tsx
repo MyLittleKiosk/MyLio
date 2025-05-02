@@ -1,15 +1,16 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import './App.css';
-import Login from '@/pages/Login';
 import MSWInit from '@/components/common/MSWInit';
+import Clova from '@/pages/Clova';
 import Confirm from '@/pages/Confirm';
-import Order from '@/pages/Order';
-import SelectPay from '@/pages/SelectPay';
 import Detail from '@/pages/Detail';
-import Pay from '@/pages/Pay';
+import Login from '@/pages/Login';
 import Main from '@/pages/Main';
-import OrderLayout from '@/pages/OrderLayout';
 import Menus from '@/pages/Menus';
+import Order from '@/pages/Order';
+import OrderLayout from '@/pages/OrderLayout';
+import Pay from '@/pages/Pay';
+import SelectPay from '@/pages/SelectPay';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import './App.css';
 function App() {
   return (
     <>
@@ -17,6 +18,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<Login />} />
+          <Route path='/clova' element={<Clova />} />
           <Route path='/kiosk' element={<OrderLayout />}>
             <Route path='main' element={<Main />} />
             <Route path='search' element={<Menus />} />
