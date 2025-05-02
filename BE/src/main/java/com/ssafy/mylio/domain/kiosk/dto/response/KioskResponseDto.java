@@ -4,11 +4,10 @@ import com.ssafy.mylio.domain.kiosk.entity.KioskSession;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
 
 @Getter
 @Builder
-public class KioskCreateResponseDto {
+public class KioskResponseDto {
     @Schema(example = "1")
     private Integer kioskId;
 
@@ -21,8 +20,8 @@ public class KioskCreateResponseDto {
     @Schema(example = "false")
     private Boolean isActivate;
 
-    public static KioskCreateResponseDto of(KioskSession session){
-        return KioskCreateResponseDto.builder()
+    public static KioskResponseDto of(KioskSession session){
+        return KioskResponseDto.builder()
                 .kioskId(session.getId())
                 .startOrder(session.getStartOrderNumber())
                 .name(session.getName())

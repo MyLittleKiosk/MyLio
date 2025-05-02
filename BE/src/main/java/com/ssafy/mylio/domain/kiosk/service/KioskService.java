@@ -4,18 +4,21 @@ import com.ssafy.mylio.domain.account.entity.Account;
 import com.ssafy.mylio.domain.account.entity.AccountRole;
 import com.ssafy.mylio.domain.account.repository.AccountRepository;
 import com.ssafy.mylio.domain.kiosk.dto.request.KioskCreateRequestDto;
-import com.ssafy.mylio.domain.kiosk.dto.response.KioskCreateResponseDto;
+import com.ssafy.mylio.domain.kiosk.dto.response.KioskResponseDto;
 import com.ssafy.mylio.domain.kiosk.entity.KioskSession;
 import com.ssafy.mylio.domain.kiosk.repository.KioskRepository;
 import com.ssafy.mylio.domain.store.entity.Store;
 import com.ssafy.mylio.domain.store.repository.StoreRepository;
+import com.ssafy.mylio.global.common.CustomPage;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
@@ -30,7 +33,7 @@ public class KioskService {
     private final AccountRepository accountRepository;
 
     @Transactional
-    public KioskCreateResponseDto createKiosk(Integer userId,String userType, Integer storeId, KioskCreateRequestDto request){
+    public KioskResponseDto createKiosk(Integer userId, String userType, Integer storeId, KioskCreateRequestDto request){
         //역할이 STORE 아닌 경우 불가
         if (!userType.equals(AccountRole.STORE.getCode())) {
             throw new CustomException(ErrorCode.INVALID_ROLE)
@@ -65,7 +68,7 @@ public class KioskService {
         //저장
         kioskRepository.save(kioskSession);
 
-        return KioskCreateResponseDto.of(kioskSession);
+        return KioskResponseDto.of(kioskSession);
     }
 
     @Transactional
@@ -91,7 +94,7 @@ public class KioskService {
     }
 
     @Transactional
-    public KioskCreateResponseDto modifyKiosk(Integer kioskId,Integer userId,String userType, Integer storeId, KioskCreateRequestDto request){
+    public KioskResponseDto modifyKiosk(Integer kioskId, Integer userId, String userType, Integer storeId, KioskCreateRequestDto request){
         //역할이 STORE 아닌 경우 불가
         if (!userType.equals(AccountRole.STORE.getCode())) {
             throw new CustomException(ErrorCode.INVALID_ROLE)
@@ -109,6 +112,28 @@ public class KioskService {
         //키오스크 수정
         kiosk.update(request.getName(),request.getStartOrder());
 
-        return KioskCreateResponseDto.of(kiosk);
+        return KioskResponseDto.of(kiosk);
+    }
+
+    public CustomPage<KioskResponseDto> getKioskList(Integer storeId, String userType, String keyword, Pageable pageable){
+        //역할이 STORE가 아니면 불가
+        if (!userType.equals(AccountRole.STORE.getCode())) {
+            throw new CustomException(ErrorCode.INVALID_ROLE)
+                    .addParameter("userType",userType);
+        }
+
+        Page<KioskSession> resultPage;
+
+        if(keyword == null || keyword.trim().isEmpty()){
+            //키워드 없는 경우
+            resultPage = kioskRepository.findByStoreId(storeId,pageable);
+        }else{
+            //키워드 있을 때
+            resultPage = kioskRepository.findByStoreIdAndNameContainingIgnoreCase(storeId,keyword,pageable);
+        }
+
+        Page<KioskResponseDto> dtoPage = resultPage.map(KioskResponseDto::of);
+
+        return new CustomPage<>(dtoPage);
     }
 }
