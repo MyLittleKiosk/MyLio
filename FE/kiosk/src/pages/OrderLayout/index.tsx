@@ -2,7 +2,8 @@ import { Link, Outlet } from 'react-router-dom';
 
 const OrderLayout = () => {
   return (
-    <div>
+    // 배경 색은 추후 변경 예정
+    <div className='flex flex-col h-screen bg-gradient-to-b from-primary to-white justify-between'>
       <nav>
         <ul>
           <li>
@@ -22,7 +23,7 @@ const OrderLayout = () => {
           </li>
         </ul>
       </nav>
-      <main>
+      <main className='h-[65%] rounded-t-xl bg-white shadow-t-2xl flex flex-col justify-center items-center'>
         <Outlet />
       </main>
     </div>
