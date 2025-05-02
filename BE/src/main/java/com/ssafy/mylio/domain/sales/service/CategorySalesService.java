@@ -35,15 +35,10 @@ public class CategorySalesService {
 
     @Transactional
     public void createCategorySales(LocalDate date){
-        // 날짜의 시작과 끝 계산
-        LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime startOfNext = date.plusDays(1).atStartOfDay();
-
         // Store 정보 조회
         List<Store> storeList = storeRepository.findAll();
         
        for(Store store : storeList){
-           List<OrderItem> orderItemList = orderItemRepository.findByStoreAndCreatedAtBetween(store.getId(), startOfDay, startOfNext);
            // 월별 통계 생성
            createMonthlyCategorySales(store, date);
            // 연도별 통계 생성
