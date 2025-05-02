@@ -1,17 +1,12 @@
 package com.ssafy.mylio.domain.sales.service;
 
-import com.ssafy.mylio.domain.sales.dto.response.CategorySalesResponseDto;
+import com.ssafy.mylio.domain.sales.dto.response.*;
 import com.ssafy.mylio.domain.account.entity.AccountRole;
 import com.ssafy.mylio.domain.order.repository.OrderRepository;
-import com.ssafy.mylio.domain.sales.dto.request.CategorySalesResponseDto;
-import com.ssafy.mylio.domain.sales.dto.response.DailySalesResponseDto;
-import com.ssafy.mylio.domain.sales.dto.response.SalesResponse;
+import com.ssafy.mylio.domain.sales.dto.response.CategorySalesResponseDto;
 import com.ssafy.mylio.domain.sales.entity.MonthlyCategorySalesRatio;
 import com.ssafy.mylio.domain.sales.entity.YearlyCategorySalesRatio;
-import com.ssafy.mylio.domain.sales.repository.DailySalesSummaryRepository;
-import com.ssafy.mylio.domain.sales.repository.MonthlyCategorySalesRatioRepository;
-import com.ssafy.mylio.domain.sales.repository.MonthlySalesSummaryRepository;
-import com.ssafy.mylio.domain.sales.repository.YearlyCategorySalesRatioRepository;
+import com.ssafy.mylio.domain.sales.repository.*;
 import com.ssafy.mylio.domain.store.entity.Store;
 import com.ssafy.mylio.domain.store.repository.StoreRepository;
 import com.ssafy.mylio.global.error.code.ErrorCode;
@@ -36,6 +31,8 @@ public class SalesService {
     private final MonthlySalesSummaryRepository monthlySalesRepo;
     private final DailySalesSummaryRepository dailySalesRepo;
     private final OrderRepository orderRepository;
+    private final MonthlyPaymentMethodRatioRepository monthlyPaymentMethodRatioRepository;
+    private final YearlyPaymentMethodRatioRepository yearlyPaymentMethodRatioRepository;
     public CategorySalesResponseDto getCategorySales(Integer storeId, Integer year, Integer month){
         Store store = getStore(storeId);
 
@@ -110,5 +107,25 @@ public class SalesService {
 
         return DailySalesResponseDto.of(totalSales, totalOrders);
 
+    }
+
+    public List<PaymentSalesResponseDto> getPaymentMethodRatio(String userType ,Integer storeId, Integer year, Integer month) {
+        //역할이 STORE가 아니면 불가
+        if (!userType.equals(AccountRole.STORE.getCode())) {
+            throw new CustomException(ErrorCode.INVALID_ROLE)
+                    .addParameter("userType",userType);
+        }
+
+        if (month != null) {
+            // 월별 결제 수단 비율
+            return monthlyPaymentMethodRatioRepository.findByStoreIdAndYearAndMonth(storeId, year, month).stream()
+                    .map(e -> PaymentSalesResponseDto.of(e.getMethod().getDescription(), e.getRatio()))
+                    .toList();
+        } else {
+            // 연도별 결제 수단 비율
+            return yearlyPaymentMethodRatioRepository.findByStoreIdAndYear(storeId, year).stream()
+                    .map(e -> PaymentSalesResponseDto.of(e.getMethod().getDescription(), e.getRatio()))
+                    .toList();
+        }
     }
 }

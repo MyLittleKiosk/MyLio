@@ -10,5 +10,7 @@ public interface MonthlyPaymentMethodRatioRepository extends JpaRepository<Month
     // 해당 매장·연도·월의 모든 통계 레코드 삭제
     void deleteByStoreAndYearAndMonth(Store store, int year, int month);
     // 월별 통계 조회
-    List<MonthlyPaymentMethodRatio> findByStoreIdAndYearAndMonth(Integer storeId, int year, int month);
+    List<MonthlyPaymentMethodRatio> findByStoreIdAndYearAndMonth(int storeId, int year, int month);
+
+
 }

@@ -1,9 +1,9 @@
 package com.ssafy.mylio.domain.sales.controller;
 
-import com.ssafy.mylio.domain.sales.dto.request.CategorySalesResponseDto;
-import com.ssafy.mylio.domain.sales.dto.response.DailySalesResponseDto;
-import com.ssafy.mylio.domain.sales.dto.response.SalesResponse;
 import com.ssafy.mylio.domain.sales.dto.response.CategorySalesResponseDto;
+import com.ssafy.mylio.domain.sales.dto.response.DailySalesResponseDto;
+import com.ssafy.mylio.domain.sales.dto.response.PaymentSalesResponseDto;
+import com.ssafy.mylio.domain.sales.dto.response.SalesResponse;
 import com.ssafy.mylio.domain.sales.service.SalesService;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExample;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
@@ -14,7 +14,6 @@ import com.ssafy.mylio.global.util.AuthenticationUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -64,5 +63,17 @@ public class SalesController {
         String userType = authenticationUtil.getCurrntUserType(userPrincipal);
 
         return CommonResponse.ok(salesService.getDailySales(storeId,userType));
+    }
+
+    @GetMapping("/by_payment")
+    @Operation(summary = "결제 수단 별 매출 비율 조회", description = "월별 결제 수단 별 매출 비율을 조회합니다.")
+    @ApiErrorCodeExample(ErrorCode.INVALID_ROLE)
+    public ResponseEntity<CommonResponse<List<PaymentSalesResponseDto>>> getPaymentMethodRatio(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestParam("year") Integer year,
+            @RequestParam(value = "month", required = false) Integer month) {
+        String userType = authenticationUtil.getCurrntUserType(userPrincipal);
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+        return CommonResponse.ok(salesService.getPaymentMethodRatio(userType,storeId, year, month));
     }
 }
