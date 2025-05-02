@@ -1,22 +1,19 @@
 import React from 'react';
 
-interface SelectProps {
+interface SelectProps<T> {
   label?: string;
-  options: OptionType[];
-  selected: string;
+  options: T[];
+  selected: T | null;
   placeholder: string;
   className?: string;
   error?: boolean;
   disabled?: boolean;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  getOptionLabel: (option: T) => string;
+  getOptionValue: (option: T) => string;
 }
 
-interface OptionType {
-  key: string;
-  value: string;
-}
-
-const Select = ({
+const Select = <T,>({
   options,
   label,
   selected,
@@ -25,26 +22,37 @@ const Select = ({
   error = false,
   disabled = false,
   onChange,
-}: SelectProps) => {
+  getOptionLabel,
+  getOptionValue,
+}: SelectProps<T>) => {
+  const selectElement = (
+    <select
+      className={`w-full ${error ? 'border-2 border-error' : 'border border-subContent'} rounded-md p-2 font-preRegular`}
+      onChange={onChange}
+      value={selected ? getOptionValue(selected) : ''}
+      disabled={disabled}
+    >
+      <option value='' className='font-preRegular'>
+        {placeholder}
+      </option>
+      {options.map((option, index) => (
+        <option key={index} value={getOptionValue(option)}>
+          {getOptionLabel(option)}
+        </option>
+      ))}
+    </select>
+  );
   return (
-    <div className={`${className}`}>
-      {label && (
-        <label className='text-md font-preSemiBold flex gap-2 items-center'>
-          {label}
-          <select
-            className={`${error ? 'border-2 border-error' : 'border border-subContent'} rounded-md p-2 font-preRegular`}
-            onChange={onChange}
-            value={selected}
-            disabled={disabled}
-          >
-            <option value='' className='font-preRegular'>
-              {placeholder}
-            </option>
-            {options.map((option) => (
-              <option key={option.key}>{option.value}</option>
-            ))}
-          </select>
+    <div className={`${className} flex items-center`}>
+      {label ? (
+        <label className='flex gap-2 items-center w-full'>
+          <span className='text-md font-preSemiBold whitespace-nowrap'>
+            {label}
+          </span>
+          {selectElement}
         </label>
+      ) : (
+        selectElement
       )}
     </div>
   );

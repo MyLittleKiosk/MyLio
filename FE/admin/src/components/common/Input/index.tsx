@@ -23,22 +23,31 @@ const Input = ({
   error = false,
   disabled = false,
 }: InputProps) => {
-  return (
-    <div className={`${className}`}>
-      {label && (
-        <label className='text-md font-preSemiBold flex gap-2 items-center'>
-          {label}
+  const inputElement = (
+    <input
+      id={inputId}
+      placeholder={placeholder}
+      type={inputType}
+      value={inputValue}
+      onChange={onChange}
+      className={`${
+        error ? 'border-2 border-error' : 'border border-subContent'
+      } rounded-md p-2 font-preRegular w-full`}
+      disabled={disabled}
+    />
+  );
 
-          <input
-            id={inputId}
-            placeholder={placeholder}
-            type={inputType}
-            value={inputValue}
-            onChange={onChange}
-            className={` ${error ? 'border-2 border-error' : 'border border-subContent'} rounded-md p-2 font-preRegular`}
-            disabled={disabled}
-          />
+  return (
+    <div className={`${className} flex items-center`}>
+      {label ? (
+        <label className='flex gap-2 items-center w-full'>
+          <span className='text-md font-preSemiBold whitespace-nowrap'>
+            {label}
+          </span>
+          {inputElement}
         </label>
+      ) : (
+        inputElement
       )}
     </div>
   );
