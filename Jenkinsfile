@@ -1,32 +1,34 @@
 pipeline {
   agent any
 
-  /* ───── 1) 브랜치명을 안전한 태그로 변환 ───── */
-  environment {
-    // ① '/' → '-'  ② 소문자 변환  ③ a-z0-9_- 이외 문자는 공백으로 제거
-    PREVIEW_TAG = "${env.BRANCH_NAME
-                      .replaceAll('/', '-')
-                      .toLowerCase()
-                      .replaceAll('[^a-z0-9_-]', '')}"
-    PREVIEW_DOMAIN = "mr-${env.PREVIEW_TAG}.preview.example.com"
-  }
-
   stages {
-    stage('Detect FE target') {
+    /* ─────────── 1) 공통 변수 계산 ─────────── */
+    stage('Detect FE target & variables') {
       steps {
         script {
-          def ref = env.CHANGE_BRANCH ?: env.BRANCH_NAME       // MR이면 CHANGE_BRANCH 사용
+          /* ① MR 빌드면 CHANGE_BRANCH, 아니면 BRANCH_NAME */
+          def ref = env.CHANGE_BRANCH ?: env.BRANCH_NAME
+
+          /* ② FE 앱(admin | service) 추출 */
           def tokens = ref.tokenize('/')
-          if (tokens.size() < 2) {
-            error "브랜치명에서 FE 앱을 찾지 못했습니다. (ref=${ref})"
-          }
-          env.FE_APP = tokens[1]          // admin 또는 service
-          echo "▶ FE_APP = ${env.FE_APP}"
-          echo "▶ PREVIEW_TAG = ${env.PREVIEW_TAG}"
+          if (tokens.size() < 2)  error "브랜치명에서 FE 앱을 찾지 못했습니다. (ref=${ref})"
+          env.FE_APP = tokens[1]
+
+          /* ③ Compose 프로젝트·태그·도메인용 safe-name */
+          env.PREVIEW_TAG = ref
+                             .replaceAll('/', '-')      // / → -
+                             .toLowerCase()             // 소문자
+                             .replaceAll('[^a-z0-9_-]', '') // 허용 문자만
+          env.PREVIEW_DOMAIN = "mr-${env.PREVIEW_TAG}.preview.example.com"
+
+          echo "▶ FE_APP        = ${env.FE_APP}"
+          echo "▶ PREVIEW_TAG   = ${env.PREVIEW_TAG}"
+          echo "▶ PREVIEW_DOMAIN= ${env.PREVIEW_DOMAIN}"
         }
       }
     }
 
+    /* ─────────── 2) Preview 앱 빌드·배포 ─────────── */
     stage('Preview up (build+run)') {
       steps {
         sh """
@@ -39,6 +41,7 @@ pipeline {
     }
   }
 
+  /* ─────────── 3) MR 종료 시 정리 ─────────── */
   post {
     cleanup {
       sh """
