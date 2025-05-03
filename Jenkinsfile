@@ -43,12 +43,21 @@ pipeline {
 
   /* ─────────── 3) MR 종료 시 정리 ─────────── */
   post {
-    cleanup {
+  // 빌드 결과 GitLab 코멘트·슬랙 알림 등은 success/failure 로
+  success { echo 'Build OK' }
+
+  cleanup {
+    when {
+      // GitLab Branch Source 플러그인이 넣어 주는 env
+      expression { env.gitlabActionType in ['MERGE', 'CLOSE'] }
+    }
+    steps {
       sh """
-        docker-compose -f docker-compose.preview.yml \\
+        docker-compose -f docker-compose.preview.yml \
           --project-name fe-preview-${PREVIEW_TAG} down -v || true
         docker image rm -f fe-preview:${PREVIEW_TAG} || true
       """
     }
   }
+}
 }
