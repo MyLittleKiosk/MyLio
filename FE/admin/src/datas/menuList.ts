@@ -23,10 +23,6 @@ const MENU_COLUMNS: Column<Menu>[] = [
     accessor: 'store_name' as keyof Menu,
   },
   {
-    header: '태그',
-    accessor: 'tags' as keyof Menu,
-  },
-  {
     header: '설명',
     accessor: 'description' as keyof Menu,
     className: 'px-4 py-3 text-sm font-preRegular max-w-xs truncate',
@@ -139,11 +135,6 @@ const MENU_NAV_LIST = [
   },
   {
     title: '카테고리',
-    columns: MENU_COLUMNS,
-    data: MENU_LIST,
-  },
-  {
-    title: '태그',
     columns: MENU_COLUMNS,
     data: MENU_LIST,
   },

@@ -13,7 +13,7 @@ const Table = <T extends object>({
     <article className='w-full flex flex-col gap-2 border border-subContent rounded-md p-4'>
       <h2 className='text-xl font-preBold'>{title}</h2>
       <p className='text-sm font-preRegular'>{description}</p>
-      <div className='overflow-x-auto'>
+      <div className='overflow-x-auto overflow-y-scroll'>
         <table className={`w-full border-collapse ${className}`}>
           <thead className='border-b border-subContent'>
             <tr>

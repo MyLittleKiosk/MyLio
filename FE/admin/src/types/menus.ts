@@ -1,3 +1,5 @@
+import { OptionInfo } from './options';
+
 interface Menu {
   menu_id: number;
   image_url: string;
@@ -22,4 +24,27 @@ interface MenuList {
   error: string | null;
 }
 
-export type { Menu, MenuList };
+interface Tag {
+  tag_kr: string;
+  tag_en: string;
+}
+
+interface NutritionInfo {
+  nutrition_template_id: number;
+  nutrition_value: number;
+}
+
+interface MenuAdd {
+  image_url: string;
+  name_kr: string;
+  name_en: string;
+  category_id: number;
+  description: string;
+  price: number;
+  tags: Tag[];
+  nutrition_info: NutritionInfo[];
+  ingredient_info: number[];
+  option_info: OptionInfo[];
+}
+
+export type { Menu, MenuList, MenuAdd };
