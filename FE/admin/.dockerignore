@@ -1,0 +1,25 @@
+# Git 히스토리 · 이슈 템플릿 등
+.git
+.github
+
+# 로컬 개발 산출물
+node_modules
+dist
+build
+coverage
+*.log
+
+# IDE / OS 잡파일
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# 테스트·문서·스토리북 등 배포에 불필요한 소스
+tests
+docs
+.storybook
+
+# 환경파일은 필요에 따라
+.env*
+!.env.production          # 프로덕션용만 남기려면 ‘!’ 예외 규칙 사용

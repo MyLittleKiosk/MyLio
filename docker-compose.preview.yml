@@ -1,0 +1,21 @@
+
+# docker-compose.preview.yml  (repo-root에 위치)
+services:
+  fe-preview:
+    image: fe-preview:${PREVIEW_TAG}
+    build:
+      # 👉  빌드 컨텍스트를 런타임 변수로 치환
+      context: ./FE/${FE_APP}
+      dockerfile: Dockerfile
+    environment:
+      # FE가 dev BE를 바라보도록 - 현재는 주석
+      #VITE_API_URL: http://{SPRING_CONTAINER_NAME}
+    labels:
+      # Traefik 예시 – 도메인도 변수화
+      - traefik.enable=true
+      - traefik.http.routers.fe-${PREVIEW_TAG}.rule=Host(`${PREVIEW_DOMAIN}`)
+      - traefik.http.services.fe-${PREVIEW_TAG}.loadbalancer.server.port=5173
+
+networks:
+  app-network:
+    external: true
