@@ -47,7 +47,7 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
   }
 
   return (
-    <>
+    <div className='flex flex-col gap-2'>
       <div className='flex gap-2 max-h-[10%] w-full justify-between'>
         <Input
           inputId='searchMenu'
@@ -91,7 +91,7 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
         columns={selectedNav.columns as Column<MenuType>[]}
         data={selectedNav.data.content as MenuType[]}
       />
-    </>
+    </div>
   );
 };
 
