@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MenuAdd } from '@/types/menus';
 import { Category } from '@/types/categories';
-import CATEGORY_LIST from '@/datas/categoryList';
+import { CATEGORY_LIST } from '@/datas/categoryList';
 import { Ingredient } from '@/types/ingredient';
 import { Nutrient } from '@/types/nutrient';
 import INGREDIENT_LIST from '@/datas/IngredientList';

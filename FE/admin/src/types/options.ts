@@ -1,10 +1,10 @@
-interface OptionInfo {
+interface OptionInfoType {
   option_id: number;
   is_required: boolean;
   option_detail_id: number;
 }
 
-interface OptionDetail {
+interface OptionDetailType {
   option_id: number;
   option_name_kr: string;
   option_name_en: string;
@@ -15,4 +15,4 @@ interface OptionDetail {
   }[];
 }
 
-export type { OptionInfo, OptionDetail };
+export type { OptionInfoType, OptionDetailType };

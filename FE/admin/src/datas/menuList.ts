@@ -1,39 +1,39 @@
-import { Menu, MenuList } from '@/types/menus';
+import { MenuType, MenuList } from '@/types/menus';
 import { Column } from '@/types/tableProps';
 
-const MENU_COLUMNS: Column<Menu>[] = [
+const MENU_COLUMNS: Column<MenuType>[] = [
   {
     header: '이미지',
-    accessor: 'image_url' as keyof Menu,
+    accessor: 'image_url' as keyof MenuType,
   },
   {
     header: '메뉴명',
-    accessor: 'name_kr' as keyof Menu,
+    accessor: 'name_kr' as keyof MenuType,
   },
   {
     header: '카테고리',
-    accessor: 'category' as keyof Menu,
+    accessor: 'category' as keyof MenuType,
   },
   {
     header: '가격',
-    accessor: 'price' as keyof Menu,
+    accessor: 'price' as keyof MenuType,
   },
   {
     header: '점포',
-    accessor: 'store_name' as keyof Menu,
+    accessor: 'store_name' as keyof MenuType,
   },
   {
     header: '설명',
-    accessor: 'description' as keyof Menu,
+    accessor: 'description' as keyof MenuType,
     className: 'px-4 py-3 text-sm font-preRegular max-w-xs truncate',
   },
   {
     header: '편집',
-    accessor: 'edit' as keyof Menu,
+    accessor: 'edit' as keyof MenuType,
   },
   {
     header: '삭제',
-    accessor: 'delete' as keyof Menu,
+    accessor: 'delete' as keyof MenuType,
   },
 ];
 

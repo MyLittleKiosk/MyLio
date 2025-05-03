@@ -1,11 +1,11 @@
-interface Store {
+interface StoreType {
   store_id: number;
   store_name: string;
   address: string;
 }
 
 interface StoreList {
-  stores: Store[];
+  stores: StoreType[];
 }
 
-export type { Store, StoreList };
+export type { StoreType, StoreList };

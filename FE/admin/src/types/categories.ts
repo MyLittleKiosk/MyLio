@@ -1,11 +1,11 @@
-interface Category {
+interface CategoryType {
   category_id: number;
   name_kr: string;
   name_en: string;
 }
 
 interface CategoryList {
-  content: Category[];
+  content: CategoryType[];
   page_number: number;
   total_pages: number;
   total_elements: number;
@@ -14,4 +14,4 @@ interface CategoryList {
   last: boolean;
 }
 
-export type { Category, CategoryList };
+export type { CategoryType, CategoryList };
