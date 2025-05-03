@@ -7,7 +7,7 @@ import Select from '@/components/common/Select';
 
 import INGREDIENT_LIST from '@/datas/IngredientList';
 import NUTRIENT_LIST from '@/datas/NutrientList';
-import OPTION_LIST from '@/datas/optionList';
+import { OPTION_LIST } from '@/datas/optionList';
 
 import { useMenuAdd } from '@/components/menus/AddMenuModal/useMenuAdd';
 
@@ -180,7 +180,7 @@ const StepTwo = () => {
           옵션 그룹
         </h2>
         <OptionTable
-          options={[OPTION_LIST.data]}
+          options={OPTION_LIST.content.options}
           onOptionSelect={handleOptionSelect}
           onDetailSelect={handleDetailSelect}
           onRequiredSelect={handleRequiredSelect}

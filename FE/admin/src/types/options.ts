@@ -4,7 +4,7 @@ interface OptionInfoType {
   option_detail_id: number;
 }
 
-interface OptionDetailType {
+interface OptionType {
   option_id: number;
   option_name_kr: string;
   option_name_en: string;
@@ -15,10 +15,16 @@ interface OptionDetailType {
   }[];
 }
 
+interface OptionDetailType {
+  option_detail_id: number;
+  option_detail_value: string;
+  additional_price: number;
+}
+
 interface OptionList {
   content: {
-    options: OptionDetailType[];
+    options: OptionType[];
   };
 }
 
-export type { OptionInfoType, OptionDetailType, OptionList };
+export type { OptionInfoType, OptionDetailType, OptionType, OptionList };

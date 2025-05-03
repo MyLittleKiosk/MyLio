@@ -1,22 +1,22 @@
-import { OptionDetailType, OptionList } from '@/types/options';
+import { OptionList, OptionType } from '@/types/options';
 import { Column } from '@/types/tableProps';
 
-const OPTION_COLUMNS: Column<OptionDetailType>[] = [
+const OPTION_COLUMNS: Column<OptionType>[] = [
   {
     header: '옵션 그룹명',
-    accessor: 'option_name_kr' as keyof OptionDetailType,
+    accessor: 'option_name_kr' as keyof OptionType,
   },
   {
     header: '옵션 항목',
-    accessor: 'option_detail' as keyof OptionDetailType,
+    accessor: 'option_detail' as keyof OptionType,
   },
   {
     header: '편집',
-    accessor: 'edit' as keyof OptionDetailType,
+    accessor: 'edit' as keyof OptionType,
   },
   {
     header: '삭제',
-    accessor: 'delete' as keyof OptionDetailType,
+    accessor: 'delete' as keyof OptionType,
   },
 ];
 

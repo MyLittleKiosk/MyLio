@@ -1,7 +1,6 @@
-import { CategoryList } from './categories';
-import { CategoryType } from './categories';
-import { OptionDetailType, OptionInfoType, OptionList } from './options';
-import { Column } from './tableProps';
+import { CategoryList, CategoryType } from '@/types/categories';
+import { OptionInfoType, OptionList, OptionType } from '@/types/options';
+import { Column } from '@/types/tableProps';
 
 interface MenuType {
   menu_id: number;
@@ -63,7 +62,7 @@ type NavItemType =
     }
   | {
       title: string;
-      columns: Column<OptionDetailType>[];
+      columns: Column<OptionType>[];
       data: OptionList;
     };
 
