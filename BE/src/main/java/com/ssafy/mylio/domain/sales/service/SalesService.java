@@ -15,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +31,8 @@ public class SalesService {
     private final OrderRepository orderRepository;
     private final MonthlyPaymentMethodRatioRepository monthlyPaymentMethodRatioRepository;
     private final YearlyPaymentMethodRatioRepository yearlyPaymentMethodRatioRepository;
+    private final MonthlyDineInTakeoutRatioRepository monthlyDineInTakeoutRatioRepository;
+    private final YearlyDineInTakeoutRatioRepository yearlyDineInTakeoutRatioRepository;
     public CategorySalesResponseDto getCategorySales(Integer storeId, Integer year, Integer month){
         Store store = getStore(storeId);
 
@@ -125,6 +125,26 @@ public class SalesService {
             // 연도별 결제 수단 비율
             return yearlyPaymentMethodRatioRepository.findByStoreIdAndYear(storeId, year).stream()
                     .map(e -> PaymentSalesResponseDto.of(e.getMethod().getDescription(), e.getRatio()))
+                    .toList();
+        }
+    }
+
+    public List<OrderTypeSalesResponseDto> getOrderTypeStatics(String userType, Integer storeId, Integer year, Integer month){
+        //역할이 STORE가 아니면 불가
+        if (!userType.equals(AccountRole.STORE.getCode())) {
+            throw new CustomException(ErrorCode.INVALID_ROLE)
+                    .addParameter("userType",userType);
+        }
+
+        if(month != null){
+            //월별 결제
+            return monthlyDineInTakeoutRatioRepository.findByStoreIdAndYearAndMonth(storeId,year,month).stream()
+                    .map(e -> OrderTypeSalesResponseDto.of(e.getType().getDescription(), e.getRatio()))
+                    .toList();
+        }else{
+            //연도별 결제
+            return yearlyDineInTakeoutRatioRepository.findByStoreIdAndYear(storeId,year).stream()
+                    .map(e -> OrderTypeSalesResponseDto.of(e.getType().getDescription(),  e.getRatio()))
                     .toList();
         }
     }
