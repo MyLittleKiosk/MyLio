@@ -15,4 +15,10 @@ interface OptionDetailType {
   }[];
 }
 
-export type { OptionInfoType, OptionDetailType };
+interface OptionList {
+  content: {
+    options: OptionDetailType[];
+  };
+}
+
+export type { OptionInfoType, OptionDetailType, OptionList };

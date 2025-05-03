@@ -1,4 +1,7 @@
-import { OptionInfoType } from './options';
+import { CategoryList } from './categories';
+import { CategoryType } from './categories';
+import { OptionDetailType, OptionInfoType, OptionList } from './options';
+import { Column } from './tableProps';
 
 interface MenuType {
   menu_id: number;
@@ -47,4 +50,21 @@ interface MenuAdd {
   option_info: OptionInfoType[];
 }
 
-export type { MenuType, MenuList, MenuAdd };
+type NavItemType =
+  | {
+      title: string;
+      columns: Column<MenuType>[];
+      data: MenuList;
+    }
+  | {
+      title: string;
+      columns: Column<CategoryType>[];
+      data: CategoryList;
+    }
+  | {
+      title: string;
+      columns: Column<OptionDetailType>[];
+      data: OptionList;
+    };
+
+export type { MenuType, MenuList, MenuAdd, NavItemType };
