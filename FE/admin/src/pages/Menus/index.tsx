@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Modal from '@/components/common/Modal';
 import Menu from '@/components/menus/Menu';
 import Category from '@/components/menus/Category';
+import Option from '@/components/menus/Option';
 
 import { MENU_NAV_LIST } from '@/datas/menuList';
 import { NavItemType } from '@/types/menus';
@@ -36,6 +37,7 @@ const Menus = () => {
           {selectedNav.title === '카테고리' && (
             <Category selectedNav={selectedNav} />
           )}
+          {selectedNav.title === '옵션' && <Option selectedNav={selectedNav} />}
         </div>
       </section>
       <Modal />
