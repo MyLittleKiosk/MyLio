@@ -1,33 +1,30 @@
-
 pipeline {
   agent any
+
+  /* ---------- 1) 환경변수 정의 ---------- */
   environment {
-    PREVIEW_TAG = BRANCH_NAME.replaceAll('/', '-')       // ex) feat-admin-login-page
-    PREVIEW_DOMAIN = "mr-${PREVIEW_TAG}.preview.example.com"
+    // BRANCH_NAME 은 이미 Jenkins 가 넣어 주는 env 변수이므로
+    PREVIEW_TAG    = "${env.BRANCH_NAME.replaceAll('/', '-')}"
+    PREVIEW_DOMAIN = "mr-${env.PREVIEW_TAG}.preview.example.com"
+    // FE_APP 은 뒤 stage 에서 동적으로 set
   }
 
   stages {
-    stage('Detect FE target') {        // ① admin 인지 service 인지 추출
+    stage('Detect FE target') {
       steps {
         script {
-          /*
-           * 브랜치 규칙: feat/<app>/<etc>
-           * tokens[1] 이 'admin' 또는 'service'
-           */
-          def app = BRANCH_NAME.tokenize('/')[1]
-          if (!app) { error "브랜치명에서 FE 앱을 찾지 못했습니다." }
-          env.FE_APP = app          // Compose 에서 사용
+          def app = env.BRANCH_NAME.tokenize('/')[1]
+          if (!app)  error "브랜치명에서 FE 앱을 찾지 못했습니다."
+          env.FE_APP = app                 // ★ 여기서 FE_APP 확정
           echo "▶ FE_APP = ${env.FE_APP}"
         }
       }
     }
 
-    stage('Preview up (build+run)') {  // ② docker-compose 에 변수 넘김
+    stage('Preview up (build+run)') {
       steps {
+        /* ---------- 2) 셸 안에서는 $FE_APP 로 그대로 쓰면 OK ---------- */
         sh """
-          FE_APP=${FE_APP} \
-          PREVIEW_TAG=${PREVIEW_TAG} \
-          PREVIEW_DOMAIN=${PREVIEW_DOMAIN} \
           docker compose \
             -f docker-compose.preview.yml \
             --project-name fe-preview-${PREVIEW_TAG} \
@@ -37,10 +34,10 @@ pipeline {
     }
   }
 
-  post {                              // ③ MR 닫힘·머지 시 정리
+  post {
     cleanup {
+      /* ---------- 3) Groovy interpolation 을 쓸 땐 env.FE_APP ↓ ---------- */
       sh """
-        FE_APP=${FE_APP} \
         docker compose -f docker-compose.preview.yml \
           --project-name fe-preview-${PREVIEW_TAG} down -v
         docker image rm -f fe-preview:${PREVIEW_TAG} || true
