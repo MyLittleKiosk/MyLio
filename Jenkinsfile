@@ -3,30 +3,38 @@ pipeline {
 
   stages {
     /* ─────────── 1) 공통 변수 계산 ─────────── */
-    stage('Detect FE target & variables') {
-      steps {
-        script {
-          /* ① MR 빌드면 CHANGE_BRANCH, 아니면 BRANCH_NAME */
-          def ref = env.CHANGE_BRANCH ?: env.BRANCH_NAME
+    steps {
+      script {
+        /* ───── 1) 빌드 대상 브랜치·MR 정보 ───── */
+        def ref = env.CHANGE_BRANCH ?: env.BRANCH_NAME        // 소스 ref
+        def mrId = env.CHANGE_ID                              // MR 번호 (null ⇢ 일반 브랜치 빌드)
 
-          /* ② FE 앱(admin | service) 추출 */
-          def tokens = ref.tokenize('/')
-          if (tokens.size() < 2)  error "브랜치명에서 FE 앱을 찾지 못했습니다. (ref=${ref})"
-          env.FE_APP = tokens[1]
+        /* ───── 2) FE 앱(admin | service) 추출 ───── */
+        def tokens = ref.tokenize('/')
+        if (tokens.size() < 2) error "브랜치명에서 FE 앱을 찾지 못했습니다. (ref=${ref})"
+        env.FE_APP = tokens[1]
 
-          /* ③ Compose 프로젝트·태그·도메인용 safe-name */
-          env.PREVIEW_TAG = ref
-                             .replaceAll('/', '-')      // / → -
-                             .toLowerCase()             // 소문자
-                             .replaceAll('[^a-z0-9_-]', '') // 허용 문자만
-          env.PREVIEW_DOMAIN = "mr-${env.PREVIEW_TAG}.preview.example.com"
-
-          echo "▶ FE_APP        = ${env.FE_APP}"
-          echo "▶ PREVIEW_TAG   = ${env.PREVIEW_TAG}"
-          echo "▶ PREVIEW_DOMAIN= ${env.PREVIEW_DOMAIN}"
+        /* ───── 3) 프로젝트·이미지·도메인 네이밍 ───── */
+        if (mrId) {                                  // MR 빌드인 경우
+          env.PROJECT_NAME  = "fe-preview-${mrId}"   // docker-compose --project-name
+          env.IMAGE_TAG     = "mr-${mrId}"           // fe-preview:mr-69
+          env.PREVIEW_PATH  = "/test/${mrId}/"       // path-based 프록시용
+        } else {                                     // 브랜치 빌드(예: dev, main)
+          def safe = ref.replaceAll('/', '-')        // / → -
+                        .toLowerCase()                // 소문자
+                         .replaceAll('[^a-z0-9_-]', '')// 허용 문자만
+          env.PROJECT_NAME  = "fe-preview-${safe}"
+          env.IMAGE_TAG     = "${safe}"
+          env.PREVIEW_PATH  = "/test/${safe}/"
         }
+
+        echo "▶ FE_APP        = ${env.FE_APP}"
+        echo "▶ PROJECT_NAME  = ${env.PROJECT_NAME}"
+        echo "▶ IMAGE_TAG     = ${env.IMAGE_TAG}"
+        echo "▶ PREVIEW_PATH  = ${env.PREVIEW_PATH}"
       }
     }
+  }
 
     /* ─────────── 2) Preview 앱 빌드·배포 ─────────── */
     stage('Preview up (build+run)') {
