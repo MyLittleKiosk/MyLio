@@ -39,10 +39,12 @@ pipeline {
     stage('Preview up (build+run)') {
       steps {
         sh """
-          BASE_PATH=${PREVIEW_PATH} IMAGE_TAG=${IMAGE_TAG} \\
           docker-compose -f docker-compose.preview.yml \\
             --project-name ${PROJECT_NAME} \\
             up -d --build --remove-orphans
+
+          # 네트워크 이름 = ${PROJECT_NAME}_default
+          docker network connect ${PROJECT_NAME}_default nginx-lb || true
         """
       }
     }
@@ -57,9 +59,11 @@ post {
       if (action && action in ['CLOSE', 'MERGE']) {
         echo "🧹 MR ${action} → cleaning review app"
         sh """
+          docker network disconnect ${network} nginx-lb || true
           docker-compose -f docker-compose.preview.yml \\
             --project-name ${PROJECT_NAME} down -v || true
           docker image rm -f fe-preview:${IMAGE_TAG} || true
+          docker network rm ${network} || true
         """
       } else {
         echo "🔖 Not a MR close/merge (gitlabActionType=${action}) – skipping cleanup"
