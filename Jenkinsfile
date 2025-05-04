@@ -49,20 +49,22 @@ pipeline {
   }
 
   /************* 3. MR 종료 시 리뷰 앱 정리 *************/
-  post {
-    always {
-      script {
-        if (env.gitlabActionType in ['CLOSE', 'MERGE']) {
-          echo "🧹 MR ${gitlabActionType} → cleaning review app"
-          sh """
-            docker-compose -f docker-compose.preview.yml \\
-              --project-name ${PROJECT_NAME} down -v || true
-            docker image rm -f fe-preview:${IMAGE_TAG} || true
-          """
-        } else {
-          echo "🔖 MR still open (${gitlabActionType}) – preview container kept alive"
-        }
+post {
+  always {
+    script {
+      def action = env.gitlabActionType
+
+      if (action && action in ['CLOSE', 'MERGE']) {
+        echo "🧹 MR ${action} → cleaning review app"
+        sh """
+          docker-compose -f docker-compose.preview.yml \\
+            --project-name ${PROJECT_NAME} down -v || true
+          docker image rm -f fe-preview:${IMAGE_TAG} || true
+        """
+      } else {
+        echo "🔖 Not a MR close/merge (gitlabActionType=${action}) – skipping cleanup"
       }
     }
   }
+}
 }
