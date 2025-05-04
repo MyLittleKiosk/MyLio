@@ -6,6 +6,7 @@ import Layout from '@/components/layout';
 import Login from '@/pages/Login';
 import Menus from '@/pages/Menus';
 import Statistics from '@/pages/Statistics';
+import Accounts from './pages/Accounts';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route element={<Layout />}>
           <Route path='/' element={<Statistics />} />
           <Route path='/menus' element={<Menus />} />
+          <Route path='/accounts' element={<Accounts />} />
         </Route>
         <Route path='/login' element={<Login />} />
       </Routes>
