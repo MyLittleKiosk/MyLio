@@ -50,7 +50,7 @@ pipeline {
     stage('Deploy Preview') {
       steps {
         sh '''
-         BASE_PATH=${BASE_PATH} IMAGE_TAG=${IMAGE_TAG} \
+         BASE_PATH=${PREVIEW_PATH} IMAGE_TAG=${IMAGE_TAG} \
           docker-compose -f docker-compose.preview.yml \
            --project-name ${PROJECT_NAME} \
             up -d --force-recreate --remove-orphans fe-preview
