@@ -40,9 +40,8 @@ const AddAccountModal = () => {
   function handleChange(field: keyof AccountFormData, value: string) {
     setFormData((prev) => ({ ...prev, [field]: value }));
 
-    const errorField = field === 'emailDomain' ? 'domain' : field;
-    if (errors[errorField as keyof AccountFormErrors]) {
-      setErrors((prev) => ({ ...prev, [errorField]: undefined }));
+    if (errors[field as keyof AccountFormErrors]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     } else if (field === 'emailId' && errors.emailDomain) {
       setErrors((prev) => ({ ...prev, emailDomain: undefined }));
     }
