@@ -39,6 +39,7 @@ pipeline {
     stage('Preview up (build+run)') {
       steps {
         sh """
+          BASE_PATH=${PREVIEW_PATH} IMAGE_TAG=${IMAGE_TAG} \\
           docker-compose -f docker-compose.preview.yml \\
             --project-name ${PROJECT_NAME} \\
             up -d --build --remove-orphans
