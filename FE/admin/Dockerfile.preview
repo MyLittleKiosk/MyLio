@@ -14,7 +14,7 @@ COPY .yarn/ .yarn/
 RUN yarn install --immutable
 
 ARG BASE_PATH=/
-ENV BASE_PATH = ${BASE_PATH}
+ENV BASE_PATH ${BASE_PATH}
 RUN echo "Building with base: $BASE_PATH"
 
 # 애플리케이션 소스 복사 → 빌드
