@@ -53,6 +53,10 @@ const Table = <T extends object>({
                       </button>
                     ) : column.accessor === 'price' ? (
                       `₩${String(row[column.accessor as keyof T]).toLocaleString()}`
+                    ) : column.accessor === 'status' ? (
+                      <div
+                        className={`ms-2 w-3 h-3 rounded-full ${row[column.accessor as keyof T] ? 'bg-green-500' : 'bg-red-500'}`}
+                      />
                     ) : (
                       String(row[column.accessor as keyof T])
                     )}
