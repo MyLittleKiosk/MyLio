@@ -17,20 +17,20 @@ pipeline {
           if (mrId) {
             env.PROJECT_NAME = "fe-preview-${mrId}"
             env.IMAGE_TAG    = "mr-${mrId}"
-            env.PREVIEW_PATH = "/test/${mrId}/"
+            env.BASE_PATH = "/test/${mrId}/"
           } else {
             def safe = ref.replaceAll('/', '-')
                           .toLowerCase()
                           .replaceAll('[^a-z0-9_-]', '')
             env.PROJECT_NAME = "fe-preview-${safe}"
             env.IMAGE_TAG    = "${safe}"
-            env.PREVIEW_PATH = "/test/${safe}/"
+            env.BASE_PATH = "/test/${safe}/"
           }
 
           echo "▶ FE_APP        = ${env.FE_APP}"
           echo "▶ PROJECT_NAME  = ${env.PROJECT_NAME}"
           echo "▶ IMAGE_TAG     = ${env.IMAGE_TAG}"
-          echo "▶ PREVIEW_PATH  = ${env.PREVIEW_PATH}"
+          echo "▶ BASE_PATH    = ${env.BASE_PATH}"
         }
       }
     }
@@ -39,7 +39,7 @@ pipeline {
     stage('Build Preview') {
       steps {
         sh '''
-          BASE_PATH=${PREVIEW_PATH} IMAGE_TAG=${IMAGE_TAG} \
+          BASE_PATH=${BASE_PATH} IMAGE_TAG=${IMAGE_TAG} \
           docker-compose -f docker-compose.preview.yml \
             --project-name ${PROJECT_NAME} \
             build --no-cache fe-preview

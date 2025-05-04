@@ -13,7 +13,7 @@ COPY .yarn/ .yarn/
 # 의존성 설치 (Berry 표준)
 RUN yarn install --immutable
 
-ARG BASE_PATH/
+ARG BASE_PATH=/
 ENV BASE_PATH = ${BASE_PATH}
 RUN echo "Building with base: $BASE_PATH"
 
