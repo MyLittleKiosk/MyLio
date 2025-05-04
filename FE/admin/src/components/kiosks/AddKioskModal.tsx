@@ -5,15 +5,21 @@ import Select from '../common/Select';
 
 interface AddKioskModalProps {
   initialData?: {
-    kioskName: string;
-    groupName: string;
-    status: string;
+    name: string;
+    id: string;
+    status: boolean;
   };
+  onSave: () => void;
+  onCancel: () => void;
 }
 
-const AddKioskModal = ({ initialData }: AddKioskModalProps) => {
-  const [kioskName, setKioskName] = useState(initialData?.kioskName || '');
-  const [groupName, setGroupName] = useState(initialData?.groupName || '');
+const AddKioskModal = ({
+  initialData,
+  onSave,
+  onCancel,
+}: AddKioskModalProps) => {
+  const [kioskName, setKioskName] = useState(initialData?.name || '');
+  const [groupName, setGroupName] = useState(initialData?.id || '');
   const [status, setStatus] = useState(initialData?.status || '활성화');
 
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -60,15 +66,15 @@ const AddKioskModal = ({ initialData }: AddKioskModalProps) => {
               onChange={handleStatusChange}
               placeholder='전체'
               className='w-full h-full'
-              getOptionLabel={(option) => option}
-              getOptionValue={(option) => option}
+              getOptionLabel={(option) => option as string}
+              getOptionValue={(option) => option as string}
             />
           </label>
         </div>
       </div>
       <div className='flex justify-end gap-2 mt-4'>
-        <Button buttonType='button' text='취소' cancel onClick={() => {}} />
-        <Button buttonType='button' text='저장' onClick={() => {}} />
+        <Button buttonType='button' text='취소' cancel onClick={onCancel} />
+        <Button buttonType='button' text='저장' onClick={onSave} />
       </div>
     </div>
   );

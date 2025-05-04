@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import AddKioskModal from '@/components/kiosks/AddKioskModal';
 
 const Kiosk = () => {
-  const { openModal } = useModalStore();
+  const { openModal, closeModal } = useModalStore();
   const [searchValue, setSearchValue] = useState('');
   const [selected, setSelected] = useState('');
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -49,7 +49,12 @@ const Kiosk = () => {
           text='키오스크 추가'
           icon={<IconAdd fillColor='white' />}
           onClick={() => {
-            openModal(<AddKioskModal />);
+            openModal(
+              <AddKioskModal
+                onSave={() => closeModal()}
+                onCancel={() => closeModal()}
+              />
+            );
           }}
           className='w-[11%] items-center justify-center'
         />
@@ -59,6 +64,18 @@ const Kiosk = () => {
         description='총 6개의 키오스크가 있습니다.'
         columns={KIOSK_COLUMNS}
         data={KIOSK_LIST.content}
+        onEdit={(row) => {
+          openModal(
+            <AddKioskModal
+              initialData={row}
+              onSave={() => closeModal()}
+              onCancel={() => closeModal()}
+            />
+          );
+        }}
+        onDelete={(row) => {
+          alert(row.id);
+        }}
       />
       <Modal />
     </section>
