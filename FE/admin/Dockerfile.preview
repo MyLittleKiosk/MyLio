@@ -18,7 +18,7 @@ RUN echo "Building with base: $BASE_PATH"
 
 # 애플리케이션 소스 복사 → 빌드
 COPY . .
-RUN yarn build --base=$BASE_PATH
+RUN yarn build --base=/
 
 ######################## 2단계 ─ Runtime ########################
 FROM nginx:alpine
