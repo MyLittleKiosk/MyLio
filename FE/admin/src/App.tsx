@@ -1,11 +1,11 @@
 import { Route, Routes } from 'react-router-dom';
 
+import MSWInit from '@/components/common/MSWInit';
 import Layout from '@/components/layout';
-import MSWInit from '@/components/common/MSWinit';
 
-import Statistics from '@/pages/Statistics';
 import Login from '@/pages/Login';
 import Menus from '@/pages/Menus';
+import Statistics from '@/pages/Statistics';
 
 function App() {
   return (
