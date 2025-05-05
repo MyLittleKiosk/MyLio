@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { MenuAdd } from '@/types/menus';
-import { Category } from '@/types/categories';
-import CATEGORY_LIST from '@/datas/categoryList';
-import { Ingredient } from '@/types/ingredient';
-import { Nutrient } from '@/types/nutrient';
+import { CategoryType } from '@/types/categories';
+import { CATEGORY_LIST } from '@/datas/categoryList';
+import { IngredientType } from '@/types/ingredient';
+import { NutrientType } from '@/types/nutrient';
 import INGREDIENT_LIST from '@/datas/IngredientList';
 import NUTRIENT_LIST from '@/datas/NutrientList';
 
 interface UseMenuAddReturn {
   menuAddData: MenuAdd;
-  selectedCategory: Category | null;
+  selectedCategory: CategoryType | null;
   tagValueKR: string;
   tagValueEN: string;
   nutritionValue: number;
@@ -19,8 +19,8 @@ interface UseMenuAddReturn {
     nutrient_name: string;
     nutrient_value: number;
   }[];
-  selectedIngredient: Ingredient | null;
-  selectedNutrient: Nutrient | null;
+  selectedIngredient: IngredientType | null;
+  selectedNutrient: NutrientType | null;
   setNutritionValue: (value: number) => void;
   handleCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleTagInputChange: (type: 'KR' | 'EN', value: string) => void;
@@ -51,7 +51,7 @@ const initialMenuData: MenuAdd = {
 
 export const useMenuAdd = (): UseMenuAddReturn => {
   const [menuAddData, setMenuAddData] = useState<MenuAdd>(initialMenuData);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+  const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(
     null
   );
   const [tagValueKR, setTagValueKR] = useState<string>('');
@@ -68,8 +68,8 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     }[]
   >([]);
   const [selectedIngredient, setSelectedIngredient] =
-    useState<Ingredient | null>(null);
-  const [selectedNutrient, setSelectedNutrient] = useState<Nutrient | null>(
+    useState<IngredientType | null>(null);
+  const [selectedNutrient, setSelectedNutrient] = useState<NutrientType | null>(
     null
   );
 
