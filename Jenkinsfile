@@ -1,7 +1,7 @@
 
 pipeline {
   agent any
-
+  /*
   triggers {
     GenericTrigger(
       genericVariables: [
@@ -15,7 +15,7 @@ pipeline {
       regexpFilterExpression: '^(open|reopen|merge|close)$'
     )
   }       
-  
+  */
   /************* 1. 공통 변수 계산 *************/
   stages {
     stage('Detect FE target & variables') {
