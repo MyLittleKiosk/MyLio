@@ -4,6 +4,7 @@ properties([
       genericVariables: [
         [key: 'action', value: '$.object_attributes.action']
       ],
+      tokenCredentialId: 'JENKINS-WH',
       causeString: 'GitLab MR action: $action',
       printPostContent: true,
       printContributedVariables: true,
