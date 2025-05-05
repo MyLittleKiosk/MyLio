@@ -1,3 +1,18 @@
+properties([
+  pipelineTriggers([
+    [$class: 'GenericTrigger',
+      genericVariables: [
+        [key: 'action', value: '$.object_attributes.action']
+      ],
+      causeString: 'GitLab MR action: $action',
+      printPostContent: true,
+      printContributedVariables: true,
+      regexpFilterText: '$action',
+      regexpFilterExpression: '^(open|reopen|merge|close)$'
+    ]
+  ])
+])
+
 pipeline {
   agent any
          
