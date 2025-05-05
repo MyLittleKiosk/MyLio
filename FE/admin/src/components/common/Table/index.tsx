@@ -39,7 +39,21 @@ const Table = <T extends object>({
                       column.className || 'px-4 py-3 text-sm font-preRegular'
                     }
                   >
-                    {column.accessor === 'image_url' ? (
+                    {column.accessor === 'option_detail' ? (
+                      <div>
+                        {(
+                          row[column.accessor as keyof T] as unknown as Array<{
+                            option_detail_value: string;
+                            additional_price: number;
+                          }>
+                        ).map((option, index) => (
+                          <p key={index}>
+                            {option.option_detail_value} +
+                            {option.additional_price}
+                          </p>
+                        ))}
+                      </div>
+                    ) : column.accessor === 'image_url' ? (
                       <img
                         src={String(row[column.accessor as keyof T])}
                         alt='메뉴 이미지'

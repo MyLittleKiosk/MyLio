@@ -33,7 +33,7 @@ const SideBar = () => {
       initial={false}
       animate={{ width: isSideBarOpen ? '180px' : '70px' }}
       transition={{
-        width: { duration: 0.815, ease: 'easeInOut' },
+        width: { duration: 0.3, ease: 'easeInOut' },
       }}
       onAnimationComplete={() => {
         if (isSideBarOpen) {

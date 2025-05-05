@@ -44,7 +44,7 @@ const Input = ({
     <div className={`${className} flex items-center`}>
       {label ? (
         <label className='flex gap-4 items-center w-full'>
-          <span className='min-w-[80px] max-w-[100px] text-md font-preSemiBold whitespace-nowrap'>
+          <span className='w-[10%] min-w-[80px] max-w-[100px] text-md font-preSemiBold whitespace-wrap break-keep'>
             {label}
           </span>
           {inputElement}

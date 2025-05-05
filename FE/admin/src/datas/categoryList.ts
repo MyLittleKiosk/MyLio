@@ -1,4 +1,20 @@
-import { CategoryList } from '@/types/categories';
+import { CategoryType, CategoryList } from '@/types/categories';
+import { Column } from '@/types/tableProps';
+
+const CATEGORY_COLUMNS: Column<CategoryType>[] = [
+  {
+    header: '카테고리명',
+    accessor: 'name_kr' as keyof CategoryType,
+  },
+  {
+    header: '편집',
+    accessor: 'edit' as keyof CategoryType,
+  },
+  {
+    header: '삭제',
+    accessor: 'delete' as keyof CategoryType,
+  },
+];
 
 const CATEGORY_LIST: CategoryList = {
   content: [
@@ -41,4 +57,4 @@ const CATEGORY_LIST: CategoryList = {
   last: true,
 };
 
-export default CATEGORY_LIST;
+export { CATEGORY_COLUMNS, CATEGORY_LIST };
