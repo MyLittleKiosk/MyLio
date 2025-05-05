@@ -58,9 +58,6 @@ pipeline {
             --project-name ${PROJECT_NAME} \
             build --no-cache fe-preview
           
-          # 네트워크 이름 = ${PROJECT_NAME}_default
-          docker network connect ${PROJECT_NAME}_default nginx-lb || true
-          docker restart nginx-lb
         '''
       }
     }
@@ -72,6 +69,10 @@ pipeline {
           docker-compose -f docker-compose.preview.yml \
            --project-name ${PROJECT_NAME} \
             up -d --force-recreate --remove-orphans fe-preview
+            
+          # 네트워크 이름 = ${PROJECT_NAME}_default
+          docker network connect ${PROJECT_NAME}_default nginx-lb || true
+          docker restart nginx-lb
         '''
       }
     }
