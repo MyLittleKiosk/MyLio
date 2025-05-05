@@ -10,6 +10,8 @@ interface TableProps<T> {
   columns: Column<T>[];
   data: T[];
   className?: string;
+  onEdit?: (row: T) => void;
+  onDelete?: (row: T) => void;
 }
 
 export type { Column, TableProps };

@@ -8,6 +8,8 @@ const Table = <T extends object>({
   columns,
   data,
   className = '',
+  onEdit,
+  onDelete,
 }: TableProps<T>) => {
   return (
     <article className='w-full flex flex-col gap-2 border border-subContent rounded-md p-4'>
@@ -58,15 +60,25 @@ const Table = <T extends object>({
                         className='w-10 h-10 rounded-md object-cover'
                       />
                     ) : column.accessor === 'edit' ? (
-                      <button className='p-1 hover:bg-gray-100 rounded-md'>
+                      <button
+                        className='p-1 hover:bg-gray-100 rounded-md'
+                        onClick={() => onEdit?.(row)}
+                      >
                         <IconEdit />
                       </button>
                     ) : column.accessor === 'delete' ? (
-                      <button className='p-1 hover:bg-gray-100 rounded-md'>
+                      <button
+                        className='p-1 hover:bg-gray-100 rounded-md'
+                        onClick={() => onDelete?.(row)}
+                      >
                         <IconTrashCan fillColor='#D44848' />
                       </button>
                     ) : column.accessor === 'price' ? (
                       `₩${String(row[column.accessor as keyof T]).toLocaleString()}`
+                    ) : column.accessor === 'status' ? (
+                      <div
+                        className={`ms-2 w-3 h-3 rounded-full ${row[column.accessor as keyof T] ? 'bg-green-500' : 'bg-red-500'}`}
+                      />
                     ) : (
                       String(row[column.accessor as keyof T])
                     )}
