@@ -61,6 +61,7 @@ pipeline {
           
           # 네트워크 이름 = ${PROJECT_NAME}_default
           docker network connect ${PROJECT_NAME}_default nginx-lb || true
+          docker exec nginx-lb nginx -s reload
         '''
       }
     }
