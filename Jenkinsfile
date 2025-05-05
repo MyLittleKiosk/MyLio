@@ -1,8 +1,11 @@
-properties([
-  pipelineTriggers([
-    [$class: 'GenericTrigger',
+
+pipeline {
+  agent any
+
+  triggers {
+    GenericTrigger(
       genericVariables: [
-        [key: 'action', value: '$.object_attributes.action']
+        [ key: 'action', value: '$.object_attributes.action' ]
       ],
       tokenCredentialId: 'JENKINS-WH',
       causeString: 'GitLab MR action: $action',
@@ -10,13 +13,9 @@ properties([
       printContributedVariables: true,
       regexpFilterText: '$action',
       regexpFilterExpression: '^(open|reopen|merge|close)$'
-    ]
-  ])
-])
-
-pipeline {
-  agent any
-         
+    )
+  }       
+  
   /************* 1. 공통 변수 계산 *************/
   stages {
     stage('Detect FE target & variables') {
