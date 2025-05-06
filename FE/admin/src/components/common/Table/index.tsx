@@ -1,5 +1,6 @@
 import IconEdit from '@/assets/icons/IconEdit';
 import IconTrashCan from '@/assets/icons/IconTrashCan';
+
 import { TableProps } from '@/types/tableProps';
 
 const Table = <T extends object>({
@@ -48,50 +49,69 @@ const Table = <T extends object>({
                       column.className || 'px-4 py-3 text-sm font-preRegular'
                     }
                   >
-                    {column.accessor === 'option_detail' ? (
-                      <div>
-                        {(
-                          row[column.accessor as keyof T] as unknown as Array<{
-                            option_detail_value: string;
-                            additional_price: number;
-                          }>
-                        ).map((option, index) => (
-                          <p key={index}>
-                            {option.option_detail_value} +
-                            {option.additional_price}
-                          </p>
-                        ))}
-                      </div>
-                    ) : column.accessor === 'image_url' ? (
-                      <img
-                        src={String(row[column.accessor as keyof T])}
-                        alt='메뉴 이미지'
-                        className='w-10 h-10 rounded-md object-cover'
-                      />
-                    ) : column.accessor === 'edit' ? (
-                      <button
-                        className='p-1 hover:bg-gray-100 rounded-md'
-                        onClick={() => onEdit?.(row)}
-                      >
-                        <IconEdit />
-                      </button>
-                    ) : column.accessor === 'delete' ? (
-                      <button
-                        className='p-1 hover:bg-gray-100 rounded-md'
-                        onClick={() => onDelete?.(row)}
-                      >
-                        <IconTrashCan fillColor='#D44848' />
-                      </button>
-                    ) : column.accessor === 'price' ||
-                      column.accessor === 'order_price' ? (
-                      `₩${String(row[column.accessor as keyof T]).toLocaleString()}`
-                    ) : column.accessor === 'status' ? (
-                      <div
-                        className={`ms-2 w-3 h-3 rounded-full ${row[column.accessor as keyof T] ? 'bg-green-500' : 'bg-red-500'}`}
-                      />
-                    ) : (
-                      String(row[column.accessor as keyof T])
-                    )}
+                    {(() => {
+                      switch (column.accessor) {
+                        case 'option_detail':
+                          return (
+                            <div>
+                              {(
+                                row[
+                                  column.accessor as keyof T
+                                ] as unknown as Array<{
+                                  option_detail_value: string;
+                                  additional_price: number;
+                                }>
+                              ).map((option, index) => (
+                                <p key={index}>
+                                  {option.option_detail_value} +
+                                  {option.additional_price}
+                                </p>
+                              ))}
+                            </div>
+                          );
+                        case 'image_url':
+                          return (
+                            <img
+                              src={String(row[column.accessor as keyof T])}
+                              alt='메뉴 이미지'
+                              className='w-10 h-10 rounded-md object-cover'
+                            />
+                          );
+                        case 'edit':
+                          return (
+                            <button
+                              className='p-1 hover:bg-gray-100 rounded-md'
+                              onClick={() => onEdit?.(row)}
+                            >
+                              <IconEdit />
+                            </button>
+                          );
+                        case 'delete':
+                          return (
+                            <button
+                              className='p-1 hover:bg-gray-100 rounded-md'
+                              onClick={() => onDelete?.(row)}
+                            >
+                              <IconTrashCan fillColor='#D44848' />
+                            </button>
+                          );
+                        case 'price':
+                        case 'order_price':
+                          return `₩${String(row[column.accessor as keyof T]).toLocaleString()}`;
+                        case 'status':
+                          return (
+                            <div
+                              className={`ms-2 w-3 h-3 rounded-full ${
+                                row[column.accessor as keyof T]
+                                  ? 'bg-green-500'
+                                  : 'bg-red-500'
+                              }`}
+                            />
+                          );
+                        default:
+                          return String(row[column.accessor as keyof T]);
+                      }
+                    })()}
                   </td>
                 ))}
               </tr>
