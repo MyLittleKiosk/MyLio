@@ -73,7 +73,8 @@ const Table = <T extends object>({
                       >
                         <IconTrashCan fillColor='#D44848' />
                       </button>
-                    ) : column.accessor === 'price' ? (
+                    ) : column.accessor === 'price' ||
+                      column.accessor === 'order_price' ? (
                       `₩${String(row[column.accessor as keyof T]).toLocaleString()}`
                     ) : column.accessor === 'status' ? (
                       <div
