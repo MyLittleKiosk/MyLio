@@ -10,6 +10,7 @@ const Table = <T extends object>({
   className = '',
   onEdit,
   onDelete,
+  onView,
 }: TableProps<T>) => {
   return (
     <article className='w-full flex flex-col gap-2 border border-subContent rounded-md p-4'>
@@ -31,7 +32,15 @@ const Table = <T extends object>({
           </thead>
           <tbody className='divide-y divide-subContent'>
             {data.map((row, rowIndex) => (
-              <tr key={rowIndex} className='hover:bg-subContent/50'>
+              <tr
+                key={rowIndex}
+                className={`hover:bg-subContent/50 ${
+                  onView ? 'cursor-pointer' : ''
+                }`}
+                onClick={() => {
+                  onView?.(row);
+                }}
+              >
                 {columns.map((column, colIndex) => (
                   <td
                     key={colIndex}

@@ -12,6 +12,7 @@ interface TableProps<T> {
   className?: string;
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
+  onView?: (row: T) => void;
 }
 
 export type { Column, TableProps };

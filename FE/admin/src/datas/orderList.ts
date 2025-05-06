@@ -54,4 +54,21 @@ const ORDER_LIST = {
   error: null,
 };
 
-export { ORDER_COLUMNS, ORDER_LIST };
+const DETAIL_ORDERS = {
+  content: [
+    {
+      product_name: '아메리카노',
+      product_price: 4500,
+      product_quantity: 1,
+      product_option: 'ICE, 샷추가',
+    },
+    {
+      product_name: '카페라떼',
+      product_price: 4500,
+      product_quantity: 1,
+      product_option: '',
+    },
+  ],
+};
+
+export { ORDER_COLUMNS, ORDER_LIST, DETAIL_ORDERS };

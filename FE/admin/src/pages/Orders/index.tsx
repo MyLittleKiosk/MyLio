@@ -4,10 +4,14 @@ import Input from '@/components/common/Input';
 import Modal from '@/components/common/Modal';
 import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
+import ViewDetailOrderModal from '@/components/orders/ViewDetailOrderModal';
 
 import { ORDER_COLUMNS, ORDER_LIST } from '@/datas/orderList';
+import useModalStore from '@/stores/useModalStore';
 
 const Orders = () => {
+  const { openModal, closeModal } = useModalStore();
+
   const [searchValue, setSearchValue] = useState('');
   const [selected, setSelected] = useState('');
 
@@ -49,6 +53,14 @@ const Orders = () => {
           description='총 5개의 주문이 있습니다.'
           columns={ORDER_COLUMNS}
           data={ORDER_LIST.content}
+          onView={(row) => {
+            openModal(
+              <ViewDetailOrderModal
+                initialData={row}
+                onClose={() => closeModal()}
+              />
+            );
+          }}
         />
         <Modal />
       </section>
