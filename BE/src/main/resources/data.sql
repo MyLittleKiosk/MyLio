@@ -10,8 +10,8 @@ INSERT INTO store (id, name, status, address, created_at, updated_at) VALUES
 
 -- 2. account
 INSERT INTO account (id, store_id, email,username, password, role, status, created_at, updated_at) VALUES
-                                                                                                       (2, 1,'test2@ssafy.io', '강남점', '$2a$10$kJJYLA3v7N6hxuGJ49IDz.ZdLTa0Dk2okd.iNUUPXVzKy17cm9XB6', 'STORE', 'REGISTERED', NOW(), NOW()),
-                                                                                                       (3, 2,'test3@ssafy.io', 'admin2', '$2a$10$kJJYLA3v7N6hxuGJ49IDz.ZdLTa0Dk2okd.iNUUPXVzKy17cm9XB6', 'STORE', 'REGISTERED', NOW(), NOW());
+                                                                                                 (2, 1,'test2@ssafy.io', '강남점', '$2a$10$kJJYLA3v7N6hxuGJ49IDz.ZdLTa0Dk2okd.iNUUPXVzKy17cm9XB6', 'STORE', 'REGISTERED', NOW(), NOW()),
+                                                                                                 (3, 2,'test3@ssafy.io', 'admin2', '$2a$10$kJJYLA3v7N6hxuGJ49IDz.ZdLTa0Dk2okd.iNUUPXVzKy17cm9XB6', 'STORE', 'REGISTERED', NOW(), NOW());
 
 -- 3. category
 INSERT INTO category (id, store_id, name_kr, name_en, status, created_at, updated_at) VALUES
@@ -58,26 +58,26 @@ INSERT INTO menu_option_map (id, is_required, menu_id, option_detail_id, option_
                                                                                                                 (2, b'1', 1, 2, 1, NOW(), NOW()), -- 아메리카노 - 사이즈 M (필수)
                                                                                                                 (3, b'1', 1, 3, 1, NOW(), NOW()), -- 아메리카노 - 사이즈 L (필수)
                                                                                                                 (4, b'0', 2, 1, 1, NOW(), NOW()); -- 녹차 - 사이즈 S (선택)
---
--- -- 11. orders
--- INSERT INTO orders (id, store_id, payment_method, total_price, is_to_go, created_at, updated_at) VALUES
---                                                                                                      (1, 1, 'CARD', 9000, true, NOW(), NOW()),
---                                                                                                      (2, 1, 'CASH', 4500, false, NOW(), NOW());
---
--- -- 12. order_item
--- INSERT INTO order_item (id, menu_id, order_id, price, created_at, updated_at) VALUES
---                                                                                   (1, 1, 1, 4000, NOW(), NOW()),
---                                                                                   (2, 2, 2, 4500, NOW(), NOW());
---
--- -- 13. order_item_option
--- INSERT INTO order_item_option (id, order_item_id, option_detail_id, price, created_at, updated_at) VALUES
---                                                                                                        (1, 1, 2, 500, NOW(), NOW()),
---                                                                                                        (2, 2, 1, 0, NOW(), NOW());
---
--- -- 14. payment
--- INSERT INTO payment (id, store_id, order_id, payment_method, amount, status, reason, tid, cid, created_at, updated_at) VALUES
---                                                                                                                            (1, 1, 1, 'CARD', 9000, 'SUCCESS', NULL, 'TID123', 'CID123', NOW(), NOW()),
---                                                                                                                            (2, 1, 2, 'CASH', 4500, 'SUCCESS', NULL, 'TID456', 'CID456', NOW(), NOW());
+
+-- 11. orders
+INSERT INTO orders (id, store_id, payment_method, total_price, is_to_go, created_at, updated_at) VALUES
+                                                                                                     (1, 1, 'CARD', 9000, true, NOW(), NOW()),
+                                                                                                     (2, 1, 'CASH', 4500, false, NOW(), NOW());
+
+-- 12. order_item
+INSERT INTO order_item (id, menu_id, order_id, price, created_at, updated_at) VALUES
+                                                                                  (1, 1, 1, 4000, NOW(), NOW()),
+                                                                                  (2, 2, 2, 4500, NOW(), NOW());
+
+-- 13. order_item_option
+INSERT INTO order_item_option (id, order_item_id, option_detail_id, price, created_at, updated_at) VALUES
+                                                                                                       (1, 1, 2, 500, NOW(), NOW()),
+                                                                                                       (2, 2, 1, 0, NOW(), NOW());
+
+-- 14. payment
+INSERT INTO payment (id, store_id, order_id, payment_method, amount, status, reason, tid, cid, created_at, updated_at) VALUES
+                                                                                                                           (1, 1, 1, 'CARD', 9000, 'SUCCESS', NULL, 'TID123', 'CID123', NOW(), NOW()),
+                                                                                                                           (2, 1, 2, 'CASH', 4500, 'SUCCESS', NULL, 'TID456', 'CID456', NOW(), NOW());
 
 -- 15. nutrition_template
 INSERT INTO nutrition_template (id, name_kr, name_en, unit_type, created_at, updated_at) VALUES

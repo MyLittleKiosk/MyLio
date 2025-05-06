@@ -3,7 +3,7 @@ package com.ssafy.mylio.domain.order.entity;
 import com.ssafy.mylio.global.common.status.EntityStatus;
 
 public enum OrderStatus implements EntityStatus {
-    DINEIN("DIVE_IN", "매장 식사"),
+    DINEIN("DINE_IN", "매장 식사"),
     TAKEOUT("TAKE_OUT", "포장");
 
     private final String code;

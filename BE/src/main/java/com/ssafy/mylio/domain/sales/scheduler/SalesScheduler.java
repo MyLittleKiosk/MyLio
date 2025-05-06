@@ -1,6 +1,7 @@
 package com.ssafy.mylio.domain.sales.scheduler;
 
 import com.ssafy.mylio.domain.sales.service.CategorySalesService;
+import com.ssafy.mylio.domain.sales.service.OrderTypeSalesService;
 import com.ssafy.mylio.domain.sales.service.PaymentSalesService;
 import com.ssafy.mylio.domain.sales.service.TotalSalesService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ public class SalesScheduler {
     private final CategorySalesService categorySalesService;
     private final PaymentSalesService paymentSalesService;
     private final TotalSalesService totalSalesService;
+    private final OrderTypeSalesService orderTypeSalesService;
 
     @Scheduled(cron = "0 0 0 * * *")
     public void getSalesByCategory (){
@@ -53,6 +55,18 @@ public class SalesScheduler {
             log.info("일,월,연도  통계 스케줄러 완료: {}", LocalDateTime.now());
         } catch (Exception e){
             log.error("일,월,연도  통계 생성 중 오류 발생: {}", e.getMessage(), e);
+        }
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void getSalesByOrderType() {
+        log.info("매장/포장별 통계 스케줄러 시작 : {}", LocalDateTime.now());
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        try{
+            orderTypeSalesService.createOrderTypeSales(yesterday);
+            log.info("매장/포장별 통계 스케줄러 완료: {}", LocalDateTime.now());
+        }catch (Exception e){
+            log.error("매장/포장별 통계 생성 중 오류 발생: {}", e.getMessage(), e);
         }
     }
 
