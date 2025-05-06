@@ -3,7 +3,6 @@ package com.ssafy.mylio.domain.sales.service;
 import com.ssafy.mylio.domain.sales.dto.response.*;
 import com.ssafy.mylio.domain.account.entity.AccountRole;
 import com.ssafy.mylio.domain.order.repository.OrderRepository;
-import com.ssafy.mylio.domain.sales.dto.response.CategorySalesResponseDto;
 import com.ssafy.mylio.domain.sales.entity.MonthlyCategorySalesRatio;
 import com.ssafy.mylio.domain.sales.entity.YearlyCategorySalesRatio;
 import com.ssafy.mylio.domain.sales.repository.*;
