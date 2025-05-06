@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  chroma:
+    image: chromadb/chroma:0.4.24     # 공개 태그로 살짝 업그레이드 권장
+    ports: ["8001:8000"]
+    volumes:
+      - chroma-data:/chroma/.chroma
+    # healthcheck:                      # ★ 3~4초마다 heartbeat 확인
+    #   test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5                     # (최대 100초 대기)
+
+  ai:
+    build: .
+    env_file: .env
+    ports: ["8000:8000"]
+    # depends_on:
+    #   chroma:
+    #     condition: service_healthy    # ★ healthy 될 때까지 대기
+volumes:
+  chroma-data:
