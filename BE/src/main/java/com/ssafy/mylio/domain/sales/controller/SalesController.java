@@ -1,9 +1,6 @@
 package com.ssafy.mylio.domain.sales.controller;
 
-import com.ssafy.mylio.domain.sales.dto.response.CategorySalesResponseDto;
-import com.ssafy.mylio.domain.sales.dto.response.DailySalesResponseDto;
-import com.ssafy.mylio.domain.sales.dto.response.PaymentSalesResponseDto;
-import com.ssafy.mylio.domain.sales.dto.response.SalesResponse;
+import com.ssafy.mylio.domain.sales.dto.response.*;
 import com.ssafy.mylio.domain.sales.service.SalesService;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExample;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
@@ -75,5 +72,17 @@ public class SalesController {
         String userType = authenticationUtil.getCurrntUserType(userPrincipal);
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         return CommonResponse.ok(salesService.getPaymentMethodRatio(userType,storeId, year, month));
+    }
+
+    @GetMapping("/by_order_type")
+    @Operation(summary = "매장/포장 별 통계 조회 API", description = "매장 / 포장 별 통계를 조회합니다.")
+    @ApiErrorCodeExamples({})
+    public ResponseEntity<CommonResponse<List<OrderTypeSalesResponseDto>>> getOrderTypeStatics(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestParam("year") Integer year,
+            @RequestParam(value = "month", required = false) Integer month){
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+        String userType = authenticationUtil.getCurrntUserType(userPrincipal);
+        return CommonResponse.ok(salesService.getOrderTypeStatics(userType,storeId,year,month));
     }
 }
