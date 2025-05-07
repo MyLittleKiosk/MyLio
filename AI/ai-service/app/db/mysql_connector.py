@@ -242,6 +242,7 @@ class MySQLConnector:
                 "option_name_en": option_map["option_name_en"],
                 "required": option_map["is_required"] == b'\x01',  # MySQL BIT -> Python Boolean
                 "is_selected": False,
+                "selected_id" : None,
                 "option_details": option_details
             })
         
