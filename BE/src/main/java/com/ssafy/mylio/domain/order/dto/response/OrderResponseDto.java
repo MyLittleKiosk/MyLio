@@ -12,7 +12,7 @@ public class OrderResponseDto {
     @Schema(example = "배닐라 라떼 하나 어이스로 주세요")
     private String preText;
     @Schema(example = "바닐라라떼 하나 아이스로 주세요")
-    private String postTest;
+    private String postText;
     @Schema(example = "바닐라 라떼 사이즈는 뭘로 하시겠어요?")
     private String reply;
     @Schema(example = "ORDER")
