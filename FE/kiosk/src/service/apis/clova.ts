@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Clova API 클라이언트 설정
 const clovaClient = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: 'https://localhost:8000',
 });
 
 /**

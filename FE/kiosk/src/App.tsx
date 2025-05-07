@@ -1,9 +1,16 @@
+import MSWInit from '@/components/common/MSWInit';
 import Clova from '@/pages/Clova';
+import Confirm from '@/pages/Confirm';
+import Detail from '@/pages/Detail';
 import Login from '@/pages/Login';
-import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
+import Main from '@/pages/Main';
+import Menus from '@/pages/Menus';
+import Order from '@/pages/Order';
+import OrderLayout from '@/pages/OrderLayout';
+import Pay from '@/pages/Pay';
+import SelectPay from '@/pages/SelectPay';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
-import MSWInit from './components/common/MSWInit';
-
 function App() {
   return (
     <>
@@ -11,9 +18,15 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<Login />} />
-          <Route path='/kiosk' element={<Outlet />}>
-            <Route index element={<div>홈페이지</div>} />
-            <Route path='clova' element={<Clova />} />
+          <Route path='/clova' element={<Clova />} />
+          <Route path='/kiosk' element={<OrderLayout />}>
+            <Route path='main' element={<Main />} />
+            <Route path='search' element={<Menus />} />
+            <Route path='order' element={<Order />} />
+            <Route path='pay' element={<Pay />} />
+            <Route path='select-pay' element={<SelectPay />} />
+            <Route path='confirm' element={<Confirm />} />
+            <Route path='detail' element={<Detail />} />
           </Route>
         </Routes>
       </BrowserRouter>

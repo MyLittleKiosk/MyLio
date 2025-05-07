@@ -15,17 +15,17 @@ const ADMIN_NAVLIST = [
   {
     icons: IconMenuList,
     title: '메뉴 관리',
-    link: '/',
+    link: '/menus',
   },
   {
     icons: IconCart,
     title: '주문 관리',
-    link: '/',
+    link: '/orders',
   },
   {
     icons: IconKiosk,
     title: '키오스크 관리',
-    link: '/',
+    link: '/kiosks',
   },
 ];
 
@@ -33,17 +33,17 @@ const SUPERADMIN_NAVLIST = [
   {
     icons: IconAccount,
     title: '계정 관리',
-    link: '/',
+    link: '/accounts',
   },
   {
     icons: IconIngredient,
     title: '원재료 관리',
-    link: '/',
+    link: '/ingredients',
   },
   {
     icons: IconNutrient,
     title: '영양소 관리',
-    link: '/',
+    link: '/nutrients',
   },
 ];
 

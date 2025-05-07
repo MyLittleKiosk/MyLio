@@ -1,0 +1,59 @@
+import React from 'react';
+
+interface InputProps {
+  label?: string;
+  inputId: string;
+  placeholder: string;
+  inputType: string;
+  inputValue: string | number;
+  className?: string;
+  error?: boolean;
+  disabled?: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+}
+
+const Input = ({
+  label,
+  inputId,
+  placeholder,
+  inputType,
+  inputValue,
+  onChange,
+  className,
+  error = false,
+  disabled = false,
+  onKeyDown,
+}: InputProps) => {
+  const inputElement = (
+    <input
+      id={inputId}
+      placeholder={placeholder}
+      type={inputType}
+      value={inputValue}
+      onChange={onChange}
+      className={`${
+        error ? 'border-2 border-error' : 'border border-subContent'
+      } rounded-md p-2 font-preRegular w-full`}
+      disabled={disabled}
+      onKeyDown={onKeyDown}
+    />
+  );
+
+  return (
+    <div className={`${className} flex items-center`}>
+      {label ? (
+        <label className='flex gap-4 items-center w-full'>
+          <span className='w-[10%] min-w-[80px] max-w-[100px] text-md font-preSemiBold whitespace-wrap break-keep'>
+            {label}
+          </span>
+          {inputElement}
+        </label>
+      ) : (
+        inputElement
+      )}
+    </div>
+  );
+};
+
+export default Input;

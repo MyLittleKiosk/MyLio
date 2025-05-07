@@ -113,3 +113,10 @@
     local("NotoSans ExtraBold"),
     url("./assets/fonts/NotoSans-ExtraBold.ttf") format("ttf")
 }
+
+@layer base {
+  #root {
+    @apply  h-dvh w-full m-0 bg-white;
+  }
+}
+

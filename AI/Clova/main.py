@@ -12,10 +12,12 @@ load_dotenv()
 app = FastAPI()
 
 # CORS 설정
-ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*")
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "https://localhost:3000")
+origins = [origin.strip() for origin in ALLOWED_ORIGINS.split(",")]
+print(origins)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[ALLOWED_ORIGINS] if isinstance(ALLOWED_ORIGINS, str) else ALLOWED_ORIGINS,
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -77,4 +79,11 @@ async def clova_stt(file: UploadFile = File(...)) -> Dict[str, Any]:
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="localhost", port=8000, reload=True) 
+    uvicorn.run(
+        "main:app",
+        host="localhost",
+        port=8000,
+        reload=True,
+        ssl_keyfile="localhost-key.pem",
+        ssl_certfile="localhost.pem"
+    ) 
