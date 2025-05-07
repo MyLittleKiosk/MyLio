@@ -9,27 +9,25 @@ import Order from '@/pages/Order';
 import OrderLayout from '@/pages/OrderLayout';
 import Pay from '@/pages/Pay';
 import SelectPay from '@/pages/SelectPay';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import './App.css';
 function App() {
   return (
     <>
       <MSWInit />
-      <BrowserRouter>
-        <Routes>
-          <Route path='/' element={<Login />} />
-          <Route path='/clova' element={<Clova />} />
-          <Route path='/kiosk' element={<OrderLayout />}>
-            <Route path='main' element={<Main />} />
-            <Route path='search' element={<Menus />} />
-            <Route path='order' element={<Order />} />
-            <Route path='pay' element={<Pay />} />
-            <Route path='select-pay' element={<SelectPay />} />
-            <Route path='confirm' element={<Confirm />} />
-            <Route path='detail' element={<Detail />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <Routes>
+        <Route path='/' element={<Login />} />
+        <Route path='/clova' element={<Clova />} />
+        <Route path='/kiosk' element={<OrderLayout />}>
+          <Route path='main' element={<Main />} />
+          <Route path='search' element={<Menus />} />
+          <Route path='order' element={<Order />} />
+          <Route path='pay' element={<Pay />} />
+          <Route path='select-pay' element={<SelectPay />} />
+          <Route path='confirm' element={<Confirm />} />
+          <Route path='detail' element={<Detail />} />
+        </Route>
+      </Routes>
     </>
   );
 }
