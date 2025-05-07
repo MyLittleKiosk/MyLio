@@ -1,4 +1,4 @@
-import { useGetSalesTrend } from '@/service/queries/statistics';
+import useGetSalesTrend from '@/service/queries/statistics';
 import formatSalesData from '@/utils/formatSalesData';
 import { Line } from 'react-chartjs-2';
 import { config } from './chart.config';
