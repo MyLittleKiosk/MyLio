@@ -1,5 +1,5 @@
-import { CategoryList, CategoryType } from '@/types/categories';
-import { OptionInfoType, OptionList, OptionType } from '@/types/options';
+import { CategoryType } from '@/types/categories';
+import { OptionInfoType, OptionType } from '@/types/options';
 import { Column } from '@/types/tableProps';
 
 interface MenuType {
@@ -52,17 +52,14 @@ type NavItemType =
   | {
       title: string;
       columns: Column<MenuType>[];
-      data: MenuList;
     }
   | {
       title: string;
       columns: Column<CategoryType>[];
-      data: CategoryList;
     }
   | {
       title: string;
       columns: Column<OptionType>[];
-      data: OptionList;
     };
 
 export type { MenuType, MenuList, MenuAdd, NavItemType };
