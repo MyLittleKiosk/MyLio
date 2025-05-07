@@ -10,7 +10,7 @@ import { ORDER_COLUMNS, ORDER_LIST } from '@/datas/orderList';
 import useModalStore from '@/stores/useModalStore';
 
 const Orders = () => {
-  const { openModal, closeModal } = useModalStore();
+  const { openModal } = useModalStore();
 
   const [searchValue, setSearchValue] = useState('');
   const [selected, setSelected] = useState('');
@@ -54,12 +54,7 @@ const Orders = () => {
           columns={ORDER_COLUMNS}
           data={ORDER_LIST.content}
           onView={(row) => {
-            openModal(
-              <ViewDetailOrderModal
-                initialData={row}
-                onClose={() => closeModal()}
-              />
-            );
+            openModal(<ViewDetailOrderModal initialData={row} />);
           }}
         />
         <Modal />

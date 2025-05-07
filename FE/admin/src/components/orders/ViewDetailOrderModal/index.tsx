@@ -1,15 +1,14 @@
 import { DETAIL_ORDERS } from '@/datas/orderList';
+import useModalStore from '@/stores/useModalStore';
 import OrderItem from '@/types/orders';
 
 interface ViewDetailOrderModalProps {
   initialData: OrderItem;
-  onClose: () => void;
 }
 
-const ViewDetailOrderModal = ({
-  initialData,
-  onClose,
-}: ViewDetailOrderModalProps) => {
+const ViewDetailOrderModal = ({ initialData }: ViewDetailOrderModalProps) => {
+  const { closeModal } = useModalStore();
+
   return (
     <section className='w-full h-full px-6 py-6 flex flex-col gap-6'>
       <div className='flex flex-col gap-1'>
@@ -82,7 +81,7 @@ const ViewDetailOrderModal = ({
 
       <div className='flex justify-end'>
         <button
-          onClick={onClose}
+          onClick={closeModal}
           className='px-4 py-2 bg-white text-black font-preMedium rounded-md border border-subContent hover:bg-subContent'
         >
           닫기
