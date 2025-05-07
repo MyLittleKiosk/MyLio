@@ -90,6 +90,24 @@ class RAGService:
         당신은 음성 키오스크 시스템의 일부로, 사용자가 말한 내용을 분석하여 의도와 메뉴, 옵션을 인식하는 역할을 합니다.
         현재 화면 상태는 '{screen_state}'입니다.
         사용자 입력: "{text}"
+
+        1. 메뉴명 교정 규칙을 최우선으로 적용하세요:
+        - "버닐라라떼/버닐라 라떼/버닐라라테/버닐라 라테" → "바닐라 라떼"
+        - "아아/아이스아메리카노/아아메리카노" → "아메리카노"
+        - "따아/따듯한 아메리카노/핫아메리카노" → "아메리카노"
+        - "카페라떼/카페라테/라떼/라테" → "카페 라떼"
+        - "헤이즐넛 라떼/헤이즐넛라떼/헤이즐 라떼" → "헤이즐넛 라떼"
+        - "딸기스무디/딸기 스무디" → "딸기 스무디"
+        - "블루베리 요거트/블루베리요거트스무디" → "블루베리 요거트 스무디"
+        - "초콜릿라떼떼 어이스 한개 줘" → "초코라떼"
+        - "어메리카노 어이스 한개 줘" → "아메리카노"
+
+        2. 다음과 같은 옵션 매핑 규칙을 적용하세요:
+        - "아이스/아이스아메리카노/차가운" → 온도 옵션의 "ICE" 값
+        - "따뜻한/뜨거운/따아" → 온도 옵션의 "HOT" 값
+        - "작은/스몰/S" → 사이즈 옵션의 "S" 값
+        - "중간/미디엄/M" → 사이즈 옵션의 "M" 값
+        - "큰/라지/L" → 사이즈 옵션의 "L" 값
         
         아래의 예시를 참고하여, 사용자의 의도와 메뉴, 옵션을 JSON 형식으로 분석해주세요:
         
@@ -102,10 +120,11 @@ class RAGService:
         "intent": "ORDER 또는 SEARCH 또는 PAYMENT 중 하나",
         "menus": [
             {{
-            "menu_name": "메뉴 이름",
+            "menu_name": "메뉴 이름 (정확한 메뉴명으로 교정해주세요)",
             "quantity": 수량,
             "options": [
                 {{
+                "option_id" : db에서 조회한 옵션 id
                 "option_name": "옵션 이름(예: 온도, 사이즈)",
                 "option_value": "옵션 값(예: HOT, ICE, S, M, L)"
                 }}
@@ -169,6 +188,8 @@ class RAGService:
                 enriched_menus = []
                 for menu in parsed_result["menus"]:
                     menu_name = menu.get("menu_name")
+                    original_menu_name = menu.get("original_menu_name", menu_name)  
+
                     if menu_name:
                         # 디버깅을 위해 검색 전 출력
                         print(f"검색할 메뉴 이름: {menu_name}, 매장 ID: {store_id}")
@@ -186,9 +207,23 @@ class RAGService:
                             menu["menu_name_en"] = search_results[0].get("name_en")
                             menu["price"] = search_results[0].get("price")
                     
+                        # 교정 여부 확인 및 추가
+                        if original_menu_name and original_menu_name.lower() != menu_name.lower():
+                            menu["is_corrected"] = True
+                            menu["original_menu_name"] = original_menu_name
+                    
                     enriched_menus.append(menu)
                 
                 parsed_result["menus"] = enriched_menus
+            
+            # 결과 반환 시 raw_text와 post_text 포함
+            post_text = text  # 기본값은 원본 텍스트
+
+            # 메뉴명 교정이 있는 경우 post_text 업데이트
+            for menu in parsed_result.get("menus", []):
+                if menu.get("is_corrected") and menu.get("original_menu_name") and menu.get("menu_name"):
+                    post_text = post_text.replace(menu.get("original_menu_name"), menu.get("menu_name"))
+            
             
             return {
                 "intent_type": parsed_result.get("intent", "UNKNOWN"),

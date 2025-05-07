@@ -179,26 +179,61 @@ class MySQLConnector:
         
         return required_options
     
+    # def get_menu_options(self, menu_id: int, store_id: int) -> List[Dict[str, Any]]:
+    #     """메뉴의 모든 옵션 조회"""
+    #     # 메뉴-옵션 매핑 조회
+    #     query = """
+    #     SELECT mom.option_id, mom.is_required, o.option_name_kr, o.option_name_en
+    #     FROM menu_option_map mom
+    #     JOIN options o ON mom.option_id = o.id
+    #     WHERE mom.menu_id = %s AND o.store_id = %s
+    #     """
+        
+    #     option_maps = self.execute_query(query, (menu_id, store_id))
+    #     if not option_maps:
+    #         return []
+        
+    #     # 각 옵션의 상세 정보 조회
+    #     result = []
+    #     for option_map in option_maps:
+    #         option_id = option_map["option_id"]
+            
+    #         # 옵션 상세 정보 조회
+    #         option_details = self.get_option_details(option_id)
+            
+    #         result.append({
+    #             "option_id": option_id,
+    #             "option_name": option_map["option_name_kr"],
+    #             "option_name_en": option_map["option_name_en"],
+    #             "required": option_map["is_required"] == b'\x01',  # MySQL BIT -> Python Boolean
+    #             "is_selected": False,
+    #             "option_details": option_details
+    #         })
+        
+    #     return result
+    
     def get_menu_options(self, menu_id: int, store_id: int) -> List[Dict[str, Any]]:
         """메뉴의 모든 옵션 조회"""
-        # 메뉴-옵션 매핑 조회
+        # 메뉴-옵션 매핑 조회 (메뉴별 옵션 필터링 추가)
         query = """
         SELECT mom.option_id, mom.is_required, o.option_name_kr, o.option_name_en
         FROM menu_option_map mom
         JOIN options o ON mom.option_id = o.id
         WHERE mom.menu_id = %s AND o.store_id = %s
+        GROUP BY mom.option_id, mom.is_required, o.option_name_kr, o.option_name_en
         """
         
         option_maps = self.execute_query(query, (menu_id, store_id))
         if not option_maps:
-            return []
+            # 옵션이 없으면 기본 옵션 추가
+            return self._get_default_options(store_id)
         
         # 각 옵션의 상세 정보 조회
         result = []
         for option_map in option_maps:
             option_id = option_map["option_id"]
             
-            # 옵션 상세 정보 조회
+            # 옵션 상세 정보 조회 (option_detail)
             option_details = self.get_option_details(option_id)
             
             result.append({
@@ -211,3 +246,32 @@ class MySQLConnector:
             })
         
         return result
+
+    def _get_default_options(self, store_id: int) -> List[Dict[str, Any]]:
+        """기본 옵션 생성 (옵션이 없는 경우 사용)"""
+        # 여기서는 사이즈와 온도 옵션만 기본으로 제공
+        return [
+            {
+                "option_id": 100,  # 임의의 ID
+                "option_name": "사이즈",
+                "option_name_en": "Size",
+                "required": True,
+                "is_selected": False,
+                "option_details": [
+                    {"id": 998, "value": "S", "additional_price": 0},
+                    {"id": 999, "value": "M", "additional_price": 500},
+                    {"id": 1000, "value": "L", "additional_price": 1000}
+                ]
+            },
+            {
+                "option_id": 101,  # 임의의 ID
+                "option_name": "온도",
+                "option_name_en": "Temperature",
+                "required": True,
+                "is_selected": False,
+                "option_details": [
+                    {"id": 1001, "value": "HOT", "additional_price": 0},
+                    {"id": 1002, "value": "ICE", "additional_price": 0}
+                ]
+            }
+        ]

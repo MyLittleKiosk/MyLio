@@ -180,33 +180,31 @@ class VectorStore:
         """메뉴 검색"""
         print(f"검색 쿼리: {query}, 매장 ID: {store_id}")
         
-        # 먼저 정확한 메뉴명 매칭 시도 (대소문자 무시)
-        # MySQL에서 메뉴 데이터 로드
+        # 1. 메뉴 데이터에서 정확한 이름 매칭 시도
         menu_data = self.mysql.get_menus(store_id)
         
         # 정확한 이름 매칭 검색
         exact_matches = []
-        query_lower = query.lower()
-        
-        print(f"정확한 매칭 검색 시작 - 쿼리: {query_lower}")
+        query_lower = query.lower().strip()
+        query_no_space = query_lower.replace(" ", "")
         
         for menu in menu_data:
             menu_name_kr = menu.get('name_kr', '').lower()
-            menu_name_en = menu.get('name_en', '').lower()
+            menu_name_kr_no_space = menu_name_kr.replace(" ", "")
             
-            # 디버깅을 위한 출력
-            print(f"메뉴 비교: '{menu_name_kr}'/'{menu_name_en}' vs '{query_lower}'")
-            
-            if query_lower in menu_name_kr or query_lower in menu_name_en:
+            # 정확한 일치 또는 공백 제거 후 일치 확인
+            if (query_lower == menu_name_kr or 
+                query_no_space == menu_name_kr_no_space or
+                query_lower in menu_name_kr or 
+                menu_name_kr in query_lower):
+                
                 tags = []
                 if 'tags' in menu and menu['tags']:
                     tags = menu['tags']
                 
-                print(f"매칭된 메뉴 발견: {menu['name_kr']}")
-                
                 exact_matches.append({
                     "id": menu.get('id'),
-                    "store_id": menu.get('store_id'), 
+                    "store_id": menu.get('store_id'),
                     "name_kr": menu.get('name_kr'),
                     "name_en": menu.get('name_en'),
                     "price": menu.get('price'),
@@ -217,95 +215,70 @@ class VectorStore:
         
         # 정확한 매칭 결과가 있으면 바로 반환
         if exact_matches:
-            print(f"정확한 매칭 결과 수: {len(exact_matches)}")
-            # store_id 필터링 (이미 MySQL 쿼리에서 필터링되었을 수 있음)
-            if store_id is not None:
-                filtered_matches = []
-                for menu in exact_matches:
-                    # 메뉴에 store_id가 있고 일치하는 경우만 포함
-                    menu_store_id = menu.get('store_id')
-                    print(f"메뉴 {menu.get('name_kr')}의 store_id: {menu_store_id}, 비교할 store_id: {store_id}")
-            
-                    if menu_store_id is not None:
-                        if isinstance(menu_store_id, str):
-                            menu_store_id = int(menu_store_id)
-                        
-                        if menu_store_id == store_id:
-                            filtered_matches.append(menu)
-                
-                if filtered_matches:
-                    print(f"store_id 필터링 후 결과 수: {len(filtered_matches)}")
-                    return filtered_matches[:top_k]
-                else:
-                    print(f"store_id({store_id})와 일치하는 메뉴가 없습니다. 벡터 검색으로 전환")
-                
-            else:
-                # store_id가 None이면 모든 결과 반환
-                return exact_matches[:top_k]
-            
-        print("정확한 매칭 결과 없음, 벡터 검색 시작")
+            print(f"정확한 매칭 결과: {exact_matches}")
+            return exact_matches
         
-        # 정확한 매칭 결과가 없거나 store_id 필터링 후 결과가 없으면 벡터 검색 수행
+        # 2. 정확한 매칭이 없는 경우 벡터 검색 수행
         try:
             collection = self.client.get_collection("menu_collection")
             results = collection.query(
                 query_texts=[query],
-                n_results=top_k
+                n_results=top_k * 2  # 필터링 가능성을 고려해 더 많은 결과 요청
             )
         except Exception as e:
             print(f"벡터 검색 오류: {e}")
             return []
         
-        # 결과가 비어있는 경우 빈 배열 반환
-        if not results.get("metadatas") or not results["metadatas"][0]:
-            print("벡터 검색 결과가 비어있습니다.")
+        # 벡터 검색 결과 처리
+        vector_results = []
+        
+        if results.get("metadatas") and results["metadatas"][0]:
+            for idx, metadata in enumerate(results["metadatas"][0]):
+                # 메타데이터에서 store_id 가져오기 및 타입 변환
+                meta_store_id = metadata.get("store_id")
+                
+                # 타입 변환
+                if meta_store_id is not None:
+                    try:
+                        meta_store_id = int(meta_store_id)
+                    except (ValueError, TypeError):
+                        print(f"store_id 변환 오류: {meta_store_id}")
+                
+                # store_id가 None이거나 메타데이터의 store_id와 일치하는 경우만 필터링
+                if store_id is None or meta_store_id == store_id:
+                    # 태그 및 원재료 정보 추가
+                    menu_id = metadata.get("id")
+                    tags = []
+                    
+                    if metadata.get("tags_text"):
+                        tag_pairs = metadata.get("tags_text").split(", ")
+                        for pair in tag_pairs:
+                            if " " in pair:
+                                kr, en = pair.split(" ", 1)
+                                tags.append({"tag_kr": kr, "tag_en": en})
+                    
+                    # 거리(유사도) 점수 가져오기
+                    score = results["distances"][0][idx] if "distances" in results and len(results["distances"]) > 0 else 1.0
+                    
+                    vector_results.append({
+                        "id": metadata.get("id"),
+                        "store_id": meta_store_id,
+                        "name_kr": metadata.get("name_kr"),
+                        "name_en": metadata.get("name_en"),
+                        "price": metadata.get("price"),
+                        "description": metadata.get("description"),
+                        "tags": tags,
+                        "score": score
+                    })
+        
+        # 점수로 정렬 (낮은 점수가 더 유사함)
+        vector_results.sort(key=lambda x: x.get('score', 1.0))
+        
+        # 결과가 없거나 유사도가 너무 낮은 경우 빈 리스트 반환
+        if not vector_results or vector_results[0].get('score', 1.0) > 0.5:
             return []
         
-        print(f"벡터 검색 결과 수: {len(results['metadatas'][0])}")
-        
-        # 결과 필터링 (store_id가 지정된 경우)
-        filtered_results = []
-        for idx, metadata in enumerate(results["metadatas"][0]):
-            # 메타데이터에서 store_id 가져오기 및 타입 변환
-            meta_store_id = metadata.get("store_id")
-            print(f"메타데이터: {metadata}")
-            
-            # 타입 변환 (문자열/정수 상관없이 비교 가능하도록)
-            if meta_store_id is not None:
-                try:
-                    meta_store_id = int(meta_store_id)
-                except (ValueError, TypeError):
-                    print(f"store_id 변환 오류: {meta_store_id}")
-            
-            # store_id가 None이거나 메타데이터의 store_id와 일치하는 경우만 필터링
-            if store_id is None or meta_store_id == store_id:
-                # 태그 및 원재료 정보가 필요하면 원본 메뉴 데이터 조회
-                menu_id = metadata.get("id")
-                tags = []
-                
-                if metadata.get("tags_text"):
-                    tag_pairs = metadata.get("tags_text").split(", ")
-                    for pair in tag_pairs:
-                        if " " in pair:
-                            kr, en = pair.split(" ", 1)
-                            tags.append({"tag_kr": kr, "tag_en": en})
-                
-                filtered_result = {
-                    "id": metadata.get("id"),
-                    "name_kr": metadata.get("name_kr"),
-                    "name_en": metadata.get("name_en"),
-                    "price": metadata.get("price"),
-                    "description": metadata.get("description"),
-                    "tags": tags
-                }
-                
-                if "distances" in results and len(results["distances"]) > 0:
-                    filtered_result["score"] = results["distances"][0][idx]
-                
-                filtered_results.append(filtered_result)
-        
-        print(f"필터링된 결과 수: {len(filtered_results)}")
-        return filtered_results
+        return vector_results[:top_k]
     
     def get_menu_required_options(self, menu_id: int) -> List[Dict[str, Any]]:
         """메뉴의 필수 옵션 조회"""
