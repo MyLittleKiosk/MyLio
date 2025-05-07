@@ -1,0 +1,70 @@
+[
+    {
+      "id": 1,
+      "store_id": 3,
+      "option_name_kr": "온도",
+      "option_name_en": "Temperature",
+      "status": "REGISTERED",
+      "option_details": [
+        {"id": 1, "value": "HOT", "additional_price": 0},
+        {"id": 2, "value": "ICE", "additional_price": 0}
+      ],
+      "menu_ids": [1, 2, 3, 4, 5]
+    },
+    {
+      "id": 2,
+      "store_id": 3,
+      "option_name_kr": "얼음량",
+      "option_name_en": "Ice Amount",
+      "status": "REGISTERED",
+      "option_details": [
+        {"id": 3, "value": "얼음 없음", "additional_price": 0},
+        {"id": 4, "value": "얼음 적게", "additional_price": 0},
+        {"id": 5, "value": "얼음 보통", "additional_price": 0},
+        {"id": 6, "value": "얼음 많이", "additional_price": 0}
+      ],
+      "menu_ids": [1, 2, 3, 4, 5, 8, 9]
+    },
+    {
+      "id": 3,
+      "store_id": 3,
+      "option_name_kr": "당도",
+      "option_name_en": "Sweetness",
+      "status": "REGISTERED",
+      "option_details": [
+        {"id": 7, "value": "당도 0%", "additional_price": 0},
+        {"id": 8, "value": "당도 30%", "additional_price": 0},
+        {"id": 9, "value": "당도 50%", "additional_price": 0},
+        {"id": 10, "value": "당도 70%", "additional_price": 0},
+        {"id": 11, "value": "당도 100%", "additional_price": 0}
+      ],
+      "menu_ids": [3, 4, 5, 6, 7, 8, 9, 13, 14, 15]
+    },
+    {
+      "id": 4,
+      "store_id": 3,
+      "option_name_kr": "샷 추가",
+      "option_name_en": "Extra Shot",
+      "status": "REGISTERED",
+      "option_details": [
+        {"id": 12, "value": "샷 추가 없음", "additional_price": 0},
+        {"id": 13, "value": "샷 1개 추가", "additional_price": 500},
+        {"id": 14, "value": "샷 2개 추가", "additional_price": 1000}
+      ],
+      "menu_ids": [1, 2, 3, 4, 5]
+    },
+    {
+      "id": 7,
+      "store_id": 3,
+      "option_name_kr": "우유 변경",
+      "option_name_en": "Milk Change",
+      "status": "REGISTERED",
+      "option_details": [
+        {"id": 21, "value": "일반 우유", "additional_price": 0},
+        {"id": 22, "value": "저지방 우유", "additional_price": 500},
+        {"id": 23, "value": "두유", "additional_price": 500},
+        {"id": 24, "value": "오트 우유", "additional_price": 700}
+      ],
+      "menu_ids": [2, 3, 4, 5]
+    }
+  ]

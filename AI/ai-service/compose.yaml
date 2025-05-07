@@ -1,4 +1,3 @@
-version: "3.9"
 
 services:
   chroma:
@@ -11,7 +10,7 @@ services:
     #   interval: 10s
     #   timeout: 5s
     #   retries: 5                     # (최대 100초 대기)
-
+  
   ai:
     build: .
     env_file: .env

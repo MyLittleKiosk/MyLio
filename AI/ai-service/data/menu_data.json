@@ -1,0 +1,86 @@
+[
+    {
+      "id": 1,
+      "store_id": 3,
+      "category_id": 1,
+      "name_kr": "아메리카노",
+      "name_en": "Americano",
+      "description": "진한 에스프레소에 물을 더해 깔끔한 맛의 아메리카노",
+      "price": 1500,
+      "image_url": "americano.jpg",
+      "status": "SELLING",
+      "tags": [
+        {"tag_kr": "커피", "tag_en": "Coffee"},
+        {"tag_kr": "베스트셀러", "tag_en": "Best Seller"}
+      ],
+      "ingredients": [
+        {"name_kr": "에스프레소", "name_en": "Espresso"},
+        {"name_kr": "얼음", "name_en": "Ice"}
+      ]
+    },
+    {
+      "id": 2,
+      "store_id": 3,
+      "category_id": 1,
+      "name_kr": "카페라떼",
+      "name_en": "Cafe Latte",
+      "description": "진한 에스프레소와 부드러운 우유가 어우러진 라떼",
+      "price": 2500,
+      "image_url": "cafelatte.jpg",
+      "status": "SELLING",
+      "tags": [
+        {"tag_kr": "커피", "tag_en": "Coffee"},
+        {"tag_kr": "우유", "tag_en": "Milk"},
+        {"tag_kr": "베스트셀러", "tag_en": "Best Seller"}
+      ],
+      "ingredients": [
+        {"name_kr": "에스프레소", "name_en": "Espresso"},
+        {"name_kr": "우유", "name_en": "Milk"},
+        {"name_kr": "얼음", "name_en": "Ice"}
+      ]
+    },
+    {
+      "id": 3,
+      "store_id": 3,
+      "category_id": 1,
+      "name_kr": "바닐라 라떼",
+      "name_en": "Vanilla Latte",
+      "description": "바닐라 시럽이 달콤하게 어우러진 라떼",
+      "price": 3000,
+      "image_url": "vanillalatte.jpg",
+      "status": "SELLING",
+      "tags": [
+        {"tag_kr": "커피", "tag_en": "Coffee"},
+        {"tag_kr": "우유", "tag_en": "Milk"},
+        {"tag_kr": "달콤한", "tag_en": "Sweet"}
+      ],
+      "ingredients": [
+        {"name_kr": "에스프레소", "name_en": "Espresso"},
+        {"name_kr": "우유", "name_en": "Milk"},
+        {"name_kr": "바닐라 시럽", "name_en": "Vanilla Syrup"},
+        {"name_kr": "얼음", "name_en": "Ice"}
+      ]
+    },
+    {
+      "id": 6,
+      "store_id": 3,
+      "category_id": 2,
+      "name_kr": "딸기 스무디",
+      "name_en": "Strawberry Smoothie",
+      "description": "새콤달콤한 딸기 스무디",
+      "price": 3500,
+      "image_url": "strawberrysmoothie.jpg",
+      "status": "SELLING",
+      "tags": [
+        {"tag_kr": "스무디", "tag_en": "Smoothie"},
+        {"tag_kr": "딸기", "tag_en": "Strawberry"},
+        {"tag_kr": "달콤한", "tag_en": "Sweet"},
+        {"tag_kr": "베스트셀러", "tag_en": "Best Seller"}
+      ],
+      "ingredients": [
+        {"name_kr": "딸기 시럽", "name_en": "Strawberry Syrup"},
+        {"name_kr": "요거트 파우더", "name_en": "Yogurt Powder"},
+        {"name_kr": "얼음", "name_en": "Ice"}
+      ]
+    }
+  ]
