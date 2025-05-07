@@ -23,7 +23,6 @@ interface MenuList {
   page_size: number;
   first: boolean;
   last: boolean;
-  error: string | null;
 }
 
 interface TagType {
