@@ -10,32 +10,27 @@ import lombok.Getter;
 @Schema(description = "계정 수정 response")
 public class AccountModifyResponse {
     @Schema(example="1")
-    private Integer userId;
+    private Integer accountId;
 
-    @Schema(example="1")
-    private Integer storeId;
+    @Schema(example="qwer@ssafy.io")
+    private String email;
 
     @Schema(example="마리오")
     private String userName;
 
-    @Schema(example="STORE")
-    private String role;
+    @Schema(example="싸피 다방")
+    private String storeName;
 
-    @Schema(example="REGISTERED")
-    private String status;
-
-    @Schema(example="qwer1234")
-    private String password;
-
+    @Schema(example="경기도 다낭")
+    private String address;
 
     public static AccountModifyResponse of(Account account){
         return AccountModifyResponse.builder()
-                .userId(account.getId())
-                .storeId(account.getStore().getId())
+                .accountId(account.getId())
+                .email(account.getEmail())
                 .userName(account.getUsername())
-                .role(account.getRole().getCode())
-                .status(account.getStatus().getCode())
-                .password(account.getPassword())
+                .storeName(account.getStore().getName())
+                .address(account.getStore().getAddress())
                 .build();
     }
 

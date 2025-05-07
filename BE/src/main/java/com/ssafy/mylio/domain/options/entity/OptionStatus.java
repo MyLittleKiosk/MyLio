@@ -1,6 +1,8 @@
 package com.ssafy.mylio.domain.options.entity;
 
 import com.ssafy.mylio.global.common.status.EntityStatus;
+import com.ssafy.mylio.global.error.code.ErrorCode;
+import com.ssafy.mylio.global.error.exception.CustomException;
 
 public enum OptionStatus implements EntityStatus {
     REGISTERED("REGISTERED", "등록됨"),
@@ -23,5 +25,14 @@ public enum OptionStatus implements EntityStatus {
     @Override
     public String getDescription() {
         return description;
+    }
+
+    public static OptionStatus fromCode(String code) {
+        for (OptionStatus status : values()) {
+            if (status.getCode().equalsIgnoreCase(code)) {
+                return status;
+            }
+        }
+        throw new CustomException(ErrorCode.INVALID_OPTION_STATUS, "status", code);
     }
 }

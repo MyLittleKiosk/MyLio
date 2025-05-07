@@ -7,9 +7,9 @@ import lombok.Getter;
 
 @Getter
 public class KioskLoginRequest {
-    @Schema(example = "1", description = "계정 ID (account.id)")
-    @NotNull(message = "아이디는 필수 입력값입니다.")
-    private Integer id;
+    @Schema(example = "qwer@ssafy.io", description = "이메일")
+    @NotNull(message = "이메일은 필수 입력값입니다.")
+    private String email;
 
     @Schema(example = "qwer1234",description ="비밀번호")
     @NotBlank(message = "비밀번호는 필수 입력값입니다.")

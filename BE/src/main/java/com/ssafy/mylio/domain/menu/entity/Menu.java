@@ -5,6 +5,7 @@ import com.ssafy.mylio.domain.store.entity.Store;
 import com.ssafy.mylio.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -38,18 +39,20 @@ public class Menu extends BaseEntity {
     @Column(name = "image_url", length = 255)
     private String imageUrl;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private MenuStatus status = MenuStatus.SELLING;
 
     public void update(Category category, String nameKr, String nameEn,
-                       String description, Integer price, String imageUrl) {
+                       String description, Integer price, String imageUrl, Store store) {
         this.category = category;
         this.nameKr = nameKr;
         this.nameEn = nameEn;
         this.description = description;
         this.price = price;
         this.imageUrl = imageUrl;
+        this.store = store;
     }
 
     public void updateStatus(MenuStatus status) {
