@@ -47,7 +47,7 @@ pipeline {
             env.IMAGE_TAG    = "${safe}"
             env.BASE_PATH = "/test/${safe}/"
           }
-          env.CONTAINER_NAME = ${env.PROJECT_NAME}
+          env.CONTAINER_NAME = "${env.PROJECT_NAME}"
 
           echo "▶ FE_APP        = ${env.FE_APP}"
           echo "▶ PROJECT_NAME  = ${env.PROJECT_NAME}"
