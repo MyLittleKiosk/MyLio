@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
-import Select from '../common/Select';
+import Select from '@/components/common/Select';
+import useModalStore from '@/stores/useModalStore';
 
 interface AddKioskModalProps {
   initialData?: {
@@ -10,17 +11,14 @@ interface AddKioskModalProps {
     status: boolean;
   };
   onSave: () => void;
-  onCancel: () => void;
 }
 
-const AddKioskModal = ({
-  initialData,
-  onSave,
-  onCancel,
-}: AddKioskModalProps) => {
+const AddKioskModal = ({ initialData, onSave }: AddKioskModalProps) => {
   const [kioskName, setKioskName] = useState(initialData?.name || '');
   const [groupName, setGroupName] = useState(initialData?.id || '');
   const [status, setStatus] = useState(initialData?.status || '활성화');
+
+  const { closeModal } = useModalStore();
 
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
     setStatus(e.target.value);
@@ -73,7 +71,7 @@ const AddKioskModal = ({
         </div>
       </div>
       <div className='flex justify-end gap-2 mt-4'>
-        <Button buttonType='button' text='취소' cancel onClick={onCancel} />
+        <Button buttonType='button' text='취소' cancel onClick={closeModal} />
         <Button buttonType='button' text='저장' onClick={onSave} />
       </div>
     </div>
