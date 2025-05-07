@@ -88,6 +88,8 @@ services:
     container_name: ${ADMIN_CONTAINER_NAME}
     ports:
       - "${ADMIN_PORT}:${ADMIN_CONTAINER_PORT}"
+    volumes:
+      - /home/ubuntu/MyLio/frontend/admin/conf.d:/etc/nginx/conf.d
     networks:
       - app-network
 
@@ -99,6 +101,8 @@ services:
     container_name: ${KIOSK_CONTAINER_NAME}
     ports:
       - "${KIOSK_PORT}:${KIOSK_CONTAINER_PORT}"
+    volumes:
+      - /home/ubuntu/MyLio/frontend/kiosk/conf.d:/etc/nginx/conf.d
     networks:
       - app-network
 
