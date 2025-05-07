@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
-import LOGO from '@/assets/images/Character_HAo.png';
 import IconBack from '@/assets/icons/IconBack';
+import LOGO from '@/assets/images/Character_HAo.png';
 
 import { ADMIN_NAVLIST, SUPERADMIN_NAVLIST } from '@/datas/sideBarList';
 
@@ -16,7 +16,7 @@ const SideBar = () => {
   const AUTHORITY = '일반관리자';
 
   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
-  const [currentPath, setCurrentPath] = useState('');
+  const [currentPath, setCurrentPath] = useState('/');
 
   // 사이드바 너비 조정 애니메이션 완료 여부
   const [isWidthAnimationComplete, setIsWidthAnimationComplete] =
