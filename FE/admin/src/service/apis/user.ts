@@ -1,7 +1,11 @@
 import { client } from '@/service/client';
-import { CustomError } from '@/types/apiResponse';
+import { CustomError, Response } from '@/types/apiResponse';
+import { User } from '@/types/user';
 
-export async function login(email: string, password: string) {
+export async function login(
+  email: string,
+  password: string
+): Promise<Response<User>> {
   try {
     const res = await client.post('/auth/login', { email, password });
     return res.data;
