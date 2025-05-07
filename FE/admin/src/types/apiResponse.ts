@@ -5,4 +5,8 @@ interface Response<T> {
   timestamp: string;
 }
 
-export type { Response };
+type CustomError = Error & {
+  response: { data: { error: { message: string } } };
+};
+
+export type { Response, CustomError };

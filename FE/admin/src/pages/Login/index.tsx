@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
-
+import { useLogin } from '@/service/queries/user';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [autoLogin, setAutoLogin] = useState(false);
   const [error, setError] = useState({ email: false, password: false });
-
+  const { mutate } = useLogin();
   const handleLogin = () => {
     const newError = {
       email: email === '',
@@ -15,7 +15,7 @@ const Login = () => {
     };
     setError(newError);
     if (newError.email || newError.password) return;
-    console.log(email, password);
+    mutate({ email, password });
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
