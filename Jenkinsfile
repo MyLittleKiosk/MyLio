@@ -15,6 +15,13 @@ pipeline {
     )
   }       
   */
+
+  environment {
+    // 환경 변수
+    VITE_PUBLIC_API_URL = credentials('VITE_PUBLIC_API_URL')
+    APP_NETWORK_NAME = credentials('APP_NETWORK_NAME')
+  }
+
   /************ 1. 공통 변수 계산 ************/
   stages {
     stage('Detect FE target & variables') {
@@ -40,6 +47,7 @@ pipeline {
             env.IMAGE_TAG    = "${safe}"
             env.BASE_PATH = "/test/${safe}/"
           }
+          env.CONTAINER_NAME = ${env.PROJECT_NAME}
 
           echo "▶ FE_APP        = ${env.FE_APP}"
           echo "▶ PROJECT_NAME  = ${env.PROJECT_NAME}"
@@ -69,10 +77,6 @@ pipeline {
           docker-compose -f docker-compose.preview.yml \
            --project-name ${PROJECT_NAME} \
             up -d --force-recreate --remove-orphans fe-preview
-            
-          # 네트워크 이름 = ${PROJECT_NAME}_default
-          docker network connect ${PROJECT_NAME}_default nginx-lb || true
-          docker restart nginx-lb
         '''
       }
     }
