@@ -1,18 +1,22 @@
+import React, { useState } from 'react';
+
 import IconAdd from '@/assets/icons/IconAdd';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
-import { KIOSK_COLUMNS, KIOSK_LIST } from '@/datas/kioskList';
 import Modal from '@/components/common/Modal';
-import useModalStore from '@/stores/useModalStore';
-import React, { useState } from 'react';
 import AddKioskModal from '@/components/kiosks/AddKioskModal';
+
+import { KIOSK_COLUMNS, KIOSK_LIST } from '@/datas/kioskList';
+
+import useModalStore from '@/stores/useModalStore';
 
 const Kiosk = () => {
   const { openModal, closeModal } = useModalStore();
   const [searchValue, setSearchValue] = useState('');
   const [selected, setSelected] = useState('');
+
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
     setSearchValue(e.target.value);
   }
@@ -49,12 +53,7 @@ const Kiosk = () => {
           text='키오스크 추가'
           icon={<IconAdd fillColor='white' />}
           onClick={() => {
-            openModal(
-              <AddKioskModal
-                onSave={() => closeModal()}
-                onCancel={() => closeModal()}
-              />
-            );
+            openModal(<AddKioskModal onSave={() => closeModal()} />);
           }}
           className='w-[11%] items-center justify-center'
         />
@@ -66,11 +65,7 @@ const Kiosk = () => {
         data={KIOSK_LIST.content}
         onEdit={(row) => {
           openModal(
-            <AddKioskModal
-              initialData={row}
-              onSave={() => closeModal()}
-              onCancel={() => closeModal()}
-            />
+            <AddKioskModal initialData={row} onSave={() => closeModal()} />
           );
         }}
         onDelete={(row) => {
