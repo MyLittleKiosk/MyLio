@@ -1,4 +1,4 @@
-package com.ssafy.mylio.domain.order.dto.response;
+package com.ssafy.mylio.domain.order.dto.common;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class OptionsResponseDto {
+public class OptionsDto {
     @Schema(example = "1")
     private Integer optionId;
     @Schema(example = "온도")
@@ -17,5 +17,5 @@ public class OptionsResponseDto {
     private boolean required;
     @Schema(example = "true")
     private boolean isSelected;
-    private List<OptionDetailsResponseDto> optionDetails;
+    private List<OptionDetailsDto> optionDetails;
 }

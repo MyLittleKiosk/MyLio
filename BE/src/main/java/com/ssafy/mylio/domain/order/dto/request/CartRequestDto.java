@@ -1,6 +1,5 @@
-package com.ssafy.mylio.domain.order.dto.response;
+package com.ssafy.mylio.domain.order.dto.request;
 
-import com.ssafy.mylio.domain.order.dto.common.NutritionInfoDto;
 import com.ssafy.mylio.domain.order.dto.common.OptionsDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -10,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class ContentsResponseDto {
+public class CartRequestDto {
     @Schema(example = "1")
     private Integer menuId;
     @Schema(example = "1")
@@ -25,8 +24,5 @@ public class ContentsResponseDto {
     private Integer totalPrice;
     @Schema(example = "vanillalatte.jpg")
     private String imageUrl;
-    @Schema(example = "CARD")
-    private List<OptionsDto> options;
     private List<OptionsDto> selectedOption;
-    private List<NutritionInfoDto> nutritionInfo;
 }

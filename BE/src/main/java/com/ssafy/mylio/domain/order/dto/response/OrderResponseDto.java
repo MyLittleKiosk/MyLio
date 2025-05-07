@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class OrderDto {
+public class OrderResponseDto {
     @Schema(example = "배닐라 라떼 하나 어이스로 주세요")
     private String preText;
     @Schema(example = "바닐라라떼 하나 아이스로 주세요")
@@ -21,9 +21,9 @@ public class OrderDto {
     private String language;
     @Schema(example = "A101")
     private String sessionId;
+    @Schema(example = "CARD")
+    private String payment;
 
     private List<CartResponseDto> cart;
     private List<ContentsResponseDto> contents;
-    @Schema(example = "CARD")
-    private String payment;
 }

@@ -1,5 +1,6 @@
 package com.ssafy.mylio.domain.order.dto.response;
 
+import com.ssafy.mylio.domain.order.dto.common.OptionsDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,5 +24,5 @@ public class CartResponseDto {
     private Integer totalPrice;
     @Schema(example = "vanillalatte.jpg")
     private String imageUrl;
-    private List<OptionsResponseDto> options;
+    private List<OptionsDto> options;
 }

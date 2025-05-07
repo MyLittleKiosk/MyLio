@@ -1,4 +1,4 @@
-package com.ssafy.mylio.domain.order.dto.response;
+package com.ssafy.mylio.domain.order.dto.request;
 
 import com.ssafy.mylio.domain.order.dto.common.NutritionInfoDto;
 import com.ssafy.mylio.domain.order.dto.common.OptionsDto;
@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class ContentsResponseDto {
+public class ContentRequestDto {
     @Schema(example = "1")
     private Integer menuId;
     @Schema(example = "1")
