@@ -1,0 +1,38 @@
+# --- 핵심 프레임워크 ---
+fastapi==0.95.2          # Pydantic v1 기반 마지막 LTS
+uvicorn[standard]==0.22.0
+pydantic==1.10.14        # FastAPI 0.95.x 와 호환
+
+# --- LLM / RAG 스택 ---
+langchain==0.0.235
+openai==0.28.1
+chromadb==0.4.15
+tiktoken==0.4.0
+
+# --- DB & 유틸 ---
+pymysql==1.1.0
+python-dotenv==1.0.1
+pandas==2.0.3
+numpy==1.24.4
+tqdm==4.66.4
+
+
+
+# # --- 핵심 프레임워크 ---
+# fastapi==0.115.*
+# uvicorn[standard]==0.29.*
+# pydantic==2.7.*
+
+# # --- LLM / RAG 스택 ---
+# langchain==0.1.14                # Pydantic 2 지원
+# langchain-openai==0.1.3
+# openai==1.21.*
+# chromadb==1.0.8                  # Chroma 1.x (Pydantic 2)
+# tiktoken==0.7.*
+
+# # --- DB & 유틸 ---
+# pymysql==1.1.*
+# python-dotenv==1.0.*
+# pandas==2.2.*
+# numpy==1.26.*
+# tqdm==4.*
