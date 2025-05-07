@@ -6,16 +6,16 @@ import SalesTrendChart from '@/components/statistics/SalesTrendChart';
 const Statistics = () => {
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [month, setMonth] = useState<number>(new Date().getMonth() + 1);
-  const getFullYear = () => {
+  function getFullYear() {
     return Array.from(
       { length: 10 },
       (_, i) => new Date().getFullYear() - 1 - i
     );
-  };
+  }
 
-  const getFullMonth = () => {
+  function getFullMonth() {
     return Array.from({ length: 12 }, (_, i) => i + 1);
-  };
+  }
 
   return (
     <>
