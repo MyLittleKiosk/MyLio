@@ -44,6 +44,8 @@ public class ProxyService {
                 .bodyToMono(String.class)
                 .timeout(Duration.ofSeconds(3));
 
+        log.info("reg : {}", toSnakeJson(req));
+
         // 2) 검증·교정 → status 분기
         return fastApiJson
                 .flatMap(orderValidator::validate)   // String → OrderResponseDto
