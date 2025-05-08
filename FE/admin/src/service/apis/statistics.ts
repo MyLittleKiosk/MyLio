@@ -1,6 +1,6 @@
 import authClient from '@/service/client';
 import { Response } from '@/types/apiResponse';
-import SalesTrendType from '@/types/statistics';
+import { SalesTrendType } from '@/types/statistics';
 
 export async function getSalesTrend(
   year: number,

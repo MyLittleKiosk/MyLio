@@ -1,7 +1,7 @@
-import { OptionDetailType, OptionType } from '@/types/options';
+import { OptionDetailType, OptionGroup } from '@/types/options';
 
 interface OptionTableProps {
-  options: OptionType[];
+  options: OptionGroup[];
   onOptionSelect: (optionId: number) => void;
   onDetailSelect: (optionId: number, detailId: number) => void;
   onRequiredSelect: (optionId: number) => void;
@@ -41,55 +41,55 @@ const OptionTable = ({
       <tbody className='divide-y divide-subContent'>
         {options.map((option) => {
           const selectedOption = selectedOptions.find(
-            (selected) => selected.optionId === option.option_id
+            (selected) => selected.optionId === option.optionId
           );
 
-          return option.option_detail.map(
+          return option.optionDetail.map(
             (detail: OptionDetailType, index: number) => (
-              <tr key={`${option.option_id}-${detail.option_detail_id}`}>
+              <tr key={`${option.optionId}-${detail.optionDetailId}`}>
                 {index === 0 && (
                   <>
                     <td
-                      rowSpan={option.option_detail.length}
+                      rowSpan={option.optionDetail.length}
                       className='text-center'
                     >
                       <input
                         type='checkbox'
                         checked={selectedOption?.isSelected || false}
-                        onChange={() => onOptionSelect(option.option_id)}
+                        onChange={() => onOptionSelect(option.optionId)}
                       />
                     </td>
                     <td
-                      rowSpan={option.option_detail.length}
+                      rowSpan={option.optionDetail.length}
                       className='px-4 py-3 text-sm font-preRegular text-center'
                     >
-                      {option.option_name_kr}
+                      {option.optionNameKr}
                     </td>
                   </>
                 )}
                 <td className='px-4 py-3 text-sm font-preRegular flex gap-2 items-center justify-center'>
-                  <span className='w-[50%]'>{detail.option_detail_value}</span>
+                  <span className='w-[50%]'>{detail.optionDetailValue}</span>
                   <input
                     type='checkbox'
                     checked={
                       selectedOption?.selectedDetails.includes(
-                        detail.option_detail_id
+                        detail.optionDetailId
                       ) || false
                     }
                     onChange={() =>
-                      onDetailSelect(option.option_id, detail.option_detail_id)
+                      onDetailSelect(option.optionId, detail.optionDetailId)
                     }
                   />
                 </td>
                 {index === 0 && (
                   <td
-                    rowSpan={option.option_detail.length}
+                    rowSpan={option.optionDetail.length}
                     className='text-center'
                   >
                     <input
                       type='checkbox'
                       checked={selectedOption?.isRequired || false}
-                      onChange={() => onRequiredSelect(option.option_id)}
+                      onChange={() => onRequiredSelect(option.optionId)}
                     />
                   </td>
                 )}

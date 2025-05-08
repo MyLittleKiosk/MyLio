@@ -10,7 +10,7 @@ import Table from '@/components/common/Table';
 import useModalStore from '@/stores/useModalStore';
 
 import { ACCOUNT_COLUMNS, DUMMY_ACCOUNT_LIST } from '@/datas/Account';
-import { Account } from '@/types/account';
+import { AccountType } from '@/types/account';
 
 const Accounts = () => {
   const { openModal } = useModalStore();
@@ -43,7 +43,7 @@ const Accounts = () => {
             className='w-[11%] items-center justify-center'
           />
         </div>
-        <Table<Account>
+        <Table<AccountType>
           title='계정 목록'
           description={`총 ${DUMMY_ACCOUNT_LIST.accounts.length}개의 계정이 있습니다.`}
           columns={ACCOUNT_COLUMNS}

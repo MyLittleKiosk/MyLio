@@ -106,8 +106,8 @@ const StepTwo = () => {
           label='원재료'
           selected={selectedIngredient}
           placeholder='원재료를 선택하세요.'
-          getOptionLabel={(option) => option.name_kr}
-          getOptionValue={(option) => option.ingredient_id.toString()}
+          getOptionLabel={(option) => option.nameKr}
+          getOptionValue={(option) => option.ingredientId.toString()}
           onChange={handleIngredientChange}
         />
         <div className='flex gap-2'>
@@ -130,8 +130,8 @@ const StepTwo = () => {
             label='영양성분'
             selected={selectedNutrient}
             placeholder='영양성분을 선택하세요.'
-            getOptionLabel={(option) => option.name_kr}
-            getOptionValue={(option) => option.nutrient_template_id.toString()}
+            getOptionLabel={(option) => option.nameKr}
+            getOptionValue={(option) => option.nutrientTemplateId.toString()}
             onChange={handleNutrientChange}
             className='w-[55%]'
           />
@@ -152,7 +152,7 @@ const StepTwo = () => {
             buttonType='button'
             onClick={() =>
               handleNutrientAdd(
-                selectedNutrient?.nutrient_template_id.toString() || '',
+                selectedNutrient?.nutrientTemplateId.toString() || '',
                 nutritionValue
               )
             }
@@ -162,13 +162,13 @@ const StepTwo = () => {
           {selectedNutrientList.map((nutrient) => {
             return (
               <p
-                key={nutrient.nutrient_template_id}
+                key={nutrient.nutrientTemplateId}
                 className='px-2 py-1 text-sm border border-subContent rounded-full font-preLight'
                 onClick={() =>
-                  handleNutrientRemove(nutrient.nutrient_template_id)
+                  handleNutrientRemove(nutrient.nutrientTemplateId)
                 }
               >
-                {nutrient.nutrient_name + ' ' + nutrient.nutrient_value}
+                {nutrient.nutrientName + ' ' + nutrient.nutrientValue}
               </p>
             );
           })}
@@ -180,7 +180,7 @@ const StepTwo = () => {
           옵션 그룹
         </h2>
         <OptionTable
-          options={OPTION_LIST.content.options}
+          options={OPTION_LIST.data.options}
           onOptionSelect={handleOptionSelect}
           onDetailSelect={handleDetailSelect}
           onRequiredSelect={handleRequiredSelect}
