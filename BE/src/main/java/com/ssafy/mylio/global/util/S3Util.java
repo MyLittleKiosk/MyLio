@@ -1,6 +1,7 @@
 package com.ssafy.mylio.global.util;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -18,10 +20,12 @@ import java.util.UUID;
 public class S3Util {
 
     private final AmazonS3 amazonS3;
-    @Value("${spring.cloud.aws.s3.bucket}")
+    @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
     public String uploadFile(MultipartFile imageFile) throws IOException {
+        if(imageFile == null) return null;
+
         // 키 생성 (중복 방지 및 디렉터리 관리)
         String key = generateKey(imageFile.getOriginalFilename());
 
@@ -30,8 +34,12 @@ public class S3Util {
         metadata.setContentType(imageFile.getContentType());
         metadata.setContentLength(imageFile.getSize());
 
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, key, imageFile.getInputStream(), metadata);
-        amazonS3.putObject(putObjectRequest);
+        // 4) 업로드 요청 (InputStream 스트리밍)
+        try (InputStream is = imageFile.getInputStream()) {
+            PutObjectRequest request = new PutObjectRequest(bucket, key, is, metadata)
+                    .withCannedAcl(CannedAccessControlList.Private);  // 기본 비공개
+            amazonS3.putObject(request);
+        }
 
         return amazonS3.getUrl(bucket, key).toString();
     }
