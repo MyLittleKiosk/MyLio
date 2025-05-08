@@ -8,7 +8,7 @@ const Login = () => {
   const [autoLogin, setAutoLogin] = useState(false);
   const [error, setError] = useState({ email: false, password: false });
   const { mutate } = useLogin();
-  const handleLogin = () => {
+  function handleLogin() {
     const newError = {
       email: email === '',
       password: password === '',
@@ -16,17 +16,17 @@ const Login = () => {
     setError(newError);
     if (newError.email || newError.password) return;
     mutate({ email, password });
-  };
+  }
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  function handleEmailChange(e: React.ChangeEvent<HTMLInputElement>) {
     setEmail(e.target.value);
     if (error.email) setError((prev) => ({ ...prev, email: false }));
-  };
+  }
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  function handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
     setPassword(e.target.value);
     if (error.password) setError((prev) => ({ ...prev, password: false }));
-  };
+  }
 
   return (
     <div className='w-full h-screen flex flex-col justify-center items-center bg-[#5B8CFF]'>
