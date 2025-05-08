@@ -77,7 +77,7 @@ export const useMenuAdd = (): UseMenuAddReturn => {
   );
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = CATEGORY_LIST.content.find(
+    const selected = CATEGORY_LIST.data.content.find(
       (category) => category.categoryId.toString() === e.target.value
     );
     setSelectedCategory(selected || null);

@@ -43,7 +43,7 @@ const StepOne = () => {
       />
 
       <Select
-        options={CATEGORY_LIST.content}
+        options={CATEGORY_LIST.data.content}
         label='카테고리'
         selected={selectedCategory}
         onChange={handleCategoryChange}
