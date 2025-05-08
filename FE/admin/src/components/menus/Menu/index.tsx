@@ -34,7 +34,7 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
   }
 
   function handleCategoryChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const selected = CATEGORY_LIST.content.find(
+    const selected = CATEGORY_LIST.data.content.find(
       (category) => category.nameKr === e.target.value
     );
     setSelectedCategory(selected || null);
@@ -65,7 +65,7 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
           className='w-[65%]'
         />
         <Select<CategoryType>
-          options={CATEGORY_LIST.content}
+          options={CATEGORY_LIST.data.content}
           selected={selectedCategory}
           onChange={handleCategoryChange}
           placeholder='모든 카테고리'
