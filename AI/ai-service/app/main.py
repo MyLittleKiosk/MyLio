@@ -10,7 +10,7 @@ from app.models.schemas import VoiceInputRequest, VoiceInputResponse, ScreenStat
 from app.db.mysql_connector import MySQLConnector
 from app.services.menu_service import MenuService
 from app.services.response_service import ResponseService
-from app.services.session_manager import SessionManager
+from app.services.redis_session_manager import RedisSessionManager
 from app.services.intent_service import IntentService
 
 # 환경 변수 로드
@@ -20,7 +20,7 @@ load_dotenv()
 app = FastAPI(
     title="Voice Kiosk API",
     description="음성 키오스크용 API 서비스",
-    version="0.1.0"
+    version="0.2.0"  # 버전 업데이트
 )
 
 # CORS 설정
@@ -54,8 +54,8 @@ def get_response_service():
 
 def get_session_manager():
     if not hasattr(app.state, "session_manager") or app.state.session_manager is None:
-        print("[경고] 세션 매니저가 존재하지 않아서 생성합니다.")
-        app.state.session_manager = SessionManager()
+        print("[경고] Redis 세션 매니저가 존재하지 않아서 생성합니다.")
+        app.state.session_manager = RedisSessionManager()
     return app.state.session_manager
 
 def get_intent_service(
@@ -73,14 +73,16 @@ def get_intent_service(
 # 초기화 이벤트
 @app.on_event("startup")
 async def startup_event():
-    print("음성 키오스크 API 서비스가 시작되었습니다.")
+    print("음성 키오스크 API 서비스가 시작되었습니다. (Redis 세션 관리 활성화)")
     
-    # 세션 관리자 초기화
-    app.state.session_manager = SessionManager()
+    # Redis 세션 관리자 초기화
+    app.state.session_manager = RedisSessionManager()
     
-    # 세션 정리 작업 예약 (실제 프로덕션에서는 백그라운드 작업으로 구현)
-    # import asyncio
-    # asyncio.create_task(cleanup_expired_sessions())
+    # Redis 연결 상태 확인
+    if app.state.session_manager.redis.ping():
+        print("Redis 서버에 성공적으로 연결되었습니다.")
+    else:
+        print("[경고] Redis 서버에 연결할 수 없습니다.")
 
 # 종료 이벤트
 @app.on_event("shutdown")

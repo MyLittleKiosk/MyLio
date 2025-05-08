@@ -14,12 +14,12 @@ from langchain.chat_models import ChatOpenAI
 from app.models.schemas import IntentType, ScreenState, Language, ResponseStatus
 from app.services.menu_service import MenuService
 from app.services.response_service import ResponseService
-from app.services.session_manager import SessionManager
+from app.services.redis_session_manager import RedisSessionManager
 
 class IntentService:
     """Few-shot 기반 의도 인식 서비스"""
     
-    def __init__(self, api_key: str, menu_service: MenuService, response_service: ResponseService, session_manager: SessionManager):
+    def __init__(self, api_key: str, menu_service: MenuService, response_service: ResponseService, session_manager: RedisSessionManager):
         """서비스 초기화"""
         self.menu_service = menu_service
         self.response_service = response_service
@@ -37,11 +37,13 @@ class IntentService:
     
     def process_request(self, text: str, language: str, screen_state: str, store_id: int, session_id: Optional[str] = None) -> Dict[str, Any]:
         """사용자 요청 처리 메인 함수"""
+        print(f"[요청 처리] 세션 ID: {session_id}, 텍스트: '{text}', 화면 상태: {screen_state}")
 
         # 1. 세션 확보
         if not session_id:
             # 세션 ID가 없으면 새로 생성
             session_id = self.session_manager.create_session()
+            print(f"[요청 처리] 새 세션 생성: {session_id}")
         else:
             # 기존 세션이 없으면 외부 ID로 생성
             if not self.session_manager.get_session(session_id):
@@ -120,6 +122,7 @@ class IntentService:
             - "초콜릿라떼떼 어이스 한개 줘" → "초코라떼"
             - "어메리카노 어이스 한개 줘" → "아메리카노"
             - "아샷추" → "아이스티"
+            - "아바라" → "바닐라 라떼"
 
             2. 다음과 같은 옵션 매핑 규칙을 적용하세요:
             - "아이스/아이스아메리카노/차가운/아아" → 온도 옵션의 "ICE" 값
@@ -318,6 +321,12 @@ class IntentService:
                     "menu": menu,
                     "pending_option": missing_option
                 }
+                
+                # Redis에 세션 상태 즉시 업데이트 (중요!)
+                self.session_manager._save_session(session["id"], session)
+                
+                print(f"[세션 업데이트] 세션 ID: {session['id']}, last_state 설정됨: menu={menu_name}, option={missing_option.get('option_name')}")
+            
                 
                 # 필수 옵션 선택 요청 응답
                 option_name = missing_option.get("option_name")
@@ -1306,6 +1315,8 @@ class IntentService:
                 "menu": menu,
                 "pending_option": next_required_option
             }
+            # Redis에 명시적으로 세션 저장 추가
+            self.session_manager._save_session(session["id"], session)
             
             return {
                 "intent_type": IntentType.OPTION_SELECT,
@@ -1344,6 +1355,7 @@ class IntentService:
             
             # 주문 완료 후 상태 초기화
             session["last_state"] = {}
+            self.session_manager._save_session(session["id"], session)
             
             return {
                 "intent_type": IntentType.ORDER,
