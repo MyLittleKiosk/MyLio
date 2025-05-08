@@ -1,7 +1,7 @@
 interface Response<T> {
   success: boolean;
   data: T;
-  error?: string | null;
+  error?: string;
   timestamp: string;
 }
 
