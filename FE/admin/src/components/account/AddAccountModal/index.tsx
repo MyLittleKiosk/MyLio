@@ -89,9 +89,9 @@ const AddAccountModal = () => {
     if (validationResult.isValid) {
       const email = `${formData.emailId}@${formData.emailDomain}`;
       const accountForm: AccountForm = {
-        user_name: formData.userName,
+        userName: formData.userName,
         email,
-        store_name: formData.storeName,
+        storeName: formData.storeName,
         address: formData.address,
       };
       console.log('data:', accountForm);

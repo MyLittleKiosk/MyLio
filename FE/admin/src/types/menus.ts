@@ -1,5 +1,5 @@
 import { CategoryType } from '@/types/categories';
-import { OptionInfoType, OptionType } from '@/types/options';
+import { OptionInfoType, OptionGroup } from '@/types/options';
 import { Column } from '@/types/tableProps';
 import { NutritionInfoType } from '@/types/nutrient';
 import { TagType } from '@/types/tags';
@@ -25,9 +25,9 @@ export interface MenuAdd {
   description: string;
   price: number;
   tags: TagType[];
-  nutrition_info: NutritionInfoType[];
-  ingredient_info: number[];
-  option_info: OptionInfoType[];
+  nutritionInfo: NutritionInfoType[];
+  ingredientInfo: number[];
+  optionInfo: OptionInfoType[];
 }
 
 export type NavItemType =
@@ -41,5 +41,5 @@ export type NavItemType =
     }
   | {
       title: string;
-      columns: Column<OptionType>[];
+      columns: Column<OptionGroup>[];
     };
