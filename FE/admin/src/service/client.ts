@@ -10,4 +10,4 @@ const client = axios.create({
   withCredentials: true,
 });
 
-export { client };
+export default client;
