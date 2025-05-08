@@ -1,5 +1,6 @@
 package com.ssafy.mylio.domain.order.dto.common;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +16,7 @@ public class OptionsDto {
     private String optionName;
     @Schema(example = "true")
     private boolean required;
+    @JsonProperty("isSelected")
     @Schema(example = "true")
     private boolean isSelected;
     @Schema(example = "1")
