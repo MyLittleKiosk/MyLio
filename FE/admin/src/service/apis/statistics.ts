@@ -1,4 +1,4 @@
-import authClient from '@/service/client';
+import authClient from '@/service/authClient';
 import { Response } from '@/types/apiResponse';
 import SalesTrendType from '@/types/statistics';
 

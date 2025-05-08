@@ -6,7 +6,6 @@ const userRole: Response<User> = {
     userId: 1,
     role: Role.SUPER,
   },
-  error: null,
   timestamp: new Date().toISOString(),
 };
 
