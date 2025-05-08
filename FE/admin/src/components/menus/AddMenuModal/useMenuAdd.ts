@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+
 import { MenuAdd } from '@/types/menus';
 import { CategoryType } from '@/types/categories';
-import { CATEGORY_LIST } from '@/datas/categoryList';
 import { IngredientType } from '@/types/ingredient';
 import { NutrientType } from '@/types/nutrient';
+
+import { CATEGORY_LIST } from '@/service/mock/dummies/category';
+
 import INGREDIENT_LIST from '@/datas/IngredientList';
 import NUTRIENT_LIST from '@/datas/NutrientList';
 

@@ -8,7 +8,7 @@ import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
 import AddMenuModal from '@/components/menus/AddMenuModal';
 
-import { CATEGORY_LIST } from '@/datas/categoryList';
+import { CATEGORY_LIST } from '@/service/mock/dummies/category';
 import STORE_LIST from '@/datas/storeList';
 
 import { CategoryType } from '@/types/categories';
