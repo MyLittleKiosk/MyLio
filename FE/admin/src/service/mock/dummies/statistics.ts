@@ -266,7 +266,59 @@ const DUMMY_SALES_BY_MONTH_2025_08 = [
   },
 ];
 
+const DUMMY_PAYMENTS_BY_YEAR_2024 = [
+  {
+    paymentName: '카드',
+    ratio: 0.4,
+  },
+  {
+    paymentName: '현금',
+    ratio: 0.2,
+  },
+  {
+    paymentName: '간편 결제',
+    ratio: 0.3,
+  },
+  {
+    paymentName: '기프트카드',
+    ratio: 0.1,
+  },
+];
+
+const DUMMY_ORDER_TYPES_BY_YEAR_2024 = [
+  {
+    orderTypeName: '매장',
+    ratio: 0.59,
+  },
+  {
+    orderTypeName: '포장',
+    ratio: 0.41,
+  },
+];
+
+const DUMMY_CATEGORY_SALES_BY_YEAR_2024 = [
+  {
+    categoryName: '커피',
+    ratio: 0.44,
+  },
+  {
+    categoryName: '논커피',
+    ratio: 0.26,
+  },
+  {
+    categoryName: '디저트',
+    ratio: 0.12,
+  },
+  {
+    categoryName: '브런치',
+    ratio: 0.18,
+  },
+];
+
 export {
+  DUMMY_CATEGORY_SALES_BY_YEAR_2024,
+  DUMMY_ORDER_TYPES_BY_YEAR_2024,
+  DUMMY_PAYMENTS_BY_YEAR_2024,
   DUMMY_SALES_BY_MONTH_2024_05,
   DUMMY_SALES_BY_MONTH_2025_08,
   DUMMY_SALES_BY_YEAR_2024,
