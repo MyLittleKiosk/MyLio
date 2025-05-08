@@ -5,6 +5,10 @@ export interface Response<T> {
   timestamp: string;
 }
 
+export type CustomError = Error & {
+  response: { data: { error: { message: string } } };
+};
+
 export interface PaginationResponse<T> {
   content: T[];
   pageNumber: number;
