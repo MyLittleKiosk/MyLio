@@ -93,7 +93,7 @@ export async function getStatisticsByPayment(
 }
 
 export async function getStatisticsByDaily(): Promise<
-  Response<DailySalesStatisticsType[]>
+  Response<DailySalesStatisticsType>
 > {
   try {
     const res = await authClient.get('/sales/daily');

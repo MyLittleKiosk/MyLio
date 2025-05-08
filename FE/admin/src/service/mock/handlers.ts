@@ -4,6 +4,7 @@ import { userRole } from './dummies/user';
 import { Response } from '@/types/apiResponse';
 import {
   CategorySalesRatioType,
+  DailySalesStatisticsType,
   OrderSalesRatioType,
   PaymentSalesRatioType,
 } from '@/types/statistics';
@@ -12,6 +13,7 @@ import MENU_LIST from './dummies/menu';
 import { OPTION_LIST } from './dummies/option';
 import {
   DUMMY_CATEGORY_SALES_BY_YEAR_2024,
+  DUMMY_DAILY_SALES,
   DUMMY_ORDER_TYPES_BY_YEAR_2024,
   DUMMY_PAYMENTS_BY_YEAR_2024,
   DUMMY_SALES_BY_MONTH_2024_05,
@@ -84,6 +86,15 @@ export const handlers = [
     const responseData: Response<CategorySalesRatioType[]> = {
       success: true,
       data: DUMMY_CATEGORY_SALES_BY_YEAR_2024,
+      timestamp: new Date().toISOString(),
+    };
+    return HttpResponse.json(responseData);
+  }),
+
+  http.get(`${baseUrl}/sales/daily`, () => {
+    const responseData: Response<DailySalesStatisticsType> = {
+      success: true,
+      data: DUMMY_DAILY_SALES,
       timestamp: new Date().toISOString(),
     };
     return HttpResponse.json(responseData);

@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import Select from '@/components/common/Select';
 import CategoryPieChart from '@/components/statistics/CategoryPieChart';
+import DailyStatistics from '@/components/statistics/DailyStatistics';
 import OrderTypePieChart from '@/components/statistics/OrderTypePieChart';
 import PaymentsPieChart from '@/components/statistics/PaymentsPieChart';
 import SalesTrendChart from '@/components/statistics/SalesTrendChart';
@@ -22,10 +23,9 @@ const Statistics = () => {
 
   return (
     <>
-      <div className='w-full h-full p-2 flex flex-col gap-2'>
-        <div className='mb-4 flex items-center gap-4'>
-          <h1 className='text-2xl font-bold'>통계 대시보드</h1>
-        </div>
+      <div className='w-full h-full p-4 flex flex-col gap-2'>
+        <h1 className='text-2xl font-preBold'>통계 대시보드</h1>
+        <DailyStatistics />
         <div className='w-full h-full max-h-[600px] min-h-[400px] flex gap-4'>
           <div className='w-full h-full flex flex-col border border-subContent rounded-md p-2 gap-2'>
             <h1 className='text-lg font-bold'>매출 추이</h1>
