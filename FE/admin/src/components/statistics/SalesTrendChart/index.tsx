@@ -2,7 +2,7 @@ import {
   DUMMY_SALES_BY_MONTH_2024_05,
   DUMMY_SALES_BY_YEAR_2024,
 } from '@/service/mock/dummies/statistics';
-import useGetSalesTrend from '@/service/queries/statistics';
+import { useGetSalesTrend } from '@/service/queries/statistics';
 import formatSalesData from '@/utils/formatSalesData';
 import { Line } from 'react-chartjs-2';
 import { config } from './chart.config';
@@ -20,8 +20,11 @@ const SalesTrendChart = ({ year, month }: SalesTrendChartProps) => {
     return <div>Loading...</div>;
   }
 
-  console.log(process.env.IS_STORYBOOK);
-  if (process.env.IS_STORYBOOK === 'true') {
+  const isStorybook =
+    typeof process !== 'undefined' && process.env?.VITE_IS_STORYBOOK === 'true';
+
+  console.log(isStorybook);
+  if (isStorybook) {
     const chartData = formatSalesData(
       month === 0 ? DUMMY_SALES_BY_YEAR_2024 : DUMMY_SALES_BY_MONTH_2024_05,
       chartType,

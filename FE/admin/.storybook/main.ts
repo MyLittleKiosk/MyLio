@@ -24,7 +24,11 @@ const config: StorybookConfig = {
   viteFinal: async (config) => {
     return mergeConfig(config, {
       define: {
-        'process.env.IS_STORYBOOK': JSON.stringify('true'),
+        ...config.define,
+        'process.env': {
+          ...(config.define?.['process.env'] || {}),
+          VITE_IS_STORYBOOK: 'true',
+        },
       },
     });
   },
