@@ -1,4 +1,4 @@
-import { client } from '@/service/client';
+import client from '@/service/client';
 import { CustomError, Response } from '@/types/apiResponse';
 import { User } from '@/types/user';
 
