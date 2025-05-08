@@ -1,8 +1,8 @@
-import { Account } from '@/types/account';
+import { AccountType } from '@/types/account';
 import { Column } from '@/types/tableProps';
 
 // 실제 Account에 존재하지 않는 컬럼은 따로 타입 선언
-interface AccountTableColumn extends Account {
+interface AccountTableColumn extends AccountType {
   password?: string;
   delete?: string;
 }
@@ -10,7 +10,7 @@ interface AccountTableColumn extends Account {
 const ACCOUNT_COLUMNS: Column<AccountTableColumn>[] = [
   {
     header: '이름',
-    accessor: 'user_name',
+    accessor: 'userName',
   },
   {
     header: '이메일',
@@ -22,7 +22,7 @@ const ACCOUNT_COLUMNS: Column<AccountTableColumn>[] = [
   },
   {
     header: '매장 이름',
-    accessor: 'store_name',
+    accessor: 'storeName',
   },
   {
     header: '삭제',
@@ -33,50 +33,50 @@ const ACCOUNT_COLUMNS: Column<AccountTableColumn>[] = [
 const DUMMY_ACCOUNT_LIST = {
   accounts: [
     {
-      account_id: 1,
-      user_name: '김하늘',
+      accountId: 1,
+      userName: '김하늘',
       email: 'haneul.kim@example.com',
-      store_name: '하늘 커피',
+      storeName: '하늘 커피',
       address: '서울특별시 강남구 강남대로 123',
       password: '********',
     },
     {
-      account_id: 2,
-      user_name: '이준호',
+      accountId: 2,
+      userName: '이준호',
       email: 'junho.lee@example.com',
-      store_name: '준호 커피',
+      storeName: '준호 커피',
       address: '서울특별시 서초구 반포대로 201',
       password: '********',
     },
     {
-      account_id: 3,
-      user_name: '박지수',
+      accountId: 3,
+      userName: '박지수',
       email: 'jisu.park@example.com',
-      store_name: '지수 커피공방',
+      storeName: '지수 커피공방',
       address: '서울특별시 마포구 월드컵북로 58',
       password: '********',
     },
     {
-      account_id: 4,
-      user_name: '최다연',
+      accountId: 4,
+      userName: '최다연',
       email: 'dayeon.choi@example.com',
-      store_name: '다연 커피하우스',
+      storeName: '다연 커피하우스',
       address: '서울특별시 성동구 왕십리로 85',
       password: '********',
     },
     {
-      account_id: 5,
-      user_name: '정우성',
+      accountId: 5,
+      userName: '정우성',
       email: 'woosung.jung@example.com',
-      store_name: '우성 브루잉 카페',
+      storeName: '우성 브루잉 카페',
       address: '서울특별시 용산구 한강대로 320',
       password: '********',
     },
   ],
-  page_number: 1,
-  total_pages: 1,
-  total_elements: 5,
-  page_size: 10,
+  pageNumber: 1,
+  totalPages: 1,
+  totalElements: 5,
+  pageSize: 10,
   first: true,
   last: true,
 };

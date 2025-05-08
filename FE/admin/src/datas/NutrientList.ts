@@ -2,24 +2,24 @@
 const NUTRIENT_LIST = {
   content: [
     {
-      nutrient_template_id: 1,
-      name_kr: '칼로리',
-      name_en: 'Calories',
+      nutrientTemplateId: 1,
+      nameKr: '칼로리',
+      nameEn: 'Calories',
     },
     {
-      nutrient_template_id: 2,
-      name_kr: '단백질',
-      name_en: 'Protein',
+      nutrientTemplateId: 2,
+      nameKr: '단백질',
+      nameEn: 'Protein',
     },
     {
-      nutrient_template_id: 3,
-      name_kr: '지방',
-      name_en: 'Fat',
+      nutrientTemplateId: 3,
+      nameKr: '지방',
+      nameEn: 'Fat',
     },
     {
-      nutrient_template_id: 4,
-      name_kr: '탄수화물',
-      name_en: 'Carbohydrate',
+      nutrientTemplateId: 4,
+      nameKr: '탄수화물',
+      nameEn: 'Carbohydrate',
     },
   ],
 };

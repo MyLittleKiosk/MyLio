@@ -1,11 +1,5 @@
-interface StoreType {
-  store_id: number;
-  store_name: string;
+export type StoreType = {
+  storeId: number;
+  storeName: string;
   address: string;
-}
-
-interface StoreList {
-  stores: StoreType[];
-}
-
-export type { StoreType, StoreList };
+};
