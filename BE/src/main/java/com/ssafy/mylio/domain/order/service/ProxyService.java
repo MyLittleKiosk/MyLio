@@ -1,6 +1,9 @@
 package com.ssafy.mylio.domain.order.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.ssafy.mylio.domain.order.dto.response.ContentsResponseDto;
+import reactor.core.scheduler.Schedulers;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.ssafy.mylio.domain.order.dto.request.OrderRequestDto;
@@ -15,7 +18,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 
+import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +35,7 @@ public class ProxyService {
     private final SearchValidator searchValidator;
     private final PaymentValidator paymentValidator;
     private final OrderService orderService;
+    private final DetailValidator detailValidator;
 
     private final ObjectMapper snakeMapper = new ObjectMapper()
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
@@ -42,36 +50,87 @@ public class ProxyService {
                 .bodyValue(toSnakeJson(req))
                 .retrieve()
                 .bodyToMono(String.class)
-                .timeout(Duration.ofSeconds(3));
+                .timeout(Duration.ofSeconds(5));
 
         log.info("reg : {}", toSnakeJson(req));
 
         // 2) 검증·교정 → status 분기
         return fastApiJson
-                .flatMap(orderValidator::validate)   // String → OrderResponseDto
-                .flatMap(this::dispatchByStatus);
+                .flatMap(this::routeByScreenState)  // JSON → OrderResponseDto 및 검증
+                .flatMap(this::dispatchByStatus);   // 최종 비즈니스 핸들링
     }
 
-    /** camelCase DTO → snake_case JSON */
-    private String toSnakeJson(Object dto) {
-        try { return snakeMapper.writeValueAsString(dto); }
-        catch (JsonProcessingException e) {
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "request", "OrderRequestDto");
-        }
+    // ORDER, DETAIL에 따른 검증 분기 처리
+    private Mono<OrderResponseDto> routeByScreenState(String json) {
+        String screen = extractScreenState(json);
+        return switch (screen) {
+            case "ORDER"  -> orderValidator.validate(json);   // 옵션 검증 포함
+            case "DETAIL" -> detailValidator.validate(json);   // 영양정보 검증 포함
+            default -> Mono.fromCallable(() -> parseOnly(json))
+                    .subscribeOn(Schedulers.boundedElastic());
+        };
     }
 
     /** status 스위칭 */
     private Mono<OrderResponseDto> dispatchByStatus(OrderResponseDto resp) {
         return switch (resp.getScreen_state()) {
             case "ORDER"   -> orderService.handleOrder(resp);
-
             case "SEARCH"  -> searchValidator.validate(resp).thenReturn(resp);
-
-            case "CONFIRM", "SELECT_PAY", "PAY", "DETAIL"
-                    -> paymentValidator.validate(resp)
+            case "CONFIRM", "SELECT_PAY", "PAY" -> paymentValidator.validate(resp)
                     .then(orderService.handlePayment(resp));
-
-            default       -> Mono.error(new IllegalStateException("Unknown status: " + resp.getScreen_state()));
+            case "DETAIL", "MAIN" -> Mono.just(resp);
+            default -> Mono.error(new IllegalStateException("Unknown status: " + resp.getScreen_state()));
         };
+    }
+
+    /** camelCase DTO → snake_case JSON */
+    private String toSnakeJson(Object dto) {
+        try { return snakeMapper.writeValueAsString(dto); }
+        catch (IOException e) {
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "request", "OrderRequestDto");
+        }
+    }
+
+    private String extractScreenState(String json) {
+        try {
+            JsonNode root = snakeMapper.readTree(json);
+            return root.path("screen_state").asText(null);
+        } catch (IOException e) {
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "payload", "screen_state");
+        }
+    }
+
+    private OrderResponseDto parseOnly(String json) {
+        try {
+            JsonNode root = snakeMapper.readTree(json);
+
+            // 필수 필드만 수동 매핑
+            String screen   = root.path("screen_state").asText(null);
+            String rawText  = root.path("raw_text").asText(null);
+
+            // 필요하다면 contents 배열 길이만 파악
+            List<ContentsResponseDto> contents = Collections.emptyList();
+            if (root.path("data").has("contents")) {
+                contents = new ArrayList<>();
+                for (JsonNode m : (ArrayNode) root.path("data").path("contents")) {
+                    contents.add(
+                            ContentsResponseDto.builder()
+                                    .menuId(m.path("menu_id").asInt())
+                                    .quantity(m.path("quantity").asInt())
+                                    .name(m.path("name").asText(null))
+                                    .build()
+                    );
+                }
+            }
+
+            return OrderResponseDto.builder()
+                    .screen_state(screen)
+                    .preText(rawText)
+                    .contents(contents)
+                    .build();
+
+        } catch (IOException e) {
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "payload", "order-json");
+        }
     }
 }
