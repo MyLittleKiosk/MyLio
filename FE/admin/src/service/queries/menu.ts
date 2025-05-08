@@ -5,10 +5,10 @@ import getMenus from '@/service/apis/menu';
 import { MenuType } from '@/types/menus';
 import { PaginationResponse, Response } from '@/types/apiResponse';
 
-const useGetMenus = () => {
+const useGetMenus = (page?: number, categoryId?: number) => {
   const query = useQuery<Response<PaginationResponse<MenuType>>>({
-    queryKey: ['menus'],
-    queryFn: getMenus,
+    queryKey: ['menus', page, categoryId],
+    queryFn: () => getMenus(page, categoryId),
   });
 
   return {

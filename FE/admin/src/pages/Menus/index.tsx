@@ -17,10 +17,11 @@ const Menus = () => {
         <h1 className='text-2xl font-preBold h-[5%]'>메뉴 목록</h1>
         <nav className='bg-subContent/50 rounded-md p-2 w-fit'>
           <ul className='flex items-center justify-center gap-2 text-sm font-preMedium'>
-            {MENU_NAV_LIST.map((navItem, index) => {
+            {MENU_NAV_LIST.map((navItem) => {
               return (
                 <li
-                  key={index}
+                  id={navItem.title}
+                  key={navItem.title}
                   onClick={() => setSelectedNav(navItem)}
                   className={`cursor-pointer hover:bg-white rounded-md px-2 py-1 ${
                     selectedNav.title === navItem.title && 'bg-white'
