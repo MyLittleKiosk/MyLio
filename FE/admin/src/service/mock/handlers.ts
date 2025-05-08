@@ -1,4 +1,6 @@
 import { http, HttpResponse } from 'msw';
+import MENU_LIST from '@/service/mock/dummies/menu';
+
 import {
   DUMMY_SALES_BY_MONTH_2024_05,
   DUMMY_SALES_BY_MONTH_2025_08,
@@ -33,5 +35,9 @@ export const handlers = [
       }
     }
     return HttpResponse.json({ data: DUMMY_SALES_BY_YEAR_2024 });
+  }),
+
+  http.get(baseUrl + '/menus', () => {
+    return HttpResponse.json(MENU_LIST);
   }),
 ];

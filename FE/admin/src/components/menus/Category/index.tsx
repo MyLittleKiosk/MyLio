@@ -10,6 +10,8 @@ import { Column } from '@/types/tableProps';
 
 import useModalStore from '@/stores/useModalStore';
 
+import { CATEGORY_LIST } from '@/datas/categoryList';
+
 const Category = ({ selectedNav }: { selectedNav: NavItemType }) => {
   const { openModal } = useModalStore();
   return (
@@ -30,7 +32,7 @@ const Category = ({ selectedNav }: { selectedNav: NavItemType }) => {
         title='카테고리 목록'
         description={`총 6개의 카테고리가 있습니다.`}
         columns={selectedNav.columns as Column<CategoryType>[]}
-        data={selectedNav.data.content as CategoryType[]}
+        data={CATEGORY_LIST.content as CategoryType[]}
       />
     </div>
   );

@@ -14,8 +14,12 @@ COPY .yarn/ .yarn/
 RUN yarn install --immutable
 
 ARG BASE_PATH=/
+ARG VITE_PUBLIC_API_URL
+
 ENV BASE_PATH ${BASE_PATH}
+ENV VITE_PUBLIC_API_URL ${VITE_PUBLIC_API_URL}
 RUN echo "Building with base: $BASE_PATH"
+RUN echo "API URL : $VITE_PUBLIC_API_URL"
 
 # 애플리케이션 소스 복사 → 빌드
 COPY . .

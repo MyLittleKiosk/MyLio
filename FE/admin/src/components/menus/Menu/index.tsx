@@ -12,12 +12,14 @@ import STORE_LIST from '@/datas/storeList';
 
 import { CategoryType } from '@/types/categories';
 import { StoreType } from '@/types/stores';
+import { MenuType, NavItemType } from '@/types/menus';
+import { Column } from '@/types/tableProps';
 
 import AddMenuModal from '../AddMenuModal';
 
 import useModalStore from '@/stores/useModalStore';
-import { MenuType, NavItemType } from '@/types/menus';
-import { Column } from '@/types/tableProps';
+
+import useGetMenus from '@/service/queries/menu';
 
 const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
   const { openModal } = useModalStore();
@@ -44,6 +46,12 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
       (store) => store.store_name === e.target.value
     );
     setSelectedStore(selected || null);
+  }
+
+  const { data: menus, isLoading } = useGetMenus();
+
+  if (!menus || isLoading) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -89,7 +97,7 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
         title='메뉴 목록'
         description='총 6개의 메뉴가 있습니다.'
         columns={selectedNav.columns as Column<MenuType>[]}
-        data={selectedNav.data.content as MenuType[]}
+        data={menus as MenuType[]}
       />
     </div>
   );
