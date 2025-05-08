@@ -55,12 +55,16 @@ public class OrderValidator {
                 .toList();
 
         if (!missingOpts.isEmpty()) {
-            String reply = gptPromptService.buildAskRequiredOptionPrompt(missingOpts, order.getLanguage());
-            return order.toBuilder()
-                    .contents(fixedContents)
-                    .reply(reply)
-                    .screen_state(order.getScreen_state())
-                    .build();
+            // reply가 없을때 GPT 호출
+            if(order.getReply()== null){
+                String reply = gptPromptService.buildAskRequiredOptionPrompt(missingOpts, order.getLanguage());
+                return order.toBuilder()
+                        .contents(fixedContents)
+                        .reply(reply)
+                        .screen_state(order.getScreen_state())
+                        .build();
+            }
+
         }
 
         return order.toBuilder().contents(fixedContents).build();

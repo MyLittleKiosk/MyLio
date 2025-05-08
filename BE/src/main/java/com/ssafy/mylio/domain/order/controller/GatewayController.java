@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.ssafy.mylio.domain.order.dto.request.OrderRequestDto;
 import com.ssafy.mylio.domain.order.dto.response.OrderResponseDto;
 import com.ssafy.mylio.domain.order.service.*;
+import com.ssafy.mylio.global.common.response.CommonResponse;
 import com.ssafy.mylio.global.security.auth.UserPrincipal;
 import com.ssafy.mylio.global.util.AuthenticationUtil;
 import lombok.RequiredArgsConstructor;
@@ -33,14 +34,13 @@ public class GatewayController {
     private final ProxyService proxyService;
 
     @PostMapping
-    public Mono<ResponseEntity<OrderResponseDto>> proxy(
+    public Mono<ResponseEntity<CommonResponse<OrderResponseDto>>> proxy(
             @AuthenticationPrincipal UserPrincipal user,
             @RequestBody OrderRequestDto req) {
 
         Integer storeId = authenticationUtil.getCurrentUserId(user);
 
-        return proxyService.process(storeId, req)
-                .map(ResponseEntity::ok);
+        return proxyService.process(storeId, req).map(CommonResponse::ok);
     }
 
 //    @PostMapping

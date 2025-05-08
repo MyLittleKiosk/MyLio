@@ -44,7 +44,7 @@ public class ProxyService {
 
         // 1) FastAPI 호출 (String JSON 수신)
         Mono<String> fastApiJson = ragWebClient.post()
-                .uri("/recognize_intent")
+                .uri("/recognize-intent")
                 .header("X-DEV-USER", storeId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(toSnakeJson(req))
@@ -103,10 +103,17 @@ public class ProxyService {
     private OrderResponseDto parseOnly(String json) {
         try {
             JsonNode root = snakeMapper.readTree(json);
+            JsonNode data = root.path("data");
 
-            // 필수 필드만 수동 매핑
-            String screen   = root.path("screen_state").asText(null);
-            String rawText  = root.path("raw_text").asText(null);
+            // root 노드 값 파싱
+            String status  = root.path("screen_state").asText(null);
+            String payment = root.path("payment_method").isNull() ? null : root.path("payment_method").asText();
+
+            // data 값 파싱
+            String preText = data.path("pre_text").asText(null);
+            String postText = data.path("post_text").asText(null);
+            String reply = data.path("reply").asText(null);
+            String sessionId = data.path("session_id").asText(null);
 
             // 필요하다면 contents 배열 길이만 파악
             List<ContentsResponseDto> contents = Collections.emptyList();
@@ -124,11 +131,16 @@ public class ProxyService {
             }
 
             return OrderResponseDto.builder()
-                    .screen_state(screen)
-                    .preText(rawText)
+                    .preText(preText)
+                    .postText(postText)
+                    .reply(reply)
+                    .screen_state(status)
+                    .language("KR")
+                    .sessionId(sessionId)
+                    .payment(payment)
+                    .cart(Collections.emptyList())
                     .contents(contents)
                     .build();
-
         } catch (IOException e) {
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "payload", "order-json");
         }
