@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: voice-kiosk-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app/app
+    environment:
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_PORT=${MYSQL_PORT}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASS=${MYSQL_PASS}
+      - MYSQL_DB=${MYSQL_DB}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - REDIS_HOST=redis  # Redis 호스트 설정 (서비스 이름)
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}  # 비밀번호 설정 (옵션)
+    depends_on:
+      - redis  # Redis 서비스에 의존성 추가
+
+  redis:
+    image: redis:7-alpine  # 가벼운 Alpine 기반 Redis 이미지 사용
+    container_name: voice-kiosk-redis
+    ports:
+      - "6379:6379"  # 로컬에서 연결할 수 있도록 포트 노출 (선택사항)
+    volumes:
+      - redis-data:/data  # 데이터 영속성을 위한 볼륨 마운트
+    command: redis-server --appendonly yes  # 데이터 지속성 활성화 (AOF)
+    # 필요시 비밀번호 설정 (추가 보안) 
+    # command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+
+volumes:
+  redis-data:  # Redis 데이터를 위한 영구 볼륨 정의
