@@ -15,8 +15,6 @@ import java.util.List;
 @Builder
 public class MenuRequestDto {
 
-//    @Schema(example = "https://mylio/latte.jpg")
-//    private String imageUrl;
     @Schema(example = "아이스 아메리카노")
     private String nameKr;
     @Schema(example = "ice americano")

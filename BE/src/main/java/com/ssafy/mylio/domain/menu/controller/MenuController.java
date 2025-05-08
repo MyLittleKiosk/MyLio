@@ -83,7 +83,11 @@ public class MenuController {
         return CommonResponse.ok();
     }
 
-    @PutMapping("/{menu_id}")
+    @PutMapping(
+            value = "/{menu_id}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @Operation(summary = "메뉴 업데이트", description = "메뉴 정보를 업데이트 합니다.")
     @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.CATEGORY_NOT_FOUND, ErrorCode.NUTRITION_TEMPLATE_NOT_FOUND,
             ErrorCode.INGREDIENT_TEMPLATE_NOT_FOUND, ErrorCode.OPTION_NOT_FOUND, ErrorCode.OPTION_DETAIL_NOT_FOUND})

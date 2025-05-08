@@ -248,7 +248,7 @@ public class MenuService {
         try{
             return s3Util.uploadFile(menuImg);
         } catch (IOException e) {
-            return null;
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 }
