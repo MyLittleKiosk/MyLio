@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class OrderResponseDto {
     @Schema(example = "배닐라 라떼 하나 어이스로 주세요")
     private String preText;

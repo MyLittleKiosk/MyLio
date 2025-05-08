@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class OptionsDto {
     @Schema(example = "1")
     private Integer optionId;
@@ -17,5 +17,7 @@ public class OptionsDto {
     private boolean required;
     @Schema(example = "true")
     private boolean isSelected;
+    @Schema(example = "1")
+    private Integer selectedId;
     private List<OptionDetailsDto> optionDetails;
 }
