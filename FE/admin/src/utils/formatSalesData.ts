@@ -1,4 +1,5 @@
 import { SalesTrendType } from '@/types/statistics';
+import { ChartData } from 'chart.js';
 
 const getDaysInMonth = (year: number, month: number): number => {
   return new Date(year, month, 0).getDate();
@@ -55,7 +56,7 @@ const formatSalesData = (
   chartType: 'month' | 'year',
   year?: number,
   month?: number
-) => {
+): ChartData<'line'> => {
   const processedData = fillMissingData(data, chartType, year, month);
 
   return {
