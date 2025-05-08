@@ -7,8 +7,11 @@ import ModalHeader from '@/components/common/Modal/ModalHeader';
 import useModalStore from '@/stores/useModalStore';
 import translator from '@/utils/translator';
 
+import { usePostCategory } from '@/service/queries/category';
+
 const AddCategoryModal = () => {
   const { closeModal } = useModalStore();
+  const { mutate } = usePostCategory();
 
   const [categoryValueKr, setCategoryValueKr] = useState('');
   const [categoryValueEn, setCategoryValueEn] = useState('');
@@ -20,6 +23,8 @@ const AddCategoryModal = () => {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    mutate({ nameKr: categoryValueKr, nameEn: categoryValueEn });
+
     closeModal();
   }
 
@@ -54,7 +59,7 @@ const AddCategoryModal = () => {
           <div className='w-full flex items-center gap-2'>
             <span className='font-preSemiBold text-md'>카테고리 영문명</span>
             <p
-              className={`flex-1 px-4 py-2 border border-1 border-subContent rounded-md ${categoryValueEn && 'text-black'} text-content2`}
+              className={`flex-1 px-4 py-2 border border-1 border-subContent rounded-md ${categoryValueEn && 'text-black'} text-content2 text-sm text-preRegular`}
             >
               {categoryValueEn || '번역 대기중...'}
             </p>

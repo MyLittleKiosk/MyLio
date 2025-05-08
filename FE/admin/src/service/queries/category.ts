@@ -1,11 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { PaginationResponse, Response } from '@/types/apiResponse';
 import { CategoryType } from '@/types/categories';
 
-import { getCategory } from '@/service/apis/category';
+import { getCategory, postCategory } from '@/service/apis/category';
+import useModalStore from '@/stores/useModalStore';
 
-const useGetCategory = (page?: number) => {
+export const useGetCategory = (page?: number) => {
   const query = useQuery<Response<PaginationResponse<CategoryType>>>({
     queryKey: ['category', page],
     queryFn: () => getCategory(page),
@@ -18,4 +19,19 @@ const useGetCategory = (page?: number) => {
   };
 };
 
-export default useGetCategory;
+export const usePostCategory = () => {
+  const { closeModal } = useModalStore();
+  return useMutation({
+    mutationFn: ({ nameKr, nameEn }: { nameKr: string; nameEn: string }) =>
+      postCategory(nameKr, nameEn),
+    onSuccess: () => {
+      alert('등록에 성공했습니다.');
+      closeModal();
+    },
+    onError: (error) => {
+      if (error instanceof Error) {
+        alert(error.message);
+      }
+    },
+  });
+};

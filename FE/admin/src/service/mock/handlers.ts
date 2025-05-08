@@ -56,4 +56,12 @@ export const handlers = [
   http.get(`${baseUrl}/category?pageable:pageable`, () => {
     return HttpResponse.json(CATEGORY_LIST);
   }),
+
+  http.post(`${baseUrl}/category`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
 ];
