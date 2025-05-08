@@ -8,12 +8,15 @@ import com.ssafy.mylio.domain.store.entity.Store;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Getter
 @SuperBuilder
+@NoArgsConstructor
 public class MenuRequestDto {
 
     @Schema(example = "아이스 아메리카노")

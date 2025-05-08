@@ -179,6 +179,7 @@ public class MenuService {
 
         // 메뉴 연관 엔티티 재등록
         saveMenuMappings(menu, store, menuUpdateDto);
+        menuRepository.save(menu);
     }
 
     private Menu getMenu(Integer menuId) {
