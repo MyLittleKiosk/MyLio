@@ -10,10 +10,20 @@ import { Column } from '@/types/tableProps';
 
 import useModalStore from '@/stores/useModalStore';
 
-import { CATEGORY_LIST } from '@/datas/categoryList';
+import useGetCategory from '@/service/queries/category';
 
 const Category = ({ selectedNav }: { selectedNav: NavItemType }) => {
   const { openModal } = useModalStore();
+
+  //임의 페이지네이션 숫자
+  const pageable = 1;
+
+  const { data: categoryList, isLoading } = useGetCategory(pageable);
+
+  if (!categoryList || isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex gap-2 max-h-[10%] w-full items-center justify-between'>
@@ -32,7 +42,7 @@ const Category = ({ selectedNav }: { selectedNav: NavItemType }) => {
         title='카테고리 목록'
         description={`총 6개의 카테고리가 있습니다.`}
         columns={selectedNav.columns as Column<CategoryType>[]}
-        data={CATEGORY_LIST.content as CategoryType[]}
+        data={categoryList as CategoryType[]}
       />
     </div>
   );

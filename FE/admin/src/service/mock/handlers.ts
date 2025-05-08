@@ -8,6 +8,8 @@ import {
   DUMMY_SALES_BY_YEAR_2025,
 } from './dummies/statistics';
 import MENU_LIST from './dummies/menu';
+import { CATEGORY_LIST } from './dummies/category';
+
 const baseUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
 export const handlers = [
@@ -38,10 +40,15 @@ export const handlers = [
     return HttpResponse.json({ data: DUMMY_SALES_BY_YEAR_2024 });
   }),
 
-  http.get(baseUrl + '/menus', () => {
+  http.get(`${baseUrl}/menus`, () => {
     return HttpResponse.json(MENU_LIST);
   }),
+
   http.get(`${baseUrl}/accounts/role`, () => {
     return HttpResponse.json(userRole);
+  }),
+
+  http.get(`${baseUrl}/category?pageable:pageable`, () => {
+    return HttpResponse.json(CATEGORY_LIST);
   }),
 ];
