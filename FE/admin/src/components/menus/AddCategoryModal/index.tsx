@@ -5,11 +5,18 @@ import Input from '@/components/common/Input';
 import ModalHeader from '@/components/common/Modal/ModalHeader';
 
 import useModalStore from '@/stores/useModalStore';
+import translator from '@/utils/translator';
 
 const AddCategoryModal = () => {
   const { closeModal } = useModalStore();
 
-  const [categoryValue, setCategoryValue] = useState('');
+  const [categoryValueKr, setCategoryValueKr] = useState('');
+  const [categoryValueEn, setCategoryValueEn] = useState('');
+
+  async function translateCategoryValue() {
+    const translatedValue = await translator(categoryValueKr);
+    setCategoryValueEn(translatedValue);
+  }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -25,14 +32,34 @@ const AddCategoryModal = () => {
 
       <form onSubmit={handleSubmit}>
         <div className='w-full flex flex-col gap-2 '>
-          <Input
-            inputId='categoryAdd'
-            label='카테고리명'
-            inputType='text'
-            onChange={(e) => setCategoryValue(e.target.value)}
-            inputValue={categoryValue}
-            placeholder='카테고리명을 입력하세요.'
-          />
+          <div className='w-full flex items-center gap-2'>
+            <Input
+              inputId='categoryAdd'
+              label='카테고리명'
+              inputType='text'
+              onChange={(e) => setCategoryValueKr(e.target.value)}
+              inputValue={categoryValueKr}
+              placeholder='카테고리명을 입력하세요.'
+            />
+
+            <Button
+              buttonType='button'
+              text='번역하기'
+              onClick={() => {
+                translateCategoryValue();
+              }}
+            />
+          </div>
+
+          <div className='w-full flex items-center gap-2'>
+            <span className='font-preSemiBold text-md'>카테고리 영문명</span>
+            <p
+              className={`flex-1 px-4 py-2 border border-1 border-subContent rounded-md ${categoryValueEn && 'text-black'} text-content2`}
+            >
+              {categoryValueEn || '번역 대기중...'}
+            </p>
+          </div>
+
           <div className='flex justify-end gap-2'>
             <Button
               buttonType='button'
