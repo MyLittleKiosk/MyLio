@@ -74,7 +74,7 @@ const AddCategoryModal = () => {
               }}
               cancel
             />
-            <Button buttonType='submit' text='추가' />
+            <Button buttonType='submit' text='추가' buttonId='addCategory' />
           </div>
         </div>
       </form>
