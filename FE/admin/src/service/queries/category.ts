@@ -5,10 +5,10 @@ import { CategoryType } from '@/types/categories';
 
 import { getCategory } from '@/service/apis/category';
 
-const useGetCategory = (pageable: number) => {
+const useGetCategory = (page?: number) => {
   const query = useQuery<Response<PaginationResponse<CategoryType>>>({
-    queryKey: ['category', pageable],
-    queryFn: () => getCategory(pageable),
+    queryKey: ['category', page],
+    queryFn: () => getCategory(page),
   });
 
   return {

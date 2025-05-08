@@ -8,7 +8,6 @@ import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
 import AddMenuModal from '@/components/menus/AddMenuModal';
 
-import { CATEGORY_LIST } from '@/service/mock/dummies/category';
 import STORE_LIST from '@/datas/storeList';
 
 import { CategoryType } from '@/types/categories';
@@ -19,6 +18,7 @@ import { Column } from '@/types/tableProps';
 import useModalStore from '@/stores/useModalStore';
 
 import useGetMenus from '@/service/queries/menu';
+import useGetCategory from '@/service/queries/category';
 
 const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
   const { openModal } = useModalStore();
@@ -34,7 +34,7 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
   }
 
   function handleCategoryChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const selected = CATEGORY_LIST.data.content.find(
+    const selected = category?.find(
       (category) => category.nameKr === e.target.value
     );
     setSelectedCategory(selected || null);
@@ -47,9 +47,10 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
     setSelectedStore(selected || null);
   }
 
-  const { data: menus, isLoading } = useGetMenus();
+  const { data: menus, isLoading: getMenusLoading } = useGetMenus();
+  const { data: category, isLoading: getCategoryLoading } = useGetCategory();
 
-  if (!menus || isLoading) {
+  if (!menus || !category || getMenusLoading || getCategoryLoading) {
     return <div>Loading...</div>;
   }
 
@@ -65,7 +66,7 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
           className='w-[65%]'
         />
         <Select<CategoryType>
-          options={CATEGORY_LIST.data.content}
+          options={category}
           selected={selectedCategory}
           onChange={handleCategoryChange}
           placeholder='모든 카테고리'

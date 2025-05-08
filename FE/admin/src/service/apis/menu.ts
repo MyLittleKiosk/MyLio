@@ -1,14 +1,20 @@
-import authClient from '../authClient';
+import { CustomError } from '@/types/apiResponse';
+import authClient from '@/service/authClient';
 
-async function getMenus() {
+async function getMenus(page?: number, categoryId?: number) {
   try {
-    const response = await authClient.get('/menus');
-    return response.data;
+    const res = await authClient.get(
+      `/menus?page=${page}&categoryId=${categoryId}`
+    );
+    return res.data;
   } catch (error: unknown) {
     if (error instanceof Error) {
-      throw error.message;
+      const customError = error as CustomError;
+      const errorMessage =
+        customError.response?.data?.error?.message || error.message;
+      throw new Error(errorMessage);
     }
-    throw new Error('Unknown error');
+    throw new Error('unknown error');
   }
 }
 
