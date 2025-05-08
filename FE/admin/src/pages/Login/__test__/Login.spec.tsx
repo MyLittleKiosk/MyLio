@@ -3,7 +3,7 @@ describe('로그인 페이지', () => {
     cy.visit('/login');
   });
 
-  it('아이디 및 비밀번호를 입력후, 로그인 버튼 클릭 시 로그인 처리', () => {
+  it('사용자는 로그인을 할 수 있다', () => {
     // given - 아이디 및 비밀번호 input 요소가 존재하고, 로그인 버튼이 존재한다.
     cy.get('#email').should('exist');
     cy.get('#password').should('exist');
