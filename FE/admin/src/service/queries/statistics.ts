@@ -8,7 +8,7 @@ function useGetSalesTrend(year: number, month?: number) {
   });
 
   return {
-    data: query.data,
+    data: query.data?.data,
     isLoading: query.isLoading,
     isError: query.isError,
   };

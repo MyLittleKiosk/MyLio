@@ -1,10 +1,11 @@
 import authClient from '@/service/client';
+import { Response } from '@/types/apiResponse';
 import SalesTrendType from '@/types/statistics';
 
 export async function getSalesTrend(
   year: number,
   month?: number
-): Promise<SalesTrendType[]> {
+): Promise<Response<SalesTrendType[]>> {
   try {
     const params = month ? { year, month } : { year };
     const res = await authClient.get('/sales', {
