@@ -3,6 +3,7 @@ package com.ssafy.mylio.domain.menu.service;
 import com.ssafy.mylio.domain.category.entity.Category;
 import com.ssafy.mylio.domain.category.repository.CategoryRepository;
 import com.ssafy.mylio.domain.menu.dto.request.MenuRequestDto;
+import com.ssafy.mylio.domain.menu.dto.request.MenuUpdateRequestDto;
 import com.ssafy.mylio.domain.menu.dto.request.TagRequestDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuDetailResponseDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuListResponseDto;
@@ -151,7 +152,7 @@ public class MenuService {
 
 
     @Transactional
-    public void updateMenu(Integer storeId, Integer menuId, MenuRequestDto menuUpdateDto, MultipartFile menuImg) {
+    public void updateMenu(Integer storeId, Integer menuId, MenuUpdateRequestDto menuUpdateDto, MultipartFile menuImg) {
         Store store = getStore(storeId);
         Category category = getCategory(storeId, menuUpdateDto.getCategoryId());
         Menu menu = menuRepository.findById(menuId)
@@ -159,7 +160,7 @@ public class MenuService {
                         .addParameter("storeId", storeId));
 
         // 이미지 주소
-        String imageUrl = getImageUrl(menuImg);
+        String imageUrl = (menuImg == null) ? menuUpdateDto.getImageUrl() : getImageUrl(menuImg);
 
         // 메뉴 업데이트
         menu.update(category,

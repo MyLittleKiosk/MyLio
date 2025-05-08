@@ -2,6 +2,7 @@ package com.ssafy.mylio.domain.menu.controller;
 
 
 import com.ssafy.mylio.domain.menu.dto.request.MenuRequestDto;
+import com.ssafy.mylio.domain.menu.dto.request.MenuUpdateRequestDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuDetailResponseDto;
 import com.ssafy.mylio.domain.menu.dto.response.MenuListResponseDto;
 import com.ssafy.mylio.domain.menu.service.MenuService;
@@ -95,7 +96,7 @@ public class MenuController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("menu_id") Integer menuId,
             @RequestPart(value = "file", required = false) MultipartFile menuImg,
-            @RequestPart("menu_data") MenuRequestDto menuRequestDto
+            @RequestPart("menu_data") MenuUpdateRequestDto menuRequestDto
     ) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         menuService.updateMenu(storeId, menuId, menuRequestDto, menuImg);
