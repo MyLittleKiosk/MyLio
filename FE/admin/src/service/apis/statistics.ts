@@ -1,5 +1,5 @@
 import authClient from '@/service/authClient';
-import { Response } from '@/types/apiResponse';
+import { CustomError, Response } from '@/types/apiResponse';
 import {
   CategorySalesRatioType,
   DailySalesStatisticsType,
@@ -18,9 +18,14 @@ export async function getSalesTrend(
       params,
     });
     return res.data;
-  } catch (e: unknown) {
-    if (e instanceof Error) throw new Error(e.message);
-    else throw new Error('unknown Error');
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      const customError = error as CustomError;
+      const errorMessage =
+        customError.response?.data?.error?.message || error.message;
+      throw new Error(errorMessage);
+    }
+    throw new Error('unknown error');
   }
 }
 
@@ -34,9 +39,14 @@ export async function getStatisticsByCategory(
       params,
     });
     return res.data;
-  } catch (e: unknown) {
-    if (e instanceof Error) throw new Error(e.message);
-    else throw new Error('unknown Error');
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      const customError = error as CustomError;
+      const errorMessage =
+        customError.response?.data?.error?.message || error.message;
+      throw new Error(errorMessage);
+    }
+    throw new Error('unknown error');
   }
 }
 
@@ -46,13 +56,18 @@ export async function getStatisticsByOrder(
 ): Promise<Response<OrderSalesRatioType[]>> {
   try {
     const params = month ? { year, month } : { year };
-    const res = await authClient.get('/sales/by_order', {
+    const res = await authClient.get('/sales/by_order_type', {
       params,
     });
     return res.data;
-  } catch (e: unknown) {
-    if (e instanceof Error) throw new Error(e.message);
-    else throw new Error('unknown Error');
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      const customError = error as CustomError;
+      const errorMessage =
+        customError.response?.data?.error?.message || error.message;
+      throw new Error(errorMessage);
+    }
+    throw new Error('unknown error');
   }
 }
 
@@ -66,9 +81,14 @@ export async function getStatisticsByPayment(
       params,
     });
     return res.data;
-  } catch (e: unknown) {
-    if (e instanceof Error) throw new Error(e.message);
-    else throw new Error('unknown Error');
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      const customError = error as CustomError;
+      const errorMessage =
+        customError.response?.data?.error?.message || error.message;
+      throw new Error(errorMessage);
+    }
+    throw new Error('unknown error');
   }
 }
 
@@ -76,10 +96,15 @@ export async function getStatisticsByDaily(): Promise<
   Response<DailySalesStatisticsType[]>
 > {
   try {
-    const res = await authClient.get('/sales/by_daily');
+    const res = await authClient.get('/sales/daily');
     return res.data;
-  } catch (e: unknown) {
-    if (e instanceof Error) throw new Error(e.message);
-    else throw new Error('unknown Error');
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      const customError = error as CustomError;
+      const errorMessage =
+        customError.response?.data?.error?.message || error.message;
+      throw new Error(errorMessage);
+    }
+    throw new Error('unknown error');
   }
 }

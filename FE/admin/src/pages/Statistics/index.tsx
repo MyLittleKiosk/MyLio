@@ -1,6 +1,9 @@
 import { useState } from 'react';
 
 import Select from '@/components/common/Select';
+import CategoryPieChart from '@/components/statistics/CategoryPieChart';
+import OrderTypePieChart from '@/components/statistics/OrderTypePieChart';
+import PaymentsPieChart from '@/components/statistics/PaymentsPieChart';
 import SalesTrendChart from '@/components/statistics/SalesTrendChart';
 
 const Statistics = () => {
@@ -19,7 +22,7 @@ const Statistics = () => {
 
   return (
     <>
-      <div className='w-full h-full p-2'>
+      <div className='w-full h-full p-2 flex flex-col gap-2'>
         <div className='mb-4 flex items-center gap-4'>
           <h1 className='text-2xl font-bold'>통계 대시보드</h1>
         </div>
@@ -48,6 +51,27 @@ const Statistics = () => {
               <div className='flex-1 relative'>
                 <SalesTrendChart year={year} month={month} />
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div className='w-full h-full flex gap-4'>
+          <div className='w-full max-h-[300px] min-h-[200px] flex flex-col border border-subContent rounded-md p-2 gap-2'>
+            <h1 className='text-lg font-bold'>결제 수단 별 매출</h1>
+            <div className='relative w-full flex-1 flex flex-col gap-2'>
+              <PaymentsPieChart year={year} month={month} />
+            </div>
+          </div>
+          <div className='w-full max-h-[300px] min-h-[200px] flex flex-col border border-subContent rounded-md p-2 gap-2'>
+            <h1 className='text-lg font-bold'>주문 형태 별 매출</h1>
+            <div className='relative w-full flex-1 flex flex-col gap-2'>
+              <OrderTypePieChart year={year} month={month} />
+            </div>
+          </div>
+          <div className='w-full max-h-[300px] min-h-[200px] flex flex-col border border-subContent rounded-md p-2 gap-2'>
+            <h1 className='text-lg font-bold'>카테고리 별 매출</h1>
+            <div className='relative w-full flex-1 flex flex-col gap-2'>
+              <CategoryPieChart year={year} month={month} />
             </div>
           </div>
         </div>

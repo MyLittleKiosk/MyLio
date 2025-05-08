@@ -1,13 +1,22 @@
 import { http, HttpResponse } from 'msw';
 import { userRole } from './dummies/user';
 
+import { Response } from '@/types/apiResponse';
 import {
+  CategorySalesRatioType,
+  OrderSalesRatioType,
+  PaymentSalesRatioType,
+} from '@/types/statistics';
+import MENU_LIST from './dummies/menu';
+import {
+  DUMMY_CATEGORY_SALES_BY_YEAR_2024,
+  DUMMY_ORDER_TYPES_BY_YEAR_2024,
+  DUMMY_PAYMENTS_BY_YEAR_2024,
   DUMMY_SALES_BY_MONTH_2024_05,
   DUMMY_SALES_BY_MONTH_2025_08,
   DUMMY_SALES_BY_YEAR_2024,
   DUMMY_SALES_BY_YEAR_2025,
 } from './dummies/statistics';
-import MENU_LIST from './dummies/menu';
 const baseUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
 export const handlers = [
@@ -43,5 +52,32 @@ export const handlers = [
   }),
   http.get(`${baseUrl}/accounts/role`, () => {
     return HttpResponse.json(userRole);
+  }),
+
+  http.get(`${baseUrl}/sales/by_payment?year=2024`, () => {
+    const responseData: Response<PaymentSalesRatioType[]> = {
+      success: true,
+      data: DUMMY_PAYMENTS_BY_YEAR_2024,
+      timestamp: new Date().toISOString(),
+    };
+    return HttpResponse.json(responseData);
+  }),
+
+  http.get(`${baseUrl}/sales/by_order_type?year=2024`, () => {
+    const responseData: Response<OrderSalesRatioType[]> = {
+      success: true,
+      data: DUMMY_ORDER_TYPES_BY_YEAR_2024,
+      timestamp: new Date().toISOString(),
+    };
+    return HttpResponse.json(responseData);
+  }),
+
+  http.get(`${baseUrl}/sales/by_category?year=2024`, () => {
+    const responseData: Response<CategorySalesRatioType[]> = {
+      success: true,
+      data: DUMMY_CATEGORY_SALES_BY_YEAR_2024,
+      timestamp: new Date().toISOString(),
+    };
+    return HttpResponse.json(responseData);
   }),
 ];
