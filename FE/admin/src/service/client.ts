@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const baseUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
-const authClient = axios.create({
+const client = axios.create({
   baseURL: baseUrl,
   headers: {
     'Content-Type': 'application/json',
@@ -10,4 +10,4 @@ const authClient = axios.create({
   withCredentials: true,
 });
 
-export default authClient;
+export default client;

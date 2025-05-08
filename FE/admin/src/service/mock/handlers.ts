@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import MENU_LIST from '@/service/mock/dummies/menu';
+import { userRole } from './dummies/user';
 
 import {
   DUMMY_SALES_BY_MONTH_2024_05,
@@ -7,6 +7,7 @@ import {
   DUMMY_SALES_BY_YEAR_2024,
   DUMMY_SALES_BY_YEAR_2025,
 } from './dummies/statistics';
+import MENU_LIST from './dummies/menu';
 const baseUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
 export const handlers = [
@@ -39,5 +40,8 @@ export const handlers = [
 
   http.get(baseUrl + '/menus', () => {
     return HttpResponse.json(MENU_LIST);
+  }),
+  http.get(`${baseUrl}/accounts/role`, () => {
+    return HttpResponse.json(userRole);
   }),
 ];
