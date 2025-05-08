@@ -10,6 +10,8 @@ import java.util.List;
 @Getter
 @Builder
 public class CartResponseDto {
+    @Schema(example = "348ed918")
+    private String cartId;
     @Schema(example = "1")
     private Integer menuId;
     @Schema(example = "1")
@@ -24,5 +26,5 @@ public class CartResponseDto {
     private Integer totalPrice;
     @Schema(example = "vanillalatte.jpg")
     private String imageUrl;
-    private List<OptionsDto> options;
+    private List<OptionsDto> selectedOptions;
 }

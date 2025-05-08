@@ -10,6 +10,7 @@ import com.ssafy.mylio.domain.options.entity.OptionDetail;
 import com.ssafy.mylio.domain.options.repository.MenuOptionRepository;
 import com.ssafy.mylio.domain.order.dto.common.OptionDetailsDto;
 import com.ssafy.mylio.domain.order.dto.common.OptionsDto;
+import com.ssafy.mylio.domain.order.dto.response.CartResponseDto;
 import com.ssafy.mylio.domain.order.dto.response.ContentsResponseDto;
 import com.ssafy.mylio.domain.order.dto.response.OrderResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class OrderValidator {
 
     /** 리액티브 진입점 */
     public Mono<OrderResponseDto> validate(String pyJson) {
+        log.info("옵션 검증 로직 진입 : {}", pyJson);
         return Mono.fromCallable(() -> parseAndValidate(pyJson))
                 .subscribeOn(Schedulers.boundedElastic());
     }
@@ -54,17 +56,14 @@ public class OrderValidator {
                 .map(c -> validateAndCorrect(c, missingOpts))
                 .toList();
 
-        if (!missingOpts.isEmpty()) {
+        if (!missingOpts.isEmpty() && order.getReply() == null) {
             // reply가 없을때 GPT 호출
-            if(order.getReply()== null){
-                String reply = gptPromptService.buildAskRequiredOptionPrompt(missingOpts, order.getLanguage());
-                return order.toBuilder()
-                        .contents(fixedContents)
-                        .reply(reply)
-                        .screen_state(order.getScreen_state())
-                        .build();
-            }
-
+            String reply = gptPromptService.buildAskRequiredOptionPrompt(missingOpts, order.getLanguage());
+            return order.toBuilder()
+                    .contents(fixedContents)
+                    .reply(reply)
+                    .screen_state(order.getScreen_state())
+                    .build();
         }
 
         return order.toBuilder().contents(fixedContents).build();
@@ -89,6 +88,10 @@ public class OrderValidator {
 
             List<ContentsResponseDto> contents = new ArrayList<>();
             for (JsonNode m : (ArrayNode) data.path("contents")) contents.add(toContentsDto(m));
+            
+            // cart 값 담기
+            List<CartResponseDto> cart = new ArrayList<>();
+            for (JsonNode c : (ArrayNode) data.path("cart")) cart.add(toCartDto(c));
 
             return OrderResponseDto.builder()
                     .preText(preText)
@@ -98,7 +101,7 @@ public class OrderValidator {
                     .language("KR")
                     .sessionId(sessionId)
                     .payment(payment)
-                    .cart(Collections.emptyList())
+                    .cart(cart)
                     .contents(contents)
                     .build();
         } catch (IOException e) {
@@ -137,6 +140,34 @@ public class OrderValidator {
                 .imageUrl(imageUrl)
                 .options(options)
                 .selectedOption(selected)
+                .build();
+    }
+
+    private CartResponseDto toCartDto(JsonNode c) {
+        String cartId = c.path("cart_id").asText();
+        Integer menuId   = c.path("menu_id").asInt();
+        Integer qty      = c.path("quantity").asInt();
+        String name      = c.path("name").asText(null);
+        String desc      = c.path("description").asText(null);
+        Integer base     = c.path("base_price").asInt();
+        Integer total    = c.path("total_price").asInt();
+        String imageUrl  = c.path("image_url").asText(null);
+
+        List<OptionsDto> options = new ArrayList<>();
+        for (JsonNode so : c.path("selected_options")) {
+            options.add(toOptionsDto(so));
+        }
+
+        return CartResponseDto.builder()
+                .cartId(cartId)
+                .menuId(menuId)
+                .quantity(qty)
+                .name(name)
+                .description(desc)
+                .basePrice(base)
+                .totalPrice(total)
+                .imageUrl(imageUrl)
+                .selectedOptions(options)
                 .build();
     }
 

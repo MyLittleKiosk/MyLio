@@ -64,7 +64,7 @@ public class ProxyService {
     private Mono<OrderResponseDto> routeByScreenState(String json) {
         String screen = extractScreenState(json);
         return switch (screen) {
-            case "ORDER"  -> orderValidator.validate(json);   // 옵션 검증 포함
+            case "ORDER", "MAIN"  -> orderValidator.validate(json);   // 옵션 검증 포함
             case "DETAIL" -> detailValidator.validate(json);   // 영양정보 검증 포함
             default -> Mono.fromCallable(() -> parseOnly(json))
                     .subscribeOn(Schedulers.boundedElastic());
