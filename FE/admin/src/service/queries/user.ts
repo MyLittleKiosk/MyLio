@@ -1,11 +1,11 @@
-import { useMutation } from '@tanstack/react-query';
-import { login } from '@/service/apis/user';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { getRole, login } from '@/service/apis/user';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '@/stores/useUserStore';
 import { User } from '@/types/user';
 import { Response } from '@/types/apiResponse';
 
-export function useLogin() {
+const useLogin = () => {
   const navigate = useNavigate();
   const { setUser } = useUserStore();
 
@@ -22,4 +22,19 @@ export function useLogin() {
       }
     },
   });
-}
+};
+
+const useGetRole = () => {
+  const query = useQuery<Response<User>>({
+    queryKey: ['role'],
+    queryFn: getRole,
+  });
+
+  return {
+    data: query.data?.data,
+    isLoading: query.isLoading,
+    isError: query.error,
+  };
+};
+
+export { useLogin, useGetRole };
