@@ -1,11 +1,9 @@
 import { CustomError } from '@/types/apiResponse';
 import authClient from '@/service/authClient';
 
-async function getMenus(page?: number, categoryId?: number) {
+export async function getOptions() {
   try {
-    const res = await authClient.get(
-      `/menus?page=${page}&categoryId=${categoryId}`
-    );
+    const res = await authClient.get(`/option`);
     return res.data;
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -17,5 +15,3 @@ async function getMenus(page?: number, categoryId?: number) {
     throw new Error('unknown error');
   }
 }
-
-export default getMenus;

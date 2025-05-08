@@ -5,7 +5,7 @@ import { useMenuAdd } from '@/components/menus/AddMenuModal/useMenuAdd';
 
 import IconAdd from '@/assets/icons/IconAdd';
 
-import { CATEGORY_LIST } from '@/datas/categoryList';
+import { CATEGORY_LIST } from '@/service/mock/dummies/category';
 
 import IconTrashCan from '@/assets/icons/IconTrashCan';
 import IconImage from '@/assets/icons/IconImage';
@@ -43,7 +43,7 @@ const StepOne = () => {
       />
 
       <Select
-        options={CATEGORY_LIST.content}
+        options={CATEGORY_LIST.data.content}
         label='카테고리'
         selected={selectedCategory}
         onChange={handleCategoryChange}
