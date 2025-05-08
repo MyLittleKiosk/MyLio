@@ -1,10 +1,10 @@
-interface Column<T> {
+export interface Column<T> {
   header: string;
   accessor: keyof T;
   className?: string;
 }
 
-interface TableProps<T> {
+export interface TableProps<T> {
   title: string;
   description: string;
   columns: Column<T>[];
@@ -14,5 +14,3 @@ interface TableProps<T> {
   onDelete?: (row: T) => void;
   onView?: (row: T) => void;
 }
-
-export type { Column, TableProps };

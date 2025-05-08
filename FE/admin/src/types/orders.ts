@@ -1,10 +1,8 @@
-interface OrderItem {
-  order_id: string;
-  order_store: string;
-  order_date: string;
-  order_price: number;
-  order_type: string;
-  order_payment: string;
-}
-
-export default OrderItem;
+export type OrderType = {
+  orderId: string;
+  orderStore: string;
+  orderDate: string;
+  orderPrice: number;
+  orderType: string;
+  orderPayment: string;
+};

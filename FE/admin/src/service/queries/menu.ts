@@ -2,11 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 
 import getMenus from '@/service/apis/menu';
 
-import { MenuList } from '@/types/menus';
-import { Response } from '@/types/apiResponse';
+import { MenuType } from '@/types/menus';
+import { PaginationResponse, Response } from '@/types/apiResponse';
 
 const useGetMenus = () => {
-  const query = useQuery<Response<MenuList>>({
+  const query = useQuery<Response<PaginationResponse<MenuType>>>({
     queryKey: ['menus'],
     queryFn: getMenus,
   });

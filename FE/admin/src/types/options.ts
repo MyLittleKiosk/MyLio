@@ -1,30 +1,26 @@
-interface OptionInfoType {
-  option_id: number;
-  is_required: boolean;
-  option_detail_id: number;
+export type OptionInfoType = {
+  optionId: number;
+  isRequired: boolean;
+  optionDetailId: number;
+};
+
+export type OptionDetailType = {
+  optionDetailId: number;
+  optionDetailValue: string;
+  additionalPrice: number;
+};
+
+export interface OptionGroup {
+  optionId: number;
+  optionNameKr: string;
+  optionNameEn: string;
+  optionDetail: OptionDetailType[];
 }
 
-interface OptionType {
-  option_id: number;
-  option_name_kr: string;
-  option_name_en: string;
-  option_detail: {
-    option_detail_id: number;
-    option_detail_value: string;
-    additional_price: number;
-  }[];
-}
-
-interface OptionDetailType {
-  option_detail_id: number;
-  option_detail_value: string;
-  additional_price: number;
-}
-
-interface OptionList {
-  content: {
-    options: OptionType[];
+export interface OptionList {
+  success: boolean;
+  data: {
+    options: OptionGroup[];
   };
+  timestamp: string;
 }
-
-export type { OptionInfoType, OptionDetailType, OptionType, OptionList };

@@ -5,7 +5,7 @@ import Table from '@/components/common/Table';
 import AddOptionGroupModal from '@/components/menus/AddOptionGroupModal';
 
 import { NavItemType } from '@/types/menus';
-import { OptionType } from '@/types/options';
+import { OptionGroup } from '@/types/options';
 import { Column } from '@/types/tableProps';
 
 import useModalStore from '@/stores/useModalStore';
@@ -29,11 +29,11 @@ const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
           className='items-center justify-center'
         />
       </div>
-      <Table<OptionType>
+      <Table<OptionGroup>
         title='옵션 목록'
         description={`총 6개의 옵션이 있습니다.`}
-        columns={selectedNav.columns as Column<OptionType>[]}
-        data={OPTION_LIST.content.options}
+        columns={selectedNav.columns as Column<OptionGroup>[]}
+        data={OPTION_LIST.data.options}
       />
     </div>
   );

@@ -1,54 +1,36 @@
 import { CategoryType } from '@/types/categories';
-import { OptionInfoType, OptionType } from '@/types/options';
+import { OptionInfoType, OptionGroup } from '@/types/options';
 import { Column } from '@/types/tableProps';
+import { NutritionInfoType } from '@/types/nutrient';
+import { TagType } from '@/types/tags';
 
-interface MenuType {
-  menu_id: number;
-  image_url: string;
-  name_kr: string;
-  name_en: string;
+export type MenuType = {
+  menuId: number;
+  imageUrl: string;
+  nameKr: string;
+  nameEn: string;
   category: string;
-  store_name: string;
+  storeName: string;
   description: string;
   price: number;
   status: string;
   tags: string[];
-}
+};
 
-interface MenuList {
-  content: MenuType[];
-  page_number: number;
-  total_pages: number;
-  total_elements: number;
-  page_size: number;
-  first: boolean;
-  last: boolean;
-}
-
-interface TagType {
-  tag_kr: string;
-  tag_en: string;
-}
-
-interface NutritionInfoType {
-  nutrition_template_id: number;
-  nutrition_value: number;
-}
-
-interface MenuAdd {
-  image_url: string;
-  name_kr: string;
-  name_en: string;
-  category_id: number;
+export interface MenuAdd {
+  imageUrl: string;
+  nameKr: string;
+  nameEn: string;
+  categoryId: number;
   description: string;
   price: number;
   tags: TagType[];
-  nutrition_info: NutritionInfoType[];
-  ingredient_info: number[];
-  option_info: OptionInfoType[];
+  nutritionInfo: NutritionInfoType[];
+  ingredientInfo: number[];
+  optionInfo: OptionInfoType[];
 }
 
-type NavItemType =
+export type NavItemType =
   | {
       title: string;
       columns: Column<MenuType>[];
@@ -59,7 +41,5 @@ type NavItemType =
     }
   | {
       title: string;
-      columns: Column<OptionType>[];
+      columns: Column<OptionGroup>[];
     };
-
-export type { MenuType, MenuList, MenuAdd, NavItemType };
