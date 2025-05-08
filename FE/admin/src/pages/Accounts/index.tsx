@@ -9,15 +9,21 @@ import Modal from '@/components/common/Modal';
 import Table from '@/components/common/Table';
 import useModalStore from '@/stores/useModalStore';
 
-import { ACCOUNT_COLUMNS, DUMMY_ACCOUNT_LIST } from '@/datas/Account';
+import { ACCOUNT_COLUMNS } from '@/datas/Account';
+import { useGetAccountList } from '@/service/queries/account';
 import { AccountType } from '@/types/account';
 
 const Accounts = () => {
+  const { data: accountList, isLoading } = useGetAccountList();
   const { openModal } = useModalStore();
   const [searchValue, setSearchValue] = useState('');
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
     setSearchValue(e.target.value);
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -45,9 +51,9 @@ const Accounts = () => {
         </div>
         <Table<AccountType>
           title='계정 목록'
-          description={`총 ${DUMMY_ACCOUNT_LIST.accounts.length}개의 계정이 있습니다.`}
+          description={`총 ${accountList?.length}개의 계정이 있습니다.`}
           columns={ACCOUNT_COLUMNS}
-          data={DUMMY_ACCOUNT_LIST.accounts}
+          data={accountList || []}
         />
       </section>
       <Modal />

@@ -17,7 +17,7 @@ export const useGetAccountList = () => {
   });
 
   return {
-    data: query.data?.data,
+    data: query.data?.data.content,
     isLoading: query.isLoading,
     isError: query.isError,
   };
