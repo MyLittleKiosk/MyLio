@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import getMenus from '../apis/menu';
+
+import getMenus from '@/service/apis/menu';
+
 import { MenuList } from '@/types/menus';
 import { Response } from '@/types/apiResponse';
 
