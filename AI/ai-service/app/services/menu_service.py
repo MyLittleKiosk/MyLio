@@ -232,10 +232,83 @@ class MenuService:
             "라테": "카페 라떼"
         }
     
-    def clear_cache(self, store_id: Optional[int] = None) -> None:
-        """메뉴 캐시 초기화"""
-        if store_id is not None:
-            if store_id in self.menu_cache:
-                del self.menu_cache[store_id]
-        else:
-            self.menu_cache.clear()
+    def get_category_by_id(self, category_id: int) -> Optional[Dict[str, Any]]:
+        """카테고리 ID로 카테고리 정보 조회"""
+        # 캐시에서 먼저 확인
+        if hasattr(self, '_categories_cache') and self._categories_cache.get(category_id):
+            return self._categories_cache.get(category_id)
+        
+        # 캐시가 없으면 카테고리 로드
+        if not hasattr(self, '_categories_cache'):
+            self.load_all_categories()
+            # 로드 후 다시 확인
+            if category_id in self._categories_cache:
+                return self._categories_cache[category_id]
+        
+        # 캐시에 없으면 직접 DB에서 조회
+        query = """
+            SELECT id, name_kr, name_en 
+            FROM category 
+            WHERE id = %s
+        """
+        
+        result = self.db.execute_query(query, (category_id,))
+        
+        if not result or len(result) == 0:
+            return None
+        
+        # 결과 캐싱
+        if not hasattr(self, '_categories_cache'):
+            self._categories_cache = {}
+        
+        self._categories_cache[category_id] = result[0]
+        
+        return result[0]
+
+    def load_all_categories(self) -> Dict[int, Dict[str, Any]]:
+        """모든 카테고리 정보를 로드하고 캐싱"""
+        # 이미 캐시가 있으면 반환
+        if hasattr(self, '_categories_cache'):
+            return self._categories_cache
+        
+        # DB에서 모든 카테고리 조회
+        query = """
+            SELECT id, name_kr, name_en 
+            FROM category
+        """
+        
+        result = self.db.execute_query(query)
+        
+        # 캐시 초기화
+        self._categories_cache = {}
+        
+        if result:
+            for category in result:
+                self._categories_cache[category['id']] = category
+        
+        return self._categories_cache
+
+    def get_store_categories(self, store_id: int) -> List[Dict[str, Any]]:
+        """매장에서 사용하는 카테고리 목록 조회"""
+        # 메뉴에서 사용되는 카테고리 ID 조회
+        query = """
+            SELECT DISTINCT category_id 
+            FROM menu 
+            WHERE store_id = %s AND status = 'SELLING'
+        """
+        
+        result = self.db.execute_query(query, (store_id,))
+        
+        if not result:
+            return []
+        
+        # 카테고리 정보 로드
+        categories = []
+        for item in result:
+            category_id = item['category_id']
+            category = self.get_category_by_id(category_id)
+            if category:
+                categories.append(category)
+        
+        return categories
+    
