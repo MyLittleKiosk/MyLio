@@ -9,6 +9,7 @@ import {
 } from './dummies/statistics';
 import MENU_LIST from './dummies/menu';
 import { CATEGORY_LIST } from './dummies/category';
+import { OPTION_LIST } from './dummies/option';
 
 const baseUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
@@ -42,6 +43,10 @@ export const handlers = [
 
   http.get(`${baseUrl}/menus`, () => {
     return HttpResponse.json(MENU_LIST);
+  }),
+
+  http.get(`${baseUrl}/option`, () => {
+    return HttpResponse.json(OPTION_LIST);
   }),
 
   http.get(`${baseUrl}/accounts/role`, () => {

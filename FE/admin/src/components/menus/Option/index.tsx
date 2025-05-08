@@ -9,11 +9,16 @@ import { OptionGroup } from '@/types/options';
 import { Column } from '@/types/tableProps';
 
 import useModalStore from '@/stores/useModalStore';
-
-import { OPTION_LIST } from '@/datas/optionList';
+import useGetOptions from '@/service/queries/option';
 
 const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
   const { openModal } = useModalStore();
+
+  const { data: options, isLoading } = useGetOptions();
+
+  if (!options || isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className='flex flex-col gap-2'>
@@ -33,7 +38,7 @@ const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
         title='옵션 목록'
         description={`총 6개의 옵션이 있습니다.`}
         columns={selectedNav.columns as Column<OptionGroup>[]}
-        data={OPTION_LIST.data.options}
+        data={options}
       />
     </div>
   );
