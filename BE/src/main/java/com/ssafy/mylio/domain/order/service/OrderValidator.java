@@ -163,7 +163,7 @@ public class OrderValidator {
                     .preText(rawText)
                     .postText(null)
                     .reply(null)
-                    .status(status)
+                    .screen_state(status)
                     .language("KR")
                     .sessionId(null)
                     .payment(payment)

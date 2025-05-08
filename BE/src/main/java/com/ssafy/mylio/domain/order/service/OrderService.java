@@ -20,7 +20,7 @@ public class OrderService {
 
     /* CONFIRM → SELECT_PAY → PAY 단계 */
     public Mono<OrderResponseDto> handlePayment(OrderResponseDto resp) {
-        if (resp.getStatus().equals("PAY")) {
+        if (resp.getScreen_state().equals("PAY")) {
             //orderRepo.saveAll(OrderEntity.of(resp.getCart())); // DB 저장
         }
         return Mono.just(resp);

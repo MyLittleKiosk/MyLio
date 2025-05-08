@@ -60,7 +60,7 @@ public class ProxyService {
 
     /** status 스위칭 */
     private Mono<OrderResponseDto> dispatchByStatus(OrderResponseDto resp) {
-        return switch (resp.getStatus()) {
+        return switch (resp.getScreen_state()) {
             case "ORDER"   -> orderService.handleOrder(resp);
 
             case "SEARCH"  -> searchValidator.validate(resp).thenReturn(resp);
@@ -69,7 +69,7 @@ public class ProxyService {
                     -> paymentValidator.validate(resp)
                     .then(orderService.handlePayment(resp));
 
-            default       -> Mono.error(new IllegalStateException("Unknown status: " + resp.getStatus()));
+            default       -> Mono.error(new IllegalStateException("Unknown status: " + resp.getScreen_state()));
         };
     }
 }

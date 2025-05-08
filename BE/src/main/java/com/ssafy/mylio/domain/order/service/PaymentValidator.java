@@ -13,7 +13,7 @@ public class PaymentValidator {
 
     public Mono<Void> validate(OrderResponseDto resp) {
         return Mono.fromRunnable(() -> {
-            String status = resp.getStatus();
+            String status = resp.getScreen_state();
             if (status.equals("CONFIRM") && resp.getCart().isEmpty())
                 throw new CustomException(ErrorCode.MENU_NOT_FOUND, "장바구니가 비어 있습니다.");
 
