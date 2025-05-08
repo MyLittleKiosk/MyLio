@@ -7,10 +7,10 @@ export interface Response<T> {
 
 export interface PaginationResponse<T> {
   content: T[];
-  page_number: number;
-  total_pages: number;
-  total_elements: number;
-  page_size: number;
+  pageNumber: number;
+  totalPages: number;
+  totalElements: number;
+  pageSize: number;
   first: boolean;
   last: boolean;
 }

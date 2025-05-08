@@ -1,4 +1,5 @@
-import { CategoryType, CategoryList } from '@/types/categories';
+import { PaginationResponse } from '@/types/apiResponse';
+import { CategoryType } from '@/types/categories';
 import { Column } from '@/types/tableProps';
 
 const CATEGORY_COLUMNS: Column<CategoryType>[] = [
@@ -16,43 +17,43 @@ const CATEGORY_COLUMNS: Column<CategoryType>[] = [
   },
 ];
 
-const CATEGORY_LIST: CategoryList = {
+const CATEGORY_LIST: PaginationResponse<CategoryType> = {
   content: [
     {
-      category_id: 1,
-      name_kr: '커피',
-      name_en: 'coffee',
+      categoryId: 1,
+      nameKr: '커피',
+      nameEn: 'coffee',
     },
     {
-      category_id: 2,
-      name_kr: '논커피',
-      name_en: 'non-coffee',
+      categoryId: 2,
+      nameKr: '논커피',
+      nameEn: 'non-coffee',
     },
     {
-      category_id: 3,
-      name_kr: '디저트',
-      name_en: 'dessert',
+      categoryId: 3,
+      nameKr: '디저트',
+      nameEn: 'dessert',
     },
     {
-      category_id: 4,
-      name_kr: '브런치',
-      name_en: 'brunch',
+      categoryId: 4,
+      nameKr: '브런치',
+      nameEn: 'brunch',
     },
     {
-      category_id: 5,
-      name_kr: '스무디',
-      name_en: 'smoothie',
+      categoryId: 5,
+      nameKr: '스무디',
+      nameEn: 'smoothie',
     },
     {
-      category_id: 6,
-      name_kr: '티',
-      name_en: 'tea',
+      categoryId: 6,
+      nameKr: '티',
+      nameEn: 'tea',
     },
   ],
-  page_number: 1,
-  total_pages: 1,
-  total_elements: 6,
-  page_size: 10,
+  pageNumber: 1,
+  totalPages: 1,
+  totalElements: 6,
+  pageSize: 10,
   first: true,
   last: true,
 };

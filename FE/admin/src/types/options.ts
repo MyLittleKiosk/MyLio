@@ -10,9 +10,17 @@ export type OptionDetailType = {
   additionalPrice: number;
 };
 
-export type OptionType = {
+export interface OptionGroup {
   optionId: number;
   optionNameKr: string;
   optionNameEn: string;
   optionDetail: OptionDetailType[];
-};
+}
+
+export interface OptionList {
+  success: boolean;
+  data: {
+    options: OptionGroup[];
+  };
+  timestamp: string;
+}

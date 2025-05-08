@@ -1,7 +1,7 @@
 import { MenuType, NavItemType } from '@/types/menus';
 import { Column } from '@/types/tableProps';
-import { CATEGORY_COLUMNS } from './categoryList';
-import { OPTION_COLUMNS } from './optionList';
+import { CATEGORY_COLUMNS } from '@/datas/categoryList';
+import { OPTION_COLUMNS } from '@/datas/optionList';
 
 const MENU_COLUMNS: Column<MenuType>[] = [
   {

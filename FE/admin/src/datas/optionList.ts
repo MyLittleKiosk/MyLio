@@ -1,52 +1,54 @@
-import { OptionList, OptionType } from '@/types/options';
+import { OptionList, OptionGroup } from '@/types/options';
 import { Column } from '@/types/tableProps';
 
-const OPTION_COLUMNS: Column<OptionType>[] = [
+const OPTION_COLUMNS: Column<OptionGroup>[] = [
   {
     header: '옵션 그룹명',
-    accessor: 'option_name_kr' as keyof OptionType,
+    accessor: 'option_name_kr' as keyof OptionGroup,
   },
   {
     header: '옵션 항목',
-    accessor: 'option_detail' as keyof OptionType,
+    accessor: 'option_detail' as keyof OptionGroup,
   },
   {
     header: '편집',
-    accessor: 'edit' as keyof OptionType,
+    accessor: 'edit' as keyof OptionGroup,
   },
   {
     header: '삭제',
-    accessor: 'delete' as keyof OptionType,
+    accessor: 'delete' as keyof OptionGroup,
   },
 ];
 
 const OPTION_LIST: OptionList = {
-  content: {
+  success: true,
+  data: {
     options: [
       {
-        option_id: 1,
-        option_name_kr: '사이즈',
-        option_name_en: 'Size',
-        option_detail: [
+        optionId: 1,
+        optionNameKr: '사이즈',
+        optionNameEn: 'Size',
+        optionDetail: [
           {
-            option_detail_id: 1,
-            option_detail_value: 'Small',
-            additional_price: 0,
+            optionDetailId: 1,
+            optionDetailValue: 'Small',
+            additionalPrice: 0,
           },
           {
-            option_detail_id: 2,
-            option_detail_value: 'Medium',
-            additional_price: 500,
+            optionDetailId: 2,
+            optionDetailValue: 'Medium',
+            additionalPrice: 500,
           },
           {
-            option_detail_id: 3,
-            option_detail_value: 'Large',
-            additional_price: 700,
+            optionDetailId: 3,
+            optionDetailValue: 'Large',
+            additionalPrice: 700,
           },
         ],
       },
     ],
   },
+  timestamp: '2024-01-01T00:00:00.000Z',
 };
 
 export { OPTION_COLUMNS, OPTION_LIST };

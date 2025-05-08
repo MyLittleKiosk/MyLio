@@ -1,3 +1,4 @@
+import { PaginationResponse } from '@/types/apiResponse';
 import { Column } from '@/types/tableProps';
 
 interface KioskItem {
@@ -14,7 +15,7 @@ const KIOSK_COLUMNS: Column<KioskItem>[] = [
   { header: '삭제', accessor: 'delete' as keyof KioskItem },
 ];
 
-const KIOSK_LIST = {
+const KIOSK_LIST: PaginationResponse<KioskItem> = {
   content: [
     {
       name: '키오스크 A',
@@ -37,13 +38,12 @@ const KIOSK_LIST = {
       status: true,
     },
   ],
-  page_number: 1,
-  total_pages: 1,
-  total_elements: 4,
-  page_size: 10,
+  pageNumber: 1,
+  totalPages: 1,
+  totalElements: 4,
+  pageSize: 10,
   first: true,
   last: true,
-  error: null,
 };
 
 export { KIOSK_COLUMNS, KIOSK_LIST };
