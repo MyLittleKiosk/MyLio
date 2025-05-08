@@ -13,95 +13,7 @@ INSERT INTO account (id, store_id, email,username, password, role, status, creat
                                                                                                  (2, 1,'test2@ssafy.io', '강남점', '$2a$10$kJJYLA3v7N6hxuGJ49IDz.ZdLTa0Dk2okd.iNUUPXVzKy17cm9XB6', 'STORE', 'REGISTERED', NOW(), NOW()),
                                                                                                  (3, 2,'test3@ssafy.io', 'admin2', '$2a$10$kJJYLA3v7N6hxuGJ49IDz.ZdLTa0Dk2okd.iNUUPXVzKy17cm9XB6', 'STORE', 'REGISTERED', NOW(), NOW());
 
--- 3. category
-INSERT INTO category (id, store_id, name_kr, name_en, status, created_at, updated_at) VALUES
-                                                                                          (1, 1, '커피', 'coffee', 'REGISTERED', NOW(), NOW()),
-                                                                                          (2, 1, '차', 'tea', 'REGISTERED', NOW(), NOW()),
-                                                                                          (3, 2, '커피', 'coffee', 'REGISTERED', NOW(), NOW());
 
--- 4. menu
-INSERT INTO menu (id, category_id, store_id, name_kr, name_en, description, price, image_url, status, created_at, updated_at) VALUES
-                                                                                                                                  (1, 1, 1, '아메리카노', 'Americano', '깔끔한 맛', 4000, 'https://mylio/americano.jpg', 'SELLING', NOW(), NOW()),
-                                                                                                                                  (2, 2, 1, '녹차', 'Green Tea', '부드러운 녹차', 4500, 'https://mylio/greentea.jpg', 'SELLING', NOW(), NOW()),
-                                                                                                                                  (3, 3, 2, '카페라떼', 'Cafe Latte', '고소한 라떼', 5000, 'https://mylio/latte.jpg', 'SELLING', NOW(), NOW());
-
--- 5. menu_tag_map
-INSERT INTO menu_tag_map (id, menu_id, store_id, tag_kr, tag_en, created_at, updated_at) VALUES
-                                                                                             (1, 1, 1, '인기', 'popular', NOW(), NOW()),
-                                                                                             (2, 1, 1, '시원해요', 'cool', NOW(), NOW()),
-                                                                                             (3, 2, 1, '건강해요', 'healthy', NOW(), NOW()),
-                                                                                             (4, 3, 2, '고소해요', 'nutty', NOW(), NOW());
-
--- 6. ingredient_template
-INSERT INTO ingredient_template (id, name_kr, name_en, status, created_at, updated_at) VALUES
-                                                                                           (1, '우유', 'milk', 'REGISTERED', NOW(), NOW()),
-                                                                                           (2, '녹차 가루', 'green tea powder', 'REGISTERED', NOW(), NOW());
-
--- 7. menu_ingredient
-INSERT INTO menu_ingredient (id, store_id, menu_id, ingredient_id, created_at, updated_at) VALUES
-                                                                                               (1, 1, 1, 1, NOW(), NOW()),
-                                                                                               (2, 1, 2, 2, NOW(), NOW());
-
--- 8. options
-INSERT INTO options (id, store_id, option_name_kr, option_name_en, created_at, updated_at) VALUES
-    (1, 1, '사이즈', 'SIZE', NOW(), NOW());
-
--- 9. option_detail
-INSERT INTO option_detail (id, option_id, value, additional_price, created_at, updated_at) VALUES
-                                                                                               (1, 1, 'S', 0, NOW(), NOW()),
-                                                                                               (2, 1, 'M', 500, NOW(), NOW()),
-                                                                                               (3, 1, 'L', 1000, NOW(), NOW());
-
--- 10. menu_option_map (⭐ 추가된 부분)
-INSERT INTO menu_option_map (id, is_required, menu_id, option_detail_id, option_id, created_at, updated_at) VALUES
-                                                                                                                (1, b'1', 1, 1, 1, NOW(), NOW()), -- 아메리카노 - 사이즈 S (필수)
-                                                                                                                (2, b'1', 1, 2, 1, NOW(), NOW()), -- 아메리카노 - 사이즈 M (필수)
-                                                                                                                (3, b'1', 1, 3, 1, NOW(), NOW()), -- 아메리카노 - 사이즈 L (필수)
-                                                                                                                (4, b'0', 2, 1, 1, NOW(), NOW()); -- 녹차 - 사이즈 S (선택)
-
--- 11. orders
-INSERT INTO orders (id, store_id, payment_method, total_price, is_to_go, created_at, updated_at) VALUES
-                                                                                                     (1, 1, 'CARD', 9000, true, NOW(), NOW()),
-                                                                                                     (2, 1, 'CASH', 4500, false, NOW(), NOW());
-
--- 12. order_item
-INSERT INTO order_item (id, menu_id, order_id, price, created_at, updated_at) VALUES
-                                                                                  (1, 1, 1, 4000, NOW(), NOW()),
-                                                                                  (2, 2, 2, 4500, NOW(), NOW());
-
--- 13. order_item_option
-INSERT INTO order_item_option (id, order_item_id, option_detail_id, price, created_at, updated_at) VALUES
-                                                                                                       (1, 1, 2, 500, NOW(), NOW()),
-                                                                                                       (2, 2, 1, 0, NOW(), NOW());
-
--- 14. payment
-INSERT INTO payment (id, store_id, order_id, payment_method, amount, status, reason, tid, cid, created_at, updated_at) VALUES
-                                                                                                                           (1, 1, 1, 'CARD', 9000, 'SUCCESS', NULL, 'TID123', 'CID123', NOW(), NOW()),
-                                                                                                                           (2, 1, 2, 'CASH', 4500, 'SUCCESS', NULL, 'TID456', 'CID456', NOW(), NOW());
-
--- 15. nutrition_template
-INSERT INTO nutrition_template (id, name_kr, name_en, unit_type, created_at, updated_at) VALUES
-                                                                                             (1, '칼로리', 'calories', 'kcal', NOW(), NOW()),
-                                                                                             (2, '단백질', 'protein', 'g', NOW(), NOW());
-
--- 16. nutrition_value
-INSERT INTO nutrition_value (id, store_id, menu_id, nutrition_id, value, status, created_at, updated_at) VALUES
-                                                                                                             (1, 1, 1, 1, 5.5, 'REGISTERED', NOW(), NOW()),
-                                                                                                             (2, 1, 1, 2, 0.2, 'REGISTERED', NOW(), NOW());
-
--- 17. kiosk_session
-INSERT INTO kiosk_session (id, store_id, account_id, start_order_number, name, is_active, created_at, updated_at, started_at) VALUES
-    (1, 1, 2, 'A', '키오스크 A', true, NOW(),NOW(),NOW());
-
--- 키오스크 B 추가
-INSERT INTO kiosk_session (id, store_id, account_id, start_order_number, name, is_active, created_at, updated_at, started_at)
-VALUES (2, 1, 2, 'B', '키오스크 B', false, NOW(), NOW(), NOW());
-
--- 키오스크 C 추가
-INSERT INTO kiosk_session (id, store_id, account_id, start_order_number, name, is_active, created_at, updated_at, started_at)
-VALUES (3, 1, 2, 'C', '키오스크 C', false, NOW(), NOW(), NOW());
-
-use mylio;
 
 -- Store 데이터
 INSERT INTO store (id,name, address, status, created_at, updated_at)
@@ -193,219 +105,459 @@ VALUES
 (3, 4, '초코 프라페', 'Chocolate Frappe', '진한 초콜릿 맛의 프라페', 4000, 'chocofrappe.jpg', 'SELLING', NOW(), NOW()),
 (3, 4, '카라멜 프라페', 'Caramel Frappe', '달콤한 카라멜 맛의 프라페', 4000, 'caramelfrappe.jpg', 'SELLING', NOW(), NOW());
 
--- 옵션 데이터
-INSERT INTO options (store_id, option_name_kr, option_name_en, status, created_at, updated_at)
+-- -- 옵션 데이터
+-- INSERT INTO options (store_id, option_name_kr, option_name_en, status, created_at, updated_at)
+-- VALUES
+--     (3, '온도', 'Temperature', 'REGISTERED', NOW(), NOW()),
+--     (3, '얼음량', 'Ice Amount', 'REGISTERED', NOW(), NOW()),
+--     (3, '당도', 'Sweetness', 'REGISTERED', NOW(), NOW()),
+--     (3, '샷 추가', 'Extra Shot', 'REGISTERED', NOW(), NOW()),
+--     (3, '시럽 추가', 'Extra Syrup', 'REGISTERED', NOW(), NOW()),
+--     (3, '휘핑크림', 'Whipped Cream', 'REGISTERED', NOW(), NOW()),
+--     (3, '우유 변경', 'Milk Change', 'REGISTERED', NOW(), NOW());
+--
+-- -- 옵션 상세 데이터
+-- INSERT INTO option_detail (option_id, value, additional_price, status, created_at, updated_at)
+-- VALUES
+-- -- 온도 옵션
+-- (1, 'HOT', 0, 'REGISTERED', NOW(), NOW()),
+-- (1, 'ICE', 0, 'REGISTERED', NOW(), NOW()),
+--
+-- -- 얼음량 옵션
+-- (2, '얼음 없음', 0, 'REGISTERED', NOW(), NOW()),
+-- (2, '얼음 적게', 0, 'REGISTERED', NOW(), NOW()),
+-- (2, '얼음 보통', 0, 'REGISTERED', NOW(), NOW()),
+-- (2, '얼음 많이', 0, 'REGISTERED', NOW(), NOW()),
+--
+-- -- 당도 옵션
+-- (3, '당도 0%', 0, 'REGISTERED', NOW(), NOW()),
+-- (3, '당도 30%', 0, 'REGISTERED', NOW(), NOW()),
+-- (3, '당도 50%', 0, 'REGISTERED', NOW(), NOW()),
+-- (3, '당도 70%', 0, 'REGISTERED', NOW(), NOW()),
+-- (3, '당도 100%', 0, 'REGISTERED', NOW(), NOW()),
+--
+-- -- 샷 추가 옵션
+-- (4, '샷 추가 없음', 0, 'REGISTERED', NOW(), NOW()),
+-- (4, '샷 1개 추가', 500, 'REGISTERED', NOW(), NOW()),
+-- (4, '샷 2개 추가', 1000, 'REGISTERED', NOW(), NOW()),
+--
+-- -- 시럽 추가 옵션
+-- (5, '시럽 추가 없음', 0, 'REGISTERED', NOW(), NOW()),
+-- (5, '바닐라 시럽 추가', 300, 'REGISTERED', NOW(), NOW()),
+-- (5, '카라멜 시럽 추가', 300, 'REGISTERED', NOW(), NOW()),
+-- (5, '헤이즐넛 시럽 추가', 300, 'REGISTERED', NOW(), NOW()),
+--
+-- -- 휘핑크림 옵션
+-- (6, '휘핑크림 없음', 0, 'REGISTERED', NOW(), NOW()),
+-- (6, '휘핑크림 추가', 500, 'REGISTERED', NOW(), NOW()),
+--
+-- -- 우유 변경 옵션
+-- (7, '일반 우유', 0, 'REGISTERED', NOW(), NOW()),
+-- (7, '저지방 우유', 500, 'REGISTERED', NOW(), NOW()),
+-- (7, '두유', 500, 'REGISTERED', NOW(), NOW()),
+-- (7, '오트 우유', 700, 'REGISTERED', NOW(), NOW());
+--
+--
+-- -- 메뉴-옵션 매핑 (전체 메뉴)
+-- INSERT INTO menu_option_map (menu_id, option_id, option_detail_id, is_required, created_at, updated_at)
+-- VALUES
+-- -- 1. 아메리카노 옵션
+-- (1, 1, 1, TRUE, NOW(), NOW()),  -- 아메리카노 - HOT 옵션
+-- (1, 1, 2, TRUE, NOW(), NOW()),  -- 아메리카노 - ICE 옵션
+-- (1, 2, 3, FALSE, NOW(), NOW()), -- 아메리카노 - 얼음 없음
+-- (1, 2, 4, FALSE, NOW(), NOW()), -- 아메리카노 - 얼음 적게
+-- (1, 2, 5, FALSE, NOW(), NOW()), -- 아메리카노 - 얼음 보통
+-- (1, 2, 6, FALSE, NOW(), NOW()), -- 아메리카노 - 얼음 많이
+-- (1, 4, 12, FALSE, NOW(), NOW()), -- 아메리카노 - 샷 추가 없음
+-- (1, 4, 13, FALSE, NOW(), NOW()), -- 아메리카노 - 샷 1개 추가
+-- (1, 4, 14, FALSE, NOW(), NOW()), -- 아메리카노 - 샷 2개 추가
+--
+-- -- 2. 카페라떼 옵션
+-- (2, 1, 1, TRUE, NOW(), NOW()),  -- 카페라떼 - HOT 옵션
+-- (2, 1, 2, TRUE, NOW(), NOW()),  -- 카페라떼 - ICE 옵션
+-- (2, 2, 3, FALSE, NOW(), NOW()), -- 카페라떼 - 얼음 없음
+-- (2, 2, 4, FALSE, NOW(), NOW()), -- 카페라떼 - 얼음 적게
+-- (2, 2, 5, FALSE, NOW(), NOW()), -- 카페라떼 - 얼음 보통
+-- (2, 2, 6, FALSE, NOW(), NOW()), -- 카페라떼 - 얼음 많이
+-- (2, 4, 12, FALSE, NOW(), NOW()), -- 카페라떼 - 샷 추가 없음
+-- (2, 4, 13, FALSE, NOW(), NOW()), -- 카페라떼 - 샷 1개 추가
+-- (2, 4, 14, FALSE, NOW(), NOW()), -- 카페라떼 - 샷 2개 추가
+-- (2, 7, 21, FALSE, NOW(), NOW()), -- 카페라떼 - 일반 우유
+-- (2, 7, 22, FALSE, NOW(), NOW()), -- 카페라떼 - 저지방 우유
+-- (2, 7, 23, FALSE, NOW(), NOW()), -- 카페라떼 - 두유
+-- (2, 7, 24, FALSE, NOW(), NOW()), -- 카페라떼 - 오트 우유
+--
+-- -- 3. 바닐라 라떼 옵션
+-- (3, 1, 1, TRUE, NOW(), NOW()),  -- 바닐라 라떼 - HOT 옵션
+-- (3, 1, 2, TRUE, NOW(), NOW()),  -- 바닐라 라떼 - ICE 옵션
+-- (3, 2, 3, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 얼음 없음
+-- (3, 2, 4, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 얼음 적게
+-- (3, 2, 5, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 얼음 보통
+-- (3, 2, 6, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 얼음 많이
+-- (3, 3, 7, FALSE, NOW(), NOW()),  -- 바닐라 라떼 - 당도 0%
+-- (3, 3, 8, FALSE, NOW(), NOW()),  -- 바닐라 라떼 - 당도 30%
+-- (3, 3, 9, FALSE, NOW(), NOW()),  -- 바닐라 라떼 - 당도 50%
+-- (3, 3, 10, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 당도 70%
+-- (3, 3, 11, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 당도 100%
+-- (3, 4, 12, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 샷 추가 없음
+-- (3, 4, 13, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 샷 1개 추가
+-- (3, 4, 14, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 샷 2개 추가
+-- (3, 7, 21, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 일반 우유
+-- (3, 7, 22, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 저지방 우유
+-- (3, 7, 23, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 두유
+-- (3, 7, 24, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 오트 우유
+--
+-- -- 4. 카라멜 마끼아또 옵션
+-- (4, 1, 1, TRUE, NOW(), NOW()),  -- 카라멜 마끼아또 - HOT 옵션
+-- (4, 1, 2, TRUE, NOW(), NOW()),  -- 카라멜 마끼아또 - ICE 옵션
+-- (4, 2, 3, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 얼음 없음
+-- (4, 2, 4, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 얼음 적게
+-- (4, 2, 5, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 얼음 보통
+-- (4, 2, 6, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 얼음 많이
+-- (4, 3, 7, FALSE, NOW(), NOW()),  -- 카라멜 마끼아또 - 당도 0%
+-- (4, 3, 8, FALSE, NOW(), NOW()),  -- 카라멜 마끼아또 - 당도 30%
+-- (4, 3, 9, FALSE, NOW(), NOW()),  -- 카라멜 마끼아또 - 당도 50%
+-- (4, 3, 10, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 당도 70%
+-- (4, 3, 11, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 당도 100%
+-- (4, 4, 12, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 샷 추가 없음
+-- (4, 4, 13, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 샷 1개 추가
+-- (4, 4, 14, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 샷 2개 추가
+-- (4, 6, 19, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 휘핑크림 없음
+-- (4, 6, 20, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 휘핑크림 추가
+-- (4, 7, 21, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 일반 우유
+-- (4, 7, 22, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 저지방 우유
+-- (4, 7, 23, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 두유
+-- (4, 7, 24, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 오트 우유
+--
+-- -- 5. 카페모카 옵션
+-- (5, 1, 1, TRUE, NOW(), NOW()),  -- 카페모카 - HOT 옵션
+-- (5, 1, 2, TRUE, NOW(), NOW()),  -- 카페모카 - ICE 옵션
+-- (5, 2, 3, FALSE, NOW(), NOW()), -- 카페모카 - 얼음 없음
+-- (5, 2, 4, FALSE, NOW(), NOW()), -- 카페모카 - 얼음 적게
+-- (5, 2, 5, FALSE, NOW(), NOW()), -- 카페모카 - 얼음 보통
+-- (5, 2, 6, FALSE, NOW(), NOW()), -- 카페모카 - 얼음 많이
+-- (5, 3, 7, FALSE, NOW(), NOW()),  -- 카페모카 - 당도 0%
+-- (5, 3, 8, FALSE, NOW(), NOW()),  -- 카페모카 - 당도 30%
+-- (5, 3, 9, FALSE, NOW(), NOW()),  -- 카페모카 - 당도 50%
+-- (5, 3, 10, FALSE, NOW(), NOW()), -- 카페모카 - 당도 70%
+-- (5, 3, 11, FALSE, NOW(), NOW()), -- 카페모카 - 당도 100%
+-- (5, 4, 12, FALSE, NOW(), NOW()), -- 카페모카 - 샷 추가 없음
+-- (5, 4, 13, FALSE, NOW(), NOW()), -- 카페모카 - 샷 1개 추가
+-- (5, 4, 14, FALSE, NOW(), NOW()), -- 카페모카 - 샷 2개 추가
+-- (5, 6, 19, FALSE, NOW(), NOW()), -- 카페모카 - 휘핑크림 없음
+-- (5, 6, 20, FALSE, NOW(), NOW()), -- 카페모카 - 휘핑크림 추가
+-- (5, 7, 21, FALSE, NOW(), NOW()), -- 카페모카 - 일반 우유
+-- (5, 7, 22, FALSE, NOW(), NOW()), -- 카페모카 - 저지방 우유
+-- (5, 7, 23, FALSE, NOW(), NOW()), -- 카페모카 - 두유
+-- (5, 7, 24, FALSE, NOW(), NOW()), -- 카페모카 - 오트 우유
+--
+-- -- 6. 딸기 스무디 옵션
+-- (6, 3, 7, FALSE, NOW(), NOW()),  -- 딸기 스무디 - 당도 0%
+-- (6, 3, 8, FALSE, NOW(), NOW()),  -- 딸기 스무디 - 당도 30%
+-- (6, 3, 9, FALSE, NOW(), NOW()),  -- 딸기 스무디 - 당도 50%
+-- (6, 3, 10, FALSE, NOW(), NOW()), -- 딸기 스무디 - 당도 70%
+-- (6, 3, 11, FALSE, NOW(), NOW()), -- 딸기 스무디 - 당도 100%
+-- (6, 6, 19, FALSE, NOW(), NOW()), -- 딸기 스무디 - 휘핑크림 없음
+-- (6, 6, 20, FALSE, NOW(), NOW()), -- 딸기 스무디 - 휘핑크림 추가
+--
+-- -- 7. 블루베리 요거트 스무디 옵션
+-- (7, 3, 7, FALSE, NOW(), NOW()),  -- 블루베리 요거트 스무디 - 당도 0%
+-- (7, 3, 8, FALSE, NOW(), NOW()),  -- 블루베리 요거트 스무디 - 당도 30%
+-- (7, 3, 9, FALSE, NOW(), NOW()),  -- 블루베리 요거트 스무디 - 당도 50%
+-- (7, 3, 10, FALSE, NOW(), NOW()), -- 블루베리 요거트 스무디 - 당도 70%
+-- (7, 3, 11, FALSE, NOW(), NOW()), -- 블루베리 요거트 스무디 - 당도 100%
+-- (7, 6, 19, FALSE, NOW(), NOW()), -- 블루베리 요거트 스무디 - 휘핑크림 없음
+-- (7, 6, 20, FALSE, NOW(), NOW()), -- 블루베리 요거트 스무디 - 휘핑크림 추가
+--
+-- -- 8. 자몽 에이드 옵션
+-- (8, 2, 3, FALSE, NOW(), NOW()), -- 자몽 에이드 - 얼음 없음
+-- (8, 2, 4, FALSE, NOW(), NOW()), -- 자몽 에이드 - 얼음 적게
+-- (8, 2, 5, FALSE, NOW(), NOW()), -- 자몽 에이드 - 얼음 보통
+-- (8, 2, 6, FALSE, NOW(), NOW()), -- 자몽 에이드 - 얼음 많이
+-- (8, 3, 7, FALSE, NOW(), NOW()),  -- 자몽 에이드 - 당도 0%
+-- (8, 3, 8, FALSE, NOW(), NOW()),  -- 자몽 에이드 - 당도 30%
+-- (8, 3, 9, FALSE, NOW(), NOW()),  -- 자몽 에이드 - 당도 50%
+-- (8, 3, 10, FALSE, NOW(), NOW()), -- 자몽 에이드 - 당도 70%
+-- (8, 3, 11, FALSE, NOW(), NOW()), -- 자몽 에이드 - 당도 100%
+--
+-- -- 9. 레몬 에이드 옵션
+-- (9, 2, 3, FALSE, NOW(), NOW()), -- 레몬 에이드 - 얼음 없음
+-- (9, 2, 4, FALSE, NOW(), NOW()), -- 레몬 에이드 - 얼음 적게
+-- (9, 2, 5, FALSE, NOW(), NOW()), -- 레몬 에이드 - 얼음 보통
+-- (9, 2, 6, FALSE, NOW(), NOW()), -- 레몬 에이드 - 얼음 많이
+-- (9, 3, 7, FALSE, NOW(), NOW()),  -- 레몬 에이드 - 당도 0%
+-- (9, 3, 8, FALSE, NOW(), NOW()),  -- 레몬 에이드 - 당도 30%
+-- (9, 3, 9, FALSE, NOW(), NOW()),  -- 레몬 에이드 - 당도 50%
+-- (9, 3, 10, FALSE, NOW(), NOW()), -- 레몬 에이드 - 당도 70%
+-- (9, 3, 11, FALSE, NOW(), NOW()), -- 레몬 에이드 - 당도 100%
+--
+-- -- 13. 쿠키 프라페 옵션
+-- (13, 3, 7, FALSE, NOW(), NOW()),  -- 쿠키 프라페 - 당도 0%
+-- (13, 3, 8, FALSE, NOW(), NOW()),  -- 쿠키 프라페 - 당도 30%
+-- (13, 3, 9, FALSE, NOW(), NOW()),  -- 쿠키 프라페 - 당도 50%
+-- (13, 3, 10, FALSE, NOW(), NOW()), -- 쿠키 프라페 - 당도 70%
+-- (13, 3, 11, FALSE, NOW(), NOW()), -- 쿠키 프라페 - 당도 100%
+-- (13, 6, 19, FALSE, NOW(), NOW()), -- 쿠키 프라페 - 휘핑크림 없음
+-- (13, 6, 20, FALSE, NOW(), NOW()), -- 쿠키 프라페 - 휘핑크림 추가
+--
+-- -- 14. 초코 프라페 옵션
+-- (14, 3, 7, FALSE, NOW(), NOW()),  -- 초코 프라페 - 당도 0%
+-- (14, 3, 8, FALSE, NOW(), NOW()),  -- 초코 프라페 - 당도 30%
+-- (14, 3, 9, FALSE, NOW(), NOW()),  -- 초코 프라페 - 당도 50%
+-- (14, 3, 10, FALSE, NOW(), NOW()), -- 초코 프라페 - 당도 70%
+-- (14, 3, 11, FALSE, NOW(), NOW()), -- 초코 프라페 - 당도 100%
+-- (14, 6, 19, FALSE, NOW(), NOW()), -- 초코 프라페 - 휘핑크림 없음
+-- (14, 6, 20, FALSE, NOW(), NOW()), -- 초코 프라페 - 휘핑크림 추가
+--
+-- -- 15. 카라멜 프라페 옵션
+-- (15, 3, 7, FALSE, NOW(), NOW()),  -- 카라멜 프라페 - 당도 0%
+-- (15, 3, 8, FALSE, NOW(), NOW()),  -- 카라멜 프라페 - 당도 30%
+-- (15, 3, 9, FALSE, NOW(), NOW()),  -- 카라멜 프라페 - 당도 50%
+-- (15, 3, 10, FALSE, NOW(), NOW()), -- 카라멜 프라페 - 당도 70%
+-- (15, 3, 11, FALSE, NOW(), NOW()), -- 카라멜 프라페 - 당도 100%
+-- (15, 6, 19, FALSE, NOW(), NOW()), -- 카라멜 프라페 - 휘핑크림 없음
+-- (15, 6, 20, FALSE, NOW(), NOW()); -- 카라멜 프라페 - 휘핑크림 추가
+
+
+-- store_id 3의 옵션 데이터 다시 삽입
+INSERT INTO options (id, store_id, option_name_kr, option_name_en, status, created_at, updated_at)
 VALUES
-    (3, '온도', 'Temperature', 'REGISTERED', NOW(), NOW()),
-    (3, '얼음량', 'Ice Amount', 'REGISTERED', NOW(), NOW()),
-    (3, '당도', 'Sweetness', 'REGISTERED', NOW(), NOW()),
-    (3, '샷 추가', 'Extra Shot', 'REGISTERED', NOW(), NOW()),
-    (3, '시럽 추가', 'Extra Syrup', 'REGISTERED', NOW(), NOW()),
-    (3, '휘핑크림', 'Whipped Cream', 'REGISTERED', NOW(), NOW()),
-    (3, '우유 변경', 'Milk Change', 'REGISTERED', NOW(), NOW());
+    (100, 3, '사이즈', 'Size', 'REGISTERED', NOW(), NOW()),
+    (101, 3, '온도', 'Temperature', 'REGISTERED', NOW(), NOW()),
+    (102, 3, '얼음량', 'Ice Amount', 'REGISTERED', NOW(), NOW()),
+    (103, 3, '당도', 'Sweetness', 'REGISTERED', NOW(), NOW()),
+    (104, 3, '샷 옵션', 'Shot Option', 'REGISTERED', NOW(), NOW()),
+    (105, 3, '시럽 추가', 'Extra Syrup', 'REGISTERED', NOW(), NOW()),
+    (106, 3, '휘핑크림', 'Whipped Cream', 'REGISTERED', NOW(), NOW()),
+    (107, 3, '우유 변경', 'Milk Change', 'REGISTERED', NOW(), NOW());
 
--- 옵션 상세 데이터
-INSERT INTO option_detail (option_id, value, additional_price, status, created_at, updated_at)
+-- 일관된 ID를 가진 옵션 상세 항목
+INSERT INTO option_detail (id, option_id, value, additional_price, status, created_at, updated_at)
 VALUES
--- 온도 옵션
-(1, 'HOT', 0, 'REGISTERED', NOW(), NOW()),
-(1, 'ICE', 0, 'REGISTERED', NOW(), NOW()),
+-- 사이즈 옵션 (101)
+(998, 100, 'S', 0, 'REGISTERED', NOW(), NOW()),
+(999, 100, 'M', 500, 'REGISTERED', NOW(), NOW()),
+(1000, 100, 'L', 1000, 'REGISTERED', NOW(), NOW()),
+-- 온도 옵션 (101)
+(1001, 101, 'HOT', 0, 'REGISTERED', NOW(), NOW()),
+(1002, 101, 'ICE', 0, 'REGISTERED', NOW(), NOW()),
 
--- 얼음량 옵션
-(2, '얼음 없음', 0, 'REGISTERED', NOW(), NOW()),
-(2, '얼음 적게', 0, 'REGISTERED', NOW(), NOW()),
-(2, '얼음 보통', 0, 'REGISTERED', NOW(), NOW()),
-(2, '얼음 많이', 0, 'REGISTERED', NOW(), NOW()),
+-- 얼음량 옵션 (102)
+(1003, 102, '얼음 없음', 0, 'REGISTERED', NOW(), NOW()),
+(1004, 102, '얼음 적게', 0, 'REGISTERED', NOW(), NOW()),
+(1005, 102, '얼음 보통', 0, 'REGISTERED', NOW(), NOW()),
+(1006, 102, '얼음 많이', 0, 'REGISTERED', NOW(), NOW()),
 
--- 당도 옵션
-(3, '당도 0%', 0, 'REGISTERED', NOW(), NOW()),
-(3, '당도 30%', 0, 'REGISTERED', NOW(), NOW()),
-(3, '당도 50%', 0, 'REGISTERED', NOW(), NOW()),
-(3, '당도 70%', 0, 'REGISTERED', NOW(), NOW()),
-(3, '당도 100%', 0, 'REGISTERED', NOW(), NOW()),
+-- 당도 옵션 (103)
+(1007, 103, '당도 0%', 0, 'REGISTERED', NOW(), NOW()),
+(1008, 103, '당도 30%', 0, 'REGISTERED', NOW(), NOW()),
+(1009, 103, '당도 50%', 0, 'REGISTERED', NOW(), NOW()),
+(1010, 103, '당도 70%', 0, 'REGISTERED', NOW(), NOW()),
+(1011, 103, '당도 100%', 0, 'REGISTERED', NOW(), NOW()),
 
--- 샷 추가 옵션
-(4, '샷 추가 없음', 0, 'REGISTERED', NOW(), NOW()),
-(4, '샷 1개 추가', 500, 'REGISTERED', NOW(), NOW()),
-(4, '샷 2개 추가', 1000, 'REGISTERED', NOW(), NOW()),
+-- 샷 옵션 (104) - '연하게' 옵션 추가
+(1012, 104, '샷 추가 없음', 0, 'REGISTERED', NOW(), NOW()),
+(1013, 104, '연하게', -500, 'REGISTERED', NOW(), NOW()),  -- 샷 빼기 옵션은 가격 할인
+(1014, 104, '샷 1개 추가', 500, 'REGISTERED', NOW(), NOW()),
+(1015, 104, '샷 2개 추가', 1000, 'REGISTERED', NOW(), NOW()),
 
--- 시럽 추가 옵션
-(5, '시럽 추가 없음', 0, 'REGISTERED', NOW(), NOW()),
-(5, '바닐라 시럽 추가', 300, 'REGISTERED', NOW(), NOW()),
-(5, '카라멜 시럽 추가', 300, 'REGISTERED', NOW(), NOW()),
-(5, '헤이즐넛 시럽 추가', 300, 'REGISTERED', NOW(), NOW()),
+-- 시럽 추가 옵션 (105)
+(1016, 105, '시럽 추가 없음', 0, 'REGISTERED', NOW(), NOW()),
+(1017, 105, '바닐라 시럽 추가', 300, 'REGISTERED', NOW(), NOW()),
+(1018, 105, '카라멜 시럽 추가', 300, 'REGISTERED', NOW(), NOW()),
+(1019, 105, '헤이즐넛 시럽 추가', 300, 'REGISTERED', NOW(), NOW()),
 
--- 휘핑크림 옵션
-(6, '휘핑크림 없음', 0, 'REGISTERED', NOW(), NOW()),
-(6, '휘핑크림 추가', 500, 'REGISTERED', NOW(), NOW()),
+-- 휘핑크림 옵션 (106)
+(1020, 106, '휘핑크림 없음', 0, 'REGISTERED', NOW(), NOW()),
+(1021, 106, '휘핑크림 추가', 500, 'REGISTERED', NOW(), NOW()),
 
--- 우유 변경 옵션
-(7, '일반 우유', 0, 'REGISTERED', NOW(), NOW()),
-(7, '저지방 우유', 500, 'REGISTERED', NOW(), NOW()),
-(7, '두유', 500, 'REGISTERED', NOW(), NOW()),
-(7, '오트 우유', 700, 'REGISTERED', NOW(), NOW());
+-- 우유 변경 옵션 (107)
+(1022, 107, '일반 우유', 0, 'REGISTERED', NOW(), NOW()),
+(1023, 107, '저지방 우유', 500, 'REGISTERED', NOW(), NOW()),
+(1024, 107, '두유', 500, 'REGISTERED', NOW(), NOW()),
+(1025, 107, '오트 우유', 700, 'REGISTERED', NOW(), NOW());
 
-
--- 메뉴-옵션 매핑 (전체 메뉴)
+-- 메뉴-옵션 매핑 (store_id 3의 모든 메뉴에 대해)
 INSERT INTO menu_option_map (menu_id, option_id, option_detail_id, is_required, created_at, updated_at)
 VALUES
 -- 1. 아메리카노 옵션
-(1, 1, 1, TRUE, NOW(), NOW()),  -- 아메리카노 - HOT 옵션
-(1, 1, 2, TRUE, NOW(), NOW()),  -- 아메리카노 - ICE 옵션
-(1, 2, 3, FALSE, NOW(), NOW()), -- 아메리카노 - 얼음 없음
-(1, 2, 4, FALSE, NOW(), NOW()), -- 아메리카노 - 얼음 적게
-(1, 2, 5, FALSE, NOW(), NOW()), -- 아메리카노 - 얼음 보통
-(1, 2, 6, FALSE, NOW(), NOW()), -- 아메리카노 - 얼음 많이
-(1, 4, 12, FALSE, NOW(), NOW()), -- 아메리카노 - 샷 추가 없음
-(1, 4, 13, FALSE, NOW(), NOW()), -- 아메리카노 - 샷 1개 추가
-(1, 4, 14, FALSE, NOW(), NOW()), -- 아메리카노 - 샷 2개 추가
+(1, 100, 998, TRUE, NOW(), NOW()),  -- 아메리카노 - S
+(1, 100, 999, TRUE, NOW(), NOW()),  -- 아메리카노 - M
+(1, 100, 1000, TRUE, NOW(), NOW()), -- 아메리카노 - L
+(1, 101, 1001, TRUE, NOW(), NOW()),  -- 아메리카노 - HOT 옵션
+(1, 101, 1002, TRUE, NOW(), NOW()),  -- 아메리카노 - ICE 옵션
+(1, 102, 1003, FALSE, NOW(), NOW()), -- 아메리카노 - 얼음 없음
+(1, 102, 1004, FALSE, NOW(), NOW()), -- 아메리카노 - 얼음 적게
+(1, 102, 1005, FALSE, NOW(), NOW()), -- 아메리카노 - 얼음 보통
+(1, 102, 1006, FALSE, NOW(), NOW()), -- 아메리카노 - 얼음 많이
+(1, 104, 1012, FALSE, NOW(), NOW()), -- 아메리카노 - 샷 추가 없음
+(1, 104, 1013, FALSE, NOW(), NOW()), -- 아메리카노 - 연하게
+(1, 104, 1014, FALSE, NOW(), NOW()), -- 아메리카노 - 샷 1개 추가
+(1, 104, 1015, FALSE, NOW(), NOW()), -- 아메리카노 - 샷 2개 추가
 
 -- 2. 카페라떼 옵션
-(2, 1, 1, TRUE, NOW(), NOW()),  -- 카페라떼 - HOT 옵션
-(2, 1, 2, TRUE, NOW(), NOW()),  -- 카페라떼 - ICE 옵션
-(2, 2, 3, FALSE, NOW(), NOW()), -- 카페라떼 - 얼음 없음
-(2, 2, 4, FALSE, NOW(), NOW()), -- 카페라떼 - 얼음 적게
-(2, 2, 5, FALSE, NOW(), NOW()), -- 카페라떼 - 얼음 보통
-(2, 2, 6, FALSE, NOW(), NOW()), -- 카페라떼 - 얼음 많이
-(2, 4, 12, FALSE, NOW(), NOW()), -- 카페라떼 - 샷 추가 없음
-(2, 4, 13, FALSE, NOW(), NOW()), -- 카페라떼 - 샷 1개 추가
-(2, 4, 14, FALSE, NOW(), NOW()), -- 카페라떼 - 샷 2개 추가
-(2, 7, 21, FALSE, NOW(), NOW()), -- 카페라떼 - 일반 우유
-(2, 7, 22, FALSE, NOW(), NOW()), -- 카페라떼 - 저지방 우유
-(2, 7, 23, FALSE, NOW(), NOW()), -- 카페라떼 - 두유
-(2, 7, 24, FALSE, NOW(), NOW()), -- 카페라떼 - 오트 우유
+(2, 100, 998, TRUE, NOW(), NOW()),  -- 아메리카노 - S
+(2, 100, 999, TRUE, NOW(), NOW()),  -- 아메리카노 - M
+(2, 100, 1000, TRUE, NOW(), NOW()), -- 아메리카노 - L
+(2, 101, 1001, TRUE, NOW(), NOW()),  -- 카페라떼 - HOT 옵션
+(2, 101, 1002, TRUE, NOW(), NOW()),  -- 카페라떼 - ICE 옵션
+(2, 102, 1003, FALSE, NOW(), NOW()), -- 카페라떼 - 얼음 없음
+(2, 102, 1004, FALSE, NOW(), NOW()), -- 카페라떼 - 얼음 적게
+(2, 102, 1005, FALSE, NOW(), NOW()), -- 카페라떼 - 얼음 보통
+(2, 102, 1006, FALSE, NOW(), NOW()), -- 카페라떼 - 얼음 많이
+(2, 104, 1012, FALSE, NOW(), NOW()), -- 카페라떼 - 샷 추가 없음
+(2, 104, 1013, FALSE, NOW(), NOW()), -- 카페라떼 - 연하게
+(2, 104, 1014, FALSE, NOW(), NOW()), -- 카페라떼 - 샷 1개 추가
+(2, 104, 1015, FALSE, NOW(), NOW()), -- 카페라떼 - 샷 2개 추가
+(2, 107, 1022, FALSE, NOW(), NOW()), -- 카페라떼 - 일반 우유
+(2, 107, 1023, FALSE, NOW(), NOW()), -- 카페라떼 - 저지방 우유
+(2, 107, 1024, FALSE, NOW(), NOW()), -- 카페라떼 - 두유
+(2, 107, 1025, FALSE, NOW(), NOW()), -- 카페라떼 - 오트 우유
 
 -- 3. 바닐라 라떼 옵션
-(3, 1, 1, TRUE, NOW(), NOW()),  -- 바닐라 라떼 - HOT 옵션
-(3, 1, 2, TRUE, NOW(), NOW()),  -- 바닐라 라떼 - ICE 옵션
-(3, 2, 3, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 얼음 없음
-(3, 2, 4, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 얼음 적게
-(3, 2, 5, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 얼음 보통
-(3, 2, 6, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 얼음 많이
-(3, 3, 7, FALSE, NOW(), NOW()),  -- 바닐라 라떼 - 당도 0%
-(3, 3, 8, FALSE, NOW(), NOW()),  -- 바닐라 라떼 - 당도 30%
-(3, 3, 9, FALSE, NOW(), NOW()),  -- 바닐라 라떼 - 당도 50%
-(3, 3, 10, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 당도 70%
-(3, 3, 11, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 당도 100%
-(3, 4, 12, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 샷 추가 없음
-(3, 4, 13, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 샷 1개 추가
-(3, 4, 14, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 샷 2개 추가
-(3, 7, 21, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 일반 우유
-(3, 7, 22, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 저지방 우유
-(3, 7, 23, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 두유
-(3, 7, 24, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 오트 우유
+(3, 100, 998, TRUE, NOW(), NOW()),  -- 아메리카노 - S
+(3, 100, 999, TRUE, NOW(), NOW()),  -- 아메리카노 - M
+(3, 100, 1000, TRUE, NOW(), NOW()), -- 아메리카노 - L
+(3, 101, 1001, TRUE, NOW(), NOW()),  -- 바닐라 라떼 - HOT 옵션
+(3, 101, 1002, TRUE, NOW(), NOW()),  -- 바닐라 라떼 - ICE 옵션
+(3, 102, 1003, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 얼음 없음
+(3, 102, 1004, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 얼음 적게
+(3, 102, 1005, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 얼음 보통
+(3, 102, 1006, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 얼음 많이
+(3, 103, 1007, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 당도 0%
+(3, 103, 1008, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 당도 30%
+(3, 103, 1009, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 당도 50%
+(3, 103, 1010, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 당도 70%
+(3, 103, 1011, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 당도 100%
+(3, 104, 1012, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 샷 추가 없음
+(3, 104, 1013, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 연하게
+(3, 104, 1014, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 샷 1개 추가
+(3, 104, 1015, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 샷 2개 추가
+(3, 107, 1022, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 일반 우유
+(3, 107, 1023, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 저지방 우유
+(3, 107, 1024, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 두유
+(3, 107, 1025, FALSE, NOW(), NOW()), -- 바닐라 라떼 - 오트 우유
 
 -- 4. 카라멜 마끼아또 옵션
-(4, 1, 1, TRUE, NOW(), NOW()),  -- 카라멜 마끼아또 - HOT 옵션
-(4, 1, 2, TRUE, NOW(), NOW()),  -- 카라멜 마끼아또 - ICE 옵션
-(4, 2, 3, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 얼음 없음
-(4, 2, 4, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 얼음 적게
-(4, 2, 5, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 얼음 보통
-(4, 2, 6, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 얼음 많이
-(4, 3, 7, FALSE, NOW(), NOW()),  -- 카라멜 마끼아또 - 당도 0%
-(4, 3, 8, FALSE, NOW(), NOW()),  -- 카라멜 마끼아또 - 당도 30%
-(4, 3, 9, FALSE, NOW(), NOW()),  -- 카라멜 마끼아또 - 당도 50%
-(4, 3, 10, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 당도 70%
-(4, 3, 11, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 당도 100%
-(4, 4, 12, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 샷 추가 없음
-(4, 4, 13, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 샷 1개 추가
-(4, 4, 14, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 샷 2개 추가
-(4, 6, 19, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 휘핑크림 없음
-(4, 6, 20, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 휘핑크림 추가
-(4, 7, 21, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 일반 우유
-(4, 7, 22, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 저지방 우유
-(4, 7, 23, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 두유
-(4, 7, 24, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 오트 우유
+(4, 100, 998, TRUE, NOW(), NOW()),  -- 아메리카노 - S
+(4, 100, 999, TRUE, NOW(), NOW()),  -- 아메리카노 - M
+(4, 100, 1000, TRUE, NOW(), NOW()), -- 아메리카노 - L
+(4, 101, 1001, TRUE, NOW(), NOW()),  -- 카라멜 마끼아또 - HOT 옵션
+(4, 101, 1002, TRUE, NOW(), NOW()),  -- 카라멜 마끼아또 - ICE 옵션
+(4, 102, 1003, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 얼음 없음
+(4, 102, 1004, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 얼음 적게
+(4, 102, 1005, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 얼음 보통
+(4, 102, 1006, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 얼음 많이
+(4, 103, 1007, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 당도 0%
+(4, 103, 1008, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 당도 30%
+(4, 103, 1009, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 당도 50%
+(4, 103, 1010, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 당도 70%
+(4, 103, 1011, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 당도 100%
+(4, 104, 1012, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 샷 추가 없음
+(4, 104, 1013, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 연하게
+(4, 104, 1014, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 샷 1개 추가
+(4, 104, 1015, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 샷 2개 추가
+(4, 106, 1020, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 휘핑크림 없음
+(4, 106, 1021, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 휘핑크림 추가
+(4, 107, 1022, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 일반 우유
+(4, 107, 1023, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 저지방 우유
+(4, 107, 1024, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 두유
+(4, 107, 1025, FALSE, NOW(), NOW()), -- 카라멜 마끼아또 - 오트 우유
 
 -- 5. 카페모카 옵션
-(5, 1, 1, TRUE, NOW(), NOW()),  -- 카페모카 - HOT 옵션
-(5, 1, 2, TRUE, NOW(), NOW()),  -- 카페모카 - ICE 옵션
-(5, 2, 3, FALSE, NOW(), NOW()), -- 카페모카 - 얼음 없음
-(5, 2, 4, FALSE, NOW(), NOW()), -- 카페모카 - 얼음 적게
-(5, 2, 5, FALSE, NOW(), NOW()), -- 카페모카 - 얼음 보통
-(5, 2, 6, FALSE, NOW(), NOW()), -- 카페모카 - 얼음 많이
-(5, 3, 7, FALSE, NOW(), NOW()),  -- 카페모카 - 당도 0%
-(5, 3, 8, FALSE, NOW(), NOW()),  -- 카페모카 - 당도 30%
-(5, 3, 9, FALSE, NOW(), NOW()),  -- 카페모카 - 당도 50%
-(5, 3, 10, FALSE, NOW(), NOW()), -- 카페모카 - 당도 70%
-(5, 3, 11, FALSE, NOW(), NOW()), -- 카페모카 - 당도 100%
-(5, 4, 12, FALSE, NOW(), NOW()), -- 카페모카 - 샷 추가 없음
-(5, 4, 13, FALSE, NOW(), NOW()), -- 카페모카 - 샷 1개 추가
-(5, 4, 14, FALSE, NOW(), NOW()), -- 카페모카 - 샷 2개 추가
-(5, 6, 19, FALSE, NOW(), NOW()), -- 카페모카 - 휘핑크림 없음
-(5, 6, 20, FALSE, NOW(), NOW()), -- 카페모카 - 휘핑크림 추가
-(5, 7, 21, FALSE, NOW(), NOW()), -- 카페모카 - 일반 우유
-(5, 7, 22, FALSE, NOW(), NOW()), -- 카페모카 - 저지방 우유
-(5, 7, 23, FALSE, NOW(), NOW()), -- 카페모카 - 두유
-(5, 7, 24, FALSE, NOW(), NOW()), -- 카페모카 - 오트 우유
+(5, 100, 998, TRUE, NOW(), NOW()),  -- 아메리카노 - S
+(5, 100, 999, TRUE, NOW(), NOW()),  -- 아메리카노 - M
+(5, 100, 1000, TRUE, NOW(), NOW()), -- 아메리카노 - L
+(5, 101, 1001, TRUE, NOW(), NOW()),  -- 카페모카 - HOT 옵션
+(5, 101, 1002, TRUE, NOW(), NOW()),  -- 카페모카 - ICE 옵션
+(5, 102, 1003, FALSE, NOW(), NOW()), -- 카페모카 - 얼음 없음
+(5, 102, 1004, FALSE, NOW(), NOW()), -- 카페모카 - 얼음 적게
+(5, 102, 1005, FALSE, NOW(), NOW()), -- 카페모카 - 얼음 보통
+(5, 102, 1006, FALSE, NOW(), NOW()), -- 카페모카 - 얼음 많이
+(5, 103, 1007, FALSE, NOW(), NOW()), -- 카페모카 - 당도 0%
+(5, 103, 1008, FALSE, NOW(), NOW()), -- 카페모카 - 당도 30%
+(5, 103, 1009, FALSE, NOW(), NOW()), -- 카페모카 - 당도 50%
+(5, 103, 1010, FALSE, NOW(), NOW()), -- 카페모카 - 당도 70%
+(5, 103, 1011, FALSE, NOW(), NOW()), -- 카페모카 - 당도 100%
+(5, 104, 1012, FALSE, NOW(), NOW()), -- 카페모카 - 샷 추가 없음
+(5, 104, 1013, FALSE, NOW(), NOW()), -- 카페모카 - 연하게
+(5, 104, 1014, FALSE, NOW(), NOW()), -- 카페모카 - 샷 1개 추가
+(5, 104, 1015, FALSE, NOW(), NOW()), -- 카페모카 - 샷 2개 추가
+(5, 106, 1020, FALSE, NOW(), NOW()), -- 카페모카 - 휘핑크림 없음
+(5, 106, 1021, FALSE, NOW(), NOW()), -- 카페모카 - 휘핑크림 추가
+(5, 107, 1022, FALSE, NOW(), NOW()), -- 카페모카 - 일반 우유
+(5, 107, 1023, FALSE, NOW(), NOW()), -- 카페모카 - 저지방 우유
+(5, 107, 1024, FALSE, NOW(), NOW()), -- 카페모카 - 두유
+(5, 107, 1025, FALSE, NOW(), NOW()), -- 카페모카 - 오트 우유
 
 -- 6. 딸기 스무디 옵션
-(6, 3, 7, FALSE, NOW(), NOW()),  -- 딸기 스무디 - 당도 0%
-(6, 3, 8, FALSE, NOW(), NOW()),  -- 딸기 스무디 - 당도 30%
-(6, 3, 9, FALSE, NOW(), NOW()),  -- 딸기 스무디 - 당도 50%
-(6, 3, 10, FALSE, NOW(), NOW()), -- 딸기 스무디 - 당도 70%
-(6, 3, 11, FALSE, NOW(), NOW()), -- 딸기 스무디 - 당도 100%
-(6, 6, 19, FALSE, NOW(), NOW()), -- 딸기 스무디 - 휘핑크림 없음
-(6, 6, 20, FALSE, NOW(), NOW()), -- 딸기 스무디 - 휘핑크림 추가
+(6, 103, 1007, FALSE, NOW(), NOW()), -- 딸기 스무디 - 당도 0%
+(6, 103, 1008, FALSE, NOW(), NOW()), -- 딸기 스무디 - 당도 30%
+(6, 103, 1009, FALSE, NOW(), NOW()), -- 딸기 스무디 - 당도 50%
+(6, 103, 1010, FALSE, NOW(), NOW()), -- 딸기 스무디 - 당도 70%
+(6, 103, 1011, FALSE, NOW(), NOW()), -- 딸기 스무디 - 당도 100%
+(6, 106, 1020, FALSE, NOW(), NOW()), -- 딸기 스무디 - 휘핑크림 없음
+(6, 106, 1021, FALSE, NOW(), NOW()), -- 딸기 스무디 - 휘핑크림 추가
 
 -- 7. 블루베리 요거트 스무디 옵션
-(7, 3, 7, FALSE, NOW(), NOW()),  -- 블루베리 요거트 스무디 - 당도 0%
-(7, 3, 8, FALSE, NOW(), NOW()),  -- 블루베리 요거트 스무디 - 당도 30%
-(7, 3, 9, FALSE, NOW(), NOW()),  -- 블루베리 요거트 스무디 - 당도 50%
-(7, 3, 10, FALSE, NOW(), NOW()), -- 블루베리 요거트 스무디 - 당도 70%
-(7, 3, 11, FALSE, NOW(), NOW()), -- 블루베리 요거트 스무디 - 당도 100%
-(7, 6, 19, FALSE, NOW(), NOW()), -- 블루베리 요거트 스무디 - 휘핑크림 없음
-(7, 6, 20, FALSE, NOW(), NOW()), -- 블루베리 요거트 스무디 - 휘핑크림 추가
+(7, 103, 1007, FALSE, NOW(), NOW()), -- 블루베리 요거트 스무디 - 당도 0%
+(7, 103, 1008, FALSE, NOW(), NOW()), -- 블루베리 요거트 스무디 - 당도 30%
+(7, 103, 1009, FALSE, NOW(), NOW()), -- 블루베리 요거트 스무디 - 당도 50%
+(7, 103, 1010, FALSE, NOW(), NOW()), -- 블루베리 요거트 스무디 - 당도 70%
+(7, 103, 1011, FALSE, NOW(), NOW()), -- 블루베리 요거트 스무디 - 당도 100%
+(7, 106, 1020, FALSE, NOW(), NOW()), -- 블루베리 요거트 스무디 - 휘핑크림 없음
+(7, 106, 1021, FALSE, NOW(), NOW()), -- 블루베리 요거트 스무디 - 휘핑크림 추가
 
 -- 8. 자몽 에이드 옵션
-(8, 2, 3, FALSE, NOW(), NOW()), -- 자몽 에이드 - 얼음 없음
-(8, 2, 4, FALSE, NOW(), NOW()), -- 자몽 에이드 - 얼음 적게
-(8, 2, 5, FALSE, NOW(), NOW()), -- 자몽 에이드 - 얼음 보통
-(8, 2, 6, FALSE, NOW(), NOW()), -- 자몽 에이드 - 얼음 많이
-(8, 3, 7, FALSE, NOW(), NOW()),  -- 자몽 에이드 - 당도 0%
-(8, 3, 8, FALSE, NOW(), NOW()),  -- 자몽 에이드 - 당도 30%
-(8, 3, 9, FALSE, NOW(), NOW()),  -- 자몽 에이드 - 당도 50%
-(8, 3, 10, FALSE, NOW(), NOW()), -- 자몽 에이드 - 당도 70%
-(8, 3, 11, FALSE, NOW(), NOW()), -- 자몽 에이드 - 당도 100%
+(8, 102, 1003, FALSE, NOW(), NOW()), -- 자몽 에이드 - 얼음 없음
+(8, 102, 1004, FALSE, NOW(), NOW()), -- 자몽 에이드 - 얼음 적게
+(8, 102, 1005, FALSE, NOW(), NOW()), -- 자몽 에이드 - 얼음 보통
+(8, 102, 1006, FALSE, NOW(), NOW()), -- 자몽 에이드 - 얼음 많이
+(8, 103, 1007, FALSE, NOW(), NOW()), -- 자몽 에이드 - 당도 0%
+(8, 103, 1008, FALSE, NOW(), NOW()), -- 자몽 에이드 - 당도 30%
+(8, 103, 1009, FALSE, NOW(), NOW()), -- 자몽 에이드 - 당도 50%
+(8, 103, 1010, FALSE, NOW(), NOW()), -- 자몽 에이드 - 당도 70%
+(8, 103, 1011, FALSE, NOW(), NOW()), -- 자몽 에이드 - 당도 100%
 
 -- 9. 레몬 에이드 옵션
-(9, 2, 3, FALSE, NOW(), NOW()), -- 레몬 에이드 - 얼음 없음
-(9, 2, 4, FALSE, NOW(), NOW()), -- 레몬 에이드 - 얼음 적게
-(9, 2, 5, FALSE, NOW(), NOW()), -- 레몬 에이드 - 얼음 보통
-(9, 2, 6, FALSE, NOW(), NOW()), -- 레몬 에이드 - 얼음 많이
-(9, 3, 7, FALSE, NOW(), NOW()),  -- 레몬 에이드 - 당도 0%
-(9, 3, 8, FALSE, NOW(), NOW()),  -- 레몬 에이드 - 당도 30%
-(9, 3, 9, FALSE, NOW(), NOW()),  -- 레몬 에이드 - 당도 50%
-(9, 3, 10, FALSE, NOW(), NOW()), -- 레몬 에이드 - 당도 70%
-(9, 3, 11, FALSE, NOW(), NOW()), -- 레몬 에이드 - 당도 100%
+(9, 102, 1003, FALSE, NOW(), NOW()), -- 레몬 에이드 - 얼음 없음
+(9, 102, 1004, FALSE, NOW(), NOW()), -- 레몬 에이드 - 얼음 적게
+(9, 102, 1005, FALSE, NOW(), NOW()), -- 레몬 에이드 - 얼음 보통
+(9, 102, 1006, FALSE, NOW(), NOW()), -- 레몬 에이드 - 얼음 많이
+(9, 103, 1007, FALSE, NOW(), NOW()), -- 레몬 에이드 - 당도 0%
+(9, 103, 1008, FALSE, NOW(), NOW()), -- 레몬 에이드 - 당도 30%
+(9, 103, 1009, FALSE, NOW(), NOW()), -- 레몬 에이드 - 당도 50%
+(9, 103, 1010, FALSE, NOW(), NOW()), -- 레몬 에이드 - 당도 70%
+(9, 103, 1011, FALSE, NOW(), NOW()), -- 레몬 에이드 - 당도 100%
+
+-- 10~12. 디저트 메뉴는 옵션이 필요 없으므로 생략
 
 -- 13. 쿠키 프라페 옵션
-(13, 3, 7, FALSE, NOW(), NOW()),  -- 쿠키 프라페 - 당도 0%
-(13, 3, 8, FALSE, NOW(), NOW()),  -- 쿠키 프라페 - 당도 30%
-(13, 3, 9, FALSE, NOW(), NOW()),  -- 쿠키 프라페 - 당도 50%
-(13, 3, 10, FALSE, NOW(), NOW()), -- 쿠키 프라페 - 당도 70%
-(13, 3, 11, FALSE, NOW(), NOW()), -- 쿠키 프라페 - 당도 100%
-(13, 6, 19, FALSE, NOW(), NOW()), -- 쿠키 프라페 - 휘핑크림 없음
-(13, 6, 20, FALSE, NOW(), NOW()), -- 쿠키 프라페 - 휘핑크림 추가
+(13, 103, 1007, FALSE, NOW(), NOW()), -- 쿠키 프라페 - 당도 0%
+(13, 103, 1008, FALSE, NOW(), NOW()), -- 쿠키 프라페 - 당도 30%
+(13, 103, 1009, FALSE, NOW(), NOW()), -- 쿠키 프라페 - 당도 50%
+(13, 103, 1010, FALSE, NOW(), NOW()), -- 쿠키 프라페 - 당도 70%
+(13, 103, 1011, FALSE, NOW(), NOW()), -- 쿠키 프라페 - 당도 100%
+(13, 106, 1020, FALSE, NOW(), NOW()), -- 쿠키 프라페 - 휘핑크림 없음
+(13, 106, 1021, FALSE, NOW(), NOW()), -- 쿠키 프라페 - 휘핑크림 추가
 
 -- 14. 초코 프라페 옵션
-(14, 3, 7, FALSE, NOW(), NOW()),  -- 초코 프라페 - 당도 0%
-(14, 3, 8, FALSE, NOW(), NOW()),  -- 초코 프라페 - 당도 30%
-(14, 3, 9, FALSE, NOW(), NOW()),  -- 초코 프라페 - 당도 50%
-(14, 3, 10, FALSE, NOW(), NOW()), -- 초코 프라페 - 당도 70%
-(14, 3, 11, FALSE, NOW(), NOW()), -- 초코 프라페 - 당도 100%
-(14, 6, 19, FALSE, NOW(), NOW()), -- 초코 프라페 - 휘핑크림 없음
-(14, 6, 20, FALSE, NOW(), NOW()), -- 초코 프라페 - 휘핑크림 추가
+(14, 103, 1007, FALSE, NOW(), NOW()), -- 초코 프라페 - 당도 0%
+(14, 103, 1008, FALSE, NOW(), NOW()), -- 초코 프라페 - 당도 30%
+(14, 103, 1009, FALSE, NOW(), NOW()), -- 초코 프라페 - 당도 50%
+(14, 103, 1010, FALSE, NOW(), NOW()), -- 초코 프라페 - 당도 70%
+(14, 103, 1011, FALSE, NOW(), NOW()), -- 초코 프라페 - 당도 100%
+(14, 106, 1020, FALSE, NOW(), NOW()), -- 초코 프라페 - 휘핑크림 없음
+(14, 106, 1021, FALSE, NOW(), NOW()), -- 초코 프라페 - 휘핑크림 추가
 
 -- 15. 카라멜 프라페 옵션
-(15, 3, 7, FALSE, NOW(), NOW()),  -- 카라멜 프라페 - 당도 0%
-(15, 3, 8, FALSE, NOW(), NOW()),  -- 카라멜 프라페 - 당도 30%
-(15, 3, 9, FALSE, NOW(), NOW()),  -- 카라멜 프라페 - 당도 50%
-(15, 3, 10, FALSE, NOW(), NOW()), -- 카라멜 프라페 - 당도 70%
-(15, 3, 11, FALSE, NOW(), NOW()), -- 카라멜 프라페 - 당도 100%
-(15, 6, 19, FALSE, NOW(), NOW()), -- 카라멜 프라페 - 휘핑크림 없음
-(15, 6, 20, FALSE, NOW(), NOW()); -- 카라멜 프라페 - 휘핑크림 추가
-
+(15, 103, 1007, FALSE, NOW(), NOW()), -- 카라멜 프라페 - 당도 0%
+(15, 103, 1008, FALSE, NOW(), NOW()), -- 카라멜 프라페 - 당도 30%
+(15, 103, 1009, FALSE, NOW(), NOW()), -- 카라멜 프라페 - 당도 50%
+(15, 103, 1010, FALSE, NOW(), NOW()), -- 카라멜 프라페 - 당도 70%
+(15, 103, 1011, FALSE, NOW(), NOW()), -- 카라멜 프라페 - 당도 100%
+(15, 106, 1020, FALSE, NOW(), NOW()), -- 카라멜 프라페 - 휘핑크림 없음
+(15, 106, 1021, FALSE, NOW(), NOW()); -- 카라멜 프라페 - 휘핑크림 추가
 
 -- 메뉴-원재료 매핑 (전체 메뉴)
 INSERT INTO menu_ingredient (menu_id, ingredient_id, store_id, created_at, updated_at)
