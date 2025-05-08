@@ -41,20 +41,22 @@ const OrderLayout = () => {
       >
         <Main userChat={''} gptChat={''} isRecording={false} volume={0} />
       </header>
-      {pathname !== '/kiosk' && (
-        <motion.main
-          className='h-2/3 rounded-t-xl bg-white shadow-t-2xl flex flex-col justify-center items-center'
-          initial={{ y: '100%' }}
-          animate={{ y: 0 }}
-          transition={{
-            type: 'spring',
-            damping: 25,
-            stiffness: 200,
-          }}
-        >
-          <Outlet />
-        </motion.main>
-      )}
+      <motion.main
+        className='rounded-t-xl bg-white shadow-t-2xl flex flex-col justify-center items-center'
+        initial={{ y: '100%', height: 0 }}
+        animate={{
+          y: pathname === '/kiosk' ? '100%' : 0,
+          height: pathname === '/kiosk' ? 0 : '66.666667%',
+        }}
+        transition={{
+          type: 'spring',
+          duration: 0.7,
+          damping: 25,
+          stiffness: 200,
+        }}
+      >
+        <Outlet />
+      </motion.main>
     </div>
   );
 };
