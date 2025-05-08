@@ -58,11 +58,13 @@ const AddCategoryModal = () => {
 
           <div className='w-full flex items-center gap-2'>
             <span className='font-preSemiBold text-md'>카테고리 영문명</span>
-            <p
-              className={`flex-1 px-4 py-2 border border-1 border-subContent rounded-md ${categoryValueEn && 'text-black'} text-content2 text-sm text-preRegular`}
-            >
-              {categoryValueEn || '번역 대기중...'}
-            </p>
+            <Input
+              inputId='engCategory'
+              inputType='text'
+              inputValue={categoryValueEn}
+              placeholder='번역 대기 중'
+              onChange={(e) => setCategoryValueEn(e.target.value)}
+            />
           </div>
 
           <div className='flex justify-end gap-2'>

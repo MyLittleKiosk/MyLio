@@ -89,7 +89,7 @@ describe('카테고리 관리 페이지', () => {
     cy.contains('button', '번역하기').click();
 
     // 번역된 영문명이 나타날 때까지 대기
-    cy.contains('Coffee', { timeout: 5000 }).should('exist');
+    cy.get('#engCategory').should('have.value', 'Coffee');
 
     // API 요청 인터셉트 및 응답 확인 (추가 버튼 클릭 전에 인터셉트 설정)
     cy.intercept('POST', '/api/category', {
