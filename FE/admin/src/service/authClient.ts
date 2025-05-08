@@ -9,4 +9,4 @@ const authClient = axios.create({
   withCredentials: true,
 });
 
-export { authClient };
+export default authClient;

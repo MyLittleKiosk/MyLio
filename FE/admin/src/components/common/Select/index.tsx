@@ -32,7 +32,7 @@ const Select = <T,>({
       value={selected ? getOptionValue(selected) : ''}
       disabled={disabled}
     >
-      <option value='' className='font-preRegular'>
+      <option value={placeholder} className='font-preRegular'>
         {placeholder}
       </option>
       {options.map((option, index) => (

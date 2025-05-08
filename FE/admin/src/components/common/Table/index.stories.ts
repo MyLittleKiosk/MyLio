@@ -1,6 +1,7 @@
 import Table from '.';
 import { Meta, StoryObj } from '@storybook/react';
-import { MENU_COLUMNS, MENU_LIST } from '@/datas/menuList';
+import { MENU_COLUMNS } from '@/datas/menuList';
+import MENU_LIST from '@/service/mock/dummies/menu';
 
 const meta: Meta<typeof Table> = {
   title: 'Components/Common/Table',
@@ -24,6 +25,6 @@ export const Default: Story = {
     title: '메뉴 목록',
     description: '총 6개의 메뉴가 있습니다.',
     columns: MENU_COLUMNS,
-    data: MENU_LIST.content,
+    data: MENU_LIST.data.content,
   },
 };
