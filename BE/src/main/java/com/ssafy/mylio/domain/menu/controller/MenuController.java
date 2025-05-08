@@ -22,6 +22,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -65,15 +66,20 @@ public class MenuController {
         return CommonResponse.ok();
     }
 
-    @PostMapping
+    @PostMapping(
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @Operation(summary = "메뉴 등록", description = "새로운 메뉴를 등록합니다")
     @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.CATEGORY_NOT_FOUND, ErrorCode.NUTRITION_TEMPLATE_NOT_FOUND,
             ErrorCode.INGREDIENT_TEMPLATE_NOT_FOUND, ErrorCode.OPTION_NOT_FOUND, ErrorCode.OPTION_DETAIL_NOT_FOUND})
     public ResponseEntity<CommonResponse<Void>> addMenu(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestBody MenuRequestDto menuRequestDto) {
+            @RequestPart(value = "file", required = false) MultipartFile menuImg,
+            @RequestPart("menu_data") MenuRequestDto menuRequestDto
+    ) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
-        menuService.addMenu(storeId, menuRequestDto);
+        menuService.addMenu(storeId, menuRequestDto, menuImg);
         return CommonResponse.ok();
     }
 
@@ -84,9 +90,11 @@ public class MenuController {
     public ResponseEntity<CommonResponse<Void>> updateMenu(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("menu_id") Integer menuId,
-            @RequestBody MenuRequestDto menuRequestDto) {
+            @RequestPart(value = "file", required = false) MultipartFile menuImg,
+            @RequestPart("menu_data") MenuRequestDto menuRequestDto
+    ) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
-        menuService.updateMenu(storeId, menuId, menuRequestDto);
+        menuService.updateMenu(storeId, menuId, menuRequestDto, menuImg);
         return CommonResponse.ok();
     }
 }

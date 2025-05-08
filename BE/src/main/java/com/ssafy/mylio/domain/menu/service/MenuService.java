@@ -36,12 +36,15 @@ import com.ssafy.mylio.domain.store.repository.StoreRepository;
 import com.ssafy.mylio.global.common.CustomPage;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
+import com.ssafy.mylio.global.util.S3Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +67,7 @@ public class MenuService {
     private final OptionDetailRepository optionDetailRepository;
     private final OptionsRepository optionsRepository;
 
+    private final S3Util s3Util;
 
     public CustomPage<MenuListResponseDto> getMenuList(Integer storeId, Integer categoryId, Pageable pageable) {
         // 메뉴 리스트 조회
@@ -127,15 +131,18 @@ public class MenuService {
     }
 
     @Transactional
-    public void addMenu(Integer storeId, MenuRequestDto menuPostRequestDto) {
+    public void addMenu(Integer storeId, MenuRequestDto menuPostRequestDto, MultipartFile menuImg) {
         // Store 조회
         Store store = getStore(storeId);
 
         // 카테고리 조회
         Category category = getCategory(storeId, menuPostRequestDto.getCategoryId());
 
+        // 이미지 주소
+        String imageUrl = getImageUrl(menuImg);
+
         // 메뉴 등록
-        Menu menu = menuPostRequestDto.toEntity(store, category);
+        Menu menu = menuPostRequestDto.toEntity(store, category, imageUrl);
         menuRepository.save(menu);
 
         // 메뉴 연관관계 Entity 등록
@@ -144,12 +151,15 @@ public class MenuService {
 
 
     @Transactional
-    public void updateMenu(Integer storeId, Integer menuId, MenuRequestDto menuUpdateDto) {
+    public void updateMenu(Integer storeId, Integer menuId, MenuRequestDto menuUpdateDto, MultipartFile menuImg) {
         Store store = getStore(storeId);
         Category category = getCategory(storeId, menuUpdateDto.getCategoryId());
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(()-> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", menuId)
                         .addParameter("storeId", storeId));
+
+        // 이미지 주소
+        String imageUrl = getImageUrl(menuImg);
 
         // 메뉴 업데이트
         menu.update(category,
@@ -157,7 +167,7 @@ public class MenuService {
                 menuUpdateDto.getNameEn(),
                 menuUpdateDto.getDescription(),
                 menuUpdateDto.getPrice(),
-                menuUpdateDto.getImageUrl(),
+                imageUrl,
                 store);
         
         // 메뉴 연관 엔티티 삭제
@@ -231,6 +241,14 @@ public class MenuService {
                 MenuOptionMap menuOptionMap = optionDto.toEntity(menu, options, optionDetail);
                 menuOptionRepository.save(menuOptionMap);
             }
+        }
+    }
+
+    private String getImageUrl(MultipartFile menuImg){
+        try{
+            return s3Util.uploadFile(menuImg);
+        } catch (IOException e) {
+            return null;
         }
     }
 }
