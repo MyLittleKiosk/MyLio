@@ -6,11 +6,11 @@ import { OPTION_COLUMNS } from '@/datas/optionList';
 const MENU_COLUMNS: Column<MenuType>[] = [
   {
     header: '이미지',
-    accessor: 'image_url' as keyof MenuType,
+    accessor: 'imageUrl' as keyof MenuType,
   },
   {
     header: '메뉴명',
-    accessor: 'name_kr' as keyof MenuType,
+    accessor: 'nameKr' as keyof MenuType,
   },
   {
     header: '카테고리',
@@ -22,7 +22,7 @@ const MENU_COLUMNS: Column<MenuType>[] = [
   },
   {
     header: '점포',
-    accessor: 'store_name' as keyof MenuType,
+    accessor: 'storeName' as keyof MenuType,
   },
   {
     header: '설명',

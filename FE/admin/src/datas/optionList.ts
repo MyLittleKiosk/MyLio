@@ -4,11 +4,11 @@ import { Column } from '@/types/tableProps';
 const OPTION_COLUMNS: Column<OptionGroup>[] = [
   {
     header: '옵션 그룹명',
-    accessor: 'option_name_kr' as keyof OptionGroup,
+    accessor: 'optionNameKr' as keyof OptionGroup,
   },
   {
     header: '옵션 항목',
-    accessor: 'option_detail' as keyof OptionGroup,
+    accessor: 'optionDetail' as keyof OptionGroup,
   },
   {
     header: '편집',
