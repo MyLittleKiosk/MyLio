@@ -23,7 +23,6 @@ const SalesTrendChart = ({ year, month }: SalesTrendChartProps) => {
   const isStorybook =
     typeof process !== 'undefined' && process.env?.VITE_IS_STORYBOOK === 'true';
 
-  console.log(isStorybook);
   if (isStorybook) {
     const chartData = formatSalesData(
       month === 0 ? DUMMY_SALES_BY_YEAR_2024 : DUMMY_SALES_BY_MONTH_2024_05,
