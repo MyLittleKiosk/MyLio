@@ -1,37 +1,60 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import Main from '@/pages/Main';
+import clsx from 'clsx';
+import { motion } from 'framer-motion';
 
 const OrderLayout = () => {
+  const { pathname } = useLocation();
   return (
     // 배경 색은 추후 변경 예정
     <div className='flex flex-col h-dvh bg-gradient-to-b from-primary to-white justify-between'>
-      <nav>
-        <ul>
+      <div className='flex justify-center items-center z-10 fixed top-20 left-0 w-full h-1/3'>
+        <ul className='flex justify-center items-center gap-4 bg-white rounded-xl p-4'>
           <li>
-            <Link to='/kiosk/main'>MAIN</Link>
+            <Link to='/kiosk'>홈</Link>
           </li>
           <li>
-            <Link to='/kiosk/order'>ORDER</Link>
+            <Link to='search'>검색</Link>
           </li>
           <li>
-            <Link to='/kiosk/detail'>DETAIL</Link>
+            <Link to='order'>주문</Link>
           </li>
           <li>
-            <Link to='/kiosk/search'>Search</Link>
+            <Link to='select-pay'>결제 수단</Link>
           </li>
           <li>
-            <Link to='/kiosk/pay'>PAY</Link>
+            <Link to='pay'>결제</Link>
           </li>
           <li>
-            <Link to='/kiosk/select-pay'>SELECT PAY</Link>
+            <Link to='confirm'>확인</Link>
           </li>
           <li>
-            <Link to='/kiosk/confirm'>CONFIRM</Link>
+            <Link to='detail'>상세</Link>
           </li>
         </ul>
-      </nav>
-      <main className='h-[65%] rounded-t-xl bg-white shadow-t-2xl flex flex-col justify-center items-center'>
-        <Outlet />
-      </main>
+      </div>
+      <header
+        className={clsx(
+          'flex justify-center items-center',
+          pathname === '/kiosk' ? 'h-full' : 'h-1/3'
+        )}
+      >
+        <Main userChat={''} gptChat={''} isRecording={false} volume={0} />
+      </header>
+      {pathname !== '/kiosk' && (
+        <motion.main
+          className='h-2/3 rounded-t-xl bg-white shadow-t-2xl flex flex-col justify-center items-center'
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          transition={{
+            type: 'spring',
+            damping: 25,
+            stiffness: 200,
+          }}
+        >
+          <Outlet />
+        </motion.main>
+      )}
     </div>
   );
 };
