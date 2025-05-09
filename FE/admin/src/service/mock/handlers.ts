@@ -1,15 +1,28 @@
 import { http, HttpResponse } from 'msw';
 import { userRole } from './dummies/user';
 
+import { DUMMY_ACCOUNT_LIST } from '@/datas/Account';
+import { AccountType } from '@/types/account';
+import { PaginationResponse, Response } from '@/types/apiResponse';
 import {
+  CategorySalesRatioType,
+  DailySalesStatisticsType,
+  OrderSalesRatioType,
+  PaymentSalesRatioType,
+} from '@/types/statistics';
+import { CATEGORY_LIST } from './dummies/category';
+import MENU_LIST from './dummies/menu';
+import { OPTION_LIST } from './dummies/option';
+import {
+  DUMMY_CATEGORY_SALES_BY_YEAR_2024,
+  DUMMY_DAILY_SALES,
+  DUMMY_ORDER_TYPES_BY_YEAR_2024,
+  DUMMY_PAYMENTS_BY_YEAR_2024,
   DUMMY_SALES_BY_MONTH_2024_05,
   DUMMY_SALES_BY_MONTH_2025_08,
   DUMMY_SALES_BY_YEAR_2024,
   DUMMY_SALES_BY_YEAR_2025,
 } from './dummies/statistics';
-import MENU_LIST from './dummies/menu';
-import { CATEGORY_LIST } from './dummies/category';
-import { OPTION_LIST } from './dummies/option';
 
 const baseUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
@@ -53,8 +66,61 @@ export const handlers = [
     return HttpResponse.json(userRole);
   }),
 
+  http.get(`${baseUrl}/sales/by_payment?year=2024`, () => {
+    const responseData: Response<PaymentSalesRatioType[]> = {
+      success: true,
+      data: DUMMY_PAYMENTS_BY_YEAR_2024,
+      timestamp: new Date().toISOString(),
+    };
+    return HttpResponse.json(responseData);
+  }),
+
+  http.get(`${baseUrl}/sales/by_order_type?year=2024`, () => {
+    const responseData: Response<OrderSalesRatioType[]> = {
+      success: true,
+      data: DUMMY_ORDER_TYPES_BY_YEAR_2024,
+      timestamp: new Date().toISOString(),
+    };
+    return HttpResponse.json(responseData);
+  }),
+
+  http.get(`${baseUrl}/sales/by_category?year=2024`, () => {
+    const responseData: Response<CategorySalesRatioType[]> = {
+      success: true,
+      data: DUMMY_CATEGORY_SALES_BY_YEAR_2024,
+      timestamp: new Date().toISOString(),
+    };
+    return HttpResponse.json(responseData);
+  }),
+
+  http.get(`${baseUrl}/sales/daily`, () => {
+    const responseData: Response<DailySalesStatisticsType> = {
+      success: true,
+      data: DUMMY_DAILY_SALES,
+      timestamp: new Date().toISOString(),
+    };
+    return HttpResponse.json(responseData);
+  }),
+
   http.get(`${baseUrl}/category?pageable:pageable`, () => {
     return HttpResponse.json(CATEGORY_LIST);
+  }),
+
+  http.get(`${baseUrl}/account?pageable=1`, () => {
+    const response: Response<PaginationResponse<AccountType>> = {
+      success: true,
+      data: {
+        content: DUMMY_ACCOUNT_LIST.accounts,
+        pageNumber: 1,
+        totalPages: 1,
+        totalElements: 1,
+        pageSize: 1,
+        first: true,
+        last: true,
+      },
+      timestamp: new Date().toISOString(),
+    };
+    return HttpResponse.json(response);
   }),
 
   http.post(`${baseUrl}/category`, () => {

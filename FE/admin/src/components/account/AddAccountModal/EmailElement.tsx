@@ -24,7 +24,7 @@ const EmailElement = ({
     <>
       <div className='flex items-center gap-2'>
         <Input
-          inputId='emailLocalPartId'
+          inputId='email-local-part-input'
           label='이메일'
           placeholder='이메일 아이디를 입력하세요.'
           inputType='text'
@@ -37,6 +37,7 @@ const EmailElement = ({
         />
         <span className='text-subContent'>@</span>
         <Select<string>
+          id='email-domain-select'
           options={EMAIL_DMAIN}
           selected={emailDomain}
           placeholder='도메인 선택'
