@@ -3,7 +3,6 @@ import Clova from '@/pages/Clova';
 import Confirm from '@/pages/Confirm';
 import Detail from '@/pages/Detail';
 import Login from '@/pages/Login';
-import Main from '@/pages/Main';
 import Menus from '@/pages/Menus';
 import Order from '@/pages/Order';
 import OrderLayout from '@/pages/OrderLayout';
@@ -19,7 +18,6 @@ function App() {
         <Route path='/' element={<Login />} />
         <Route path='/clova' element={<Clova />} />
         <Route path='/kiosk' element={<OrderLayout />}>
-          <Route path='main' element={<Main />} />
           <Route path='search' element={<Menus />} />
           <Route path='order' element={<Order />} />
           <Route path='pay' element={<Pay />} />
