@@ -219,7 +219,7 @@ public class AccountService {
         account.update(encodedPW);
     }
 
-    public AccountGetInfoResponseDto getAcoountInfo(Integer userId, String userType){
+    public AccountGetInfoResponseDto getAcountInfo(Integer userId, String userType){
         //계정 조회
         Account account = accountRepository.findById(userId)
                 .orElseThrow(()-> new CustomException(ErrorCode.ACOUNT_NOT_FOUND,"userId",userId));
