@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.ssafy.mylio.domain.menu.repository.MenuRepository;
 import com.ssafy.mylio.domain.order.dto.common.OptionDetailsDto;
 import com.ssafy.mylio.domain.order.dto.common.OptionsDto;
 import com.ssafy.mylio.domain.order.dto.response.CartResponseDto;
@@ -29,6 +30,7 @@ import java.util.List;
 public class SearchValidator {
 
     private final OrderJsonMapper mapper;
+    private final MenuRepository menuRepository;
 
     public Mono<OrderResponseDto> validate(String pyJson) {
         log.info("옵션 검증 로직 진입 : {}", pyJson);
@@ -38,7 +40,21 @@ public class SearchValidator {
 
     @Transactional(readOnly = true)
     protected OrderResponseDto parseAndValidate(OrderResponseDto order) {
-        // 여기에 검색 결과 검증 로직
+
+        Integer storeId = order.getStoreId();
+
+        // storeId로 모든 메뉴 조회
+        List<Integer> menuIds = menuRepository.findAllByStoreId(storeId).stream()
+                .map(menu-> menu.getId())
+                .toList();
+
+        // contents의 menuId가 모두 유효한지 검증
+        for (ContentsResponseDto c : order.getContents()) {
+            Integer menuId = c.getMenuId();
+            if (!menuIds.contains(menuId)) {
+                throw new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", menuId);
+            }
+        }
 
         return order.toBuilder().build();
     }

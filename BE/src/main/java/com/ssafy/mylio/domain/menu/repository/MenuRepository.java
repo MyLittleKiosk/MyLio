@@ -8,8 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, Integer> {
+
+    @Query("SELECT m FROM Menu m WHERE m.store.id = :storeId")
+    List<Menu> findAllByStoreId(@Param("storeId")  Integer storeId);
 
     @Query("""
             SELECT m
