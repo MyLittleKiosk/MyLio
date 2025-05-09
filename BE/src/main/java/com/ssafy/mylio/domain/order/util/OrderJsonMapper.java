@@ -3,6 +3,7 @@ package com.ssafy.mylio.domain.order.util;
 import com.ssafy.mylio.domain.order.dto.common.NutritionInfoDto;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
+import com.ssafy.mylio.global.security.auth.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,7 +27,7 @@ public class OrderJsonMapper {
     private final ObjectMapper snakeMapper = new ObjectMapper()
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 
-    public OrderResponseDto parse(String json) {
+    public OrderResponseDto parse(String json, UserPrincipal user) {
         try {
             JsonNode root = snakeMapper.readTree(json);
             JsonNode data = root.path("data");

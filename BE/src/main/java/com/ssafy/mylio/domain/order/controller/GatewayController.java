@@ -39,13 +39,13 @@ public class GatewayController {
     @PostMapping
     @Operation(summary = "음성인식", description = "주문부터 결제까지 진행하는 단일 API")
     public Mono<ResponseEntity<CommonResponse<OrderResponseDto>>> proxy(
-            @AuthenticationPrincipal UserPrincipal user,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody OrderRequestDto req) {
 
-        Integer storeId = authenticationUtil.getCurrntStoreId(user);
-        String role = authenticationUtil.getCurrntUserType(user);
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+        String role = authenticationUtil.getCurrntUserType(userPrincipal);
 
-        return proxyService.process(storeId, role, req).map(CommonResponse::ok);
+        return proxyService.process(storeId, role, userPrincipal, req).map(CommonResponse::ok);
     }
 }
 

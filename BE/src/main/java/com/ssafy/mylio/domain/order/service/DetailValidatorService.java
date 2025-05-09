@@ -12,6 +12,7 @@ import com.ssafy.mylio.domain.order.dto.response.OrderResponseDto;
 import com.ssafy.mylio.domain.order.util.OrderJsonMapper;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
+import com.ssafy.mylio.global.security.auth.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,14 +34,13 @@ public class DetailValidatorService {
     private final NutritionRepository nutritionRepository;
     private final OrderJsonMapper mapper;
 
-    public Mono<OrderResponseDto> validate(String pyJson){
-        return Mono.fromCallable(() -> parseAndValidate(mapper.parse(pyJson)))
+    public Mono<OrderResponseDto> validate(String pyJson, UserPrincipal user) {
+        return Mono.fromCallable(() -> parseAndValidate(mapper.parse(pyJson, user), user))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
     @Transactional(readOnly = true)
-    protected OrderResponseDto parseAndValidate(OrderResponseDto order) {
-
+    protected OrderResponseDto parseAndValidate(OrderResponseDto order, UserPrincipal user) {
         List<ContentsResponseDto> fixed = order.getContents().stream()
                 .map(this::syncNutritionInfo)
                 .toList();
