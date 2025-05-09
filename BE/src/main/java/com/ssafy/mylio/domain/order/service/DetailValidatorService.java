@@ -9,6 +9,7 @@ import com.ssafy.mylio.domain.nutrition.repository.NutritionRepository;
 import com.ssafy.mylio.domain.order.dto.common.NutritionInfoDto;
 import com.ssafy.mylio.domain.order.dto.response.ContentsResponseDto;
 import com.ssafy.mylio.domain.order.dto.response.OrderResponseDto;
+import com.ssafy.mylio.domain.order.util.OrderJsonMapper;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -30,17 +31,15 @@ import java.util.Optional;
 public class DetailValidatorService {
 
     private final NutritionRepository nutritionRepository;
-    private final ObjectMapper snakeMapper = new ObjectMapper()
-            .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+    private final OrderJsonMapper mapper;
 
     public Mono<OrderResponseDto> validate(String pyJson){
-        return Mono.fromCallable(() -> parseAndValidate(pyJson))
+        return Mono.fromCallable(() -> parseAndValidate(mapper.parse(pyJson)))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
     @Transactional(readOnly = true)
-    protected OrderResponseDto parseAndValidate(String json) {
-        OrderResponseDto order = parsePythonPayload(json);
+    protected OrderResponseDto parseAndValidate(OrderResponseDto order) {
 
         List<ContentsResponseDto> fixed = order.getContents().stream()
                 .map(this::syncNutritionInfo)
@@ -49,57 +48,6 @@ public class DetailValidatorService {
         return order.toBuilder().contents(fixed).build();
     }
 
-    // JSON 파싱
-    private OrderResponseDto parsePythonPayload(String json) {
-        try {
-            JsonNode root = snakeMapper.readTree(json);
-            JsonNode data = root.path("data");
-
-            // root 노드 값 파싱
-            String status  = root.path("screen_state").asText(null);
-            String payment = root.path("payment_method").isNull() ? null : root.path("payment_method").asText();
-
-            // data 값 파싱
-            String preText = data.path("pre_text").asText(null);
-            String postText = data.path("post_text").asText(null);
-            String reply = data.path("reply").asText(null);
-            String sessionId = data.path("session_id").asText(null);
-
-
-            List<ContentsResponseDto> contents = new ArrayList<>();
-            for (JsonNode m : (ArrayNode) root.path("contents")) {
-                Integer menuId = m.path("menu_id").asInt();
-                Integer quantity = m.path("quantity").asInt();
-                String name = m.path("name").asText();
-                Integer basePrice = m.path("base_price").asInt();
-                Integer totalPrice = m.path("total_price").asInt();
-
-                contents.add(ContentsResponseDto.builder()
-                        .menuId(menuId)
-                        .quantity(quantity)
-                        .name(name)
-                        .basePrice(basePrice)
-                        .totalPrice(totalPrice)
-                        .nutritionInfo(Collections.emptyList()) // placeholder
-                        .build());
-            }
-
-            return OrderResponseDto.builder()
-                    .preText(preText)
-                    .postText(postText)
-                    .reply(reply)
-                    .screenState(status)
-                    .language("KR")
-                    .sessionId(sessionId)
-                    .payment(payment)
-                    .cart(Collections.emptyList())
-                    .contents(contents)
-                    .build();
-
-        } catch (IOException e) {
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "jsonParserError");
-        }
-    }
 
     private ContentsResponseDto syncNutritionInfo(ContentsResponseDto content) {
         List<NutritionValue> values = nutritionRepository.findAllWithTemplateByMenuId(content.getMenuId());

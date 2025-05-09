@@ -86,7 +86,7 @@ public class OrderJsonMapper {
             selected.add(dto.toBuilder().isSelected(true).selectedId(selId).build());
         }
 
-        List<NutritionInfoDto> nutritionInfo = toNutritionList(m.path("nutrition_info"));
+        List<NutritionInfoDto> nutritionInfo = toNutritionList(m.path("nutrition"));
 
         return ContentsResponseDto.builder()
                 .menuId(menuId)
@@ -162,10 +162,10 @@ public class OrderJsonMapper {
         if (arr.isMissingNode() || !arr.isArray()) return list;
         for (JsonNode n : arr) {
             list.add(NutritionInfoDto.builder()
-                    .nutritionId(n.path("nutrition_id").asInt())
-                    .nutritionName(altText(n, "nutrition_name", "name", "name_kr"))
-                    .nutritionValue(n.path("nutrition_value").asInt())
-                    .nutritionType(n.path("nutrition_type").asText(null))
+                    .nutritionId(n.path("id").asInt())
+                    .nutritionName(altText(n, "name", "name_en"))
+                    .nutritionValue(n.path("value").asInt())
+                    .nutritionType(n.path("unit").asText(null))
                     .build());
         }
         return list;
