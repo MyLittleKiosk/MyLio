@@ -12,7 +12,7 @@ export function useLogin() {
     }: {
       email: string;
       password: string;
-      kioskId: string;
+      kioskId: number;
     }) => login(email, password, kioskId),
     onSuccess: () => {
       navigate('/kiosk');
