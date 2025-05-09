@@ -38,7 +38,7 @@ public class GatewayController {
             @AuthenticationPrincipal UserPrincipal user,
             @RequestBody OrderRequestDto req) {
 
-        Integer storeId = authenticationUtil.getCurrentUserId(user);
+        Integer storeId = authenticationUtil.getCurrntStoreId(user);
         String role = authenticationUtil.getCurrntUserType(user);
 
         return proxyService.process(storeId, role, req).map(CommonResponse::ok);
