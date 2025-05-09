@@ -127,19 +127,19 @@ async def shutdown_event():
     print("음성 키오스크 API 서비스가 종료되었습니다.")
 
 # 화면 상태 목록 조회 엔드포인트
-@app.get("/screen-states")
+@app.get("/ai/screen-states")
 async def get_screen_states():
     """화면 상태 목록 조회"""
     return {"screen_states": [state.value for state in ScreenState]}
 
 # 지원 언어 목록 조회 엔드포인트
-@app.get("/languages")
+@app.get("/ai/languages")
 async def get_languages():
     """지원 언어 목록 조회"""
     return {"languages": [lang.value for lang in Language]}
 
 # 메뉴 조회 엔드포인트
-@app.get("/menus/{store_id}")
+@app.get("/ai/menus/{store_id}")
 async def get_store_menus(store_id: int, menu_service: MenuService = Depends(get_menu_service)):
     """스토어 ID에 해당하는 메뉴 정보 조회"""
     try:
@@ -149,7 +149,7 @@ async def get_store_menus(store_id: int, menu_service: MenuService = Depends(get
         raise HTTPException(status_code=500, detail=f"메뉴 조회 중 오류 발생: {str(e)}")
 
 # 음성 입력 처리 엔드포인트
-@app.post("/recognize-intent", response_model=VoiceInputResponse)
+@app.post("/ai/recognize-intent", response_model=VoiceInputResponse)
 async def recognize_intent(
     request: VoiceInputRequest,
     intent_service: IntentService = Depends(get_intent_service)
@@ -187,7 +187,7 @@ async def recognize_intent(
         )
 
 # 세션 관리 엔드포인트 (옵션)
-@app.get("/sessions/{session_id}")
+@app.get("/ai/sessions/{session_id}")
 async def get_session(session_id: str, session_manager = Depends(get_session_manager)):
     """세션 정보 조회"""
     session = session_manager.get_session(session_id)
@@ -200,7 +200,7 @@ async def get_session(session_id: str, session_manager = Depends(get_session_man
         "last_accessed": session.get("last_accessed", "")
     }
 
-@app.delete("/sessions/{session_id}/cart")
+@app.delete("/ai/sessions/{session_id}/cart")
 async def clear_cart(session_id: str, session_manager = Depends(get_session_manager)):
     """장바구니 비우기"""
     result = session_manager.clear_cart(session_id)
@@ -286,7 +286,7 @@ def format_intent_response(response_data: Dict[str, Any]) -> Dict[str, Any]:
     return formatted_response
 
 
-@app.post("/test/recognize-intent")
+@app.post("/ai/test/recognize-intent")
 async def test_recognize_intent(
     request: VoiceInputRequest,
     intent_service: IntentService = Depends(get_intent_service)
