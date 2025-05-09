@@ -51,9 +51,9 @@ export const deleteAccount = async (accountId: number) => {
   }
 };
 
-export const getAccountDetail = async (accountId: number) => {
+export const getAccountDetail = async () => {
   try {
-    const response = await authClient.get(`/account/${accountId}`);
+    const response = await authClient.get(`/account/detail`);
     return response.data;
   } catch (error: unknown) {
     if (error instanceof Error) {

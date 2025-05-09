@@ -56,10 +56,10 @@ export const useDeleteAccount = () => {
   };
 };
 
-export const useGetAccountDetail = (accountId: number) => {
+export const useGetAccountDetail = () => {
   const query = useQuery({
-    queryKey: ['accountDetail', accountId],
-    queryFn: () => getAccountDetail(accountId),
+    queryKey: ['accountDetail'],
+    queryFn: () => getAccountDetail(),
   });
 
   return {
