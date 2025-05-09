@@ -1,6 +1,7 @@
 import React from 'react';
 
 interface SelectProps<T> {
+  id?: string;
   label?: string;
   options: T[];
   selected: T | null;
@@ -14,6 +15,7 @@ interface SelectProps<T> {
 }
 
 const Select = <T,>({
+  id,
   options,
   label,
   selected,
@@ -27,6 +29,7 @@ const Select = <T,>({
 }: SelectProps<T>) => {
   const selectElement = (
     <select
+      id={id}
       className={`w-full ${error ? 'border-2 border-error' : 'border border-subContent'} rounded-md p-2 font-preRegular`}
       onChange={onChange}
       value={selected ? getOptionValue(selected) : ''}

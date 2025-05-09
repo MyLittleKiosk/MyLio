@@ -71,6 +71,8 @@ const Table = <T extends object>({
             }`}
           />
         );
+      case 'password':
+        return '********';
       default:
         return String(row[column.accessor as keyof T]);
     }

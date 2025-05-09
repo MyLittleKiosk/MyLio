@@ -1,7 +1,9 @@
 import { http, HttpResponse } from 'msw';
 import { userRole } from './dummies/user';
 
-import { Response } from '@/types/apiResponse';
+import { DUMMY_ACCOUNT_LIST } from '@/datas/Account';
+import { AccountType } from '@/types/account';
+import { PaginationResponse, Response } from '@/types/apiResponse';
 import {
   CategorySalesRatioType,
   DailySalesStatisticsType,
@@ -102,5 +104,22 @@ export const handlers = [
 
   http.get(`${baseUrl}/category?pageable:pageable`, () => {
     return HttpResponse.json(CATEGORY_LIST);
+  }),
+
+  http.get(`${baseUrl}/account?pageable=1`, () => {
+    const response: Response<PaginationResponse<AccountType>> = {
+      success: true,
+      data: {
+        content: DUMMY_ACCOUNT_LIST.accounts,
+        pageNumber: 1,
+        totalPages: 1,
+        totalElements: 1,
+        pageSize: 1,
+        first: true,
+        last: true,
+      },
+      timestamp: new Date().toISOString(),
+    };
+    return HttpResponse.json(response);
   }),
 ];

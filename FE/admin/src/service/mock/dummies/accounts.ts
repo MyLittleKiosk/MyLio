@@ -1,35 +1,3 @@
-import { AccountType } from '@/types/account';
-import { Column } from '@/types/tableProps';
-
-// 실제 Account에 존재하지 않는 컬럼은 따로 타입 선언
-interface AccountTableColumn extends AccountType {
-  password?: string;
-  delete?: string;
-}
-
-const ACCOUNT_COLUMNS: Column<AccountTableColumn>[] = [
-  {
-    header: '이름',
-    accessor: 'userName',
-  },
-  {
-    header: '이메일',
-    accessor: 'email',
-  },
-  {
-    header: '비밀번호',
-    accessor: 'password',
-  },
-  {
-    header: '매장 이름',
-    accessor: 'storeName',
-  },
-  {
-    header: '삭제',
-    accessor: 'delete',
-  },
-];
-
 const DUMMY_ACCOUNT_LIST = {
   accounts: [
     {
@@ -76,14 +44,4 @@ const DUMMY_ACCOUNT_LIST = {
   last: true,
 };
 
-const EMAIL_DMAIN = [
-  'gmail.com',
-  'naver.com',
-  'daum.net',
-  'hotmail.com',
-  'outlook.com',
-  'yahoo.com',
-  'msn.com',
-];
-
-export { ACCOUNT_COLUMNS, DUMMY_ACCOUNT_LIST, EMAIL_DMAIN };
+export default DUMMY_ACCOUNT_LIST;
