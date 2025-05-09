@@ -9,6 +9,7 @@ from app.services.processor.payment_processor import PaymentProcessor
 from app.services.menu_service import MenuService
 from app.services.response_service import ResponseService
 from app.services.redis_session_manager import RedisSessionManager
+from app.services.processor.detail_processor import DetailProcessor
 
 class IntentService:
     """Few-shot 기반 의도 인식 서비스"""
@@ -23,7 +24,8 @@ class IntentService:
         self.order_processor = OrderProcessor(api_key, menu_service, response_service, session_manager)
         self.search_processor = SearchProcessor(api_key, menu_service, response_service, session_manager)
         self.payment_processor = PaymentProcessor(api_key, menu_service, response_service, session_manager)
-    
+        self.detail_processor = DetailProcessor(api_key, menu_service, response_service, session_manager)
+
     def process_request(self, text: str, language: str, screen_state: str, store_id: int, session_id: Optional[str] = None) -> Dict[str, Any]:
         """사용자 요청 처리 메인 함수"""
         print(f"[요청 처리] 세션 ID: {session_id}, 텍스트: '{text}', 화면 상태: {screen_state}")
@@ -61,6 +63,8 @@ class IntentService:
             response = self.search_processor.process(intent_data, text, language, screen_state, store_id, session)
         elif intent_data["intent_type"] == IntentType.PAYMENT:
             response = self.payment_processor.process(intent_data, text, language, screen_state, store_id, session)
+        elif intent_data["intent_type"] == IntentType.DETAIL:
+            response = self.detail_processor.process(intent_data, text, language, screen_state, store_id, session)
         else:
             response = self.order_processor.process_unknown(text, language, screen_state, store_id, session)
         

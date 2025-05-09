@@ -20,19 +20,20 @@ class IntentType(str, Enum):
     OPTION_SELECT = "OPTION_SELECT"  # 옵션 선택 의도
     PAYMENT = "PAYMENT"        # 결제 의도
     CONFIRM = "CONFIRM"        # 확인 의도
+    DETAIL = "DETAIL"          # 메뉴 영양 성분 조회
     UNKNOWN = "UNKNOWN"        # 알 수 없는 의도
 
 class Language(str, Enum):
     """지원 언어 정의"""
-    KO = "ko"  # 한국어
-    EN = "en"  # 영어
-    JA = "ja"  # 일본어
-    ZH = "zh"  # 중국어
+    KR = "KR"  # 한국어
+    EN = "EN"  # 영어
+    JP = "JP"  # 일본어
+    CN = "CN"  # 중국어
 
 class VoiceInputRequest(BaseModel):
     """음성 입력 요청 모델"""
     text: str
-    language: Language = Language.KO
+    language: Language = Language.KR
     screen_state: ScreenState
     store_id: int
     session_id: Optional[str] = None
@@ -47,6 +48,7 @@ class ResponseStatus(str, Enum):
     PAYMENT_CONFIRM = "PAYMENT_CONFIRM"       # 결제 확인
     PAYMENT_SUCCESS = "PAYMENT_SUCCESS"       # 결제 완료
     PAYMENT_FAILED = "PAYMENT_FAILED"         # 결제 실패
+    DETAIL = "DETAIL"          # 메뉴 영양 성분 조회
     UNKNOWN = "UNKNOWN"                       # 알 수 없음
 
 class VoiceInputResponse(BaseModel):
@@ -64,7 +66,7 @@ class VoiceInputResponse(BaseModel):
             "post_text": "",
             "reply": "",
             "status": ResponseStatus.UNKNOWN,
-            "language": Language.KO,
+            "language": Language.KR,
             "session_id": "",
             "cart": [],
             "contents": [],

@@ -219,11 +219,22 @@ class VectorDBService:
             if ingredient_names_en:
                 lines.append(f"원재료(영문): {', '.join(filter(None, ingredient_names_en))}")
         
-        # 영양성분 정보
+        # 영양성분 정보 - 리스트 형태 대응
         if menu.get("nutrition"):
+            nutrition_data = menu.get("nutrition")
             nutrition_lines = ["영양성분:"]
-            for key, value in menu.get("nutrition", {}).items():
-                nutrition_lines.append(f"- {key}: {value}")
+            
+            # nutrition이 리스트인 경우
+            if isinstance(nutrition_data, list):
+                for item in nutrition_data:
+                    name = item.get("name", "")
+                    formatted_value = item.get("formatted", "")
+                    nutrition_lines.append(f"- {name}: {formatted_value}")
+            # nutrition이 딕셔너리인 경우 (기존 코드 유지)
+            elif isinstance(nutrition_data, dict):
+                for key, value in nutrition_data.items():
+                    nutrition_lines.append(f"- {key}: {value}")
+            
             lines.append("\n".join(nutrition_lines))
         
         # 옵션 정보
@@ -242,12 +253,6 @@ class VectorDBService:
                     option_lines.append(f"  * {value} {price_text}")
             
             lines.append("\n".join(option_lines))
-        
-        
-        # 태그 정보
-        if menu.get("tags"):
-            tag_list = [t.get("name", "") for t in menu.get("tags", [])]
-            lines.append(f"태그: {', '.join(tag_list)}")
         
         # 특별 키워드 추가 (검색 최적화)
         special_keywords = []

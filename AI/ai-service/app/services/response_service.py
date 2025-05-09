@@ -13,7 +13,7 @@ class ResponseService:
         """언어별 응답 템플릿 초기화"""
         return {
             # 한국어 템플릿
-            Language.KO: {
+            Language.KR: {
                 # 메뉴 관련 응답
                 "menu_not_found": "죄송합니다. 주문하신 메뉴를 찾을 수 없습니다.",
                 "menu_corrected": "{original_name}을(를) {menu_name}(으)로 이해했습니다. {menu_name}를 주문하시겠습니까?",
@@ -41,7 +41,16 @@ class ResponseService:
                 
                 # 오류 응답
                 "error": "죄송합니다. 주문 처리 중 오류가 발생했습니다. 다시 시도해주세요.",
-                "unknown": "죄송합니다. 명령을 이해하지 못했습니다. 다시 말씀해 주세요."
+                "unknown": "죄송합니다. 명령을 이해하지 못했습니다. 다시 말씀해 주세요.",
+
+                # 메뉴 상세 정보 관련 템플릿 추가
+                "menu_detail": "'{menu_name}'의 상세 정보입니다.",
+                "nutrition_info": "{menu_name}의 영양 성분: {nutrition_text}",
+                "ingredients_info": "{menu_name}의 원재료: {ingredients_text}",
+                "allergy_info": "{menu_name}의 알레르기 정보: {allergy_text}",
+                "no_nutrition_info": "죄송합니다. {menu_name}의 영양 성분 정보가 없습니다.",
+                "no_ingredients_info": "죄송합니다. {menu_name}의 원재료 정보가 없습니다.",
+                "search_single_result": "{menu_name} - {description} (가격: {price}원)",
             },
             
             # 영어 템플릿
@@ -73,11 +82,20 @@ class ResponseService:
                 
                 # 오류 응답
                 "error": "Sorry, an error occurred while processing your order. Please try again.",
-                "unknown": "Sorry, I didn't understand your command. Please try again."
+                "unknown": "Sorry, I didn't understand your command. Please try again.",
+
+                # 메뉴 상세 정보 관련 템플릿 추가
+                "menu_detail": "Here is the detailed information for '{menu_name}'.",
+                "nutrition_info": "Nutritional information for {menu_name}: {nutrition_text}",
+                "ingredients_info": "Ingredients for {menu_name}: {ingredients_text}",
+                "allergy_info": "Allergy information for {menu_name}: {allergy_text}",
+                "no_nutrition_info": "Sorry, there is no nutritional information available for {menu_name}.",
+                "no_ingredients_info": "Sorry, there is no ingredient information available for {menu_name}.",
+                "search_single_result": "{menu_name} - {description} (Price: {price} KRW)",
             },
             
             # 일본어 템플릿
-            Language.JA: {
+            Language.JP: {
                 # 메뉴 관련 응답
                 "menu_not_found": "申し訳ありませんが、ご注文のメニューが見つかりませんでした。",
                 "menu_corrected": "{original_name}を{menu_name}として理解しました。{menu_name}を注文しますか？",
@@ -104,11 +122,20 @@ class ResponseService:
                 
                 # 오류 응답
                 "error": "申し訳ありません。注文処理中にエラーが発生しました。もう一度お試しください。",
-                "unknown": "申し訳ありません。コマンドを理解できませんでした。もう一度言ってください。"
+                "unknown": "申し訳ありません。コマンドを理解できませんでした。もう一度言ってください。",
+
+                # 메뉴 상세 정보 관련 템플릿 추가
+                "menu_detail": "'{menu_name}'の詳細情報です。",
+                "nutrition_info": "{menu_name}の栄養成分: {nutrition_text}",
+                "ingredients_info": "{menu_name}の原材料: {ingredients_text}",
+                "allergy_info": "{menu_name}のアレルギー情報: {allergy_text}",
+                "no_nutrition_info": "申し訳ありませんが、{menu_name}の栄養成分情報はありません。",
+                "no_ingredients_info": "申し訳ありませんが、{menu_name}の原材料情報はありません。",
+                "search_single_result": "{menu_name} - {description} (価格: {price}ウォン)",
             },
             
             # 중국어 템플릿
-            Language.ZH: {
+            Language.CN: {
                 # 메뉴 관련 응답
                 "menu_not_found": "抱歉，找不到您点的菜单。",
                 "menu_corrected": "我将{original_name}理解为{menu_name}。您要点{menu_name}吗？",
@@ -135,7 +162,15 @@ class ResponseService:
                 
                 # 오류 응답
                 "error": "抱歉，处理订单时出错。请再试一次。",
-                "unknown": "抱歉，我不明白您的命令。请再说一次。"
+                "unknown": "抱歉，我不明白您的命令。请再说一次。",
+                # 메뉴 상세 정보 관련 템플릿 추가
+                "menu_detail": "这是'{menu_name}'的详细信息。",
+                "nutrition_info": "{menu_name}的营养成分: {nutrition_text}",
+                "ingredients_info": "{menu_name}的原材料: {ingredients_text}",
+                "allergy_info": "{menu_name}的过敏原信息: {allergy_text}",
+                "no_nutrition_info": "抱歉，没有{menu_name}的营养成分信息。",
+                "no_ingredients_info": "抱歉，没有{menu_name}的原材料信息。",
+                "search_single_result": "{menu_name} - {description} (价格: {price}韩元)",
             }
         }
     

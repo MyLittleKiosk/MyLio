@@ -65,7 +65,49 @@ class BaseProcessor:
         # 디버깅 정보
         print(f"[의도 인식] 입력: '{text}', 인식 결과: {result}")
         
+        # DetailProcessor가 없어도 영양 성분 관련 의도를 인식할 수 있도록
+        if self._is_detail_intent(text, language):
+            result["intent_type"] = IntentType.DETAIL
+            
+            # 메뉴 이름 추출 시도
+            menu_name = self._extract_menu_name(text, store_id)
+            if menu_name:
+                result["menu_name"] = menu_name
+                menu = self.menu_service.find_menu_by_name(menu_name, store_id)
+                if menu:
+                    result["menu_id"] = menu["id"]
+        
         return result
+
+    def _is_detail_intent(self, text: str, language: str) -> bool:
+        """영양 성분 관련 의도인지 확인"""
+        text_lower = text.lower()
+        
+        # 한국어 패턴
+        if language == Language.KR:
+            detail_keywords = ["영양", "성분", "칼로리", "원재료", "알레르기", "원산지", "정보", "상세"]
+            return any(keyword in text_lower for keyword in detail_keywords)
+        
+        # 영어 패턴
+        else:
+            detail_keywords = ["nutrition", "calorie", "ingredient", "allergy", "detail", "information"]
+            return any(keyword in text_lower for keyword in detail_keywords)
+        
+    def _extract_menu_name(self, text: str, store_id: int) -> Optional[str]:
+        """텍스트에서 메뉴 이름 추출 시도"""
+        # 메뉴 이름 목록 가져오기
+        store_menus = self.menu_service.get_store_menus(store_id)
+        menu_names = [menu["name_kr"] for menu in store_menus.values()]
+        menu_names.extend([menu.get("name_en", "") for menu in store_menus.values() if menu.get("name_en")])
+        
+        # 긴 이름부터 매칭 시도 (짧은 이름이 긴 이름에 포함될 수 있으므로)
+        menu_names.sort(key=len, reverse=True)
+        
+        for name in menu_names:
+            if name and name.lower() in text.lower():
+                return name
+        
+        return None
     
     def _get_prompt_template(self) -> PromptTemplate:
         """프롬프트 템플릿 정의"""
@@ -129,8 +171,18 @@ class BaseProcessor:
                 # 영양 성분 정보 추가
                 if menu.get('nutrition'):
                     nutrition_info = ["#### 영양 성분:"]
-                    for key, value in menu['nutrition'].items():
-                        nutrition_info.append(f"- {key}: {value}")
+                    
+                    # nutrition이 리스트인 경우
+                    if isinstance(menu['nutrition'], list):
+                        for item in menu['nutrition']:
+                            name = item.get('name', '')
+                            formatted_value = item.get('formatted', '')
+                            nutrition_info.append(f"- {name}: {formatted_value}")
+                    # nutrition이 딕셔너리인 경우
+                    elif isinstance(menu['nutrition'], dict):
+                        for key, value in menu['nutrition'].items():
+                            nutrition_info.append(f"- {key}: {value}")
+                    
                     menu_info.append("\n".join(nutrition_info))
                 
                 # 원재료 정보 추가
