@@ -1,6 +1,7 @@
 package com.ssafy.mylio.domain.order.service;
 
 import com.ssafy.mylio.domain.order.util.OrderJsonMapper;
+import com.ssafy.mylio.global.security.auth.UserPrincipal;
 import reactor.core.scheduler.Schedulers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,7 +39,7 @@ public class ProxyService {
     private final ObjectMapper snakeMapper = new ObjectMapper()
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 
-    public Mono<OrderResponseDto> process(Integer storeId, String role, OrderRequestDto req) {
+    public Mono<OrderResponseDto> process(Integer storeId, String role, UserPrincipal user, OrderRequestDto req) {
 
         if(!role.equals("KIOSK")){
             throw new CustomException(ErrorCode.FORBIDDEN_ACCESS,"role",role);
@@ -53,7 +54,6 @@ public class ProxyService {
         }
 
         // 1) FastAPI 호출 (String JSON 수신)
-        // 1) FastAPI 호출 (String JSON 수신)
         Mono<String> fastApiJson = ragWebClient.post()
                 .uri("/ai/recognize-intent")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -66,28 +66,29 @@ public class ProxyService {
 
         // 2) 검증·교정 → status 분기
         return fastApiJson
-                .flatMap(this::routeByScreenState)  // JSON → OrderResponseDto 및 검증 로직
-                .flatMap(this::dispatchByStatus);   // 최종 비즈니스 핸들링
+                .flatMap(json -> routeByScreenState(json, user)) // JSON → OrderResponseDto 및 검증 로직
+                .flatMap(resp -> dispatchByStatus(resp, user));   // 최종 비즈니스 핸들링
+
     }
 
     /** DTO 변환 및 검증 분기처리 */
-    private Mono<OrderResponseDto> routeByScreenState(String json) {
+    private Mono<OrderResponseDto> routeByScreenState(String json, UserPrincipal user) {
         String screen = extractScreenState(json);
         return switch (screen) {
-            case "ORDER", "MAIN"  -> orderValidatorService.validate(json);   // 옵션 검증 포함
-            case "DETAIL" -> detailValidatorService.validate(json);   // 영양정보 검증 포함
-            case "SEARCH" -> searchValidatorService.validate(json);
-            case "CONFIRM", "SELECT_PAY" -> paymentValidatorService.validate(json);
-            default -> Mono.fromCallable(() -> mapper.parse(json))
+            case "ORDER", "MAIN"  -> orderValidatorService.validate(json, user);   // 옵션 검증 포함
+            case "DETAIL" -> detailValidatorService.validate(json, user);   // 영양정보 검증 포함
+            case "SEARCH" -> searchValidatorService.validate(json, user);
+            case "CONFIRM", "SELECT_PAY" -> paymentValidatorService.validate(json, user);
+            default -> Mono.fromCallable(() -> mapper.parse(json, user))
                     .subscribeOn(Schedulers.boundedElastic());
         };
     }
 
     /** status 스위칭 */
-    private Mono<OrderResponseDto> dispatchByStatus(OrderResponseDto resp) {
+    private Mono<OrderResponseDto> dispatchByStatus(OrderResponseDto resp, UserPrincipal user) {
         return switch (resp.getScreenState()) {
-            case "ORDER", "MAIN"   -> orderService.handleOrder(resp);
-            case "CONFIRM", "SELECT_PAY", "PAY" -> orderService.handlePayment(resp);
+            case "ORDER", "MAIN"   -> orderService.handleOrder(resp,user);
+            case "CONFIRM", "SELECT_PAY", "PAY" -> orderService.handlePayment(resp,user);
             case "DETAIL", "SEARCH" -> Mono.just(resp);
             default -> Mono.error(new CustomException(ErrorCode.SCREEN_STATE_NOT_FOUND, "status: " + resp.getScreenState()));
         };

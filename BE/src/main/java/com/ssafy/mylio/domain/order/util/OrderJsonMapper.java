@@ -3,6 +3,7 @@ package com.ssafy.mylio.domain.order.util;
 import com.ssafy.mylio.domain.order.dto.common.NutritionInfoDto;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
+import com.ssafy.mylio.global.security.auth.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,7 +27,7 @@ public class OrderJsonMapper {
     private final ObjectMapper snakeMapper = new ObjectMapper()
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 
-    public OrderResponseDto parse(String json) {
+    public OrderResponseDto parse(String json, UserPrincipal user) {
         try {
             JsonNode root = snakeMapper.readTree(json);
             JsonNode data = root.path("data");
@@ -86,7 +87,7 @@ public class OrderJsonMapper {
             selected.add(dto.toBuilder().isSelected(true).selectedId(selId).build());
         }
 
-        List<NutritionInfoDto> nutritionInfo = toNutritionList(m.path("nutrition_info"));
+        List<NutritionInfoDto> nutritionInfo = toNutritionList(m.path("nutrition"));
 
         return ContentsResponseDto.builder()
                 .menuId(menuId)
@@ -162,10 +163,10 @@ public class OrderJsonMapper {
         if (arr.isMissingNode() || !arr.isArray()) return list;
         for (JsonNode n : arr) {
             list.add(NutritionInfoDto.builder()
-                    .nutritionId(n.path("nutrition_id").asInt())
-                    .nutritionName(altText(n, "nutrition_name", "name", "name_kr"))
-                    .nutritionValue(n.path("nutrition_value").asInt())
-                    .nutritionType(n.path("nutrition_type").asText(null))
+                    .nutritionId(n.path("id").asInt())
+                    .nutritionName(altText(n, "name", "name_en"))
+                    .nutritionValue(n.path("value").asInt())
+                    .nutritionType(n.path("unit").asText(null))
                     .build());
         }
         return list;
