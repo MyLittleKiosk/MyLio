@@ -12,6 +12,7 @@ from app.services.menu_service import MenuService
 from app.services.response_service import ResponseService
 from app.services.redis_session_manager import RedisSessionManager
 from app.services.intent_service import IntentService
+from app.services.vector_db_service import VectorDBService
 
 # 환경 변수 로드
 load_dotenv()
@@ -74,6 +75,42 @@ def get_intent_service(
 @app.on_event("startup")
 async def startup_event():
     print("음성 키오스크 API 서비스가 시작되었습니다. (Redis 세션 관리 활성화)")
+
+    # 벡터 DB 초기화 (메뉴 서비스 필요)
+    try:
+        # 메뉴 서비스 생성
+        mysql_host = os.getenv("MYSQL_HOST", "localhost")
+        mysql_port = int(os.getenv("MYSQL_PORT", "3306"))
+        mysql_user = os.getenv("MYSQL_USER", "root")
+        mysql_pass = os.getenv("MYSQL_PASS", "password")
+        mysql_db = os.getenv("MYSQL_DB", "kiosk")
+
+        # DB 객체 생성
+        db = MySQLConnector(
+            host=mysql_host,
+            port=mysql_port,
+            user=mysql_user,
+            password=mysql_pass,
+            database=mysql_db
+        )
+        
+        # MenuService 초기화 - db 객체 전달
+        menu_service = MenuService(db)
+        
+        # 벡터 DB 서비스 초기화
+        vector_db_service = VectorDBService.get_instance()
+        
+        # 매장 ID 목록 
+        store_ids = menu_service.get_all_store_ids()
+        
+        # 메뉴 데이터로 벡터 DB 초기화
+        document_count = vector_db_service.initialize_from_menus(menu_service, store_ids)
+        print(f"[앱 시작] 벡터 DB 초기화 완료: {document_count}개 메뉴 데이터")
+        
+    except Exception as e:
+        print(f"[앱 시작] 벡터 DB 초기화 오류: {e}")
+        import traceback
+        traceback.print_exc()
     
     # Redis 세션 관리자 초기화
     app.state.session_manager = RedisSessionManager()
