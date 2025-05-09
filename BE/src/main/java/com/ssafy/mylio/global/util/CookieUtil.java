@@ -10,8 +10,8 @@ public class CookieUtil {
     public static ResponseCookie makeAccessTokenCookie(String refreshToken) {
         return ResponseCookie.from(SecurityConstants.ACCESS_TOKEN_COOKIE_NAME, refreshToken)
                 .httpOnly(true)
-                .secure(!SecurityConstants.getIsLocal()) // isLocal이 true면 secure=false, false면 secure=true
-                .sameSite(SecurityConstants.getIsLocal() ? "Lax" : "None") // isLocal이 true면 Lax, false면 None
+                .secure(SecurityConstants.getIsLocal()) // HTTPS 환경에서만 전송
+                .sameSite("Strict") // CSRF 방지
                 .domain(SecurityConstants.getDomain())
                 .path("/") // 모든 경로에서 접근 가능
                 .maxAge(Duration.ofSeconds(SecurityConstants.ACCESS_TOKEN_VALIDITY_SECONDS))
@@ -21,8 +21,8 @@ public class CookieUtil {
     public static ResponseCookie makeRefreshTokenCookie(String refreshToken) {
         return ResponseCookie.from(SecurityConstants.REFRESH_TOKEN_COOKIE_NAME, refreshToken)
                 .httpOnly(true)
-                .secure(!SecurityConstants.getIsLocal())
-                .sameSite(SecurityConstants.getIsLocal() ? "Lax" : "None")
+                .secure(SecurityConstants.getIsLocal()) // HTTPS 환경에서만 전송
+                .sameSite("Strict") // CSRF 방지
                 .domain(SecurityConstants.getDomain())
                 .path("/") // 모든 경로에서 접근 가능
                 .maxAge(Duration.ofSeconds(SecurityConstants.REFRESH_TOKEN_VALIDITY_SECONDS))
@@ -32,8 +32,8 @@ public class CookieUtil {
     public static ResponseCookie deleteAccessTokenCookie() {
         return ResponseCookie.from(SecurityConstants.ACCESS_TOKEN_COOKIE_NAME, "")
                 .httpOnly(true)
-                .secure(!SecurityConstants.getIsLocal())
-                .sameSite(SecurityConstants.getIsLocal() ? "Lax" : "None")
+                .secure(SecurityConstants.getIsLocal())
+                .sameSite("Strict")
                 .domain(SecurityConstants.getDomain())
                 .path("/")
                 .maxAge(0) // 즉시 만료
@@ -43,8 +43,8 @@ public class CookieUtil {
     public static ResponseCookie deleteRefreshTokenCookie() {
         return ResponseCookie.from(SecurityConstants.REFRESH_TOKEN_COOKIE_NAME, "")
                 .httpOnly(true)
-                .secure(!SecurityConstants.getIsLocal())
-                .sameSite(SecurityConstants.getIsLocal() ? "Lax" : "None")
+                .secure(SecurityConstants.getIsLocal())
+                .sameSite("Strict")
                 .domain(SecurityConstants.getDomain())
                 .path("/")
                 .maxAge(0) // 즉시 만료

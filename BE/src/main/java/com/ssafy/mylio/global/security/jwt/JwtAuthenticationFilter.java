@@ -63,7 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     ErrorCode errorType;
 
                     if (Objects.requireNonNull(validationResult.error()) == TokenError.EXPIRED) {
-                        errorType = ErrorCode.INVALID_ACCESS_TOKEN;
+                        errorType = ErrorCode.EXPIRED_TOKEN;
                     } else {
                         errorType = ErrorCode.UNAUTHORIZED_ACCESS;
                     }

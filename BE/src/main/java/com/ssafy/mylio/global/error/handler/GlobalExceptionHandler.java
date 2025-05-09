@@ -214,5 +214,69 @@ public class GlobalExceptionHandler {
         return CommonResponse.error(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * 인증 관련 예외를 처리하는 핸들러
+     * Spring Security의 AccessDeniedException 처리 (권한 부족)
+     */
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    protected ResponseEntity<CommonResponse<Object>> handleAccessDeniedException(
+            org.springframework.security.access.AccessDeniedException e, HttpServletRequest request) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userInfo = auth != null ?
+                auth.getPrincipal() instanceof UserPrincipal ?
+                        ((UserPrincipal) auth.getPrincipal()).getUserId() + " - " + auth.getAuthorities()
+                        : "Not UserPrincipal: " + auth.getPrincipal()
+                : "No Authentication";
+
+        log.error("[AccessDeniedException] {} {}: {} - User: {}",
+                request.getMethod(),
+                request.getRequestURI(),
+                e.getMessage(),
+                userInfo
+        );
+
+        // 익명 사용자인 경우 (인증되지 않음)
+        if (auth == null || auth instanceof AnonymousAuthenticationToken) {
+            return CommonResponse.error(ErrorCode.UNAUTHORIZED_ACCESS);  // 401 Unauthorized
+        }
+
+        // 인증은 됐지만 권한이 없는 경우
+        return CommonResponse.error(ErrorCode.FORBIDDEN_ACCESS);  // 403 Forbidden
+    }
+
+    /**
+     * Spring Security 인증 예외를 처리하는 핸들러
+     */
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    protected ResponseEntity<CommonResponse<Object>> handleAuthenticationException(
+            org.springframework.security.core.AuthenticationException e, HttpServletRequest request) {
+
+        log.error("[AuthenticationException] {} {}: {}",
+                request.getMethod(),
+                request.getRequestURI(),
+                e.getMessage()
+        );
+
+        // 인증 실패 (로그인 실패, 토큰 에러 등)
+        return CommonResponse.error(ErrorCode.UNAUTHORIZED_ACCESS);  // 401 Unauthorized
+    }
+
+    /**
+     * 보안 필터 예외를 처리하는 핸들러
+     */
+    @ExceptionHandler(org.springframework.security.web.firewall.RequestRejectedException.class)
+    protected ResponseEntity<CommonResponse<Object>> handleRequestRejectedException(
+            org.springframework.security.web.firewall.RequestRejectedException e, HttpServletRequest request) {
+
+        log.warn("[RequestRejected] Security firewall rejected request: {} {} - {}",
+                request.getMethod(),
+                request.getRequestURI(),
+                e.getMessage()
+        );
+
+        // 잘못된 요청
+        return CommonResponse.error(ErrorCode.INVALID_INPUT_VALUE);
+    }
 
 }
