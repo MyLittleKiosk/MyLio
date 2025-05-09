@@ -5,6 +5,7 @@ import com.ssafy.mylio.domain.account.dto.request.AccountModifyRequestDto;
 import com.ssafy.mylio.domain.account.dto.request.PasswordRequestDto;
 import com.ssafy.mylio.domain.account.dto.request.ModifyPasswordRequest;
 import com.ssafy.mylio.domain.account.dto.response.AccountDetailResponseDto;
+import com.ssafy.mylio.domain.account.dto.response.AccountGetInfoResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountListResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountModifyResponse;
 import com.ssafy.mylio.domain.account.entity.Account;
@@ -213,5 +214,13 @@ public class AccountService {
         String encodedPW = passwordEncoder.encode(request.getNewPw());
 
         account.update(encodedPW);
+    }
+
+    public AccountGetInfoResponseDto getAcoountInfo(Integer userId, String userType){
+        //계정 조회
+        Account account = accountRepository.findById(userId)
+                .orElseThrow(()-> new CustomException(ErrorCode.ACOUNT_NOT_FOUND,"userId",userId));
+
+        return AccountGetInfoResponseDto.of(account,userType);
     }
 }

@@ -4,6 +4,7 @@ import com.ssafy.mylio.domain.account.dto.request.AccountCreateRequest;
 import com.ssafy.mylio.domain.account.dto.request.AccountModifyRequestDto;
 import com.ssafy.mylio.domain.account.dto.request.PasswordRequestDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountDetailResponseDto;
+import com.ssafy.mylio.domain.account.dto.response.AccountGetInfoResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountListResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountModifyResponse;
 import com.ssafy.mylio.domain.account.service.AccountService;
@@ -115,5 +116,15 @@ public class AccountController {
 
         accountService.modifyPW(userId,userType,request);
         return CommonResponse.ok();
+    }
+
+    @GetMapping("/role")
+    @Operation(summary = "계정 정보 조회", description = "모든 계정의 정보를 조회합니다.")
+    @ApiErrorCodeExamples({})
+    public ResponseEntity<CommonResponse<AccountGetInfoResponseDto>> getAcoountInfo(
+            @AuthenticationPrincipal UserPrincipal userPrincipal){
+        Integer userId = authenticationUtil.getCurrentUserId(userPrincipal);
+        String userType = authenticationUtil.getCurrntUserType(userPrincipal);
+        return CommonResponse.ok(accountService.getAcoountInfo(userId,userType));
     }
 }
