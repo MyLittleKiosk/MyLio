@@ -1,7 +1,5 @@
 package com.ssafy.mylio.domain.order.service;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.ssafy.mylio.domain.order.dto.response.ContentsResponseDto;
 import com.ssafy.mylio.domain.order.util.OrderJsonMapper;
 import reactor.core.scheduler.Schedulers;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,9 +19,6 @@ import com.ssafy.mylio.global.error.code.ErrorCode;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +42,7 @@ public class ProxyService {
         // 1) FastAPI 호출 (String JSON 수신)
         Mono<String> fastApiJson = ragWebClient.post()
                 .uri("/recognize-intent")
-                .header("X-DEV-USER", storeId.toString())
+                //.header("X-DEV-USER", storeId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(toSnakeJson(req))
                 .retrieve()

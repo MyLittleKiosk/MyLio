@@ -1,5 +1,6 @@
 package com.ssafy.mylio.domain.order.util;
 
+import com.ssafy.mylio.domain.order.dto.common.NutritionInfoDto;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -64,12 +65,13 @@ public class OrderJsonMapper {
     }
 
     private ContentsResponseDto toContentsDto(JsonNode m) {
-        Integer menuId = m.path("menu_id").asInt();
+        int menuId = altInt(m, "menu_id", "id");
         Integer quantity = m.path("quantity").asInt();
-        String name = m.path("name").asText(null);
+        String name = altText(m, "name", "name_kr", "name_en");
         String desc = m.path("description").asText(null);
-        Integer base = m.path("base_price").asInt();
-        Integer total = m.path("total_price").asInt();
+        Integer price = m.path("price").asInt(0);
+        Integer base = m.path("base_price").asInt(price);
+        Integer total = m.path("total_price").asInt(price);
         String img = m.path("image_url").asText(null);
 
         List<OptionsDto> options = new ArrayList<>();
@@ -82,6 +84,8 @@ public class OrderJsonMapper {
             selected.add(dto.toBuilder().isSelected(true).selectedId(selId).build());
         }
 
+        List<NutritionInfoDto> nutritionInfo = toNutritionList(m.path("nutrition_info"));
+
         return ContentsResponseDto.builder()
                 .menuId(menuId)
                 .quantity(quantity)
@@ -92,17 +96,20 @@ public class OrderJsonMapper {
                 .imageUrl(img)
                 .options(options)
                 .selectedOption(selected)
+                .nutritionInfo(nutritionInfo)
                 .build();
     }
 
+
     private CartResponseDto toCartDto(JsonNode c) {
         String cartId = c.path("cart_id").asText();
-        Integer menuId   = c.path("menu_id").asInt();
+        Integer menuId = altInt(c, "menu_id", "id");
         Integer qty      = c.path("quantity").asInt();
-        String name      = c.path("name").asText(null);
+        String name = altText(c, "name", "name_kr", "name_en");
         String desc      = c.path("description").asText(null);
-        Integer base     = c.path("base_price").asInt();
-        Integer total    = c.path("total_price").asInt();
+        Integer price = c.path("price").asInt(0);
+        Integer base     = c.path("base_price").asInt(price);
+        Integer total    = c.path("total_price").asInt(price);
         String imageUrl  = c.path("image_url").asText(null);
 
         List<OptionsDto> selected = new ArrayList<>();
@@ -146,5 +153,28 @@ public class OrderJsonMapper {
                 .selectedId(selectedId)
                 .optionDetails(detailDtos)
                 .build();
+    }
+
+    private List<NutritionInfoDto> toNutritionList(JsonNode arr) {
+        List<NutritionInfoDto> list = new ArrayList<>();
+        if (arr.isMissingNode() || !arr.isArray()) return list;
+        for (JsonNode n : arr) {
+            list.add(NutritionInfoDto.builder()
+                    .nutritionId(n.path("nutrition_id").asInt())
+                    .nutritionName(altText(n, "nutrition_name", "name", "name_kr"))
+                    .nutritionValue(n.path("nutrition_value").asInt())
+                    .nutritionType(n.path("nutrition_type").asText(null))
+                    .build());
+        }
+        return list;
+    }
+
+    private String altText(JsonNode node, String... keys) {
+        for (String k : keys) if (node.has(k)) return node.path(k).asText(null);
+        return null;
+    }
+
+    private int altInt(JsonNode node, String primary, String alt) {
+        return node.has(primary) ? node.path(primary).asInt() : node.path(alt).asInt();
     }
 }
