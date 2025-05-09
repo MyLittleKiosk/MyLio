@@ -12,7 +12,7 @@ export function useOrderRequest() {
     onSuccess: (data) => {
       const state = data.data.screenState;
       setOrder(data.data);
-      navigate(parseState(state));
+      navigate(`/kiosk${parseState(state)}`);
     },
   });
 }
