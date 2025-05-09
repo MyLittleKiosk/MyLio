@@ -89,6 +89,8 @@ services:
       - "${CHROMA_PORT}:${CHROMA_PORT}"
     volumes:
       - /home/ubuntu/MyLio/chroma-data:/chroma/.chroma
+    networks:
+      - app-network
 
   fastapi-rag:
     build:
