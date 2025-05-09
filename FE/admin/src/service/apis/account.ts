@@ -82,9 +82,9 @@ export const patchResetPassword = async (email: string, username: string) => {
   }
 };
 
-export const patchAccount = async (accountId: number, account: AccountForm) => {
+export const patchAccount = async (account: AccountForm) => {
   try {
-    const response = await authClient.patch(`/account/${accountId}`, account);
+    const response = await authClient.patch('/account', account);
     return response.data;
   } catch (error: unknown) {
     if (error instanceof Error) {
