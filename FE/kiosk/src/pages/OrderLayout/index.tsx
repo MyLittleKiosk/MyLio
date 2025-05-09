@@ -4,13 +4,26 @@ import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import RecordButton from '@/components/Chat/RecordButton';
 import { useState } from 'react';
-
+import { useOrderRequest } from '@/service/queries/useOrderRequest';
+import useOrderStore from '@/stores/useOrderStore';
+import { DEFAULT_COMMENT } from '@/datas/COMMENT';
 const OrderLayout = () => {
   const { pathname } = useLocation();
   const [userChat, setUserChat] = useState<string>('');
-
+  const { order } = useOrderStore();
+  const { mutate: orderRequest } = useOrderRequest();
   const handleRecognitionResult = (text: string) => {
     setUserChat(text);
+    orderRequest({
+      text: userChat,
+      screenState: order.screenState,
+      language: 'KR',
+      sessionId: order.sessionId,
+      cart: order.cart,
+      contents: order.contents,
+      payment: order.payment,
+      storeId: order.storeId,
+    });
   };
 
   return (
@@ -50,7 +63,7 @@ const OrderLayout = () => {
       >
         <Main
           userChat={userChat}
-          gptChat={`무엇을 도와드릴까요?\n다양한 커피 메뉴를 소개해드릴게요.\n커피 메뉴를 선택해주세요.\n오늘의 메뉴로 청포도 아이스 티를 추천해드려요!`}
+          gptChat={order.postText ? order.postText : DEFAULT_COMMENT}
         />
         <RecordButton onRecognitionResult={handleRecognitionResult} />
       </header>

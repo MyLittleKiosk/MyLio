@@ -97,6 +97,7 @@ export type OrderResponse = {
   preText: string | null;
   postText: string | null;
   reply: string | null;
+  storeId: number | null;
   screenState:
     | 'MAIN'
     | 'ORDER'
@@ -118,7 +119,7 @@ export type OrderResponse = {
  * @param screenState 상태
  * @param language 언어
  * @param sessionId 세션 아이디 (null 일 경우 새로운 세션 생성)
- * @param store_id 매장 아이디 (null 일 경우 기본 매장 사용)
+ * @param storeId 매장 아이디 (null 일 경우 기본 매장 사용)
  * @param cart 장바구니 아이템
  * @param contents 컨텐츠 아이템
  * @param payment 결제 방법
@@ -135,7 +136,7 @@ export type OrderRequest = {
     | 'DETAIL';
   language: 'KR' | 'EN' | 'JP' | 'CN';
   sessionId: string | null;
-  store_id: number | null;
+  storeId: number | null;
   cart: CartItem[];
   contents: ContentItem[];
   payment: 'MOBILE' | 'PAY' | 'GIFT' | 'CARD' | null;
