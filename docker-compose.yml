@@ -86,7 +86,7 @@ services:
     image: chromadb/chroma:0.4.24
     container_name: ${CHROMA_CONTAINER_NAME}
     ports: 
-      - "${CHROMA_PORT}:${CHROMA_PORT}"
+      - "${CHROMA_PORT}:${CHROMA_CONTAINER_PORT}"
     volumes:
       - /home/ubuntu/MyLio/chroma-data:/chroma/.chroma
     networks:
