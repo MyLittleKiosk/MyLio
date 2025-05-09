@@ -1,7 +1,6 @@
 package com.ssafy.mylio.domain.order.service;
 
 import com.ssafy.mylio.domain.order.util.OrderJsonMapper;
-import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.scheduler.Schedulers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,11 +28,11 @@ public class ProxyService {
 
     @Qualifier("ragWebClient")
     private final WebClient ragWebClient;
-    private final OrderValidator orderValidator;
-    private final SearchValidator searchValidator;
-    private final PaymentValidator paymentValidator;
+    private final OrderValidatorService orderValidatorService;
+    private final SearchValidatorService searchValidatorService;
+    private final PaymentValidatorService paymentValidatorService;
     private final OrderService orderService;
-    private final DetailValidator detailValidator;
+    private final DetailValidatorService detailValidatorService;
     private final OrderJsonMapper mapper;
 
     private final ObjectMapper snakeMapper = new ObjectMapper()
@@ -75,10 +74,10 @@ public class ProxyService {
     private Mono<OrderResponseDto> routeByScreenState(String json) {
         String screen = extractScreenState(json);
         return switch (screen) {
-            case "ORDER", "MAIN"  -> orderValidator.validate(json);   // 옵션 검증 포함
-            case "DETAIL" -> detailValidator.validate(json);   // 영양정보 검증 포함
-            case "SEARCH" -> searchValidator.validate(json);
-            case "CONFIRM", "SELECT_PAY" -> paymentValidator.validate(json);
+            case "ORDER", "MAIN"  -> orderValidatorService.validate(json);   // 옵션 검증 포함
+            case "DETAIL" -> detailValidatorService.validate(json);   // 영양정보 검증 포함
+            case "SEARCH" -> searchValidatorService.validate(json);
+            case "CONFIRM", "SELECT_PAY" -> paymentValidatorService.validate(json);
             default -> Mono.fromCallable(() -> mapper.parse(json))
                     .subscribeOn(Schedulers.boundedElastic());
         };

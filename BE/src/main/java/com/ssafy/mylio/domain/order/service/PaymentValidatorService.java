@@ -13,7 +13,7 @@ import reactor.core.scheduler.Schedulers;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class PaymentValidator {
+public class PaymentValidatorService {
 
     private final OrderJsonMapper mapper;
 

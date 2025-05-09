@@ -1,13 +1,6 @@
 package com.ssafy.mylio.domain.order.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.ssafy.mylio.domain.menu.repository.MenuRepository;
-import com.ssafy.mylio.domain.order.dto.common.OptionDetailsDto;
-import com.ssafy.mylio.domain.order.dto.common.OptionsDto;
-import com.ssafy.mylio.domain.order.dto.response.CartResponseDto;
 import com.ssafy.mylio.domain.order.dto.response.ContentsResponseDto;
 import com.ssafy.mylio.domain.order.dto.response.OrderResponseDto;
 import com.ssafy.mylio.domain.order.util.OrderJsonMapper;
@@ -20,14 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SearchValidator {
+public class SearchValidatorService {
 
     private final OrderJsonMapper mapper;
     private final MenuRepository menuRepository;

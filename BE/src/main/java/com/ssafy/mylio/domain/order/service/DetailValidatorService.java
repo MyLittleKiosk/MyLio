@@ -27,7 +27,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class DetailValidator {
+public class DetailValidatorService {
 
     private final NutritionRepository nutritionRepository;
     private final ObjectMapper snakeMapper = new ObjectMapper()
