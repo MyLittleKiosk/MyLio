@@ -10,7 +10,7 @@ import { Column } from '@/types/tableProps';
 
 import useModalStore from '@/stores/useModalStore';
 
-import useGetCategory from '@/service/queries/category';
+import { useGetCategory } from '@/service/queries/category';
 
 const Category = ({ selectedNav }: { selectedNav: NavItemType }) => {
   const { openModal } = useModalStore();
