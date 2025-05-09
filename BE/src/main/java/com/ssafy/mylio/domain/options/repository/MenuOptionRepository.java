@@ -19,4 +19,13 @@ public interface MenuOptionRepository extends JpaRepository<MenuOptionMap, Integ
     @Query("DELETE FROM MenuOptionMap mo WHERE mo.menu = :menu")
     void deleteByMenu(@Param("menu") Menu menu);
 
+    @Query("""
+            select mom
+            from   MenuOptionMap mom
+              join fetch mom.options opt
+              join fetch mom.optionDetail od
+            where  mom.menu.id = :menuId
+           """)
+    List<MenuOptionMap> findAllWithDetailByMenuId(Integer menuId);
+
 }
