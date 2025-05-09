@@ -69,7 +69,7 @@ public class SecurityConfig {
                                         "/account/pw", "/auth/refresh"  ).permitAll()
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .requestMatchers("/actuator/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/order").permitAll()  // ★ local
+//                                .requestMatchers(HttpMethod.POST, "/order").permitAll()  // ★ local
                                 .anyRequest().authenticated()
                 );
 
