@@ -1,6 +1,7 @@
 package com.ssafy.mylio.domain.order.service;
 
 import com.ssafy.mylio.domain.order.util.OrderJsonMapper;
+import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.scheduler.Schedulers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,9 +54,9 @@ public class ProxyService {
         }
 
         // 1) FastAPI 호출 (String JSON 수신)
+        // 1) FastAPI 호출 (String JSON 수신)
         Mono<String> fastApiJson = ragWebClient.post()
                 .uri("/ai/recognize-intent")
-                //.header("X-DEV-USER", storeId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(toSnakeJson(req))
                 .retrieve()

@@ -56,6 +56,6 @@ public class SearchValidator {
             }
         }
 
-        return order.toBuilder().build();
+        return order;
     }
 }

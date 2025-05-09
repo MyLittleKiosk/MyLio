@@ -14,8 +14,8 @@ spring:
     include: secret
     active: local
 
-  jackson:
-    property-naming-strategy: SNAKE_CASE
+#  jackson:
+#    property-naming-strategy: SNAKE_CASE
 
   data:
     web:
@@ -29,4 +29,4 @@ management:
       base-path: /api/actuator
 
 fast-api:
-  base-url: http://localhost:8000
+  base-url: https://k12b102.p.ssafy.io
