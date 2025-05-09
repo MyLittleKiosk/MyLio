@@ -1,7 +1,5 @@
-type User = {
-  id: number;
-  name: string;
-  email: string;
+export type User = {
+  userId: number;
+  userName: string;
+  role: 'KIOSK';
 };
-
-export default User;
