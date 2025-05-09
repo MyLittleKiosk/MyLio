@@ -109,6 +109,11 @@ services:
       REDIS_PORT: ${REDIS_PORT}
       CHROMA_HOST: ${CHROMA_HOST}
       COLLECTION_NAME: ${COLLECTION_NAME}
+    depends_on:
+      chroma:
+        condition: service_started 
+      redis:
+        condition: service_started
     restart: always
     networks:
       - app-network
