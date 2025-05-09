@@ -38,8 +38,8 @@ public class AuthController {
         LoginResult result = authService.login(request);
 
 
-        ResponseCookie accessTokenCookie = CookieUtil.makeDevAccessTokenCookie(result.getAccessToken());
-        ResponseCookie refreshTokenCookie = CookieUtil.makeDevRefreshTokenCookie(result.getRefreshToken());
+        ResponseCookie accessTokenCookie = CookieUtil.makeAccessTokenCookie(result.getAccessToken());
+        ResponseCookie refreshTokenCookie = CookieUtil.makeRefreshTokenCookie(result.getRefreshToken());
 
         return CommonResponse.okWithCookie(
                 result.getResponse(),
@@ -53,7 +53,7 @@ public class AuthController {
     @ApiErrorCodeExamples({ErrorCode.INTERNAL_SERVER_ERROR, ErrorCode.INVALID_REFRESH_TOKEN})
     public ResponseEntity<CommonResponse<Void>> refreshToken(
             @CookieValue(name = "refresh_token",required = false) String refreshToken){
-        ResponseCookie accessTokenCookie = CookieUtil.makeDevAccessTokenCookie(authService.getRefreshToken(refreshToken));
+        ResponseCookie accessTokenCookie = CookieUtil.makeAccessTokenCookie(authService.getRefreshToken(refreshToken));
 
         return CommonResponse.okWithCookie(accessTokenCookie);
 
@@ -66,8 +66,8 @@ public class AuthController {
             @Valid @RequestBody KioskLoginRequest request){
         LoginResult result = authService.kioskLogin(request);
 
-        ResponseCookie accessTokenCookie = CookieUtil.makeDevAccessTokenCookie(result.getAccessToken());
-        ResponseCookie refreshTokenCookie = CookieUtil.makeDevRefreshTokenCookie(result.getRefreshToken());
+        ResponseCookie accessTokenCookie = CookieUtil.makeAccessTokenCookie(result.getAccessToken());
+        ResponseCookie refreshTokenCookie = CookieUtil.makeRefreshTokenCookie(result.getRefreshToken());
 
         return CommonResponse.okWithCookie(
                 result.getResponse(),
