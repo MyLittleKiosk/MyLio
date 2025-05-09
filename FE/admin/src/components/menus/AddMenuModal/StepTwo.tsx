@@ -11,7 +11,7 @@ import NUTRIENT_LIST from '@/datas/NutrientList';
 import { useMenuAdd } from '@/components/menus/AddMenuModal/useMenuAdd';
 
 import OptionTable from '@/components/menus/AddMenuModal/OptionTable';
-import useGetOptions from '@/service/queries/option';
+import { useGetOptions } from '@/service/queries/option';
 
 /**
  * 메뉴 추가 페이지 2단계 컴포넌트

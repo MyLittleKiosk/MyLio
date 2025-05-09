@@ -9,7 +9,7 @@ import { OptionGroup } from '@/types/options';
 import { Column } from '@/types/tableProps';
 
 import useModalStore from '@/stores/useModalStore';
-import useGetOptions from '@/service/queries/option';
+import { useGetOptions } from '@/service/queries/option';
 
 const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
   const { openModal } = useModalStore();
