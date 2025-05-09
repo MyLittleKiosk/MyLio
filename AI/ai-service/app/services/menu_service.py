@@ -7,6 +7,12 @@ class MenuService:
     def __init__(self, db: MySQLConnector):
         self.db = db
         self.menu_cache = {}  # 메뉴 캐시 (store_id -> menus)
+
+    def get_all_store_ids(self) -> List[int]:
+        query = "SELECT DISTINCT id FROM store"
+        rows = self.db.execute_query(query)
+        return [row["id"] for row in rows]
+
     
     def get_store_menus(self, store_id: int) -> Dict[int, Dict[str, Any]]:
         """스토어 ID에 해당하는 메뉴 정보 조회 (캐싱 적용)"""
