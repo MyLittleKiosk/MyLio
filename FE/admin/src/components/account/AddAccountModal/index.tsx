@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 
 import EmailElement from '@/components/account/AddAccountModal/EmailElement';
 import Button from '@/components/common/Button';
+import CompleteModal from '@/components/common/CompleteModal';
 import Input from '@/components/common/Input';
 import ModalHeader from '@/components/common/Modal/ModalHeader';
 import useModalStore from '@/stores/useModalStore';
 
-import CompleteModal from '@/components/account/CompleteModal';
 import { usePostAccount } from '@/service/queries/account';
 import { AccountForm } from '@/types/account';
 
@@ -99,7 +99,13 @@ const AddAccountModal = () => {
         address: formData.address,
       };
       createAccount({ account: accountForm });
-      openModal(<CompleteModal />);
+      openModal(
+        <CompleteModal
+          title='계정 추가'
+          description='계정 추가가 완료되었습니다.'
+          buttonText='확인'
+        />
+      );
     }
   }
 
