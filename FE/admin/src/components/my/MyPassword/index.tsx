@@ -1,6 +1,7 @@
 import Button from '@/components/common/Button';
 import CompleteModal from '@/components/common/CompleteModal';
 import Input from '@/components/common/Input';
+import errorMessage from '@/datas/error';
 import { usePatchAccountPassword } from '@/service/queries/account';
 import useModalStore from '@/stores/useModalStore';
 import { verificationPassword } from '@/utils/verificationPassword';
@@ -17,13 +18,11 @@ const MyPassword = () => {
   const handlePatchAccountPassword = () => {
     setError(''); // 기존 에러 메시지 초기화
     if (!verificationPassword(newPassword)) {
-      setError(
-        '비밀번호는 8~16자여야 하며, 영문, 숫자, 특수문자를 각각 최소 1개 이상 포함해야 합니다.'
-      );
+      setError(errorMessage.password.invalid);
       return;
     }
     if (newPassword !== newPasswordCheck) {
-      setError('새 비밀번호와 새 비밀번호 확인이 일치하지 않습니다.');
+      setError(errorMessage.password.notMatch);
       return;
     }
     patchAccountPassword(
@@ -44,9 +43,7 @@ const MyPassword = () => {
           setNewPasswordCheck('');
         },
         onError: () => {
-          setError(
-            '현재 비밀번호가 일치하지 않거나, 알 수 없는 오류가 발생했습니다.'
-          );
+          setError(errorMessage.password.unknown);
         },
       }
     );
