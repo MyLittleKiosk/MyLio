@@ -8,15 +8,17 @@ import com.ssafy.mylio.domain.store.entity.Store;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Getter
-@Builder
+@SuperBuilder
+@NoArgsConstructor
 public class MenuRequestDto {
 
-    @Schema(example = "https://mylio/latte.jpg")
-    private String imageUrl;
     @Schema(example = "아이스 아메리카노")
     private String nameKr;
     @Schema(example = "ice americano")
@@ -33,11 +35,11 @@ public class MenuRequestDto {
     private List<Integer> ingredientInfo;
     private List<MenuOptionMapRequestDto> optionInfo;
 
-    public Menu toEntity(Store store, Category category){
+    public Menu toEntity(Store store, Category category, String imageUrl){
         return Menu.builder()
                 .store(store)
                 .category(category)
-                .imageUrl(this.imageUrl)
+                .imageUrl(imageUrl)
                 .nameKr(this.nameKr)
                 .nameEn(this.nameEn)
                 .description(this.description)
