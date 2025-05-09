@@ -22,7 +22,7 @@ public enum ErrorCode {
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "A003", "유효하지 않은 액세스 토큰입니다"),
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "A004", "아이디 혹은 비밀번호가 일치하지 않습니다."),
     INVALID_ROLE(HttpStatus.UNAUTHORIZED,"A005","권한이 없는 사용자입니다."),
-
+    EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT,"A006","중복된 이메일입니다."),
     // Menu
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 메뉴입니다"),
 

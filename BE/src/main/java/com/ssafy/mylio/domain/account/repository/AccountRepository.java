@@ -19,6 +19,8 @@ public interface AccountRepository extends JpaRepository<Account,Integer> {
     @EntityGraph(attributePaths = "store")
     Optional<Account> findWithStoreByEmail(String email);
 
+    Optional<Account> findByEmail(String email);
+
     @Query("""
     SELECT a FROM Account a 
     JOIN FETCH a.store s 

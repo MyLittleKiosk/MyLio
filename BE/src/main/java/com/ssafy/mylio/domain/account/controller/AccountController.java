@@ -4,6 +4,7 @@ import com.ssafy.mylio.domain.account.dto.request.AccountCreateRequest;
 import com.ssafy.mylio.domain.account.dto.request.AccountModifyRequestDto;
 import com.ssafy.mylio.domain.account.dto.request.PasswordRequestDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountDetailResponseDto;
+import com.ssafy.mylio.domain.account.dto.response.AccountGetInfoResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountListResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountModifyResponse;
 import com.ssafy.mylio.domain.account.service.AccountService;
@@ -35,7 +36,7 @@ public class AccountController {
 
     @PostMapping
     @Operation(summary = "매장 관리자 계정 생성",description = "매장 관리자 계정을 생성합니다.")
-    @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE,ErrorCode.STORE_NOT_FOUND,ErrorCode.STORE_NOT_FOUND})
+    @ApiErrorCodeExamples({ErrorCode.EMAIL_ALREADY_EXISTS,ErrorCode.INVALID_ROLE,ErrorCode.STORE_NOT_FOUND,ErrorCode.STORE_NOT_FOUND})
     public ResponseEntity<CommonResponse<Void>> createAccount(
             @Valid @RequestBody AccountCreateRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
@@ -115,5 +116,15 @@ public class AccountController {
 
         accountService.modifyPW(userId,userType,request);
         return CommonResponse.ok();
+    }
+
+    @GetMapping("/role")
+    @Operation(summary = "계정 정보 조회", description = "모든 계정의 정보를 조회합니다.")
+    @ApiErrorCodeExamples({})
+    public ResponseEntity<CommonResponse<AccountGetInfoResponseDto>> getAccountInfo(
+            @AuthenticationPrincipal UserPrincipal userPrincipal){
+        Integer userId = authenticationUtil.getCurrentUserId(userPrincipal);
+        String userType = authenticationUtil.getCurrntUserType(userPrincipal);
+        return CommonResponse.ok(accountService.getAcoountInfo(userId,userType));
     }
 }
