@@ -1,26 +1,20 @@
 package com.ssafy.mylio.domain.order.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.ssafy.mylio.domain.menu.repository.MenuRepository;
 import com.ssafy.mylio.domain.options.entity.MenuOptionMap;
 import com.ssafy.mylio.domain.options.entity.OptionDetail;
 import com.ssafy.mylio.domain.options.repository.MenuOptionRepository;
 import com.ssafy.mylio.domain.order.dto.common.OptionDetailsDto;
 import com.ssafy.mylio.domain.order.dto.common.OptionsDto;
-import com.ssafy.mylio.domain.order.dto.response.CartResponseDto;
 import com.ssafy.mylio.domain.order.dto.response.ContentsResponseDto;
 import com.ssafy.mylio.domain.order.dto.response.OrderResponseDto;
+import com.ssafy.mylio.domain.order.util.OrderJsonMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
-
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,25 +25,19 @@ public class OrderValidator {
 
     private final MenuRepository menuRepository;
     private final MenuOptionRepository menuOptionRepository;
-    private final GptPromptService gptPromptService;   // 🔹 추가 – GPT 호출 래퍼
-
-    private final ObjectMapper snakeMapper = new ObjectMapper()
-            .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+    private final GptPromptService gptPromptService;
+    private final OrderJsonMapper mapper;
 
     /** 리액티브 진입점 */
     public Mono<OrderResponseDto> validate(String pyJson) {
         log.info("옵션 검증 로직 진입 : {}", pyJson);
-        return Mono.fromCallable(() -> parseAndValidate(pyJson))
+        return Mono.fromCallable(() -> parseAndValidate(mapper.parse(pyJson)))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
-    // ------------------------------------------------------------
-    //  트랜잭션 내부: 파싱 → 검증 → 누락 옵션 프롬프트 생성
-    // ------------------------------------------------------------
-
+    // 검증 및 누락 옵션 프롬프트 생성
     @Transactional(readOnly = true)
-    protected OrderResponseDto parseAndValidate(String json) {
-        OrderResponseDto order = parsePythonPayload(json);
+    protected OrderResponseDto parseAndValidate(OrderResponseDto order) {
 
         List<String> missingOpts = new ArrayList<>();
         List<ContentsResponseDto> fixedContents = order.getContents().stream()
@@ -62,140 +50,11 @@ public class OrderValidator {
             return order.toBuilder()
                     .contents(fixedContents)
                     .reply(reply)
-                    .screen_state(order.getScreen_state())
+                    .screenState(order.getScreenState())
                     .build();
         }
 
         return order.toBuilder().contents(fixedContents).build();
-    }
-
-    // -------------------------- JSON → DTO --------------------------
-
-    private OrderResponseDto parsePythonPayload(String json) {
-        try {
-            JsonNode root = snakeMapper.readTree(json);
-            JsonNode data = root.path("data");
-
-            // root 노드 값 파싱
-            String status  = root.path("screen_state").asText(null);
-            String payment = root.path("payment_method").isNull() ? null : root.path("payment_method").asText();
-
-            // data 값 파싱
-            String preText = data.path("pre_text").asText(null);
-            String postText = data.path("post_text").asText(null);
-            String reply = data.path("reply").asText(null);
-            String sessionId = data.path("session_id").asText(null);
-
-            List<ContentsResponseDto> contents = new ArrayList<>();
-            for (JsonNode m : (ArrayNode) data.path("contents")) contents.add(toContentsDto(m));
-            
-            // cart 값 담기
-            List<CartResponseDto> cart = new ArrayList<>();
-            for (JsonNode c : (ArrayNode) data.path("cart")) cart.add(toCartDto(c));
-
-            return OrderResponseDto.builder()
-                    .preText(preText)
-                    .postText(postText)
-                    .reply(reply)
-                    .screen_state(status)
-                    .language("KR")
-                    .sessionId(sessionId)
-                    .payment(payment)
-                    .cart(cart)
-                    .contents(contents)
-                    .build();
-        } catch (IOException e) {
-            throw new IllegalStateException("JSON parse fail", e);
-        }
-    }
-
-    // ---------------- DTO helpers ----------------
-
-    private ContentsResponseDto toContentsDto(JsonNode m) {
-        Integer menuId = m.path("menu_id").asInt();
-        Integer quantity = m.path("quantity").asInt();
-        String name = m.path("name").asText(null);
-        String description = m.path("description").asText(null);
-        Integer basePrice = m.path("base_price").asInt();
-        Integer totalPrice = m.path("total_price").asInt();
-        String imageUrl = m.path("image_url").asText(null);
-
-        List<OptionsDto> options = new ArrayList<>();
-        for (JsonNode o : m.path("options")) options.add(toOptionsDto(o));
-
-        List<OptionsDto> selected = new ArrayList<>();
-        for (JsonNode so : m.path("selected_options")) {
-            OptionsDto dto = toOptionsDto(so);
-            Integer selId = so.path("option_details").isEmpty() ? null : so.path("option_details").get(0).path("id").asInt();
-            selected.add(dto.toBuilder().isSelected(true).selectedId(selId).build());
-        }
-
-        return ContentsResponseDto.builder()
-                .menuId(menuId)
-                .quantity(quantity)
-                .name(name)
-                .description(description)
-                .basePrice(basePrice)
-                .totalPrice(totalPrice)
-                .imageUrl(imageUrl)
-                .options(options)
-                .selectedOption(selected)
-                .build();
-    }
-
-    private CartResponseDto toCartDto(JsonNode c) {
-        String cartId = c.path("cart_id").asText();
-        Integer menuId   = c.path("menu_id").asInt();
-        Integer qty      = c.path("quantity").asInt();
-        String name      = c.path("name").asText(null);
-        String desc      = c.path("description").asText(null);
-        Integer base     = c.path("base_price").asInt();
-        Integer total    = c.path("total_price").asInt();
-        String imageUrl  = c.path("image_url").asText(null);
-
-        List<OptionsDto> options = new ArrayList<>();
-        for (JsonNode so : c.path("selected_options")) {
-            options.add(toOptionsDto(so));
-        }
-
-        return CartResponseDto.builder()
-                .cartId(cartId)
-                .menuId(menuId)
-                .quantity(qty)
-                .name(name)
-                .description(desc)
-                .basePrice(base)
-                .totalPrice(total)
-                .imageUrl(imageUrl)
-                .selectedOptions(options)
-                .build();
-    }
-
-    private OptionsDto toOptionsDto(JsonNode o) {
-        Integer optionId = o.path("option_id").asInt();
-        String optionName = o.path("option_name").asText(null);
-        boolean required = o.path("required").asBoolean(false);
-        boolean isSelected = o.path("is_selected").asBoolean(false);
-        Integer selectedId = o.path("selected_id").isNull() ? null : o.path("selected_id").asInt();
-
-        List<OptionDetailsDto> detailDtos = new ArrayList<>();
-        for (JsonNode d : o.path("option_details")) {
-            detailDtos.add(
-                    OptionDetailsDto.builder()
-                            .optionDetailId(d.path("id").asInt())
-                            .optionDetailValue(d.path("value").asText())
-                            .additionalPrice(d.path("additional_price").asInt())
-                            .build());
-        }
-
-        return OptionsDto.builder()
-                .optionId(optionId)
-                .optionName(optionName)
-                .required(required)
-                .isSelected(isSelected)
-                .selectedId(selectedId)
-                .optionDetails(detailDtos)
-                .build();
     }
 
     // ---------------- 검증 & 교정 ----------------

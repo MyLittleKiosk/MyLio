@@ -16,7 +16,7 @@ public class OrderResponseDto {
     @Schema(example = "바닐라 라떼 사이즈는 뭘로 하시겠어요?")
     private String reply;
     @Schema(example = "ORDER")
-    private String screen_state;
+    private String screenState;
     @Schema(example = "KR")
     private String language;
     @Schema(example = "A101")

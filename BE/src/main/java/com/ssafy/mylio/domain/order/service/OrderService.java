@@ -14,13 +14,13 @@ public class OrderService {
 
     /* 옵션 검증 완료 → 장바구니 업데이트 등 */
     public Mono<OrderResponseDto> handleOrder(OrderResponseDto resp) {
-        // 예: totalPrice 재계산, cart 에 push …
+        // 예: totalPrice 재계산, cart 에 push
         return Mono.just(resp);
     }
 
     /* CONFIRM → SELECT_PAY → PAY 단계 */
     public Mono<OrderResponseDto> handlePayment(OrderResponseDto resp) {
-        if (resp.getScreen_state().equals("PAY")) {
+        if (resp.getScreenState().equals("PAY")) {
             //orderRepo.saveAll(OrderEntity.of(resp.getCart())); // DB 저장
         }
         return Mono.just(resp);

@@ -88,7 +88,7 @@ public class DetailValidator {
                     .preText(preText)
                     .postText(postText)
                     .reply(reply)
-                    .screen_state(status)
+                    .screenState(status)
                     .language("KR")
                     .sessionId(sessionId)
                     .payment(payment)
