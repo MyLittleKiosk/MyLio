@@ -148,44 +148,52 @@ export const MenuResponse = {
 };
 
 export const DETAIL_RESPONSE = {
-  detail: {
-    id: 1,
-    name: '아이스 아메리카노',
-    price: 3000,
-    image: '/src/assets/images/defaultDrink.png',
-    nutrition: {
-      saturatedFat: {
-        name: '포화지방',
-        value: 0,
-        unit: 'g',
+  success: true,
+  data: {
+    pre_text: '아메리카노 영양정보 보여줘',
+    post_text: '아메리카노 영양정보 보여줘',
+    reply: '아메리카노 영양정보 보여드릴게요',
+    status: 'DETAIL',
+    language: 'KR',
+    session_id: 'A101',
+    cart: [],
+    contents: [
+      {
+        menu_id: 1,
+        quantity: 1,
+        name: '아이스 아메리카노',
+        description: '깔끔한 아메리카노',
+        base_price: 3000,
+        total_price: 3000,
+        image_url: '/src/assets/images/defaultDrink.png',
+        options: [],
+        selected_option: [],
+        nutrition_info: [
+          {
+            nutrition_id: 1,
+            nutrition_name: '칼로리',
+            nutrition_value: 5,
+            nutrition_type: 'kcal',
+          },
+          {
+            nutrition_id: 2,
+            nutrition_name: '단백질',
+            nutrition_value: 1,
+            nutrition_type: 'g',
+          },
+          {
+            nutrition_id: 3,
+            nutrition_name: '카페인',
+            nutrition_value: 150,
+            nutrition_type: 'mg',
+          },
+        ],
       },
-      sodium: {
-        name: '나트륨',
-        value: 5,
-        unit: 'mg',
-      },
-      caffeine: {
-        name: '카페인',
-        value: 150,
-        unit: 'mg',
-      },
-      protein: {
-        name: '단백질',
-        value: 1,
-        unit: 'g',
-      },
-      sugar: {
-        name: '당류',
-        value: 0,
-        unit: 'g',
-      },
-      calorie: {
-        name: '칼로리',
-        value: 5,
-        unit: 'kcal',
-      },
-    },
+    ],
+    payment: null,
   },
+  error: null,
+  timestamp: '2024-03-19 16:09:12',
 };
 
 export const CONFIRM_RESPONSE = {
@@ -391,4 +399,216 @@ export const CONFIRM_RESPONSE = {
       ],
     },
   ],
+};
+
+export const ORDER_RESPONSE = {
+  success: true,
+  data: {
+    pre_text: '아이스 아메리카노 하나 주세요',
+    post_text: '아이스 아메리카노 하나 주세요',
+    reply: '아이스 아메리카노 사이즈는 뭘로 하시겠어요?',
+    status: 'ORDER',
+    language: 'KR',
+    session_id: 'A101',
+    cart: [],
+    contents: [
+      {
+        menu_id: 1,
+        quantity: 1,
+        name: '아이스 아메리카노',
+        description: '깔끔한 아메리카노',
+        base_price: 3000,
+        total_price: 3000,
+        image_url: '/src/assets/images/defaultDrink.png',
+        options: [
+          {
+            optoin_id: 1,
+            option_name: '사이즈',
+            required: true,
+            is_selected: false,
+            selected_id: null,
+            option_details: [
+              {
+                option_detail_id: 1,
+                option_detail_value: '레귤러',
+                additional_price: 0,
+              },
+              {
+                option_detail_id: 2,
+                option_detail_value: '라지',
+                additional_price: 700,
+              },
+            ],
+          },
+        ],
+        selected_option: [],
+        nutrition_info: [],
+      },
+    ],
+    payment: null,
+  },
+  error: null,
+  timestamp: '2024-03-19 16:09:12',
+};
+
+export const SEARCH_RESPONSE = {
+  success: true,
+  data: {
+    pre_text: '디카페인 있어?',
+    post_text: '디카페인 있어?',
+    reply: '디카페인 음료 목록을 보여드릴게요',
+    status: 'SEARCH',
+    language: 'KR',
+    session_id: 'A101',
+    cart: [],
+    contents: [
+      {
+        menu_id: 1,
+        quantity: 1,
+        name: '디카페인 아메리카노',
+        description: '카페인이 제거된 아메리카노',
+        base_price: 3500,
+        total_price: 3500,
+        image_url: '/src/assets/images/defaultDrink.png',
+        options: [],
+        selected_option: [],
+        nutrition_info: [],
+      },
+    ],
+    payment: null,
+  },
+  error: null,
+  timestamp: '2024-03-19 16:09:12',
+};
+
+export const CONFIRM_ORDER_RESPONSE = {
+  success: true,
+  data: {
+    pre_text: '장바구니 보여줘',
+    post_text: '장바구니 보여줘',
+    reply: '이 메뉴가 맞으세요?',
+    status: 'CONFIRM',
+    language: 'KR',
+    session_id: 'A101',
+    cart: [
+      {
+        cart_id: 1,
+        menu_id: 1,
+        quantity: 1,
+        name: '아이스 아메리카노',
+        description: '깔끔한 아메리카노',
+        base_price: 3000,
+        total_price: 3700,
+        image_url: '/src/assets/images/defaultDrink.png',
+        options: [
+          {
+            optoin_id: 1,
+            option_name: '사이즈',
+            required: true,
+            is_selected: true,
+            selected_id: 2,
+            option_details: [
+              {
+                option_detail_id: 2,
+                option_detail_value: '라지',
+                additional_price: 700,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    contents: [],
+    payment: null,
+  },
+  error: null,
+  timestamp: '2024-03-19 16:09:12',
+};
+
+export const SELECT_PAY_RESPONSE = {
+  success: true,
+  data: {
+    pre_text: '네',
+    post_text: '네',
+    reply: '결제수단을 선택해주세요',
+    status: 'SELECT_PAY',
+    language: 'KR',
+    session_id: 'A101',
+    cart: [
+      {
+        cart_id: 1,
+        menu_id: 1,
+        quantity: 1,
+        name: '아이스 아메리카노',
+        description: '깔끔한 아메리카노',
+        base_price: 3000,
+        total_price: 3700,
+        image_url: '/src/assets/images/defaultDrink.png',
+        options: [
+          {
+            optoin_id: 1,
+            option_name: '사이즈',
+            required: true,
+            is_selected: true,
+            selected_id: 2,
+            option_details: [
+              {
+                option_detail_id: 2,
+                option_detail_value: '라지',
+                additional_price: 700,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    contents: [],
+    payment: null,
+  },
+  error: null,
+  timestamp: '2024-03-19 16:09:12',
+};
+
+export const PAY_RESPONSE = {
+  success: true,
+  data: {
+    pre_text: '카카오페이로 할게',
+    post_text: '카카오페이로 할게',
+    reply: '카카오페이 결제를 진행할게요',
+    status: 'PAY',
+    language: 'KR',
+    session_id: 'A101',
+    cart: [
+      {
+        cart_id: 1,
+        menu_id: 1,
+        quantity: 1,
+        name: '아이스 아메리카노',
+        description: '깔끔한 아메리카노',
+        base_price: 3000,
+        total_price: 3700,
+        image_url: '/src/assets/images/defaultDrink.png',
+        options: [
+          {
+            optoin_id: 1,
+            option_name: '사이즈',
+            required: true,
+            is_selected: true,
+            selected_id: 2,
+            option_details: [
+              {
+                option_detail_id: 2,
+                option_detail_value: '라지',
+                additional_price: 700,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    contents: [],
+    payment: 'CARD',
+  },
+  error: null,
+  timestamp: '2024-03-19 16:09:12',
 };

@@ -70,6 +70,56 @@ describe('카테고리 관리 페이지', () => {
         cy.contains(CATEGORY_LIST.data.content[0].nameKr).should('exist');
       });
   });
+
+  it('카테고리를 추가할 수 있다.', () => {
+    //given - 메뉴 관리 페이지 - 카테고리 탭에 접근한다.
+    cy.visit('/menus');
+    cy.get('#카테고리').click();
+
+    //when - 카테고리 추가 버튼을 클릭하고, 한글 메뉴명을 입력한다. 입력 후 '번역하기' 버튼을 클릭해 영문명을 생성한다.
+    cy.contains('button', '카테고리 추가').click();
+
+    // 모달이 나타나는지 확인
+    cy.contains('새 카테고리 추가').should('exist');
+
+    // 카테고리명 입력
+    cy.get('#categoryAdd').type('커피');
+
+    // 번역하기 버튼 클릭
+    cy.contains('button', '번역하기').click();
+
+    // 번역된 영문명이 나타날 때까지 대기
+    cy.get('#engCategory').should('have.value', 'Coffee');
+
+    // API 요청 인터셉트 및 응답 확인 (추가 버튼 클릭 전에 인터셉트 설정)
+    cy.intercept('POST', '/api/category', {
+      statusCode: 200,
+      body: {
+        success: true,
+        data: {},
+        timestamp: new Date().toISOString(),
+      },
+    }).as('addCategory');
+
+    // 추가 버튼 클릭 (force: true 옵션 추가)
+    cy.get('#addCategory').click();
+
+    // alert 메시지를 확인하기 위한 spy 설정
+    const alertStub = cy.stub();
+    cy.on('window:alert', alertStub);
+
+    // 추가 버튼 클릭
+    cy.get('#addCategory')
+      .click({ force: true })
+      .then(() => {
+        // alert 메시지 확인
+        cy.wrap(alertStub).should('be.calledWith', '등록에 성공했습니다.');
+      });
+
+    // 모달이 닫혔는지 확인
+    cy.contains('새 카테고리 추가').should('not.exist');
+    //then - 추가 버튼을 클릭해 카테고리 추가에 성공한다.
+  });
 });
 
 describe('옵션관리 페이지', () => {

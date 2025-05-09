@@ -122,4 +122,12 @@ export const handlers = [
     };
     return HttpResponse.json(response);
   }),
+
+  http.post(`${baseUrl}/category`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
 ];

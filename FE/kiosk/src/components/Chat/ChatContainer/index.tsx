@@ -104,7 +104,7 @@ const ChatContainer = ({
         layout
         transition={springTransition}
       >
-        &quot;{userChat}&quot;
+        {userChat !== '' && <span>&quot;{userChat}&quot;</span>}
       </motion.div>
     </motion.div>
   );
