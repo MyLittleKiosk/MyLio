@@ -25,7 +25,6 @@ public class ContentRequestDto {
     private Integer totalPrice;
     @Schema(example = "vanillalatte.jpg")
     private String imageUrl;
-    @Schema(example = "CARD")
     private List<OptionsDto> options;
     private List<OptionsDto> selectedOption;
     private List<NutritionInfoDto> nutritionInfo;
