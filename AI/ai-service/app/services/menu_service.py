@@ -31,6 +31,9 @@ class MenuService:
         
         # 4. 메뉴 원재료 정보 조회
         self._load_menu_ingredients(menus, store_id)
+    
+        # 5. 메뉴 영양 성분 정보 조회
+        self._load_menu_nutrition(menus, store_id)
         
         # 결과 캐싱
         self.menu_cache[store_id] = menus
@@ -318,3 +321,70 @@ class MenuService:
         
         return categories
     
+    def _load_menu_nutrition(self, menus: Dict[int, Dict[str, Any]], store_id: int) -> None:
+        """메뉴 영양 성분 정보 조회"""
+        if not menus:
+            return
+        
+        menu_ids = list(menus.keys())
+        if not menu_ids:
+            return
+        
+        placeholders = ", ".join(["%s"] * len(menu_ids))
+        
+        # 테이블 구조에 맞게 쿼리 수정
+        query = f"""
+        SELECT menu_id, nutrition_id, value, status 
+        FROM nutrition_value 
+        WHERE menu_id IN ({placeholders})
+        """
+        
+        params = menu_ids
+        nutrition_rows = self.db.execute_query(query, params)
+        
+        if not nutrition_rows:
+            return
+        
+        # 영양 성분 템플릿 정보 가져오기 (이름과 단위)
+        nutrition_template_query = """
+        SELECT id, name_kr, name_en, unit_type 
+        FROM nutrition_template
+        """
+        
+        nutrition_templates = self.db.execute_query(nutrition_template_query)
+        if not nutrition_templates:
+            return
+        
+        # 영양 성분 템플릿을 ID 기준으로 매핑
+        nutrition_template_map = {template["id"]: template for template in nutrition_templates}
+        
+        # 각 메뉴별로 영양 성분 정보 리스트 생성 및 초기화
+        for menu_id in menus:
+            # 이미 dict으로 초기화되어 있어도 리스트로 덮어쓰기
+            menus[menu_id]["nutrition"] = []
+        
+        # 각 메뉴별로 영양 성분 정보 구성
+        for row in nutrition_rows:
+            menu_id = row["menu_id"]
+            if menu_id in menus:
+                # 영양 성분 ID를 이용해 템플릿 정보 가져오기
+                nutrition_id = row["nutrition_id"]
+                template = nutrition_template_map.get(nutrition_id)
+                
+                if template:
+                    name = template["name_kr"]
+                    name_en = template.get("name_en", "")
+                    unit = template["unit_type"]
+                    value = row["value"]
+                    
+                    # 영양 성분 정보를 객체로 구성하여 리스트에 추가
+                    nutrition_item = {
+                        "id": nutrition_id,
+                        "name": name,
+                        "name_en": name_en,
+                        "value": value,
+                        "unit": unit,
+                        "formatted": f"{value}{unit}"  # 포맷팅된 값
+                    }
+                    
+                    menus[menu_id]["nutrition"].append(nutrition_item)
