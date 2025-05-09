@@ -42,6 +42,8 @@ logging.level:
 app:
   domain:
     url: https://k12b102.p.ssafy.io
-    cors-origins: https://k12b102.p.ssafy.io, http://localhost:5173
+    cors-origins:
+      - https://k12b102.p.ssafy.io
+      - http://localhost:5173
   is-local: false
   cookie-domain: k12b102.p.ssafy.io
