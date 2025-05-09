@@ -53,7 +53,6 @@ public class ProxyService {
         }
 
         // 1) FastAPI 호출 (String JSON 수신)
-        // 1) FastAPI 호출 (String JSON 수신)
         Mono<String> fastApiJson = ragWebClient.post()
                 .uri("/ai/recognize-intent")
                 .contentType(MediaType.APPLICATION_JSON)
