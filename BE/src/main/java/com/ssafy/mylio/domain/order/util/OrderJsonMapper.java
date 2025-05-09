@@ -41,6 +41,7 @@ public class OrderJsonMapper {
             String reply    = data.path("reply").isNull() ? null : data.path("reply").asText(null);
             String session  = data.path("session_id").asText(null);
             String lang     = data.path("language").asText(null);
+            Integer storeId = data.path("store_id").asInt();
 
             List<ContentsResponseDto> contents = new ArrayList<>();
             for (JsonNode m : (ArrayNode) data.path("contents")) contents.add(toContentsDto(m));
@@ -49,6 +50,7 @@ public class OrderJsonMapper {
             for (JsonNode c : (ArrayNode) data.path("cart")) cart.add(toCartDto(c));
 
             return OrderResponseDto.builder()
+                    .storeId(storeId)
                     .preText(preText)
                     .postText(postText)
                     .reply(reply)

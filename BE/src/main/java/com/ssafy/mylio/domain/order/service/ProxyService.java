@@ -19,6 +19,7 @@ import com.ssafy.mylio.global.error.code.ErrorCode;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,11 +38,23 @@ public class ProxyService {
     private final ObjectMapper snakeMapper = new ObjectMapper()
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 
-    public Mono<OrderResponseDto> process(Integer storeId, OrderRequestDto req) {
+    public Mono<OrderResponseDto> process(Integer storeId, String role, OrderRequestDto req) {
+
+        if(!role.equals("KIOSK")){
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS,"role",role);
+        }
+
+        // storeId
+        req.setStoreId(storeId);
+
+        // sessionId
+        if(req.getSessionId() == null || req.getSessionId().isBlank()){
+            req.setSessionId(UUID.randomUUID().toString());
+        }
 
         // 1) FastAPI 호출 (String JSON 수신)
         Mono<String> fastApiJson = ragWebClient.post()
-                .uri("/recognize-intent")
+                .uri("/ai/recognize-intent")
                 //.header("X-DEV-USER", storeId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(toSnakeJson(req))
@@ -76,7 +89,7 @@ public class ProxyService {
             case "ORDER", "MAIN"   -> orderService.handleOrder(resp);
             case "CONFIRM", "SELECT_PAY", "PAY" -> orderService.handlePayment(resp);
             case "DETAIL", "SEARCH" -> Mono.just(resp);
-            default -> Mono.error(new IllegalStateException("Unknown status: " + resp.getScreenState()));
+            default -> Mono.error(new CustomException(ErrorCode.SCREEN_STATE_NOT_FOUND, "status: " + resp.getScreenState()));
         };
     }
 
