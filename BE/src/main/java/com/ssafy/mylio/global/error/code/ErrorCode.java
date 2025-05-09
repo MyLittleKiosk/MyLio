@@ -22,7 +22,7 @@ public enum ErrorCode {
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "A003", "유효하지 않은 액세스 토큰입니다"),
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "A004", "아이디 혹은 비밀번호가 일치하지 않습니다."),
     INVALID_ROLE(HttpStatus.UNAUTHORIZED,"A005","권한이 없는 사용자입니다."),
-
+    EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT,"A006","중복된 이메일입니다."),
     // Menu
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 메뉴입니다"),
 
@@ -41,6 +41,7 @@ public enum ErrorCode {
     OPTION_STORE_NOT_MATCH(HttpStatus.BAD_REQUEST,"O002","매장에 없는 옵션입니다"),
     OPTION_DETAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "O003", "존재하지 않는 상세옵션입니다"),
     INVALID_OPTION_STATUS(HttpStatus.BAD_REQUEST,"O004","존재하지 않는 옵션 STATUS 입니다"),
+    REQUIRED_OPTION_MISSING(HttpStatus.BAD_REQUEST,"O005","필수옵션이 선택되지 않았습니다"),
 
     //Account
     ACOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "U001","존재하지 않는 계정 정보입니다."),
@@ -54,8 +55,10 @@ public enum ErrorCode {
     NUTRITION_TEMPLATE_NOT_FOUND(HttpStatus.NOT_FOUND, "N001", "존재하지 않는 영양정보 템플릿입니다"),
 
     // Ingredient
-    INGREDIENT_TEMPLATE_NOT_FOUND(HttpStatus.NOT_FOUND, "I001", "존재하지 않는 원재료 템플릿입니다");
+    INGREDIENT_TEMPLATE_NOT_FOUND(HttpStatus.NOT_FOUND, "I001", "존재하지 않는 원재료 템플릿입니다"),
 
+    // AI
+    SCREEN_STATE_NOT_FOUND(HttpStatus.BAD_REQUEST,"AI001","렌더링 할 수 없는 STATE 입니다");
     private final HttpStatus status;
     private final String code;
     private final String message;

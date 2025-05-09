@@ -5,6 +5,7 @@ import com.ssafy.mylio.domain.account.dto.request.AccountModifyRequestDto;
 import com.ssafy.mylio.domain.account.dto.request.PasswordRequestDto;
 import com.ssafy.mylio.domain.account.dto.request.ModifyPasswordRequest;
 import com.ssafy.mylio.domain.account.dto.response.AccountDetailResponseDto;
+import com.ssafy.mylio.domain.account.dto.response.AccountGetInfoResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountListResponseDto;
 import com.ssafy.mylio.domain.account.dto.response.AccountModifyResponse;
 import com.ssafy.mylio.domain.account.entity.Account;
@@ -43,7 +44,10 @@ public class AccountService {
             throw new CustomException(ErrorCode.INVALID_ROLE)
                     .addParameter("userType",userType);
         }
-
+        //중복된 이메일 제거
+        if(accountRepository.findByEmail(request.getEmail()).isPresent()){
+            throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
         //Store 정보 저장
         Store store = saveStoreInfo(request);
 
@@ -213,5 +217,13 @@ public class AccountService {
         String encodedPW = passwordEncoder.encode(request.getNewPw());
 
         account.update(encodedPW);
+    }
+
+    public AccountGetInfoResponseDto getAcountInfo(Integer userId, String userType){
+        //계정 조회
+        Account account = accountRepository.findById(userId)
+                .orElseThrow(()-> new CustomException(ErrorCode.ACOUNT_NOT_FOUND,"userId",userId));
+
+        return AccountGetInfoResponseDto.of(account,userType);
     }
 }
