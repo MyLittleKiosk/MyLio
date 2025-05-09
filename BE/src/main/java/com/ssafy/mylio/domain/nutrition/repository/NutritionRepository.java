@@ -18,4 +18,12 @@ public interface NutritionRepository extends JpaRepository<NutritionValue, Integ
     @Query("DELETE FROM NutritionValue nv WHERE nv.menu = :menu")
     void deleteByMenu(@Param("menu") Menu menu);
 
+    @Query("""
+              select nv
+              from NutritionValue nv
+                join fetch nv.nutrition nt
+              where nv.menu.id = :menuId
+            """)
+    List<NutritionValue> findAllWithTemplateByMenuId(Integer menuId);
+
 }

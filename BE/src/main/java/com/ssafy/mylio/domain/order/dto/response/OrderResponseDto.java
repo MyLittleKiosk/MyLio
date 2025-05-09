@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class OrderResponseDto {
     @Schema(example = "배닐라 라떼 하나 어이스로 주세요")
     private String preText;
@@ -16,7 +16,7 @@ public class OrderResponseDto {
     @Schema(example = "바닐라 라떼 사이즈는 뭘로 하시겠어요?")
     private String reply;
     @Schema(example = "ORDER")
-    private String status;
+    private String screenState;
     @Schema(example = "KR")
     private String language;
     @Schema(example = "A101")
