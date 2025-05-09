@@ -44,7 +44,10 @@ public class AccountService {
             throw new CustomException(ErrorCode.INVALID_ROLE)
                     .addParameter("userType",userType);
         }
-
+        //중복된 이메일 제거
+        if(accountRepository.findByEmail(request.getEmail()).isPresent()){
+            throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
         //Store 정보 저장
         Store store = saveStoreInfo(request);
 

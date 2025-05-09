@@ -36,7 +36,7 @@ public class AccountController {
 
     @PostMapping
     @Operation(summary = "매장 관리자 계정 생성",description = "매장 관리자 계정을 생성합니다.")
-    @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE,ErrorCode.STORE_NOT_FOUND,ErrorCode.STORE_NOT_FOUND})
+    @ApiErrorCodeExamples({ErrorCode.EMAIL_ALREADY_EXISTS,ErrorCode.INVALID_ROLE,ErrorCode.STORE_NOT_FOUND,ErrorCode.STORE_NOT_FOUND})
     public ResponseEntity<CommonResponse<Void>> createAccount(
             @Valid @RequestBody AccountCreateRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
