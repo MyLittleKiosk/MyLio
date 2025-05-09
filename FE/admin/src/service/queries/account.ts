@@ -39,10 +39,11 @@ export const usePostAccount = () => {
   };
 };
 
-export const useDeleteAccount = (accountId: number) => {
+export const useDeleteAccount = () => {
   const queryClient = new QueryClient();
   const query = useMutation({
-    mutationFn: () => deleteAccount(accountId),
+    mutationFn: ({ accountId }: { accountId: number }) =>
+      deleteAccount(accountId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accountList'] });
     },

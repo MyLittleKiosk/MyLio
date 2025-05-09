@@ -67,4 +67,40 @@ describe('계정 관리 페이지', () => {
     // then -  계정 추가 모달이 사라진다.
     cy.contains('h2', '계정 추가').should('not.exist');
   });
+
+  it('매장 관리자 계정을 삭제할 수 있다.', () => {
+    // given -  페이지에 접근한다.
+    cy.intercept('GET', '/api/account?pageable=1').as('getAccounts');
+    cy.intercept('DELETE', '/api/account/1', {
+      statusCode: 200,
+      body: {
+        success: true,
+        data: {},
+        timestamp: '2021-01-01T00:00:00.000Z',
+      },
+    }).as('deleteAccount');
+    cy.visit('/accounts');
+
+    // when -  삭제 아이콘 버튼을 클릭 했을 때, 계정 삭제 모달이 나타난다.
+    cy.wait('@getAccounts');
+
+    // then -  계정 삭제 버튼을 클릭 했을 때, 계정 삭제 요청이 성공한다.
+    cy.get('table tbody tr')
+      .first()
+      .within(() => {
+        cy.get('td')
+          .eq(4) // 4번째 td (삭제 아이콘)
+          .within(() => {
+            cy.get('button').click();
+          });
+      });
+
+    // then -  계정 삭제 모달이 나타난다.
+    cy.contains('button', '확인').click();
+
+    cy.wait('@deleteAccount');
+
+    // then -  계정 삭제 모달이 사라진다.
+    cy.contains('button', '확인').should('not.exist');
+  });
 });
