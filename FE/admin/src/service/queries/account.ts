@@ -23,10 +23,10 @@ export const useGetAccountList = () => {
   };
 };
 
-export const usePostAccount = (account: AccountForm) => {
+export const usePostAccount = () => {
   const queryClient = new QueryClient();
   const query = useMutation({
-    mutationFn: () => postAccount(account),
+    mutationFn: ({ account }: { account: AccountForm }) => postAccount(account),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accountList'] });
     },
