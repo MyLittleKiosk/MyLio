@@ -125,6 +125,6 @@ public class AccountController {
             @AuthenticationPrincipal UserPrincipal userPrincipal){
         Integer userId = authenticationUtil.getCurrentUserId(userPrincipal);
         String userType = authenticationUtil.getCurrntUserType(userPrincipal);
-        return CommonResponse.ok(accountService.getAcoountInfo(userId,userType));
+        return CommonResponse.ok(accountService.getAcountInfo(userId,userType));
     }
 }

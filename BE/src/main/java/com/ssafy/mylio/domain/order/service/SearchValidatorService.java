@@ -1,12 +1,6 @@
 package com.ssafy.mylio.domain.order.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.ssafy.mylio.domain.order.dto.common.OptionDetailsDto;
-import com.ssafy.mylio.domain.order.dto.common.OptionsDto;
-import com.ssafy.mylio.domain.order.dto.response.CartResponseDto;
+import com.ssafy.mylio.domain.menu.repository.MenuRepository;
 import com.ssafy.mylio.domain.order.dto.response.ContentsResponseDto;
 import com.ssafy.mylio.domain.order.dto.response.OrderResponseDto;
 import com.ssafy.mylio.domain.order.util.OrderJsonMapper;
@@ -19,16 +13,15 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SearchValidator {
+public class SearchValidatorService {
 
     private final OrderJsonMapper mapper;
+    private final MenuRepository menuRepository;
 
     public Mono<OrderResponseDto> validate(String pyJson) {
         log.info("옵션 검증 로직 진입 : {}", pyJson);
@@ -38,8 +31,22 @@ public class SearchValidator {
 
     @Transactional(readOnly = true)
     protected OrderResponseDto parseAndValidate(OrderResponseDto order) {
-        // 여기에 검색 결과 검증 로직
 
-        return order.toBuilder().build();
+        Integer storeId = order.getStoreId();
+
+        // storeId로 모든 메뉴 조회
+        List<Integer> menuIds = menuRepository.findAllByStoreId(storeId).stream()
+                .map(menu-> menu.getId())
+                .toList();
+
+        // contents의 menuId가 모두 유효한지 검증
+        for (ContentsResponseDto c : order.getContents()) {
+            Integer menuId = c.getMenuId();
+            if (!menuIds.contains(menuId)) {
+                throw new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", menuId);
+            }
+        }
+
+        return order;
     }
 }

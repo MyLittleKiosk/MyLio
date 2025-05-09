@@ -55,8 +55,10 @@ public enum ErrorCode {
     NUTRITION_TEMPLATE_NOT_FOUND(HttpStatus.NOT_FOUND, "N001", "존재하지 않는 영양정보 템플릿입니다"),
 
     // Ingredient
-    INGREDIENT_TEMPLATE_NOT_FOUND(HttpStatus.NOT_FOUND, "I001", "존재하지 않는 원재료 템플릿입니다");
+    INGREDIENT_TEMPLATE_NOT_FOUND(HttpStatus.NOT_FOUND, "I001", "존재하지 않는 원재료 템플릿입니다"),
 
+    // AI
+    SCREEN_STATE_NOT_FOUND(HttpStatus.BAD_REQUEST,"AI001","렌더링 할 수 없는 STATE 입니다");
     private final HttpStatus status;
     private final String code;
     private final String message;

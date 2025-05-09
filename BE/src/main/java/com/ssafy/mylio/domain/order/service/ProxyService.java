@@ -1,7 +1,5 @@
 package com.ssafy.mylio.domain.order.service;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.ssafy.mylio.domain.order.dto.response.ContentsResponseDto;
 import com.ssafy.mylio.domain.order.util.OrderJsonMapper;
 import reactor.core.scheduler.Schedulers;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,9 +19,7 @@ import com.ssafy.mylio.global.error.code.ErrorCode;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,22 +28,34 @@ public class ProxyService {
 
     @Qualifier("ragWebClient")
     private final WebClient ragWebClient;
-    private final OrderValidator orderValidator;
-    private final SearchValidator searchValidator;
-    private final PaymentValidator paymentValidator;
+    private final OrderValidatorService orderValidatorService;
+    private final SearchValidatorService searchValidatorService;
+    private final PaymentValidatorService paymentValidatorService;
     private final OrderService orderService;
-    private final DetailValidator detailValidator;
+    private final DetailValidatorService detailValidatorService;
     private final OrderJsonMapper mapper;
 
     private final ObjectMapper snakeMapper = new ObjectMapper()
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 
-    public Mono<OrderResponseDto> process(Integer storeId, OrderRequestDto req) {
+    public Mono<OrderResponseDto> process(Integer storeId, String role, OrderRequestDto req) {
+
+        if(!role.equals("KIOSK")){
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS,"role",role);
+        }
+
+        // storeId
+        req.setStoreId(storeId);
+
+        // sessionId
+        if(req.getSessionId() == null || req.getSessionId().isBlank()){
+            req.setSessionId(UUID.randomUUID().toString());
+        }
 
         // 1) FastAPI 호출 (String JSON 수신)
+        // 1) FastAPI 호출 (String JSON 수신)
         Mono<String> fastApiJson = ragWebClient.post()
-                .uri("/recognize-intent")
-                .header("X-DEV-USER", storeId.toString())
+                .uri("/ai/recognize-intent")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(toSnakeJson(req))
                 .retrieve()
@@ -66,10 +74,10 @@ public class ProxyService {
     private Mono<OrderResponseDto> routeByScreenState(String json) {
         String screen = extractScreenState(json);
         return switch (screen) {
-            case "ORDER", "MAIN"  -> orderValidator.validate(json);   // 옵션 검증 포함
-            case "DETAIL" -> detailValidator.validate(json);   // 영양정보 검증 포함
-            case "SEARCH" -> searchValidator.validate(json);
-            case "CONFIRM", "SELECT_PAY" -> paymentValidator.validate(json);
+            case "ORDER", "MAIN"  -> orderValidatorService.validate(json);   // 옵션 검증 포함
+            case "DETAIL" -> detailValidatorService.validate(json);   // 영양정보 검증 포함
+            case "SEARCH" -> searchValidatorService.validate(json);
+            case "CONFIRM", "SELECT_PAY" -> paymentValidatorService.validate(json);
             default -> Mono.fromCallable(() -> mapper.parse(json))
                     .subscribeOn(Schedulers.boundedElastic());
         };
@@ -81,7 +89,7 @@ public class ProxyService {
             case "ORDER", "MAIN"   -> orderService.handleOrder(resp);
             case "CONFIRM", "SELECT_PAY", "PAY" -> orderService.handlePayment(resp);
             case "DETAIL", "SEARCH" -> Mono.just(resp);
-            default -> Mono.error(new IllegalStateException("Unknown status: " + resp.getScreenState()));
+            default -> Mono.error(new CustomException(ErrorCode.SCREEN_STATE_NOT_FOUND, "status: " + resp.getScreenState()));
         };
     }
 

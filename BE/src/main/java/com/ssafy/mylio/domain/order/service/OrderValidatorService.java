@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class OrderValidator {
+public class OrderValidatorService {
 
     private final MenuRepository menuRepository;
     private final MenuOptionRepository menuOptionRepository;
