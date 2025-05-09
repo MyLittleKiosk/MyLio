@@ -121,7 +121,7 @@ public class AccountController {
     @GetMapping("/role")
     @Operation(summary = "계정 정보 조회", description = "모든 계정의 정보를 조회합니다.")
     @ApiErrorCodeExamples({})
-    public ResponseEntity<CommonResponse<AccountGetInfoResponseDto>> getAcoountInfo(
+    public ResponseEntity<CommonResponse<AccountGetInfoResponseDto>> getAccountInfo(
             @AuthenticationPrincipal UserPrincipal userPrincipal){
         Integer userId = authenticationUtil.getCurrentUserId(userPrincipal);
         String userType = authenticationUtil.getCurrntUserType(userPrincipal);
