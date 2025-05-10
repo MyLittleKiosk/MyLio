@@ -138,6 +138,9 @@ services:
       - "${ADMIN_PORT}:${ADMIN_CONTAINER_PORT}"
     volumes:
       - /home/ubuntu/MyLio/frontend/admin/default.conf:/etc/nginx/conf.d/default.conf
+    args:
+        VITE_PUBLIC_API_URL: ${VITE_PUBLIC_API_URL}
+        VITE_OPENAI_API_KEY: ${VITE_OPENAI_API_KEY}
     networks:
       - app-network
 
@@ -151,6 +154,10 @@ services:
       - "${KIOSK_PORT}:${KIOSK_CONTAINER_PORT}"
     volumes:
       - /home/ubuntu/MyLio/frontend/kiosk/default.conf:/etc/nginx/conf.d/default.conf
+    args:
+        BASE_PATH: ${KIOSK_BASE_PATH}
+        VITE_PUBLIC_API_URL: ${VITE_PUBLIC_API_URL}
+        VITE_OPENAI_API_KEY: ${VITE_OPENAI_API_KEY}
     networks:
       - app-network
 

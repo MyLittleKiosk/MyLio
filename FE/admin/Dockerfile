@@ -13,6 +13,14 @@ COPY .yarn/ .yarn/
 # 의존성 설치 (Berry 표준)
 RUN yarn install --immutable
 
+ARG BASE_PATH=/
+ARG VITE_PUBLIC_API_URL
+ARG VITE_OPENAI_API_KEY
+
+ENV BASE_PATH ${BASE_PATH}
+ENV VITE_PUBLIC_API_URL ${VITE_PUBLIC_API_URL}
+ENV VITE_OPENAI_API_KEY ${VITE_OPENAI_API_KEY}
+
 # 애플리케이션 소스 복사 → 빌드
 COPY . .
 RUN yarn build
