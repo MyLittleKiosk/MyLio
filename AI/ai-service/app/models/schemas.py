@@ -37,6 +37,9 @@ class VoiceInputRequest(BaseModel):
     screen_state: ScreenState
     store_id: int
     session_id: Optional[str] = None
+    
+    class Config:
+        extra = "ignore"  # 모델에 없는 추가 필드는 무시
 
 class ResponseStatus(str, Enum):
     """응답 상태 정의"""
