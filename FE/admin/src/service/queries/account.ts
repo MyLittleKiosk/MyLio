@@ -56,10 +56,10 @@ export const useDeleteAccount = () => {
   };
 };
 
-export const useGetAccountDetail = (accountId: number) => {
+export const useGetAccountDetail = () => {
   const query = useQuery({
-    queryKey: ['accountDetail', accountId],
-    queryFn: () => getAccountDetail(accountId),
+    queryKey: ['accountDetail'],
+    queryFn: () => getAccountDetail(),
   });
 
   return {
@@ -69,12 +69,13 @@ export const useGetAccountDetail = (accountId: number) => {
   };
 };
 
-export const usePatchAccount = (accountId: number, account: AccountForm) => {
+export const usePatchAccount = () => {
   const queryClient = new QueryClient();
   const query = useMutation({
-    mutationFn: () => patchAccount(accountId, account),
+    mutationFn: ({ account }: { account: AccountForm }) =>
+      patchAccount(account),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['accountList'] });
+      queryClient.invalidateQueries({ queryKey: ['accountDetail'] });
     },
   });
 
@@ -82,37 +83,38 @@ export const usePatchAccount = (accountId: number, account: AccountForm) => {
     mutate: query.mutate,
     isPending: query.isPending,
     isError: query.isError,
+    isSuccess: query.isSuccess,
   };
 };
 
-export const usePatchAccountPassword = (nowPw: string, newPw: string) => {
-  const queryClient = new QueryClient();
+export const usePatchAccountPassword = () => {
   const query = useMutation({
-    mutationFn: () => patchAccountPassword(nowPw, newPw),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['accountList'] });
-    },
+    mutationFn: ({
+      nowPassword,
+      newPassword,
+    }: {
+      nowPassword: string;
+      newPassword: string;
+    }) => patchAccountPassword(nowPassword, newPassword),
   });
 
   return {
     mutate: query.mutate,
     isPending: query.isPending,
     isError: query.isError,
+    isSuccess: query.isSuccess,
   };
 };
 
 export const usePatchResetPassword = (email: string, username: string) => {
-  const queryClient = new QueryClient();
   const query = useMutation({
     mutationFn: () => patchResetPassword(email, username),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['accountList'] });
-    },
   });
 
   return {
     mutate: query.mutate,
     isPending: query.isPending,
     isError: query.isError,
+    isSuccess: query.isSuccess,
   };
 };

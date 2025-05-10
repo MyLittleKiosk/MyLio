@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import IconBack from '@/assets/icons/IconBack';
 import LOGO from '@/assets/images/Character_HAo.png';
@@ -17,7 +17,7 @@ const SideBar = () => {
   const AUTHORITY = '일반관리자';
 
   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
-  const [currentPath, setCurrentPath] = useState('/');
+  const [currentPath, setCurrentPath] = useState(useLocation().pathname);
 
   // 사이드바 너비 조정 애니메이션 완료 여부
   const [isWidthAnimationComplete, setIsWidthAnimationComplete] =
@@ -80,8 +80,10 @@ const SideBar = () => {
               >
                 <li
                   className={clsx(
-                    'flex items-center hover:bg-offWhite rounded-md p-2',
-                    currentPath === item.link && 'bg-subContent font-preBold'
+                    'flex items-center  rounded-md p-2',
+                    currentPath === item.link
+                      ? 'bg-subContent font-preBold'
+                      : 'hover:bg-offWhite'
                   )}
                 >
                   <div className='size-6 flex items-center justify-center'>

@@ -12,6 +12,7 @@ import {
 } from '@/types/statistics';
 import { CATEGORY_LIST } from './dummies/category';
 import MENU_LIST from './dummies/menu';
+import DUMMY_MY_INFO from './dummies/my';
 import { OPTION_LIST } from './dummies/option';
 import {
   DUMMY_CATEGORY_SALES_BY_YEAR_2024,
@@ -124,6 +125,34 @@ export const handlers = [
   }),
 
   http.post(`${baseUrl}/category`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.get(`${baseUrl}/account/detail`, () => {
+    const responseData: Response<AccountType> = {
+      success: true,
+      data: {
+        ...DUMMY_MY_INFO,
+        accountId: 1,
+      },
+      timestamp: new Date().toISOString(),
+    };
+    return HttpResponse.json(responseData);
+  }),
+
+  http.patch(`${baseUrl}/account`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.patch(`${baseUrl}/account/change_pw`, () => {
     return HttpResponse.json({
       success: true,
       data: {},
