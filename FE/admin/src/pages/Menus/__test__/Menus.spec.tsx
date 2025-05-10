@@ -101,19 +101,18 @@ describe('카테고리 관리 페이지', () => {
       },
     }).as('addCategory');
 
-    // 추가 버튼 클릭 (force: true 옵션 추가)
-    cy.get('#addCategory').click();
-
     // alert 메시지를 확인하기 위한 spy 설정
     const alertStub = cy.stub();
     cy.on('window:alert', alertStub);
 
-    // 추가 버튼 클릭
+    // 추가 버튼 클릭 (force: true 옵션 추가)
     cy.get('#addCategory')
       .click({ force: true })
       .then(() => {
         // alert 메시지 확인
-        cy.wrap(alertStub).should('be.calledWith', '등록에 성공했습니다.');
+        cy.on('window:alert', () => {
+          cy.wrap(alertStub).should('be.calledWith', '등록에 성공했습니다.');
+        });
       });
 
     // 모달이 닫혔는지 확인
@@ -154,5 +153,51 @@ describe('옵션관리 페이지', () => {
       .within(() => {
         cy.contains(OPTION_LIST.data.options[0].optionNameKr).should('exist');
       });
+  });
+
+  it('옵션 그룹을 추가할 수 있다.', () => {
+    //given - 메뉴 관리 페이지 - 옵션 탭에 접근한다.
+    cy.visit('/menus');
+    cy.get('#옵션').click();
+
+    //when - 옵션 그룹 추가 버튼을 클릭하고, 한글 옵션 그룹명을 입력한다.
+    cy.contains('button', '옵션 그룹 추가').click();
+
+    // 모달이 나타나는지 확인
+    cy.contains('dialog', '옵션 그룹 추가').should('exist');
+
+    // 옵션 그룹명 입력
+    cy.get('#optionGroupAdd').type('사이즈');
+
+    // 번역하기 버튼 클릭
+    cy.contains('button', '번역하기').click();
+
+    // 번역된 영문명이 나타날 때까지 대기
+    cy.get('#engOptionGroup').should('have.value', 'Size');
+
+    // API 요청 인터셉트 설정 (클릭 직전에 설정)
+    cy.intercept('POST', '/api/option', {
+      statusCode: 200,
+      body: {
+        success: true,
+        data: {},
+        timestamp: new Date().toISOString(),
+      },
+    }).as('addOptionGroup');
+
+    // alert 메시지를 확인하기 위한 spy 설정
+    const alertStub = cy.stub();
+    cy.on('window:alert', alertStub);
+
+    // 추가 버튼 클릭
+    cy.get('#addOptionGroup')
+      .click({ force: true })
+      .then(() => {
+        // alert 메시지 확인
+        cy.wrap(alertStub).should('be.calledWith', '등록에 성공했습니다.');
+      });
+
+    // 모달이 닫혔는지 확인
+    cy.contains('dialog', '옵션 그룹 추가').should('not.exist');
   });
 });

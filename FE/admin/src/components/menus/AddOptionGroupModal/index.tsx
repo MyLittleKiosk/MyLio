@@ -28,7 +28,6 @@ const AddOptionGroupModal = () => {
       optionNameKr: optionGroupValueKor,
       optionNameEn: optionGroupValueEng,
     });
-    closeModal();
   }
 
   return (
@@ -59,7 +58,7 @@ const AddOptionGroupModal = () => {
             />
           </div>
           <Input
-            inputId='optionGroupAdd'
+            inputId='engOptionGroup'
             label='옵션 그룹 영문명'
             inputType='text'
             onChange={(e) => setOptionGroupValueEng(e.target.value)}
@@ -75,7 +74,7 @@ const AddOptionGroupModal = () => {
               }}
               cancel
             />
-            <Button buttonType='submit' text='추가' />
+            <Button buttonType='submit' text='추가' buttonId='addOptionGroup' />
           </div>
         </div>
       </form>

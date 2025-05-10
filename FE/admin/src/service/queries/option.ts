@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { OptionList } from '@/types/options';
 import { addOptionGroup, getOptions } from '@/service/apis/option';
+import useModalStore from '@/stores/useModalStore';
 
 const useGetOptions = () => {
   const query = useQuery<OptionList>({
@@ -16,6 +17,7 @@ const useGetOptions = () => {
 };
 
 const useAddOptionGroup = () => {
+  const { closeModal } = useModalStore();
   return useMutation({
     mutationFn: ({
       optionNameKr,
@@ -26,6 +28,7 @@ const useAddOptionGroup = () => {
     }) => addOptionGroup({ optionNameKr, optionNameEn }),
     onSuccess: () => {
       alert('등록에 성공했습니다.');
+      closeModal();
     },
     onError: (error) => {
       if (error instanceof Error) {

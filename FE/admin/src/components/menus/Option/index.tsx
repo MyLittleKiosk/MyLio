@@ -26,7 +26,7 @@ const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
         <h3 className='text-lg font-preMedium'>옵션 관리</h3>
         <Button
           buttonType='button'
-          text='옵션그룹 추가'
+          text='옵션 그룹 추가'
           icon={<IconAdd fillColor='white' />}
           onClick={() => {
             openModal(<AddOptionGroupModal />);
