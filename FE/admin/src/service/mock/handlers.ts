@@ -70,6 +70,14 @@ export const handlers = [
     });
   }),
 
+  http.post(`${baseUrl}/option_detail/:optionId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
   http.get(`${baseUrl}/accounts/role`, () => {
     return HttpResponse.json(userRole);
   }),

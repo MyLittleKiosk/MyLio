@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
@@ -8,12 +8,30 @@ import useModalStore from '@/stores/useModalStore';
 
 import { OptionGroup } from '@/types/options';
 
+import { useAddOptionDetail } from '@/service/queries/option';
+
 const AddOptionDetailModal = ({ row }: { row: OptionGroup }) => {
   const { closeModal } = useModalStore();
+
   const [optionDetailName, setOptionDetailName] = useState('');
   const [optionDetailPrice, setOptionDetailPrice] = useState('');
 
-  function handleSubmit() {}
+  const { mutate: addOptionDetail } = useAddOptionDetail();
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (!optionDetailName || !optionDetailPrice) {
+      alert('모든 필드를 입력해주세요.');
+      return;
+    }
+
+    addOptionDetail({
+      optionId: row.optionId,
+      value: optionDetailName,
+      additionalPrice: Number(optionDetailPrice),
+    });
+  }
 
   return (
     <div className='flex flex-col gap-8 px-10 py-8'>
