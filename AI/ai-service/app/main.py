@@ -229,7 +229,7 @@ def format_intent_response(response_data: Dict[str, Any]) -> Dict[str, Any]:
             "post_text": response_data.get("raw_text", ""),
             "reply": "죄송합니다. 요청을 처리할 수 없습니다.",
             "status": ResponseStatus.UNKNOWN,
-            "language": "ko",
+            "language": "KR",
             "session_id": "",
             "cart": [],
             "contents": [],

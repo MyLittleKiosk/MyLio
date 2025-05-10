@@ -332,7 +332,7 @@ class RedisSessionManager:
                 
                 sanitized["cart"].append(safe_item)
         
-        # last_state 안전하게 복사 (중요 - 세션 상태 유지에 필수)
+        # last_state 안전하게 복사
         if "last_state" in session_data:
             sanitized["last_state"] = {}
             last_state = session_data["last_state"]
@@ -358,23 +358,69 @@ class RedisSessionManager:
                         }
                         sanitized["last_state"]["pending_option"]["option_details"].append(safe_detail)
             
-            # menu 복사 (위의 카트 아이템과 유사한 방식)
+            # menu 복사 
             if "menu" in last_state:
                 menu = last_state["menu"]
                 sanitized["last_state"]["menu"] = {
                     "menu_id": menu.get("menu_id"),
                     "name": menu.get("name"),
                     "base_price": menu.get("base_price", 0),
-                    "total_price": menu.get("total_price", 0)
-                    # 필요한 다른 필드 추가
+                    "total_price": menu.get("total_price", 0),
+                    "image_url": menu.get("image_url", ""),
+                    "is_corrected": menu.get("is_corrected", False),
+                    "original_name": menu.get("original_name", None)
                 }
                 
-                # 옵션 정보 복사 (간소화된 버전)
+                # 옵션 정보 복사 (개선)
+                if "options" in menu:
+                    sanitized["last_state"]["menu"]["options"] = []
+                    for option in menu.get("options", []):
+                        safe_option = {
+                            "option_id": option.get("option_id"),
+                            "option_name": option.get("option_name"),
+                            "option_name_en": option.get("option_name_en", ""),
+                            "required": option.get("required", False),
+                            "is_selected": option.get("is_selected", False),
+                            "selected_id": option.get("selected_id")
+                        }
+                        
+                        if "option_details" in option:
+                            safe_option["option_details"] = []
+                            for detail in option.get("option_details", []):
+                                safe_detail = {
+                                    "id": detail.get("id"),
+                                    "value": detail.get("value"),
+                                    "additional_price": detail.get("additional_price", 0)
+                                }
+                                safe_option["option_details"].append(safe_detail)
+                        
+                        sanitized["last_state"]["menu"]["options"].append(safe_option)
+                
+                # 선택된 옵션 정보 복사 (중요 추가)
                 if "selected_options" in menu:
                     sanitized["last_state"]["menu"]["selected_options"] = []
-                    # 나머지 옵션 복사 로직 (위와 유사)
+                    for option in menu.get("selected_options", []):
+                        safe_option = {
+                            "option_id": option.get("option_id"),
+                            "option_name": option.get("option_name"),
+                            "option_name_en": option.get("option_name_en", ""),
+                            "required": option.get("required", False),
+                            "is_selected": option.get("is_selected", True)
+                        }
+                        
+                        if "option_details" in option:
+                            safe_option["option_details"] = []
+                            for detail in option.get("option_details", []):
+                                safe_detail = {
+                                    "id": detail.get("id"),
+                                    "value": detail.get("value"),
+                                    "additional_price": detail.get("additional_price", 0)
+                                }
+                                safe_option["option_details"].append(safe_detail)
+                        
+                        sanitized["last_state"]["menu"]["selected_options"].append(safe_option)
         
-        # 대화 기록 복사 (필요시)
+        # 대화 기록 복사
         if "history" in session_data:
             sanitized["history"] = []
             for entry in session_data.get("history", [])[:10]:  # 최근 10개만 저장
@@ -395,9 +441,52 @@ class RedisSessionManager:
                 
                 sanitized["history"].append(safe_entry)
         
-        # 컨텍스트 정보 복사 (필요시)
+        # 컨텍스트 정보 복사
         if "context" in session_data:
+            context = session_data["context"]
             sanitized["context"] = {}
-            # 필요한 컨텍스트 정보만 복사
+            
+            # 화면 및 세션 상태 컨텍스트
+            if "current_screen" in context:
+                sanitized["context"]["current_screen"] = context["current_screen"]
+            if "screen_history" in context:
+                sanitized["context"]["screen_history"] = context["screen_history"]
+            if "conversation_intent" in context:
+                sanitized["context"]["conversation_intent"] = context["conversation_intent"]
+            
+            # LLM/랭체인 관련 컨텍스트
+            if "selected_examples" in context:
+                sanitized["context"]["selected_examples"] = context["selected_examples"]
+            if "llm_response_keys" in context:
+                sanitized["context"]["llm_response_keys"] = context["llm_response_keys"]
+            if "prompt_context" in context:
+                sanitized["context"]["prompt_context"] = context["prompt_context"]
+            
+            # 메뉴 및 주문 맥락
+            if "menu_keywords" in context:
+                sanitized["context"]["menu_keywords"] = context["menu_keywords"]
+            if "option_patterns" in context:
+                sanitized["context"]["option_patterns"] = context["option_patterns"]
+            if "order_intent_state" in context:
+                sanitized["context"]["order_intent_state"] = context["order_intent_state"]
+            
+            # 벡터 검색 관련 컨텍스트
+            if "last_search_query" in context:
+                sanitized["context"]["last_search_query"] = context["last_search_query"]
+            if "search_results" in context:
+                # 검색 결과의 핵심 정보만 저장 (전체 문서는 아님)
+                sanitized["context"]["search_results"] = [
+                    {"menu_id": r.get("menu_id"), "name": r.get("name_kr"), "similarity": r.get("similarity")}
+                    for r in context["search_results"][:5]  # 상위 5개만 저장
+                ] if isinstance(context["search_results"], list) else []
+            
+            # 기타 단순 타입의 컨텍스트 정보 보존
+            for key, value in context.items():
+                if key not in sanitized["context"]:
+                    # 직렬화 가능한 단순 타입만 저장
+                    if isinstance(value, (str, int, float, bool)):
+                        sanitized["context"][key] = value
+                    elif isinstance(value, (list, dict)) and len(str(value)) < 1000:  # 크기 제한
+                        sanitized["context"][key] = value
         
         return sanitized
