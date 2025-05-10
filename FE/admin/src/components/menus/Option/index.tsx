@@ -3,6 +3,7 @@ import IconAdd from '@/assets/icons/IconAdd';
 import Button from '@/components/common/Button';
 import Table from '@/components/common/Table';
 import AddOptionGroupModal from '@/components/menus/AddOptionGroupModal';
+import AddOptionDetailModal from '@/components/menus/AddOptionDetailModal';
 
 import { NavItemType } from '@/types/menus';
 import { OptionGroup } from '@/types/options';
@@ -39,6 +40,9 @@ const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
         description={`총 6개의 옵션이 있습니다.`}
         columns={selectedNav.columns as Column<OptionGroup>[]}
         data={options}
+        onAdd={(row) => {
+          openModal(<AddOptionDetailModal row={row} />);
+        }}
       />
     </div>
   );

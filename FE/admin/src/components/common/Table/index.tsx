@@ -1,3 +1,4 @@
+import IconAdd from '@/assets/icons/IconAdd';
 import IconEdit from '@/assets/icons/IconEdit';
 import IconTrashCan from '@/assets/icons/IconTrashCan';
 
@@ -12,6 +13,7 @@ const Table = <T extends object>({
   onEdit,
   onDelete,
   onView,
+  onAdd,
 }: TableProps<T>) => {
   function checkColumn(column: Column<T>, row: T) {
     switch (column.accessor) {
@@ -73,6 +75,15 @@ const Table = <T extends object>({
         );
       case 'password':
         return '********';
+      case 'optionDetailAdd':
+        return (
+          <button
+            className='p-1 hover:bg-gray-100 rounded-md'
+            onClick={() => onAdd?.(row)}
+          >
+            <IconAdd />
+          </button>
+        );
       default:
         return String(row[column.accessor as keyof T]);
     }
