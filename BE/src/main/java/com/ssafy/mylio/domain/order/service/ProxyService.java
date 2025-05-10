@@ -78,7 +78,7 @@ public class ProxyService {
             case "ORDER", "MAIN"  -> orderValidatorService.validate(json, user);   // 옵션 검증 포함
             case "DETAIL" -> detailValidatorService.validate(json, user);   // 영양정보 검증 포함
             case "SEARCH" -> searchValidatorService.validate(json, user);
-            case "CONFIRM", "SELECT_PAY" -> paymentValidatorService.validate(json, user);
+            case "CONFIRM", "SELECT_PAY" , "PAY"-> paymentValidatorService.validate(json, user);
             default -> Mono.fromCallable(() -> mapper.parse(json, user))
                     .subscribeOn(Schedulers.boundedElastic());
         };
