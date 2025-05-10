@@ -55,7 +55,7 @@ class ResponseService:
                 # 한국어 결제 템플릿 추가
                 "empty_cart": "장바구니가 비어있습니다. 메뉴를 먼저 선택해주세요.",
                 "confirm_order": "주문 내역을 확인해 주세요. 총 금액은 {total_amount}원입니다. 결제를 진행하시겠습니까?",
-                "select_payment": "결제 방법을 선택해 주세요. 카드, 카카오페이, 네이버페이, 현금, 상품권이 가능합니다.",
+                "select_payment": "결제 방법을 선택해 주세요. 카드, 카카오페이, 기프트카드, 모바일일상품권이 가능합니다.",
                 "payment_success": "{payment_method}로 결제가 완료되었습니다. 이용해 주셔서 감사합니다.",
                 "payment_failed": "결제에 실패했습니다. 다시 시도해 주세요.",
                 "payment_canceled": "결제가 취소되었습니다. 다시 주문하시겠어요?",
