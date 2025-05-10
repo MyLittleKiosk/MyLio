@@ -8,12 +8,14 @@ import { useOrderRequest } from '@/service/queries/useOrderRequest';
 import useOrderStore from '@/stores/useOrderStore';
 import { DEFAULT_COMMENT } from '@/datas/COMMENT';
 import { useLogout } from '@/service/queries/useLogout';
+
 const OrderLayout = () => {
   const { pathname } = useLocation();
   const [userChat, setUserChat] = useState<string>('');
   const { order } = useOrderStore();
   const { mutate: orderRequest } = useOrderRequest();
   const { mutate: logout } = useLogout();
+
   const handleRecognitionResult = (text: string) => {
     setUserChat(text);
     orderRequest({

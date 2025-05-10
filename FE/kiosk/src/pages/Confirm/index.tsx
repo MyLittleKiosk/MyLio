@@ -11,7 +11,7 @@ const Confirm = () => {
             <img src={item.imageUrl} alt={item.name} />
             <div className='flex flex-col w-1/2'>
               <h2 className='text-lg font-preBold'>{item.name}</h2>
-              <p>{formatNumber(item.basePrice)}</p>
+              <p>{formatNumber(item.totalPrice)}</p>
               {item.options.map((option) => (
                 <p key={option.optionName} className='text-xs text-gray-500'>
                   <div className='flex items-center justify-between'>
@@ -22,6 +22,17 @@ const Confirm = () => {
             </div>
           </div>
         ))}
+        <div className='flex flex-col gap-2 w-full pe-4'>
+          <div className='flex items-center justify-between border-t pt-4'>
+            <div>총 주문금액</div>
+            <div>
+              {formatNumber(
+                order.contents.reduce((acc, curr) => acc + curr.totalPrice, 0)
+              )}
+              원
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
