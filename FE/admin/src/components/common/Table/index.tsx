@@ -78,6 +78,7 @@ const Table = <T extends object>({
       case 'optionDetailAdd':
         return (
           <button
+            id='optionDetailAdd'
             className='p-1 hover:bg-gray-100 rounded-md'
             onClick={() => onAdd?.(row)}
           >

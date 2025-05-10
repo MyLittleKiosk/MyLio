@@ -200,4 +200,47 @@ describe('옵션관리 페이지', () => {
     // 모달이 닫혔는지 확인
     cy.contains('dialog', '옵션 그룹 추가').should('not.exist');
   });
+
+  it('옵션 상세를 추가할 수 있다.', () => {
+    //given - 메뉴 관리 페이지 - 옵션 탭에 접근한다.
+    cy.visit('/menus');
+    cy.get('#옵션').click();
+
+    //when - 옵션 상세 추가 버튼을 클릭하고, 한글 옵션 상세명을 입력한다.
+    cy.get('#optionDetailAdd').click();
+
+    // 모달이 나타나는지 확인
+    cy.contains('dialog', '옵션 상세 추가').should('exist');
+
+    // 옵션 상세명 입력
+    cy.get('#optionDetailName').type('사이즈');
+
+    // 가격 입력
+    cy.get('#optionDetailPrice').type('1000');
+
+    // API 요청 인터셉트 설정 (클릭 직전에 설정)
+    cy.intercept('POST', '/api/option_detail/:optionId', {
+      statusCode: 200,
+      body: {
+        success: true,
+        data: {},
+        timestamp: new Date().toISOString(),
+      },
+    }).as('addOptionDetail');
+
+    // alert 메시지를 확인하기 위한 spy 설정
+    const alertStub = cy.stub();
+    cy.on('window:alert', alertStub);
+
+    // 추가 버튼 클릭
+    cy.get('#addOptionDetail')
+      .click({ force: true })
+      .then(() => {
+        // alert 메시지 확인
+        cy.wrap(alertStub).should('be.calledWith', '등록에 성공했습니다.');
+      });
+
+    // 모달이 닫혔는지 확인
+    cy.contains('dialog', '옵션 상세 추가').should('not.exist');
+  });
 });
