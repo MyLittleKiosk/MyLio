@@ -19,6 +19,7 @@ import reactor.core.scheduler.Schedulers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,7 +46,9 @@ public class PaymentValidatorService {
             throw new CustomException(ErrorCode.CART_IS_EMPTY);
         }
 
-
+        if(screenState.equals("PAY")){
+            payValidate(order);
+        }
 
         List<CartResponseDto> fixedCart = order.getCart().stream()
                 .map(this::validateCartItem)
@@ -99,9 +102,17 @@ public class PaymentValidatorService {
     }
 
     private void payValidate(OrderResponseDto order) {
+        String paymentMethod = order.getPayment();
+        Set<String> validMethods = Set.of("CARD", "MOBILE", "GIFT", "PAY");
+
+        if (paymentMethod == null || paymentMethod.isBlank()) {
+            throw new CustomException(ErrorCode.PAY_NOT_FOUND, "paymentMethod", paymentMethod);
+        }
+
+        if (!validMethods.contains(paymentMethod)) {
+            throw new CustomException(ErrorCode.PAY_NOT_MATCH, "paymentMethod", paymentMethod);
+        }
+
     }
-
-
-
 
 }
