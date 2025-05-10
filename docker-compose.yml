@@ -79,6 +79,11 @@ services:
       dockerfile: Dockerfile
     image: ${VOICE_IMAGE_NAME}
     container_name: ${VOICE_CONTAINER_NAME}
+    environment:
+      CLOVA_API_INVOKE_URL: ${CLOVA_API_INVOKE_URL}
+      CLOVA_API_KEY_ID: ${CLOVA_API_KEY_ID}
+      CLOVA_API_SECRET: ${CLOVA_API_SECRET}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
     ports:
       - "${VOICE_PORT}:${VOICE_CONTAINER_PORT}"
     restart: always
