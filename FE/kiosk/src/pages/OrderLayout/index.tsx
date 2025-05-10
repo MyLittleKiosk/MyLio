@@ -7,15 +7,17 @@ import { useState } from 'react';
 import { useOrderRequest } from '@/service/queries/useOrderRequest';
 import useOrderStore from '@/stores/useOrderStore';
 import { DEFAULT_COMMENT } from '@/datas/COMMENT';
+import { useLogout } from '@/service/queries/useLogout';
 const OrderLayout = () => {
   const { pathname } = useLocation();
   const [userChat, setUserChat] = useState<string>('');
   const { order } = useOrderStore();
   const { mutate: orderRequest } = useOrderRequest();
+  const { mutate: logout } = useLogout();
   const handleRecognitionResult = (text: string) => {
     setUserChat(text);
     orderRequest({
-      text: userChat,
+      text: text,
       screenState: order.screenState,
       language: 'KR',
       sessionId: order.sessionId,
@@ -54,6 +56,7 @@ const OrderLayout = () => {
             <Link to='detail'>상세</Link>
           </li>
         </ul>
+        <button onClick={() => logout(3)}>로그아웃</button>
       </div>
       <header
         className={clsx(
@@ -63,7 +66,7 @@ const OrderLayout = () => {
       >
         <Main
           userChat={userChat}
-          gptChat={order.postText ? order.postText : DEFAULT_COMMENT}
+          gptChat={order.reply ? order.reply : DEFAULT_COMMENT}
         />
         <RecordButton onRecognitionResult={handleRecognitionResult} />
       </header>

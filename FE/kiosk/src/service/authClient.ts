@@ -3,9 +3,9 @@ const baseUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
 const authClient = axios.create({
   baseURL: baseUrl,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
-    withCredentials: true,
   },
 });
 

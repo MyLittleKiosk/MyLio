@@ -9,20 +9,24 @@ const Menus = () => {
           총 {order.contents.length}개의 메뉴
         </span>
       </div>
-      <div className='grid grid-cols-4 justify-items-start gap-5 overflow-y-auto'>
+      <div className='grid grid-cols-4 justify-items-center gap-5 overflow-y-auto'>
         {order.contents.map((item) => {
           return (
             <div
               key={item.menuId}
-              className='flex flex-col items-center justify-center w-[180px] h-[180px] text-center break-keep rounded-3xl'
+              className='flex flex-col items-center justify-center w-[1/4] h-[180px] text-center whitespace-nowrap tracking-[-0.1em] rounded-3xl'
             >
               <img
-                src={item.imageUrl}
+                // src={item.imageUrl}
+                src={'/src/assets/images/defaultDrink.png'}
                 alt={item.name}
-                className='w-[90px] h-[90px]'
+                className='w-full h-[90px] max-w-[90px] mx-auto'
               />
-              <div className='flex flex-col items-center h-[100px] justify-center'>
+              <div className='flex flex-col items-center h-[100px] justify-center mx-auto'>
                 <h1 className='text-sm font-preBold'>{item.name}</h1>
+                <h1 className='text-sm font-preBold'>
+                  {item.basePrice.toLocaleString()}원
+                </h1>
               </div>
             </div>
           );

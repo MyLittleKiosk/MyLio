@@ -1,9 +1,9 @@
 export function parseState(state: string) {
   switch (state) {
     case 'MAIN':
-      return '/';
+      return '';
     case 'ORDER':
-      return 'ORDER';
+      return '/order';
     case 'SEARCH':
       return '/search';
     case 'DETAIL':
@@ -15,6 +15,6 @@ export function parseState(state: string) {
     case 'PAY':
       return '/pay';
     default:
-      return '/';
+      return '';
   }
 }
