@@ -1,0 +1,64 @@
+import React from 'react';
+
+interface SelectProps<T> {
+  id?: string;
+  label?: string;
+  options: T[];
+  selected: T | null;
+  placeholder: string;
+  className?: string;
+  error?: boolean;
+  disabled?: boolean;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  getOptionLabel: (option: T) => string;
+  getOptionValue: (option: T) => string;
+}
+
+const Select = <T,>({
+  id,
+  options,
+  label,
+  selected,
+  placeholder,
+  className,
+  error = false,
+  disabled = false,
+  onChange,
+  getOptionLabel,
+  getOptionValue,
+}: SelectProps<T>) => {
+  const selectElement = (
+    <select
+      id={id}
+      className={`w-full ${error ? 'border-2 border-error' : 'border border-subContent'} rounded-md p-2 font-preRegular`}
+      onChange={onChange}
+      value={selected ? getOptionValue(selected) : ''}
+      disabled={disabled}
+    >
+      <option value={placeholder} className='font-preRegular'>
+        {placeholder}
+      </option>
+      {options.map((option, index) => (
+        <option key={index} value={getOptionValue(option)}>
+          {getOptionLabel(option)}
+        </option>
+      ))}
+    </select>
+  );
+  return (
+    <div className={`${className} flex items-center`}>
+      {label ? (
+        <label className='flex gap-4 items-center w-full'>
+          <span className='min-w-[80px] max-w-[100px] text-md font-preSemiBold whitespace-nowrap'>
+            {label}
+          </span>
+          {selectElement}
+        </label>
+      ) : (
+        selectElement
+      )}
+    </div>
+  );
+};
+
+export default Select;

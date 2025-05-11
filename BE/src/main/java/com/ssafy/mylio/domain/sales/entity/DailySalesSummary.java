@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CurrentTimestamp;
 
 import java.time.LocalDate;
 
@@ -22,6 +23,7 @@ public class DailySalesSummary extends BaseEntity {
     private Store store;
 
     @Column(name = "stat_date", nullable = false)
+    @CurrentTimestamp
     private LocalDate statDate;
 
     @Column(name = "total_sales", nullable = false)

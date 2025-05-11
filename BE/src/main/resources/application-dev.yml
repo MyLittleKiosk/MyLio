@@ -26,6 +26,15 @@ spring:
 jwt:
   secret: ${JWT_SECRET_KEY}
 
+cloud:
+  aws:
+    credentials:
+      access-key: ${S3_ACCESS_KEY}
+      secret-key: ${S3_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: mylio-bucket
 
 logging.level:
   org.hibernate.SQL: info
@@ -33,6 +42,6 @@ logging.level:
 app:
   domain:
     url: https://k12b102.p.ssafy.io
-    cors-origins: https://k12b102.p.ssafy.io, http://localhost:5173
+    cors-origins: https://k12b102.p.ssafy.io,http://localhost:5173
   is-local: false
   cookie-domain: k12b102.p.ssafy.io

@@ -1,4 +1,4 @@
-import React, { ButtonHTMLAttributes, useState, useRef } from 'react';
+import React, { ButtonHTMLAttributes, useRef, useState } from 'react';
 
 type ButtonSize = 'small' | 'medium' | 'large';
 
@@ -7,6 +7,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
   className?: string;
   isLoading?: boolean;
+  disabled?: boolean;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const Button = ({
@@ -50,7 +52,7 @@ const Button = ({
     onClick?.(e);
   };
 
-  const baseStyles = 'rounded-md font-bold relative overflow-hidden';
+  const baseStyles = 'rounded-md font-preBold relative overflow-hidden';
 
   const variantStyles = {
     primary: 'bg-primary text-white hover:bg-primary/90',

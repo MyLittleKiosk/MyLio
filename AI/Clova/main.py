@@ -12,10 +12,12 @@ load_dotenv()
 app = FastAPI()
 
 # CORS 설정
-ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*")
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "https://localhost:3000")
+origins = [origin.strip() for origin in ALLOWED_ORIGINS.split(",")]
+print(origins)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[ALLOWED_ORIGINS] if isinstance(ALLOWED_ORIGINS, str) else ALLOWED_ORIGINS,
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -27,7 +29,7 @@ CLOVA_API_SECRET = os.getenv("CLOVA_API_SECRET")
 
 SUPPORTED_FORMATS = { "audio/mp3", "audio/wav" }
 
-@app.post("/clova/stt")
+@app.post("/voice/clova/stt")
 async def clova_stt(file: UploadFile = File(...)) -> Dict[str, Any]:
     if file.content_type not in SUPPORTED_FORMATS:
         raise HTTPException(status_code=400, detail="지원되지 않는 오디오 형식입니다. (mp3, wav만 지원)")
@@ -77,4 +79,11 @@ async def clova_stt(file: UploadFile = File(...)) -> Dict[str, Any]:
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="localhost", port=8000, reload=True) 
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        ssl_keyfile="localhost-key.pem",
+        ssl_certfile="localhost.pem"
+    ) 

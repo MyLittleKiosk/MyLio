@@ -14,8 +14,8 @@ spring:
     include: secret
     active: dev
 
-  jackson:
-    property-naming-strategy: SNAKE_CASE
+#  jackson:
+#    property-naming-strategy: SNAKE_CASE
 
   data:
     web:
@@ -27,3 +27,6 @@ management:
   endpoints:
     web:
       base-path: /api/actuator
+
+fast-api:
+  base-url: https://k12b102.p.ssafy.io
