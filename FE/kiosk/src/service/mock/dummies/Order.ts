@@ -401,15 +401,16 @@ export const CONFIRM_RESPONSE = {
   ],
 };
 
-export const ORDER_RESPONSE = {
+export const SEARCH_RESPONSE = {
   success: true,
   data: {
-    pre_text: '아이스 아메리카노 하나 주세요',
-    post_text: '아이스 아메리카노 하나 주세요',
-    reply: '아이스 아메리카노 사이즈는 뭘로 하시겠어요?',
-    status: 'ORDER',
+    preText: '아메리카노 검색해줘',
+    postText: '아메리카노 검색 결과를 보여드릴게요',
+    reply: '아메리카노 검색 결과입니다',
+    storeId: 1,
+    screenState: 'SEARCH',
     language: 'KR',
-    session_id: 'A101',
+    sessionId: 'A101',
     cart: [],
     contents: [
       {
@@ -422,192 +423,86 @@ export const ORDER_RESPONSE = {
         image_url: '/src/assets/images/defaultDrink.png',
         options: [
           {
-            optoin_id: 1,
-            option_name: '사이즈',
-            required: true,
-            is_selected: false,
-            selected_id: null,
-            option_details: [
-              {
-                option_detail_id: 1,
-                option_detail_value: '레귤러',
-                additional_price: 0,
-              },
-              {
-                option_detail_id: 2,
-                option_detail_value: '라지',
-                additional_price: 700,
-              },
-            ],
+            name: '아이스',
+            price: 0,
+          },
+          {
+            name: '라지',
+            price: 700,
+          },
+          {
+            name: '휘핑크림',
+            price: 500,
           },
         ],
         selected_option: [],
-        nutrition_info: [],
+        nutrition_info: [
+          {
+            nutrition_id: 1,
+            nutrition_name: '칼로리',
+            nutrition_value: 5,
+            nutrition_type: 'kcal',
+          },
+          {
+            nutrition_id: 2,
+            nutrition_name: '단백질',
+            nutrition_value: 1,
+            nutrition_type: 'g',
+          },
+          {
+            nutrition_id: 3,
+            nutrition_name: '카페인',
+            nutrition_value: 150,
+            nutrition_type: 'mg',
+          },
+        ],
       },
-    ],
-    payment: null,
-  },
-  error: null,
-  timestamp: '2024-03-19 16:09:12',
-};
-
-export const SEARCH_RESPONSE = {
-  success: true,
-  data: {
-    pre_text: '디카페인 있어?',
-    post_text: '디카페인 있어?',
-    reply: '디카페인 음료 목록을 보여드릴게요',
-    status: 'SEARCH',
-    language: 'KR',
-    session_id: 'A101',
-    cart: [],
-    contents: [
       {
-        menu_id: 1,
+        menu_id: 2,
         quantity: 1,
-        name: '디카페인 아메리카노',
-        description: '카페인이 제거된 아메리카노',
-        base_price: 3500,
-        total_price: 3500,
+        name: '아이스 카페라떼',
+        description: '부드러운 카페라떼',
+        base_price: 5000,
+        total_price: 5000,
         image_url: '/src/assets/images/defaultDrink.png',
-        options: [],
+        options: [
+          {
+            name: '아이스',
+            price: 0,
+          },
+          {
+            name: '라지',
+            price: 700,
+          },
+          {
+            name: '휘핑크림',
+            price: 500,
+          },
+        ],
         selected_option: [],
-        nutrition_info: [],
-      },
-    ],
-    payment: null,
-  },
-  error: null,
-  timestamp: '2024-03-19 16:09:12',
-};
-
-export const CONFIRM_ORDER_RESPONSE = {
-  success: true,
-  data: {
-    pre_text: '장바구니 보여줘',
-    post_text: '장바구니 보여줘',
-    reply: '이 메뉴가 맞으세요?',
-    status: 'CONFIRM',
-    language: 'KR',
-    session_id: 'A101',
-    cart: [
-      {
-        cart_id: 1,
-        menu_id: 1,
-        quantity: 1,
-        name: '아이스 아메리카노',
-        description: '깔끔한 아메리카노',
-        base_price: 3000,
-        total_price: 3700,
-        image_url: '/src/assets/images/defaultDrink.png',
-        options: [
+        nutrition_info: [
           {
-            optoin_id: 1,
-            option_name: '사이즈',
-            required: true,
-            is_selected: true,
-            selected_id: 2,
-            option_details: [
-              {
-                option_detail_id: 2,
-                option_detail_value: '라지',
-                additional_price: 700,
-              },
-            ],
+            nutrition_id: 1,
+            nutrition_name: '칼로리',
+            nutrition_value: 120,
+            nutrition_type: 'kcal',
+          },
+          {
+            nutrition_id: 2,
+            nutrition_name: '단백질',
+            nutrition_value: 6,
+            nutrition_type: 'g',
+          },
+          {
+            nutrition_id: 3,
+            nutrition_name: '카페인',
+            nutrition_value: 120,
+            nutrition_type: 'mg',
           },
         ],
       },
     ],
-    contents: [],
     payment: null,
-  },
-  error: null,
-  timestamp: '2024-03-19 16:09:12',
-};
-
-export const SELECT_PAY_RESPONSE = {
-  success: true,
-  data: {
-    pre_text: '네',
-    post_text: '네',
-    reply: '결제수단을 선택해주세요',
-    status: 'SELECT_PAY',
-    language: 'KR',
-    session_id: 'A101',
-    cart: [
-      {
-        cart_id: 1,
-        menu_id: 1,
-        quantity: 1,
-        name: '아이스 아메리카노',
-        description: '깔끔한 아메리카노',
-        base_price: 3000,
-        total_price: 3700,
-        image_url: '/src/assets/images/defaultDrink.png',
-        options: [
-          {
-            optoin_id: 1,
-            option_name: '사이즈',
-            required: true,
-            is_selected: true,
-            selected_id: 2,
-            option_details: [
-              {
-                option_detail_id: 2,
-                option_detail_value: '라지',
-                additional_price: 700,
-              },
-            ],
-          },
-        ],
-      },
-    ],
-    contents: [],
-    payment: null,
-  },
-  error: null,
-  timestamp: '2024-03-19 16:09:12',
-};
-
-export const PAY_RESPONSE = {
-  success: true,
-  data: {
-    pre_text: '카카오페이로 할게',
-    post_text: '카카오페이로 할게',
-    reply: '카카오페이 결제를 진행할게요',
-    status: 'PAY',
-    language: 'KR',
-    session_id: 'A101',
-    cart: [
-      {
-        cart_id: 1,
-        menu_id: 1,
-        quantity: 1,
-        name: '아이스 아메리카노',
-        description: '깔끔한 아메리카노',
-        base_price: 3000,
-        total_price: 3700,
-        image_url: '/src/assets/images/defaultDrink.png',
-        options: [
-          {
-            optoin_id: 1,
-            option_name: '사이즈',
-            required: true,
-            is_selected: true,
-            selected_id: 2,
-            option_details: [
-              {
-                option_detail_id: 2,
-                option_detail_value: '라지',
-                additional_price: 700,
-              },
-            ],
-          },
-        ],
-      },
-    ],
-    contents: [],
-    payment: 'CARD',
   },
   error: null,
   timestamp: '2024-03-19 16:09:12',

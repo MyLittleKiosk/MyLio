@@ -4,3 +4,7 @@ export type ApiResponse<T> = {
   error?: string;
   timestamp: string;
 };
+
+export type CustomError = Error & {
+  response: { data: { error: { message: string } } };
+};
