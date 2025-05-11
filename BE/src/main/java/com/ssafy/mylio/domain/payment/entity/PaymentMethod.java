@@ -6,9 +6,9 @@ import java.util.Arrays;
 
 public enum PaymentMethod implements EntityStatus {
     CARD("CARD", "카드"),
-    CASH("PAY", "카카오페이"),
+    PAY("PAY", "카카오페이"),
     MOBILE("MOBILE", "모바일결제"),
-    POINTS("GIFT", "기프트 카드");
+    GIFT("GIFT", "기프트 카드");
 
     private final String code;
     private final String description;

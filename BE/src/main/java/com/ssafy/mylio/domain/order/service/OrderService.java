@@ -43,6 +43,7 @@ public class OrderService {
     }
 
     /* PAY 단계 */
+    @Transactional
     public Mono<OrderResponseDto> handlePayment(OrderResponseDto resp, UserPrincipal user) {
 
         // Orders 저장
