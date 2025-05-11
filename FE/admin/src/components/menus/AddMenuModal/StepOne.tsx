@@ -5,7 +5,7 @@ import { useMenuAdd } from '@/components/menus/AddMenuModal/useMenuAdd';
 
 import IconAdd from '@/assets/icons/IconAdd';
 
-import { CATEGORY_LIST } from '@/datas/categoryList';
+import { CATEGORY_LIST } from '@/service/mock/dummies/category';
 
 import IconTrashCan from '@/assets/icons/IconTrashCan';
 import IconImage from '@/assets/icons/IconImage';
@@ -36,20 +36,20 @@ const StepOne = () => {
         placeholder='아이스아메리카노'
         inputType='text'
         label='메뉴명'
-        inputValue={menuAddData.name_kr}
+        inputValue={menuAddData.nameKr}
         onChange={(e) =>
-          setMenuAddData({ ...menuAddData, name_kr: e.target.value })
+          setMenuAddData({ ...menuAddData, nameKr: e.target.value })
         }
       />
 
       <Select
-        options={CATEGORY_LIST.content}
+        options={CATEGORY_LIST.data.content}
         label='카테고리'
         selected={selectedCategory}
         onChange={handleCategoryChange}
         placeholder='카테고리를 선택하세요.'
-        getOptionLabel={(option) => option.name_kr}
-        getOptionValue={(option) => option.category_id.toString()}
+        getOptionLabel={(option) => option.nameKr}
+        getOptionValue={(option) => option.categoryId.toString()}
       />
 
       <Input
@@ -100,11 +100,11 @@ const StepOne = () => {
           {menuAddData.tags.map((data) => {
             return (
               <div
-                key={data.tag_kr}
+                key={data.tagKr}
                 className='flex gap-1 text-sm font-preRegular items-center px-2 py-1 border border-subContent rounded-full cursor-pointer hover:bg-subContent/50'
-                onClick={() => handleTagDelete(data.tag_kr)}
+                onClick={() => handleTagDelete(data.tagKr)}
               >
-                {data.tag_kr}
+                {data.tagKr}
                 <IconTrashCan width={12} height={12} />
               </div>
             );
@@ -122,9 +122,9 @@ const StepOne = () => {
         <div className='flex flex-col gap-2 font-preRegular'>
           <div className='flex gap-2 items-center'>
             <div className='flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-content2 rounded-lg bg-gray-50 hover:bg-subContent/50 transition-colors'>
-              {menuAddData.image_url ? (
+              {menuAddData.imageUrl ? (
                 <img
-                  src={menuAddData.image_url}
+                  src={menuAddData.imageUrl}
                   alt='메뉴 이미지'
                   className='w-full h-full object-contain'
                 />
@@ -154,7 +154,7 @@ const StepOne = () => {
                     reader.onload = (e) => {
                       setMenuAddData({
                         ...menuAddData,
-                        image_url: e.target?.result as string,
+                        imageUrl: e.target?.result as string,
                       });
                     };
                     reader.readAsDataURL(file);

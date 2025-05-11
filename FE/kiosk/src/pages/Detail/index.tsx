@@ -1,18 +1,18 @@
-import { DETAIL_RESPONSE } from '@/service/mock/dummies/Order';
 import { formatNumber } from '@/utils/formatNumber';
-
+import useOrderStore from '@/stores/useOrderStore';
 const Detail = () => {
+  const { order } = useOrderStore();
   return (
     <section className='flex flex-col gap-4 w-3/4'>
       <div className='flex items-center gap-4 pb-4 justify-between'>
         <img
           className='w-[350px]'
-          src={DETAIL_RESPONSE.detail.image}
+          src={order.contents[0].imageUrl}
           alt='drink'
         />
         <div className='font-preBold text-xl flex flex-col gap-4'>
-          <h1>{DETAIL_RESPONSE.detail.name}</h1>
-          <span>{formatNumber(DETAIL_RESPONSE.detail.price)}원</span>
+          <h1>{order.contents[0].name}</h1>
+          <span>{formatNumber(order.contents[0].basePrice)}원</span>
         </div>
       </div>
       <div>
@@ -20,13 +20,13 @@ const Detail = () => {
           *1회 제공량 기준: 24oz
         </span>
         <div className='grid grid-cols-2 gap-x-9 gap-y-4 border-t-2 border-b-2 border-black py-4'>
-          {Object.values(DETAIL_RESPONSE.detail.nutrition).map((item) => (
+          {Object.values(order.contents[0].nutritionInfo).map((item) => (
             <div
-              key={item.name}
+              key={item.nutritionName}
               className='flex items-center gap-2 justify-between font-preBold text-xs'
             >
-              <span>{`${item.name}(${item.unit})`}</span>
-              <span className='font-normal'>{item.value}</span>
+              <span>{`${item.nutritionName}(${item.nutritionType})`}</span>
+              <span className='font-normal'>{item.nutritionValue}</span>
             </div>
           ))}
         </div>

@@ -15,22 +15,26 @@ const Table = <T extends object>({
 }: TableProps<T>) => {
   function checkColumn(column: Column<T>, row: T) {
     switch (column.accessor) {
-      case 'option_detail':
+      case 'optionDetail':
         return (
           <div>
             {(
               row[column.accessor as keyof T] as unknown as Array<{
-                option_detail_value: string;
-                additional_price: number;
+                optionDetailValue: string;
+                additionalPrice: number;
               }>
             ).map((option, index) => (
               <p key={index}>
-                {option.option_detail_value} +{option.additional_price}
+                {option.optionDetailValue} +{option.additionalPrice}
               </p>
             ))}
           </div>
         );
-      case 'image_url':
+      case 'imageUrl':
+        console.log(
+          'row[column.accessor as keyof T]:',
+          row[column.accessor as keyof T]
+        );
         return (
           <img
             src={String(row[column.accessor as keyof T])}
@@ -57,7 +61,7 @@ const Table = <T extends object>({
           </button>
         );
       case 'price':
-      case 'order_price':
+      case 'orderPrice':
         return `₩${String(row[column.accessor as keyof T]).toLocaleString()}`;
       case 'status':
         return (
@@ -67,6 +71,8 @@ const Table = <T extends object>({
             }`}
           />
         );
+      case 'password':
+        return '********';
       default:
         return String(row[column.accessor as keyof T]);
     }

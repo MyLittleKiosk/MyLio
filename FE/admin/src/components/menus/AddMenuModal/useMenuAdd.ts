@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+
 import { MenuAdd } from '@/types/menus';
 import { CategoryType } from '@/types/categories';
-import { CATEGORY_LIST } from '@/datas/categoryList';
 import { IngredientType } from '@/types/ingredient';
 import { NutrientType } from '@/types/nutrient';
+
+import { CATEGORY_LIST } from '@/service/mock/dummies/category';
+
 import INGREDIENT_LIST from '@/datas/IngredientList';
 import NUTRIENT_LIST from '@/datas/NutrientList';
 
@@ -15,9 +18,9 @@ interface UseMenuAddReturn {
   nutritionValue: number;
   selectedIngredientList: string[];
   selectedNutrientList: {
-    nutrient_template_id: number;
-    nutrient_name: string;
-    nutrient_value: number;
+    nutrientTemplateId: number;
+    nutrientName: string;
+    nutrientValue: number;
   }[];
   selectedIngredient: IngredientType | null;
   selectedNutrient: NutrientType | null;
@@ -37,16 +40,16 @@ interface UseMenuAddReturn {
 }
 
 const initialMenuData: MenuAdd = {
-  image_url: '',
-  name_kr: '',
-  name_en: '',
-  category_id: 0,
+  imageUrl: '',
+  nameKr: '',
+  nameEn: '',
+  categoryId: 0,
   description: '',
   price: 0,
   tags: [],
-  nutrition_info: [],
-  ingredient_info: [],
-  option_info: [],
+  nutritionInfo: [],
+  ingredientInfo: [],
+  optionInfo: [],
 };
 
 export const useMenuAdd = (): UseMenuAddReturn => {
@@ -62,9 +65,9 @@ export const useMenuAdd = (): UseMenuAddReturn => {
   >([]);
   const [selectedNutrientList, setSelectedNutrientList] = useState<
     {
-      nutrient_template_id: number;
-      nutrient_name: string;
-      nutrient_value: number;
+      nutrientTemplateId: number;
+      nutrientName: string;
+      nutrientValue: number;
     }[]
   >([]);
   const [selectedIngredient, setSelectedIngredient] =
@@ -74,13 +77,13 @@ export const useMenuAdd = (): UseMenuAddReturn => {
   );
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = CATEGORY_LIST.content.find(
-      (category) => category.category_id.toString() === e.target.value
+    const selected = CATEGORY_LIST.data.content.find(
+      (category) => category.categoryId.toString() === e.target.value
     );
     setSelectedCategory(selected || null);
     setMenuAddData((prev) => ({
       ...prev,
-      category_id: selected?.category_id || 0,
+      categoryId: selected?.categoryId || 0,
     }));
   };
 
@@ -94,7 +97,7 @@ export const useMenuAdd = (): UseMenuAddReturn => {
 
   function handleIngredientChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const selected = INGREDIENT_LIST.content.find(
-      (ingredient) => ingredient.ingredient_id.toString() === e.target.value
+      (ingredient) => ingredient.ingredientId.toString() === e.target.value
     );
 
     if (!selected) {
@@ -103,12 +106,12 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     }
 
     setSelectedIngredient(selected || null);
-    handleIngredientAdd(selected?.ingredient_id.toString());
+    handleIngredientAdd(selected?.ingredientId.toString());
   }
 
   function handleNutrientChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const selected = NUTRIENT_LIST.content.find(
-      (nutrient) => nutrient.nutrient_template_id.toString() === e.target.value
+      (nutrient) => nutrient.nutrientTemplateId.toString() === e.target.value
     );
 
     if (!selected) {
@@ -130,8 +133,8 @@ export const useMenuAdd = (): UseMenuAddReturn => {
       tags: [
         ...prev.tags,
         {
-          tag_kr: tagValueKR,
-          tag_en: tagValueEN,
+          tagKr: tagValueKR,
+          tagEn: tagValueEN,
         },
       ],
     }));
@@ -142,14 +145,14 @@ export const useMenuAdd = (): UseMenuAddReturn => {
   function handleTagDelete(tagKR: string) {
     setMenuAddData((prev) => ({
       ...prev,
-      tags: prev.tags.filter((tag) => tag.tag_kr !== tagKR),
+      tags: prev.tags.filter((tag) => tag.tagKr !== tagKR),
     }));
   }
 
   const handleIngredientAdd = (ingredientId: string) => {
     setMenuAddData((prev) => ({
       ...prev,
-      ingredient_info: [...prev.ingredient_info, Number(ingredientId)],
+      ingredientInfo: [...prev.ingredientInfo, Number(ingredientId)],
     }));
   };
 
@@ -166,28 +169,28 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     }
 
     const newNutrient = {
-      nutrition_template_id: Number(nutrientId),
-      nutrition_value: value,
+      nutritionTemplateId: Number(nutrientId),
+      nutritionValue: value,
     };
 
     setMenuAddData((prev) => ({
       ...prev,
-      nutrition_info: [...prev.nutrition_info, newNutrient],
+      nutritionInfo: [...prev.nutritionInfo, newNutrient],
     }));
 
     setSelectedNutrientList((prev) => [
       ...prev,
       {
-        nutrient_template_id: Number(nutrientId),
-        nutrient_name: selectedNutrient?.name_kr || '',
-        nutrient_value: value,
+        nutrientTemplateId: Number(nutrientId),
+        nutrientName: selectedNutrient?.nameKr || '',
+        nutrientValue: value,
       },
     ]);
   };
 
   const handleNutrientRemove = (nutrientId: number) => {
     setSelectedNutrientList((prev) =>
-      prev.filter((item) => item.nutrient_template_id !== nutrientId)
+      prev.filter((item) => item.nutrientTemplateId !== nutrientId)
     );
   };
 

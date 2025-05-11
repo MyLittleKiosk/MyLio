@@ -148,44 +148,52 @@ export const MenuResponse = {
 };
 
 export const DETAIL_RESPONSE = {
-  detail: {
-    id: 1,
-    name: '아이스 아메리카노',
-    price: 3000,
-    image: '/src/assets/images/defaultDrink.png',
-    nutrition: {
-      saturatedFat: {
-        name: '포화지방',
-        value: 0,
-        unit: 'g',
+  success: true,
+  data: {
+    pre_text: '아메리카노 영양정보 보여줘',
+    post_text: '아메리카노 영양정보 보여줘',
+    reply: '아메리카노 영양정보 보여드릴게요',
+    status: 'DETAIL',
+    language: 'KR',
+    session_id: 'A101',
+    cart: [],
+    contents: [
+      {
+        menu_id: 1,
+        quantity: 1,
+        name: '아이스 아메리카노',
+        description: '깔끔한 아메리카노',
+        base_price: 3000,
+        total_price: 3000,
+        image_url: '/src/assets/images/defaultDrink.png',
+        options: [],
+        selected_option: [],
+        nutrition_info: [
+          {
+            nutrition_id: 1,
+            nutrition_name: '칼로리',
+            nutrition_value: 5,
+            nutrition_type: 'kcal',
+          },
+          {
+            nutrition_id: 2,
+            nutrition_name: '단백질',
+            nutrition_value: 1,
+            nutrition_type: 'g',
+          },
+          {
+            nutrition_id: 3,
+            nutrition_name: '카페인',
+            nutrition_value: 150,
+            nutrition_type: 'mg',
+          },
+        ],
       },
-      sodium: {
-        name: '나트륨',
-        value: 5,
-        unit: 'mg',
-      },
-      caffeine: {
-        name: '카페인',
-        value: 150,
-        unit: 'mg',
-      },
-      protein: {
-        name: '단백질',
-        value: 1,
-        unit: 'g',
-      },
-      sugar: {
-        name: '당류',
-        value: 0,
-        unit: 'g',
-      },
-      calorie: {
-        name: '칼로리',
-        value: 5,
-        unit: 'kcal',
-      },
-    },
+    ],
+    payment: null,
   },
+  error: null,
+  timestamp: '2024-03-19 16:09:12',
 };
 
 export const CONFIRM_RESPONSE = {
@@ -391,4 +399,111 @@ export const CONFIRM_RESPONSE = {
       ],
     },
   ],
+};
+
+export const SEARCH_RESPONSE = {
+  success: true,
+  data: {
+    preText: '아메리카노 검색해줘',
+    postText: '아메리카노 검색 결과를 보여드릴게요',
+    reply: '아메리카노 검색 결과입니다',
+    storeId: 1,
+    screenState: 'SEARCH',
+    language: 'KR',
+    sessionId: 'A101',
+    cart: [],
+    contents: [
+      {
+        menu_id: 1,
+        quantity: 1,
+        name: '아이스 아메리카노',
+        description: '깔끔한 아메리카노',
+        base_price: 3000,
+        total_price: 3000,
+        image_url: '/src/assets/images/defaultDrink.png',
+        options: [
+          {
+            name: '아이스',
+            price: 0,
+          },
+          {
+            name: '라지',
+            price: 700,
+          },
+          {
+            name: '휘핑크림',
+            price: 500,
+          },
+        ],
+        selected_option: [],
+        nutrition_info: [
+          {
+            nutrition_id: 1,
+            nutrition_name: '칼로리',
+            nutrition_value: 5,
+            nutrition_type: 'kcal',
+          },
+          {
+            nutrition_id: 2,
+            nutrition_name: '단백질',
+            nutrition_value: 1,
+            nutrition_type: 'g',
+          },
+          {
+            nutrition_id: 3,
+            nutrition_name: '카페인',
+            nutrition_value: 150,
+            nutrition_type: 'mg',
+          },
+        ],
+      },
+      {
+        menu_id: 2,
+        quantity: 1,
+        name: '아이스 카페라떼',
+        description: '부드러운 카페라떼',
+        base_price: 5000,
+        total_price: 5000,
+        image_url: '/src/assets/images/defaultDrink.png',
+        options: [
+          {
+            name: '아이스',
+            price: 0,
+          },
+          {
+            name: '라지',
+            price: 700,
+          },
+          {
+            name: '휘핑크림',
+            price: 500,
+          },
+        ],
+        selected_option: [],
+        nutrition_info: [
+          {
+            nutrition_id: 1,
+            nutrition_name: '칼로리',
+            nutrition_value: 120,
+            nutrition_type: 'kcal',
+          },
+          {
+            nutrition_id: 2,
+            nutrition_name: '단백질',
+            nutrition_value: 6,
+            nutrition_type: 'g',
+          },
+          {
+            nutrition_id: 3,
+            nutrition_name: '카페인',
+            nutrition_value: 120,
+            nutrition_type: 'mg',
+          },
+        ],
+      },
+    ],
+    payment: null,
+  },
+  error: null,
+  timestamp: '2024-03-19 16:09:12',
 };

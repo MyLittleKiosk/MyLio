@@ -40,3 +40,8 @@ dist-ssr
 .server.js
 localhost-key.pem
 localhost.pem
+
+
+Jenkinsfile
+docker-compose.preview
+Dockerfile.preview

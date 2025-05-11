@@ -4,21 +4,21 @@ import Button from '@/components/common/Button';
 import Table from '@/components/common/Table';
 import AddOptionGroupModal from '@/components/menus/AddOptionGroupModal';
 
-import { CategoryList } from '@/types/categories';
-import { MenuList, NavItemType } from '@/types/menus';
-import { OptionList, OptionType } from '@/types/options';
+import { NavItemType } from '@/types/menus';
+import { OptionGroup } from '@/types/options';
 import { Column } from '@/types/tableProps';
 
 import useModalStore from '@/stores/useModalStore';
+import useGetOptions from '@/service/queries/option';
 
 const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
   const { openModal } = useModalStore();
 
-  const isOptionData = (
-    data: MenuList | CategoryList | OptionList
-  ): data is OptionList => {
-    return 'content' in data && 'options' in data.content;
-  };
+  const { data: options, isLoading } = useGetOptions();
+
+  if (!options || isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className='flex flex-col gap-2'>
@@ -34,13 +34,11 @@ const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
           className='items-center justify-center'
         />
       </div>
-      <Table<OptionType>
+      <Table<OptionGroup>
         title='옵션 목록'
         description={`총 6개의 옵션이 있습니다.`}
-        columns={selectedNav.columns as Column<OptionType>[]}
-        data={
-          isOptionData(selectedNav.data) ? selectedNav.data.content.options : []
-        }
+        columns={selectedNav.columns as Column<OptionGroup>[]}
+        data={options}
       />
     </div>
   );

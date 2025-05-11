@@ -1,9 +1,12 @@
 import { PAY_METHODS } from '@/datas/PAYS';
 import { formatNumber } from '@/utils/formatNumber';
-
+import useOrderStore from '@/stores/useOrderStore';
 const SelectPay = () => {
-  const totalPrice = 13000;
-
+  const { order } = useOrderStore();
+  const totalPrice = order.contents.reduce(
+    (acc, curr) => acc + curr.totalPrice,
+    0
+  );
   return (
     <section className='flex flex-col w-full h-full px-10 pt-10'>
       <h1 className='text-2xl font-preBold'>결제 수단</h1>

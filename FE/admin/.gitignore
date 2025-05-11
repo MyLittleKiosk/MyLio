@@ -39,3 +39,8 @@ dist-ssr
 # ssl
 localhost-key.pem
 localhost.pem
+
+# Jenkins
+Jenkinsfile
+docker-compose.preview
+Dockerfile.preview

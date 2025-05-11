@@ -4,20 +4,39 @@ import IconAdd from '@/assets/icons/IconAdd';
 
 import AddAccountModal from '@/components/account/AddAccountModal';
 import Button from '@/components/common/Button';
+import CompleteModal from '@/components/common/CompleteModal';
 import Input from '@/components/common/Input';
 import Modal from '@/components/common/Modal';
 import Table from '@/components/common/Table';
 import useModalStore from '@/stores/useModalStore';
 
-import { ACCOUNT_COLUMNS, DUMMY_ACCOUNT_LIST } from '@/datas/Account';
-import { Account } from '@/types/account';
+import { ACCOUNT_COLUMNS } from '@/datas/Account';
+import { useDeleteAccount, useGetAccountList } from '@/service/queries/account';
+import { AccountType } from '@/types/account';
 
 const Accounts = () => {
+  const { mutate: deleteAccount } = useDeleteAccount();
+  const { data: accountList, isLoading } = useGetAccountList();
   const { openModal } = useModalStore();
   const [searchValue, setSearchValue] = useState('');
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
     setSearchValue(e.target.value);
+  }
+
+  function handleDelete(row: AccountType) {
+    deleteAccount({ accountId: row.accountId });
+    openModal(
+      <CompleteModal
+        title='계정 삭제'
+        description='계정 삭제가 완료되었습니다.'
+        buttonText='확인'
+      />
+    );
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -43,11 +62,12 @@ const Accounts = () => {
             className='w-[11%] items-center justify-center'
           />
         </div>
-        <Table<Account>
+        <Table<AccountType>
           title='계정 목록'
-          description={`총 ${DUMMY_ACCOUNT_LIST.accounts.length}개의 계정이 있습니다.`}
+          description={`총 ${accountList?.length}개의 계정이 있습니다.`}
           columns={ACCOUNT_COLUMNS}
-          data={DUMMY_ACCOUNT_LIST.accounts}
+          data={accountList || []}
+          onDelete={(row) => handleDelete(row)}
         />
       </section>
       <Modal />

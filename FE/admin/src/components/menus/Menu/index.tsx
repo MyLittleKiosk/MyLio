@@ -6,18 +6,19 @@ import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
+import AddMenuModal from '@/components/menus/AddMenuModal';
 
-import { CATEGORY_LIST } from '@/datas/categoryList';
 import STORE_LIST from '@/datas/storeList';
 
 import { CategoryType } from '@/types/categories';
 import { StoreType } from '@/types/stores';
-
-import AddMenuModal from '../AddMenuModal';
-
-import useModalStore from '@/stores/useModalStore';
 import { MenuType, NavItemType } from '@/types/menus';
 import { Column } from '@/types/tableProps';
+
+import useModalStore from '@/stores/useModalStore';
+
+import { useGetCategory } from '@/service/queries/category';
+import useGetMenus from '@/service/queries/menu';
 
 const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
   const { openModal } = useModalStore();
@@ -33,17 +34,24 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
   }
 
   function handleCategoryChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const selected = CATEGORY_LIST.content.find(
-      (category) => category.name_kr === e.target.value
+    const selected = category?.find(
+      (category) => category.nameKr === e.target.value
     );
     setSelectedCategory(selected || null);
   }
 
   function handleStoreChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const selected = STORE_LIST.stores.find(
-      (store) => store.store_name === e.target.value
+    const selected = STORE_LIST.find(
+      (store) => store.storeName === e.target.value
     );
     setSelectedStore(selected || null);
+  }
+
+  const { data: menus, isLoading: getMenusLoading } = useGetMenus();
+  const { data: category, isLoading: getCategoryLoading } = useGetCategory();
+
+  if (!menus || !category || getMenusLoading || getCategoryLoading) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -58,22 +66,22 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
           className='w-[65%]'
         />
         <Select<CategoryType>
-          options={CATEGORY_LIST.content}
+          options={category}
           selected={selectedCategory}
           onChange={handleCategoryChange}
           placeholder='모든 카테고리'
           className='w-[11%]'
-          getOptionLabel={(option) => option.name_kr}
-          getOptionValue={(option) => option.name_kr}
+          getOptionLabel={(option) => option.nameKr}
+          getOptionValue={(option) => option.nameKr}
         />
         <Select<StoreType>
-          options={STORE_LIST.stores}
+          options={STORE_LIST}
           selected={selectedStore}
           onChange={handleStoreChange}
           placeholder='모든 점포'
           className='w-[11%]'
-          getOptionLabel={(option) => option.store_name}
-          getOptionValue={(option) => option.store_name}
+          getOptionLabel={(option) => option.storeName}
+          getOptionValue={(option) => option.storeName}
         />
         <Button
           buttonType='button'
@@ -89,7 +97,7 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
         title='메뉴 목록'
         description='총 6개의 메뉴가 있습니다.'
         columns={selectedNav.columns as Column<MenuType>[]}
-        data={selectedNav.data.content as MenuType[]}
+        data={menus as MenuType[]}
       />
     </div>
   );

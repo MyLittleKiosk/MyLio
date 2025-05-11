@@ -1,9 +1,10 @@
-import { Link } from 'react-router-dom';
+import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
-import LOGO from '@/assets/images/Character_HAo.png';
 import IconBack from '@/assets/icons/IconBack';
+import LOGO from '@/assets/images/Character_HAo.png';
 
 import { ADMIN_NAVLIST, SUPERADMIN_NAVLIST } from '@/datas/sideBarList';
 
@@ -16,7 +17,7 @@ const SideBar = () => {
   const AUTHORITY = '일반관리자';
 
   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
-  const [currentPath, setCurrentPath] = useState('');
+  const [currentPath, setCurrentPath] = useState(useLocation().pathname);
 
   // 사이드바 너비 조정 애니메이션 완료 여부
   const [isWidthAnimationComplete, setIsWidthAnimationComplete] =
@@ -31,7 +32,7 @@ const SideBar = () => {
   return (
     <motion.nav
       initial={false}
-      animate={{ width: isSideBarOpen ? '180px' : '70px' }}
+      animate={{ width: isSideBarOpen ? '250px' : '80px' }}
       transition={{
         width: { duration: 0.3, ease: 'easeInOut' },
       }}
@@ -42,9 +43,9 @@ const SideBar = () => {
       }}
       className={`h-full p-2 flex flex-col`}
     >
-      <header className='min-h-[50px] h-[10%] flex justify-between items-center gap-2 font-preBold text-lg text-primary'>
-        <div className='h-full flex items-center gap-2 min-w-0'>
-          <div className='w-8 flex-shrink-0'>
+      <header className='h-[70px] flex justify-between items-center gap-2 font-preBold text-lg text-primary'>
+        <div className='h-full flex items-center gap-2 min-w-0 text-2xl'>
+          <div className='w-10 flex-shrink-0'>
             <img src={LOGO} alt='logo' className='w-full h-full' />
           </div>
           {isWidthAnimationComplete && (
@@ -58,7 +59,7 @@ const SideBar = () => {
             </motion.h1>
           )}
         </div>
-        <div className='ml-4 w-5 h-5'>
+        <div className='ml-4 size-6'>
           <IconBack
             className={`text-content hover:bg-gray-100 rounded-md cursor-pointer ${
               isSideBarOpen ? '' : 'rotate-180'
@@ -70,7 +71,7 @@ const SideBar = () => {
       <hr className='w-full' />
       <section className='flex flex-col h-[80%] min-h-[120px]'>
         {!ISSUPERADMIN && (
-          <ul className='h-full pt-2 flex flex-col gap-1 text-xs font-preMedium'>
+          <ul className='h-full pt-2 flex flex-col gap-1 text-base font-preMedium'>
             {ADMIN_NAVLIST.map((item) => (
               <Link
                 key={item.title}
@@ -78,9 +79,14 @@ const SideBar = () => {
                 onClick={() => setCurrentPath(item.link)}
               >
                 <li
-                  className={`flex items-center hover:bg-subContent rounded-md px-2 py-1 ${currentPath === item.link && 'bg-subContent'}`}
+                  className={clsx(
+                    'flex items-center  rounded-md p-2',
+                    currentPath === item.link
+                      ? 'bg-subContent font-preBold'
+                      : 'hover:bg-offWhite'
+                  )}
                 >
-                  <div className='w-5 h-5 flex items-center justify-center'>
+                  <div className='size-6 flex items-center justify-center'>
                     <item.icons width={20} height={20} />
                   </div>
                   <div className='ml-4'>
@@ -100,7 +106,7 @@ const SideBar = () => {
           </ul>
         )}
         {ISSUPERADMIN && (
-          <ul className='h-full pt-2 flex flex-col gap-1 text-xs font-preMedium'>
+          <ul className='h-full pt-2 flex flex-col gap-1 text-base font-preMedium'>
             {SUPERADMIN_NAVLIST.map((item) => (
               <Link
                 key={item.title}
@@ -108,9 +114,12 @@ const SideBar = () => {
                 onClick={() => setCurrentPath(item.link)}
               >
                 <li
-                  className={`flex items-center hover:bg-subContent rounded-md px-2 py-1 ${currentPath === item.link && 'bg-subContent'}`}
+                  className={clsx(
+                    'flex items-center hover:bg-offWhite rounded-md p-2',
+                    currentPath === item.link && 'bg-subContent font-preBold'
+                  )}
                 >
-                  <div className='w-5 h-5'>
+                  <div className='size-6 flex items-center justify-center'>
                     <item.icons width={20} height={20} />
                   </div>
                   <div className='ml-4'>

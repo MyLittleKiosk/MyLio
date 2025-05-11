@@ -34,7 +34,7 @@ const Input = ({
       onChange={onChange}
       className={`${
         error ? 'border-2 border-error' : 'border border-subContent'
-      } rounded-md p-2 font-preRegular w-full`}
+      } rounded-md p-2 font-preRegular w-full h-[40px] box-border`}
       disabled={disabled}
       onKeyDown={onKeyDown}
     />

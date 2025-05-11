@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 
 import EmailElement from '@/components/account/AddAccountModal/EmailElement';
 import Button from '@/components/common/Button';
+import CompleteModal from '@/components/common/CompleteModal';
 import Input from '@/components/common/Input';
 import ModalHeader from '@/components/common/Modal/ModalHeader';
 import useModalStore from '@/stores/useModalStore';
 
+import { usePostAccount } from '@/service/queries/account';
 import { AccountForm } from '@/types/account';
 
 interface AccountFormData {
@@ -26,6 +28,8 @@ interface AccountFormErrors {
 
 const AddAccountModal = () => {
   const { closeModal } = useModalStore();
+  const { openModal } = useModalStore();
+  const { mutate: createAccount } = usePostAccount();
 
   const [formData, setFormData] = useState<AccountFormData>({
     userName: '',
@@ -89,25 +93,31 @@ const AddAccountModal = () => {
     if (validationResult.isValid) {
       const email = `${formData.emailId}@${formData.emailDomain}`;
       const accountForm: AccountForm = {
-        user_name: formData.userName,
+        userName: formData.userName,
         email,
-        store_name: formData.storeName,
+        storeName: formData.storeName,
         address: formData.address,
       };
-      console.log('data:', accountForm);
-      closeModal();
+      createAccount({ account: accountForm });
+      openModal(
+        <CompleteModal
+          title='계정 추가'
+          description='계정 추가가 완료되었습니다.'
+          buttonText='확인'
+        />
+      );
     }
   }
 
   return (
-    <div className='flex flex-col gap-8 px-10 py-8'>
+    <div id='add-account-modal' className='flex flex-col gap-8 px-10 py-8'>
       <ModalHeader
         title='계정 추가'
         description='새로운 매장 정보를 입력하세요. 추가 후 매장 계정에서 편집할 수 있습니다.'
       />
       <form onSubmit={handleSubmit}>
         <div className='flex flex-col gap-2'>
-          <div>
+          <div id='account-name-input'>
             <Input
               inputId='accountId'
               label='사용자 이름'
@@ -135,7 +145,7 @@ const AddAccountModal = () => {
             />
           </div>
 
-          <div>
+          <div id='store-name-input'>
             <Input
               inputId='storeId'
               label='매장 이름'
@@ -150,7 +160,7 @@ const AddAccountModal = () => {
             )}
           </div>
 
-          <div>
+          <div id='address-input'>
             <Input
               inputId='addressId'
               label='매장 주소'

@@ -3,29 +3,29 @@
 const INGREDIENT_LIST = {
   content: [
     {
-      ingredient_id: 1,
-      name_kr: '에스프레스',
-      name_en: 'Espresso',
+      ingredientId: 1,
+      nameKr: '에스프레스',
+      nameEn: 'Espresso',
     },
     {
-      ingredient_id: 2,
-      name_kr: '우유',
-      name_en: 'Milk',
+      ingredientId: 2,
+      nameKr: '우유',
+      nameEn: 'Milk',
     },
     {
-      ingredient_id: 3,
-      name_kr: '바닐라시럽',
-      name_en: 'Vanilla Syrup',
+      ingredientId: 3,
+      nameKr: '바닐라시럽',
+      nameEn: 'Vanilla Syrup',
     },
     {
-      ingredient_id: 4,
-      name_kr: '초콜릿 소스',
-      name_en: 'Chocolate Syrup',
+      ingredientId: 4,
+      nameKr: '초콜릿 소스',
+      nameEn: 'Chocolate Syrup',
     },
     {
-      ingredient_id: 5,
-      name_kr: '카라멜 시럽',
-      name_en: 'Caramel Syrup',
+      ingredientId: 5,
+      nameKr: '카라멜 시럽',
+      nameEn: 'Caramel Syrup',
     },
   ],
 };

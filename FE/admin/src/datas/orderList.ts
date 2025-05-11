@@ -1,72 +1,72 @@
-import OrderItem from '@/types/orders';
+import { PaginationResponse } from '@/types/apiResponse';
+import { OrderType } from '@/types/orders';
 import { Column } from '@/types/tableProps';
 
-const ORDER_COLUMNS: Column<OrderItem>[] = [
-  { header: '주문번호', accessor: 'order_id' as keyof OrderItem },
-  { header: '점포', accessor: 'order_store' as keyof OrderItem },
-  { header: '날짜/시간', accessor: 'order_date' as keyof OrderItem },
-  { header: '금액', accessor: 'order_price' as keyof OrderItem },
-  { header: '유형', accessor: 'order_type' as keyof OrderItem },
-  { header: '결제방법', accessor: 'order_payment' as keyof OrderItem },
+const ORDER_COLUMNS: Column<OrderType>[] = [
+  { header: '주문번호', accessor: 'orderId' as keyof OrderType },
+  { header: '점포', accessor: 'orderStore' as keyof OrderType },
+  { header: '날짜/시간', accessor: 'orderDate' as keyof OrderType },
+  { header: '금액', accessor: 'orderPrice' as keyof OrderType },
+  { header: '유형', accessor: 'orderType' as keyof OrderType },
+  { header: '결제방법', accessor: 'orderPayment' as keyof OrderType },
 ];
 
-const ORDER_LIST = {
+const ORDER_LIST: PaginationResponse<OrderType> = {
   content: [
     {
-      order_id: 'ORD-001234',
-      order_store: 'MyLio 강남점',
-      order_date: '2023-04-22 14:30:00',
-      order_price: 15500,
-      order_type: '매장',
-      order_payment: '신용카드',
+      orderId: 'ORD-001234',
+      orderStore: 'MyLio 강남점',
+      orderDate: '2023-04-22 14:30:00',
+      orderPrice: 15500,
+      orderType: '매장',
+      orderPayment: '신용카드',
     },
     {
-      order_id: 'ORD-001235',
-      order_store: 'MyLio 홍대점',
-      order_date: '2023-04-22 15:45:00',
-      order_price: 12000,
-      order_type: '포장',
-      order_payment: '간편결제',
+      orderId: 'ORD-001235',
+      orderStore: 'MyLio 홍대점',
+      orderDate: '2023-04-22 15:45:00',
+      orderPrice: 12000,
+      orderType: '포장',
+      orderPayment: '간편결제',
     },
     {
-      order_id: 'ORD-001236',
-      order_store: 'MyLio 명동점',
-      order_date: '2023-04-22 16:30:00',
-      order_price: 9000,
-      order_type: '포장',
-      order_payment: '현금',
+      orderId: 'ORD-001236',
+      orderStore: 'MyLio 명동점',
+      orderDate: '2023-04-22 16:30:00',
+      orderPrice: 9000,
+      orderType: '포장',
+      orderPayment: '현금',
     },
     {
-      order_id: 'ORD-001237',
-      order_store: 'MyLio 여의도점',
-      order_date: '2023-04-22 17:15:00',
-      order_price: 18500,
-      order_type: '매장',
-      order_payment: '신용카드',
+      orderId: 'ORD-001237',
+      orderStore: 'MyLio 여의도점',
+      orderDate: '2023-04-22 17:15:00',
+      orderPrice: 18500,
+      orderType: '매장',
+      orderPayment: '신용카드',
     },
   ],
-  page_number: 1,
-  total_pages: 1,
-  total_elements: 4,
-  page_size: 10,
+  pageNumber: 1,
+  totalPages: 1,
+  totalElements: 4,
+  pageSize: 10,
   first: true,
   last: true,
-  error: null,
 };
 
 const DETAIL_ORDERS = {
   content: [
     {
-      product_name: '아메리카노',
-      product_price: 4500,
-      product_quantity: 1,
-      product_option: 'ICE, 샷추가',
+      productName: '아메리카노',
+      productPrice: 4500,
+      productQuantity: 1,
+      productOption: 'ICE, 샷추가',
     },
     {
-      product_name: '카페라떼',
-      product_price: 4500,
-      product_quantity: 1,
-      product_option: '',
+      productName: '카페라떼',
+      productPrice: 4500,
+      productQuantity: 1,
+      productOption: '',
     },
   ],
 };
