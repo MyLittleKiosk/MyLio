@@ -317,7 +317,8 @@ class OrderProcessor(BaseProcessor):
         else:
             # 모든 필수 옵션이 선택된 경우, 장바구니에 추가
             print(f"[장바구니 추가 전] 세션 ID: {session_id}, 장바구니 항목 수: {len(session.get('cart', []))}")
-            
+            print(f"[선택된 옵션] {[opt.get('option_name') for opt in menu.get('selected_options', [])]}")
+
             # 장바구니 초기화 (필요 시)
             if "cart" not in session:
                 session["cart"] = []
