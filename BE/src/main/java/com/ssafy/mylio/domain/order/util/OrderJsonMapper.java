@@ -45,10 +45,18 @@ public class OrderJsonMapper {
             Integer storeId = data.path("store_id").asInt();
 
             List<ContentsResponseDto> contents = new ArrayList<>();
-            for (JsonNode m : (ArrayNode) data.path("contents")) contents.add(toContentsDto(m));
+            if (data.has("contents") && data.get("contents").isArray()) {
+                for (JsonNode m : data.path("contents")) {
+                    contents.add(toContentsDto(m));
+                }
+            }
 
             List<CartResponseDto> cart = new ArrayList<>();
-            for (JsonNode c : (ArrayNode) data.path("cart")) cart.add(toCartDto(c));
+            if (data.has("cart") && data.get("cart").isArray()) {
+                for (JsonNode c : data.path("cart")) {
+                    cart.add(toCartDto(c));
+                }
+            }
 
             return OrderResponseDto.builder()
                     .storeId(storeId)
