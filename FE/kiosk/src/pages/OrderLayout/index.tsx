@@ -34,7 +34,7 @@ const OrderLayout = () => {
     // 배경 색은 추후 변경 예정
     <div className='flex flex-col h-dvh bg-gradient-to-b from-primary to-white justify-between'>
       {/* 임시 네비게이터 */}
-      <div className='flex justify-center items-center z-10 fixed top-20 left-0 w-full h-1/3'>
+      <div className='flex justify-center items-center z-10 fixed top-0 left-0 w-full h-[100px]'>
         <ul className='flex justify-center items-center gap-4 bg-white rounded-xl p-4'>
           <li>
             <Link to='/kiosk'>홈</Link>
