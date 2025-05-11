@@ -29,7 +29,7 @@ CLOVA_API_SECRET = os.getenv("CLOVA_API_SECRET")
 
 SUPPORTED_FORMATS = { "audio/mp3", "audio/wav" }
 
-@app.post("/clova/stt")
+@app.post("/voice/clova/stt")
 async def clova_stt(file: UploadFile = File(...)) -> Dict[str, Any]:
     if file.content_type not in SUPPORTED_FORMATS:
         raise HTTPException(status_code=400, detail="지원되지 않는 오디오 형식입니다. (mp3, wav만 지원)")
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
         "main:app",
-        host="localhost",
+        host="0.0.0.0",
         port=8000,
         reload=True,
         ssl_keyfile="localhost-key.pem",
