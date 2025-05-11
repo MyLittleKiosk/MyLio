@@ -88,8 +88,8 @@ public class ProxyService {
     private Mono<OrderResponseDto> dispatchByStatus(OrderResponseDto resp, UserPrincipal user) {
         return switch (resp.getScreenState()) {
             case "ORDER", "MAIN"   -> orderService.handleOrder(resp,user);
-            case "CONFIRM", "SELECT_PAY", "PAY" -> orderService.handlePayment(resp,user);
-            case "DETAIL", "SEARCH" -> Mono.just(resp);
+            case "PAY" -> orderService.handlePayment(resp,user);
+            case "DETAIL", "SEARCH", "CONFIRM", "SELECT_PAY" -> Mono.just(resp);
             default -> Mono.error(new CustomException(ErrorCode.SCREEN_STATE_NOT_FOUND, "status: " + resp.getScreenState()));
         };
     }
