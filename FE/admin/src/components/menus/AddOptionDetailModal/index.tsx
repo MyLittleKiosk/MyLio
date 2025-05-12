@@ -11,7 +11,11 @@ import { OptionGroup } from '@/types/options';
 
 import { useAddOptionDetail } from '@/service/queries/option';
 
-const AddOptionDetailModal = ({ row }: { row: OptionGroup }) => {
+interface AddOptionDetailModalProps {
+  row: OptionGroup;
+}
+
+const AddOptionDetailModal = ({ row }: AddOptionDetailModalProps) => {
   const { closeModal, openModal } = useModalStore();
 
   const [optionDetailName, setOptionDetailName] = useState('');
