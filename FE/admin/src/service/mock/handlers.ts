@@ -155,6 +155,22 @@ export const handlers = [
     return HttpResponse.json(CATEGORY_LIST);
   }),
 
+  http.patch(`${baseUrl}/category/:categoryId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.delete(`${baseUrl}/category/:categoryId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
   http.get(`${baseUrl}/account?pageable=1`, () => {
     const response: Response<PaginationResponse<AccountType>> = {
       success: true,

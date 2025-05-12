@@ -1,19 +1,19 @@
 import Button from '@/components/common/Button';
 import CompleteModal from '@/components/common/CompleteModal';
-import { useDeleteOptionGroup } from '@/service/queries/option';
+import { useDeleteCategory } from '@/service/queries/category';
 import useModalStore from '@/stores/useModalStore';
-import { OptionGroup } from '@/types/options';
+import { CategoryType } from '@/types/categories';
 
 interface Props {
-  row: OptionGroup;
+  row: CategoryType;
 }
 
-const DeleteOptionModal = ({ row }: Props) => {
+const DeleteCategoryModal = ({ row }: Props) => {
   const { openModal } = useModalStore();
-  const { mutate: deleteOptionGroup } = useDeleteOptionGroup();
+  const { mutate: deleteCategory } = useDeleteCategory();
 
-  function handleDeleteOptionGroup(optionId: number) {
-    deleteOptionGroup(optionId, {
+  function handleDeleteCategory(categoryId: number) {
+    deleteCategory(categoryId, {
       onSuccess: () => {
         openModal(
           <CompleteModal
@@ -31,13 +31,14 @@ const DeleteOptionModal = ({ row }: Props) => {
     <div className='flex flex-col items-center justify-center py-6 gap-6'>
       <h2 className='font-preBold text-xl'>삭제 확인</h2>
       <p className='font-preMedium text-lg text-longContent'>
-        &quot;{row.optionNameKr}&quot; 옵션 그룹을 삭제하시겠습니까?
+        &quot;{row.nameKr}&quot; 카테고리를 삭제하시겠습니까?
       </p>
+
       <div>
         <Button
           buttonType='button'
           text='삭제'
-          onClick={() => handleDeleteOptionGroup(row.optionId)}
+          onClick={() => handleDeleteCategory(row.categoryId)}
           className='w-full mt-4 flex justify-center'
         />
       </div>
@@ -45,4 +46,4 @@ const DeleteOptionModal = ({ row }: Props) => {
   );
 };
 
-export default DeleteOptionModal;
+export default DeleteCategoryModal;
