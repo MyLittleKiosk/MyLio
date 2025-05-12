@@ -36,7 +36,7 @@ public class OptionController {
     @Operation(summary = "옵션 전체 조회", description = "전체 옵션 리스트를 조회합니다.")
     public ResponseEntity<CommonResponse<OptionListResponseDto>> getOptionList(
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         return CommonResponse.ok(optionService.getOptionList(storeId));
     }
 
@@ -46,7 +46,7 @@ public class OptionController {
     public ResponseEntity<CommonResponse<OptionResponseDto>> getOptionDetail(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("option_id") Integer optionId) {
-        Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         return CommonResponse.ok(optionService.getOptionDetail(storeId, optionId));
     }
 
@@ -56,7 +56,7 @@ public class OptionController {
     public ResponseEntity<CommonResponse<Void>> deleteOption(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("option_id") Integer optionId) {
-        Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         optionService.deleteOption(storeId, optionId);
         return CommonResponse.ok();
     }
