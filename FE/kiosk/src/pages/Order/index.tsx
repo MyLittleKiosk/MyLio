@@ -21,8 +21,8 @@ const Order = () => {
       <div className='relative flex items-center justify-center mb-4 w-full'>
         {/* 좌우 흐릿한 이미지 */}
         <img
-          // src={imageUrl}
-          src={'/src/assets/images/defaultDrink.png'}
+          src={menu.imageUrl}
+          // src={'/src/assets/images/defaultDrink.png'}
           alt={menu.name}
           className='w-32 h-32 object-cover rounded-xl z-10 mx-auto'
         />

@@ -25,6 +25,7 @@ export const login = async (
     throw new Error('unknown error');
   }
 };
+
 export const logout = async (kioskId: number): Promise<ApiResponse<void>> => {
   try {
     const response = await authClient.post('/auth/logout', {
