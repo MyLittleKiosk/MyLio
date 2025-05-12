@@ -1,18 +1,33 @@
+import React, { useState } from 'react';
+
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import ModalHeader from '@/components/common/Modal/ModalHeader';
+
+import { useAddOptionGroup } from '@/service/queries/option';
+
 import useModalStore from '@/stores/useModalStore';
-import React, { useState } from 'react';
+
+import translator from '@/utils/translator';
 
 const AddOptionGroupModal = () => {
   const { closeModal } = useModalStore();
+  const { mutate } = useAddOptionGroup();
 
   const [optionGroupValueKor, setOptionGroupValueKor] = useState('');
   const [optionGroupValueEng, setOptionGroupValueEng] = useState('');
 
+  async function translateCategoryValue() {
+    const translatedValue = await translator(optionGroupValueKor);
+    setOptionGroupValueEng(translatedValue);
+  }
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    closeModal();
+    mutate({
+      optionNameKr: optionGroupValueKor,
+      optionNameEn: optionGroupValueEng,
+    });
   }
 
   return (
@@ -24,16 +39,26 @@ const AddOptionGroupModal = () => {
 
       <form onSubmit={handleSubmit}>
         <div className='w-full flex flex-col gap-2 '>
+          <div className='w-full flex items-center gap-2'>
+            <Input
+              inputId='optionGroupAdd'
+              label='옵션 그룹명'
+              inputType='text'
+              onChange={(e) => setOptionGroupValueKor(e.target.value)}
+              inputValue={optionGroupValueKor}
+              placeholder='옵션 그룹명을 입력하세요.'
+            />
+
+            <Button
+              buttonType='button'
+              text='번역하기'
+              onClick={() => {
+                translateCategoryValue();
+              }}
+            />
+          </div>
           <Input
-            inputId='optionGroupAdd'
-            label='옵션 그룹명'
-            inputType='text'
-            onChange={(e) => setOptionGroupValueKor(e.target.value)}
-            inputValue={optionGroupValueKor}
-            placeholder='옵션 그룹명을 입력하세요.'
-          />
-          <Input
-            inputId='optionGroupAdd'
+            inputId='engOptionGroup'
             label='옵션 그룹 영문명'
             inputType='text'
             onChange={(e) => setOptionGroupValueEng(e.target.value)}
@@ -49,7 +74,7 @@ const AddOptionGroupModal = () => {
               }}
               cancel
             />
-            <Button buttonType='submit' text='추가' />
+            <Button buttonType='submit' text='추가' buttonId='addOptionGroup' />
           </div>
         </div>
       </form>
