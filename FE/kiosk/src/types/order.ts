@@ -107,7 +107,7 @@ export type OrderResponse = {
     | 'PAY'
     | 'DETAIL';
   language: 'KR' | 'EN' | 'JP' | 'CN';
-  sessionId: string;
+  sessionId: string | null;
   cart: CartItem[];
   contents: ContentItem[];
   payment: 'MOBILE' | 'PAY' | 'GIFT' | 'CARD' | null;
