@@ -68,6 +68,54 @@ class IntentService:
             # 현재 장바구니 상태 출력
             print(f"[요청 처리] 세션 ID: {session_id}, 장바구니 항목 수: {len(session.get('cart', []))}")
             
+            # "결제" 관련 키워드 직접 처리 추가
+            if self._is_payment_request(text, language):
+                print("[요청 처리] 결제 요청 키워드 감지, PaymentProcessor로 직접 처리")
+                intent_data = {
+                    "intent_type": IntentType.PAYMENT,
+                    "confidence": 0.95,
+                    "post_text": "결제를 진행합니다.",
+                    "reply": None  # Reply는 processor에서 생성
+                }
+                
+                response = self.payment_processor.process(intent_data, text, language, screen_state, store_id, session)
+                
+                # 응답 후 세션 다시 가져와서 상태 출력
+                updated_session = self.session_manager.get_session(session_id)
+                print(f"[요청 처리] 결제 요청 처리 후 장바구니: {len(updated_session.get('cart', []))}")
+                
+                # 응답에 장바구니 보강
+                if "data" in response and "cart" in response["data"]:
+                    response["data"]["cart"] = updated_session.get("cart", [])
+                    
+                # 대화 기록 저장
+                self.session_manager.add_to_history(session_id, text, response)
+                return response
+            # CONFIRM 화면에서의 확인 응답 특별 처리
+            if screen_state == ScreenState.CONFIRM and self._is_confirmation_response(text, language):
+                print("[요청 처리] CONFIRM 화면에서 확인 응답 감지, PaymentProcessor로 직접 처리")
+                # 직접 결제 처리기로 처리
+                intent_data = {
+                    "intent_type": IntentType.PAYMENT,
+                    "confidence": 0.95,
+                    "post_text": "결제를 진행합니다.",
+                    "reply": "결제를 진행하겠습니다. 결제 방법을 선택해주세요."
+                }
+                
+                response = self.payment_processor._process_payment_confirmation(intent_data, text, language, screen_state, store_id, session)
+                
+                # 응답 후 세션 다시 가져와서 상태 출력
+                updated_session = self.session_manager.get_session(session_id)
+                print(f"[요청 처리] 확인 응답 처리 후 장바구니: {len(updated_session.get('cart', []))}")
+                
+                # 응답에 장바구니 보강
+                if "data" in response and "cart" in response["data"]:
+                    response["data"]["cart"] = updated_session.get("cart", [])
+                    
+                # 대화 기록 저장
+                self.session_manager.add_to_history(session_id, text, response)
+                return response
+            
             # 2. 컨텍스트 기반 옵션 선택 흐름 처리
             if session.get("last_state") and session["last_state"].get("pending_option"):
                 print("[요청 처리] 이전 대화 기반 옵션 선택 흐름 진입")
@@ -151,23 +199,37 @@ class IntentService:
             raise HTTPException(status_code=500, detail="세션 정보가 유효하지 않습니다.")
             
         return session_id, session
-        """세션 확보 및 검증"""
-        if not session_id:
-            # 세션 ID가 없으면 새로 생성
-            session_id = self.session_manager.create_session()
-            print(f"[요청 처리] 새 세션 생성: {session_id}")
-        else:
-            # 기존 세션이 없으면 외부 ID로 생성
-            if not self.session_manager.get_session(session_id):
-                self.session_manager.create_session_with_id(session_id)
+    
+    def _is_confirmation_response(self, text: str, language: str) -> bool:
+        """주문 확인 화면에서의 확인 응답인지 판단"""
+        text_lower = text.lower()
         
-        # 세션 가져오기
-        session = self.session_manager.get_session(session_id)
+        # 한국어 확인 키워드
+        if language == Language.KR:
+            confirm_keywords = ["네", "예", "맞아", "응", "좋아", "그래", "확인", "진행", "해줘", "결제", "맞습니다", "맞아요"]
+            return any(keyword in text_lower for keyword in confirm_keywords)
         
-        if not session:
-            raise HTTPException(status_code=500, detail="세션 생성 실패")
+        # 영어 확인 키워드
+        elif language == Language.EN:
+            confirm_keywords = ["yes", "yeah", "correct", "right", "ok", "okay", "proceed", "confirm", "sure", "yep"]
+            return any(keyword in text_lower for keyword in confirm_keywords)
         
-        if not isinstance(session, dict):
-            raise HTTPException(status_code=500, detail="세션 정보가 유효하지 않습니다.")
-            
-        return session_id, session
+        # 기타 언어는 기본값으로 처리
+        return False
+    
+    def _is_payment_request(self, text: str, language: str) -> bool:
+        """결제 요청 키워드인지 확인"""
+        text_lower = text.lower()
+        
+        # 한국어 결제 키워드
+        if language == Language.KR:
+            payment_keywords = ["결제", "계산", "지불", "결제할게", "결제해줘", "계산해줘", "지불할게"]
+            return any(keyword in text_lower for keyword in payment_keywords)
+        
+        # 영어 결제 키워드
+        elif language == Language.EN:
+            payment_keywords = ["pay", "payment", "checkout", "pay now", "purchase", "buy"]
+            return any(keyword in text_lower for keyword in payment_keywords)
+        
+        # 기타 언어는 기본값으로 처리
+        return False

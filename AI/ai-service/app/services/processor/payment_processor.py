@@ -196,9 +196,20 @@ class PaymentProcessor(BaseProcessor):
                 "screen_state": screen_state,
                 "cart_status": "empty"
             }
-            reply = intent_data.get("reply") or self.response_generator.generate_response(
-                intent_data, language, context
-            )
+            # 언어에 따른 응답 생성
+            if language == Language.KR:
+                reply = "장바구니가 비어 있어요. 먼저 메뉴를 선택해주세요."
+            elif language == Language.EN:
+                reply = "Your cart is empty. Please select menu items first."
+            elif language == Language.JP:
+                reply = "カートが空です。まずメニューを選択してください。"
+            elif language == Language.CN:
+                reply = "购物车是空的。请先选择菜单。"
+            else:
+                reply = intent_data.get("reply") or self.response_generator.generate_response(
+                    intent_data, language, context
+                )
+
             return {
                 "intent_type": IntentType.PAYMENT,
                 "confidence": intent_data.get("confidence", 0.7),
@@ -220,20 +231,42 @@ class PaymentProcessor(BaseProcessor):
             # 결제 확인 화면으로 이동
             # 장바구니 총액 계산
             total_amount = sum(item.get("total_price", 0) for item in cart)
-            
-            # 컨텍스트 구성
-            context = {
-                "status": ResponseStatus.PAYMENT_CONFIRM,
-                "screen_state": ScreenState.CONFIRM,
-                "total_amount": total_amount,
-                "cart": cart
-            }
-            
-            # 응답 생성
-            reply = intent_data.get("reply") or self.response_generator.generate_response(
-                intent_data, language, context
-            )
-            
+
+            # 언어에 따른 장바구니 확인 요청 메시지 생성
+            if language == Language.KR:
+                cart_items = ", ".join([f"{item.get('name')} {item.get('quantity')}개" for item in cart[:3]])
+                if len(cart) > 3:
+                    cart_items += f" 외 {len(cart) - 3}개"
+                reply = f"장바구니에 {cart_items}가 있어요. 총 금액은 {total_amount}원이에요. 결제를 진행할까요?"
+            elif language == Language.EN:
+                cart_items = ", ".join([f"{item.get('quantity')} {item.get('name_en') or item.get('name')}" for item in cart[:3]])
+                if len(cart) > 3:
+                    cart_items += f" and {len(cart) - 3} more items"
+                reply = f"Your cart contains {cart_items}. Total amount is {total_amount} won. Would you like to proceed with payment?"
+            elif language == Language.JP:
+                cart_items = ", ".join([f"{item.get('name')} {item.get('quantity')}個" for item in cart[:3]])
+                if len(cart) > 3:
+                    cart_items += f" 他 {len(cart) - 3}個"
+                reply = f"カートに{cart_items}があります。合計金額は{total_amount}ウォンです。お支払いを続けますか？"
+            elif language == Language.CN:
+                cart_items = ", ".join([f"{item.get('name')} {item.get('quantity')}个" for item in cart[:3]])
+                if len(cart) > 3:
+                    cart_items += f" 等 {len(cart) - 3}个"
+                reply = f"购物车中有{cart_items}。总金额为{total_amount}韩元。您要继续付款吗？"
+            else:
+                # 컨텍스트 구성
+                context = {
+                    "status": ResponseStatus.PAYMENT_CONFIRM,
+                    "screen_state": ScreenState.CONFIRM,
+                    "total_amount": total_amount,
+                    "cart": cart
+                }
+                
+                # 응답 생성
+                reply = intent_data.get("reply") or self.response_generator.generate_response(
+                    intent_data, language, context
+                )
+                
             return {
                 "intent_type": IntentType.PAYMENT,
                 "confidence": intent_data.get("confidence", 0.8),

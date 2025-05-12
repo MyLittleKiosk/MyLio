@@ -248,13 +248,16 @@ class OptionMatcher:
         return ResponseStatus.READY_TO_ADD_CART
     
     def calculate_total_price(self, menu: Dict[str, Any]) -> int:
-        """선택된 옵션을 포함한 총 가격 계산"""
+        """메뉴의 총 가격 계산 (옵션 포함)"""
         base_price = menu.get("base_price", 0)
+        quantity = menu.get("quantity", 1)
+        
+        # 선택된 옵션의 추가 가격 계산
         additional_price = 0
-        
         for option in menu.get("selected_options", []):
-            if option.get("option_details"):
-                option_detail = option["option_details"][0]
-                additional_price += option_detail.get("additional_price", 0)
+            option_details = option.get("option_details", [])
+            if option_details:
+                additional_price += option_details[0].get("additional_price", 0)
         
-        return base_price + additional_price
+        # (기본 가격 + 추가 가격) * 수량
+        return (base_price + additional_price) * quantity
