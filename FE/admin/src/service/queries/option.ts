@@ -61,7 +61,7 @@ const useEditOptionGroup = () => {
       optionId: number;
       optionNameKr: string;
       optionNameEn: string;
-    }) => editOptionGroup({ optionId, optionNameKr, optionNameEn }),
+    }) => editOptionGroup(optionId, optionNameKr, optionNameEn),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['options'] });
     },
@@ -77,8 +77,7 @@ const useDeleteOptionGroup = () => {
   const queryClient = new QueryClient();
 
   return useMutation({
-    mutationFn: ({ optionId }: { optionId: number }) =>
-      deleteOptionGroup({ optionId }),
+    mutationFn: (optionId: number) => deleteOptionGroup(optionId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['options'] });
     },
@@ -99,7 +98,7 @@ const useAddOptionDetail = () => {
       optionId: number;
       value: string;
       additionalPrice: number;
-    }) => addOptionDetail({ optionId, value, additionalPrice }),
+    }) => addOptionDetail(optionId, value, additionalPrice),
     onSuccess: () => {},
     onError: (error) => {
       if (error instanceof Error) {
@@ -119,7 +118,7 @@ const useEditOptionDetail = () => {
       optionDetailId: number;
       value: string;
       additionalPrice: number;
-    }) => editOptionDetail({ optionDetailId, value, additionalPrice }),
+    }) => editOptionDetail(optionDetailId, value, additionalPrice),
     onSuccess: () => {},
     onError: (error) => {
       if (error instanceof Error) {
@@ -131,8 +130,7 @@ const useEditOptionDetail = () => {
 
 const useDeleteOptionDetail = () => {
   return useMutation({
-    mutationFn: ({ optionDetailId }: { optionDetailId: number }) =>
-      deleteOptionDetail({ optionDetailId }),
+    mutationFn: (optionDetailId: number) => deleteOptionDetail(optionDetailId),
     onSuccess: () => {},
     onError: (error) => {
       if (error instanceof Error) {

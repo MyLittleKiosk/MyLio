@@ -92,23 +92,18 @@ const EditOptionModal = ({ row }: Props) => {
   }
 
   function handleOptionDetailDelete(optionDetailId: number) {
-    deleteOptionDetail(
-      {
-        optionDetailId,
+    deleteOptionDetail(optionDetailId, {
+      onSuccess: () => {
+        openModal(
+          <CompleteModal
+            title='옵션 상세 삭제'
+            description='옵션 상세 삭제가 완료되었습니다.'
+            buttonText='확인'
+          />,
+          'sm'
+        );
       },
-      {
-        onSuccess: () => {
-          openModal(
-            <CompleteModal
-              title='옵션 상세 삭제'
-              description='옵션 상세 삭제가 완료되었습니다.'
-              buttonText='확인'
-            />,
-            'sm'
-          );
-        },
-      }
-    );
+    });
   }
 
   function handleOptionDetailAdd(e: React.FormEvent) {

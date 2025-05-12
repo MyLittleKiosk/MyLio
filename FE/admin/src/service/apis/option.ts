@@ -43,15 +43,11 @@ export async function addOptionGroup({
 }
 
 //옵션 그룹명 수정
-export async function editOptionGroup({
-  optionId,
-  optionNameKr,
-  optionNameEn,
-}: {
-  optionId: number;
-  optionNameKr: string;
-  optionNameEn: string;
-}) {
+export async function editOptionGroup(
+  optionId: number,
+  optionNameKr: string,
+  optionNameEn: string
+) {
   try {
     const res = await authClient.patch(`/option/${optionId}`, {
       optionNameKr,
@@ -71,7 +67,7 @@ export async function editOptionGroup({
 }
 
 //옵션 그룹 삭제
-export async function deleteOptionGroup({ optionId }: { optionId: number }) {
+export async function deleteOptionGroup(optionId: number) {
   try {
     const res = await authClient.delete(`/option/${optionId}`);
     return res.data;
@@ -87,15 +83,11 @@ export async function deleteOptionGroup({ optionId }: { optionId: number }) {
 }
 
 //옵션 상세 추가
-export async function addOptionDetail({
-  optionId,
-  value,
-  additionalPrice,
-}: {
-  optionId: number;
-  value: string;
-  additionalPrice: number;
-}) {
+export async function addOptionDetail(
+  optionId: number,
+  value: string,
+  additionalPrice: number
+) {
   try {
     const res = await authClient.post(`/option_detail/${optionId}`, {
       value,
@@ -114,15 +106,11 @@ export async function addOptionDetail({
 }
 
 //옵션 상세 수정
-export async function editOptionDetail({
-  optionDetailId,
-  value,
-  additionalPrice,
-}: {
-  optionDetailId: number;
-  value: string;
-  additionalPrice: number;
-}) {
+export async function editOptionDetail(
+  optionDetailId: number,
+  value: string,
+  additionalPrice: number
+) {
   try {
     const res = await authClient.patch(`/option_detail/${optionDetailId}`, {
       value,
@@ -142,11 +130,7 @@ export async function editOptionDetail({
 }
 
 //옵션 상세 삭제
-export async function deleteOptionDetail({
-  optionDetailId,
-}: {
-  optionDetailId: number;
-}) {
+export async function deleteOptionDetail(optionDetailId: number) {
   try {
     const res = await authClient.delete(`/option_detail/${optionDetailId}`);
     return res.data;
