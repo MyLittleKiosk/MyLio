@@ -25,7 +25,7 @@ public class SearchValidatorService {
     private final MenuRepository menuRepository;
 
     public Mono<OrderResponseDto> validate(String pyJson, UserPrincipal user) {
-        log.info("옵션 검증 로직 진입 : {}", pyJson);
+        log.info("검색 검증 로직 진입 : {}", pyJson);
         return Mono.fromCallable(() -> parseAndValidate(mapper.parse(pyJson, user), user))
                 .subscribeOn(Schedulers.boundedElastic());
     }

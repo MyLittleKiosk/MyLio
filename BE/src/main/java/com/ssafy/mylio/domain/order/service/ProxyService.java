@@ -78,7 +78,7 @@ public class ProxyService {
             case "ORDER", "MAIN"  -> orderValidatorService.validate(json, user);   // 옵션 검증 포함
             case "DETAIL" -> detailValidatorService.validate(json, user);   // 영양정보 검증 포함
             case "SEARCH" -> searchValidatorService.validate(json, user);
-            case "CONFIRM", "SELECT_PAY" -> paymentValidatorService.validate(json, user);
+            case "CONFIRM", "SELECT_PAY" , "PAY"-> paymentValidatorService.validate(json, user);
             default -> Mono.fromCallable(() -> mapper.parse(json, user))
                     .subscribeOn(Schedulers.boundedElastic());
         };
@@ -88,8 +88,8 @@ public class ProxyService {
     private Mono<OrderResponseDto> dispatchByStatus(OrderResponseDto resp, UserPrincipal user) {
         return switch (resp.getScreenState()) {
             case "ORDER", "MAIN"   -> orderService.handleOrder(resp,user);
-            case "CONFIRM", "SELECT_PAY", "PAY" -> orderService.handlePayment(resp,user);
-            case "DETAIL", "SEARCH" -> Mono.just(resp);
+            case "PAY" -> orderService.handlePayment(resp,user);
+            case "DETAIL", "SEARCH", "CONFIRM", "SELECT_PAY" -> Mono.just(resp);
             default -> Mono.error(new CustomException(ErrorCode.SCREEN_STATE_NOT_FOUND, "status: " + resp.getScreenState()));
         };
     }

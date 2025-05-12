@@ -1,8 +1,8 @@
 package com.ssafy.mylio.domain.sales.service;
 
+import com.ssafy.mylio.domain.order.repository.OrdersRepository;
 import com.ssafy.mylio.domain.sales.dto.response.*;
 import com.ssafy.mylio.domain.account.entity.AccountRole;
-import com.ssafy.mylio.domain.order.repository.OrderRepository;
 import com.ssafy.mylio.domain.sales.entity.MonthlyCategorySalesRatio;
 import com.ssafy.mylio.domain.sales.entity.YearlyCategorySalesRatio;
 import com.ssafy.mylio.domain.sales.repository.*;
@@ -27,7 +27,7 @@ public class SalesService {
     private final YearlyCategorySalesRatioRepository yearlyCategorySalesRatioRepository;
     private final MonthlySalesSummaryRepository monthlySalesRepo;
     private final DailySalesSummaryRepository dailySalesRepo;
-    private final OrderRepository orderRepository;
+    private final OrdersRepository orderRepository;
     private final MonthlyPaymentMethodRatioRepository monthlyPaymentMethodRatioRepository;
     private final YearlyPaymentMethodRatioRepository yearlyPaymentMethodRatioRepository;
     private final MonthlyDineInTakeoutRatioRepository monthlyDineInTakeoutRatioRepository;
