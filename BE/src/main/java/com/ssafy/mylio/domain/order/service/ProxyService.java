@@ -60,7 +60,7 @@ public class ProxyService {
                 .bodyValue(toSnakeJson(req))
                 .retrieve()
                 .bodyToMono(String.class)
-                .timeout(Duration.ofSeconds(10));
+                .timeout(Duration.ofSeconds(20));
 
         log.info("reg : {}", toSnakeJson(req));
 
