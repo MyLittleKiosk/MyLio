@@ -4,7 +4,9 @@ import com.ssafy.mylio.domain.payment.dto.request.KakaoPayApproveRequestDto;
 import com.ssafy.mylio.domain.payment.dto.request.PayRequestDto;
 import com.ssafy.mylio.domain.payment.dto.response.ApproveResponseDto;
 import com.ssafy.mylio.domain.payment.dto.response.ReadyResponseDto;
+import com.ssafy.mylio.domain.payment.entity.PaymentMethod;
 import com.ssafy.mylio.domain.payment.service.KakaoPayService;
+import com.ssafy.mylio.domain.payment.service.PaymentFacadeService;
 import com.ssafy.mylio.global.common.response.CommonResponse;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
@@ -26,15 +28,17 @@ import reactor.core.publisher.Mono;
 public class PaymentController {
 
     private final AuthenticationUtil authenticationUtil;
-    private final KakaoPayService kakaoPayService;
+    private final PaymentFacadeService paymentFacadeService;
 
     @PostMapping("/ready")
     @Operation(summary = "카카오페이 결제 요청", description = "카카오페이 결제 요청을 진행합니다(QR 요청)")
-    public ResponseEntity<CommonResponse<ReadyResponseDto>> readyToPay(
+    public Mono<ResponseEntity<CommonResponse<ReadyResponseDto>>> readyToPay(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody PayRequestDto payRequestDto) {
         Integer userId = authenticationUtil.getCurrentUserId(userPrincipal);
-        return CommonResponse.ok(kakaoPayService.readyToPay(userId, payRequestDto).block());
+        return paymentFacadeService.resolve(PaymentMethod.PAY) // KakaoPayService 선택
+                .readyToPay(userId, payRequestDto)
+                .map(CommonResponse::ok);
     }
 
     @PostMapping("/success")
@@ -45,8 +49,9 @@ public class PaymentController {
 
         Integer userId = authenticationUtil.getCurrentUserId(userPrincipal);
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
-        return kakaoPayService.approveToPay(kakaoDto, userId, storeId)
-                .map(result -> CommonResponse.ok(result));
+        return paymentFacadeService.resolve(PaymentMethod.PAY)
+                .approveToPay(kakaoDto, userId, storeId)
+                .map(CommonResponse::ok);
     }
 
     @GetMapping("/cancel")

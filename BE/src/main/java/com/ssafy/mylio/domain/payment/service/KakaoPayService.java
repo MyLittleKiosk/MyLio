@@ -5,6 +5,7 @@ import com.ssafy.mylio.domain.payment.dto.request.KakaoPayApproveRequestDto;
 import com.ssafy.mylio.domain.payment.dto.request.PayRequestDto;
 import com.ssafy.mylio.domain.payment.dto.response.ApproveResponseDto;
 import com.ssafy.mylio.domain.payment.dto.response.ReadyResponseDto;
+import com.ssafy.mylio.domain.payment.entity.PaymentMethod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +24,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class KakaoPayService {
+public class KakaoPayService implements PayService {
 
     @Value("${app.domain.url}")
     private String BASE_URL;
@@ -44,6 +45,7 @@ public class KakaoPayService {
 
     private final OrderService orderService;
 
+    @Override
     public Mono<ReadyResponseDto> readyToPay(Integer userId, PayRequestDto payRequestDto){
         Map<String, Object> body = new HashMap<>();
         body.put("cid", CID);
@@ -81,6 +83,7 @@ public class KakaoPayService {
 
     }
 
+    @Override
     public Mono<ApproveResponseDto> approveToPay(KakaoPayApproveRequestDto dto, Integer userId, Integer storeId){
         // Redis에서 TID 조회
         String tid = redisTemplate.opsForValue().get(REDIS_KEY_PREFIX + dto.getOrderId());
@@ -110,5 +113,10 @@ public class KakaoPayService {
                     return orderService.saveOrderAfterKakaoPay(storeId, dto.getCart())
                             .thenReturn(approveResponse); // 저장 성공 후 응답 리턴
                 });
+    }
+
+    @Override
+    public PaymentMethod getPaymentMethod() {
+        return PaymentMethod.PAY;
     }
 }
