@@ -1,6 +1,6 @@
 import mic from '@/assets/icons/mic.svg';
 import { useAudioRecord } from '@/hooks/useAudioRecord';
-import { sendAudioToClova } from '@/service/apis/clova';
+import { sendAudioToClova } from '@/service/apis/voice';
 import { useState } from 'react';
 
 interface Props {

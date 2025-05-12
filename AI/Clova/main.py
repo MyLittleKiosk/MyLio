@@ -1,10 +1,13 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 import requests
 import os
+import io
 from dotenv import load_dotenv
 from typing import Dict, Any
 import urllib.parse
+from google.cloud import texttospeech
 
 # Load environment variables
 load_dotenv()
@@ -12,9 +15,9 @@ load_dotenv()
 app = FastAPI()
 
 # CORS 설정
-ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "https://localhost:3000")
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173")
 origins = [origin.strip() for origin in ALLOWED_ORIGINS.split(",")]
-print(origins)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -26,6 +29,10 @@ app.add_middleware(
 # Clova Speech API 설정
 CLOVA_API_URL = os.getenv("CLOVA_API_INVOKE_URL")
 CLOVA_API_SECRET = os.getenv("CLOVA_API_SECRET")
+
+GOOGLE_TTS_API_URL = os.getenv("GOOGLE_TTS_API_URL")
+GOOGLE_TTS_API_SECRET = os.getenv("GOOGLE_TTS_API_SECRET")
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
 SUPPORTED_FORMATS = { "audio/mp3", "audio/wav" }
 
@@ -76,6 +83,41 @@ async def clova_stt(file: UploadFile = File(...)) -> Dict[str, Any]:
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Clova API 요청 실패: {str(e)}")
+
+
+@app.post("/voice/google/tts")
+async def google_tts(text: str = Form(...)):
+    try:
+        # Google TTS 클라이언트 초기화
+        client = texttospeech.TextToSpeechClient()
+
+        # 사용할 음성 선택
+        voice_name = "ko-KR-Chirp3-HD-Gacrux"
+
+        # 텍스트 입력 생성
+        synthesis_input = texttospeech.SynthesisInput(text=text)
+
+        # 음성 선택
+        voice = texttospeech.VoiceSelectionParams(
+            language_code=voice_name.split("-")[0] + "-" + voice_name.split("-")[1],
+            name=voice_name,
+            ssml_gender=texttospeech.SsmlVoiceGender.SSML_VOICE_GENDER_UNSPECIFIED,
+        )
+
+        # 출력 형식 설정
+        audio_config = texttospeech.AudioConfig(
+            audio_encoding=texttospeech.AudioEncoding.MP3
+        )
+
+        # 음성 생성
+        response = client.synthesize_speech(
+            input=synthesis_input, voice=voice, audio_config=audio_config
+        )
+
+        # 음성 출력
+        return StreamingResponse(io.BytesIO(response.audio_content), media_type="audio/mp3")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Google API 요청 실패: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
