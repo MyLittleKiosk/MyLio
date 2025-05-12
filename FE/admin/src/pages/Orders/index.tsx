@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 import Input from '@/components/common/Input';
 import Modal from '@/components/common/Modal';
-import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
 import ViewDetailOrderModal from '@/components/orders/ViewDetailOrderModal';
 
@@ -12,15 +11,15 @@ import useModalStore from '@/stores/useModalStore';
 const Orders = () => {
   const { openModal } = useModalStore();
 
-  const [searchValue, setSearchValue] = useState('');
-  const [selected, setSelected] = useState('');
+  const [startSearchValue, setStartSearchValue] = useState('');
+  const [endSearchValue, setEndSearchValue] = useState('');
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setSearchValue(e.target.value);
+    setStartSearchValue(e.target.value);
   }
 
-  function handleSelectChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    setSelected(e.target.value);
+  function handleEndSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setEndSearchValue(e.target.value);
   }
 
   return (
@@ -30,21 +29,18 @@ const Orders = () => {
         <div className='flex gap-2 max-h-[10%] w-full justify-between'>
           <div className='flex gap-2 w-full'>
             <Input
-              inputId='searchOrder'
-              placeholder='주문번호로 검색'
-              inputType='text'
-              inputValue={searchValue}
+              inputId='startSearchOrder'
+              placeholder=''
+              inputType='date'
+              inputValue={startSearchValue}
               onChange={handleSearchChange}
-              className='w-[65%]'
             />
-            <Select
-              options={['MyLio 강남점', 'MyLio 홍대점', 'MyLio 명동점']}
-              selected={selected}
-              onChange={handleSelectChange}
-              placeholder='모든 점포'
-              className='w-[11%] h-full'
-              getOptionLabel={(option) => option}
-              getOptionValue={(option) => option}
+            <Input
+              inputId='endSearchOrder'
+              placeholder=''
+              inputType='date'
+              inputValue={endSearchValue}
+              onChange={handleEndSearchChange}
             />
           </div>
         </div>

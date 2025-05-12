@@ -22,17 +22,13 @@ const ViewDetailOrderModal = ({ initialData }: ViewDetailOrderModalProps) => {
           <tr className='text-md text-longContent font-preRegular'>
             <td className='w-[50%]'>
               <span className='font-preBold'>날짜/시간: </span>
-              <span>{initialData.orderDate}</span>
-            </td>
-            <td className='w-[50%]'>
-              <span className='font-preBold'>점포: </span>
-              <span>{initialData.orderStore}</span>
+              <span>{initialData.orderedAt}</span>
             </td>
           </tr>
           <tr className='text-md text-longContent font-preRegular'>
             <td className='w-[50%]'>
               <span className='font-preBold'>결제정보: </span>
-              <span>{initialData.orderPayment}</span>
+              <span>{initialData.paidBy}</span>
             </td>
             <td className='w-[50%]'>
               <span className='font-preBold'>주문유형: </span>
@@ -75,7 +71,7 @@ const ViewDetailOrderModal = ({ initialData }: ViewDetailOrderModalProps) => {
       <div>
         <span className='text-md text-longContent font-preBold'>총 금액 :</span>
         <span className='text-md text-longContent font-preBold'>
-          ₩{initialData.orderPrice}
+          ₩{initialData.totalPrice}
         </span>
       </div>
 
