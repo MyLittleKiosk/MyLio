@@ -37,7 +37,7 @@ const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
       </div>
       <Table<OptionGroup>
         title='옵션 목록'
-        description={`총 6개의 옵션이 있습니다.`}
+        description={`총 ${options.length}개의 옵션이 있습니다.`}
         columns={selectedNav.columns as Column<OptionGroup>[]}
         data={options}
         onAdd={(row) => {
