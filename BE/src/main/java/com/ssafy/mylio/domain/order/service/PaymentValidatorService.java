@@ -5,6 +5,7 @@ import com.ssafy.mylio.domain.options.entity.MenuOptionMap;
 import com.ssafy.mylio.domain.options.repository.MenuOptionRepository;
 import com.ssafy.mylio.domain.order.dto.common.OptionsDto;
 import com.ssafy.mylio.domain.order.dto.response.CartResponseDto;
+import com.ssafy.mylio.domain.order.dto.response.ContentsResponseDto;
 import com.ssafy.mylio.domain.order.dto.response.OrderResponseDto;
 import com.ssafy.mylio.domain.order.util.OrderJsonMapper;
 import com.ssafy.mylio.global.error.code.ErrorCode;
@@ -54,7 +55,29 @@ public class PaymentValidatorService {
                 .map(this::validateCartItem)
                 .toList();
 
-        return order.toBuilder().cart(fixedCart).build();
+        // cart에 있는 내용을 content에 넣기
+        List<ContentsResponseDto> generateContents = null;
+        if(screenState.equals("SELECT_PAY") || screenState.equals("CONFIRM")){
+            generateContents = fixedCart.stream()
+                    .map(cart-> ContentsResponseDto.builder()
+                            .menuId(cart.getMenuId())
+                            .quantity(cart.getQuantity())
+                            .name(cart.getName())
+                            .description(cart.getDescription())
+                            .basePrice(cart.getBasePrice())
+                            .totalPrice(cart.getTotalPrice())
+                            .imageUrl(cart.getImageUrl())
+                            .selectedOption(cart.getSelectedOptions())
+                            .options(List.of())
+                            .nutritionInfo(List.of())
+                            .build())
+                    .toList();
+        }
+
+        return order.toBuilder()
+                .cart(fixedCart)
+                .contents(generateContents != null ? generateContents : order.getContents())
+                .build();
     }
 
     private CartResponseDto validateCartItem(CartResponseDto item) {
