@@ -61,7 +61,11 @@ public enum ErrorCode {
     SCREEN_STATE_NOT_FOUND(HttpStatus.BAD_REQUEST,"AI001","렌더링 할 수 없는 STATE 입니다"),
     CART_IS_EMPTY(HttpStatus.BAD_REQUEST,"AI002","장바구니가 비어있습니다"),
     PAY_NOT_MATCH(HttpStatus.BAD_REQUEST,"AI003","등록되지 않은 결제방법입니다"),
-    PAY_NOT_FOUND(HttpStatus.BAD_REQUEST,"AI004","결제수단이 정해지지 않았습니다");
+    PAY_NOT_FOUND(HttpStatus.BAD_REQUEST,"AI004","결제수단이 정해지지 않았습니다"),
+
+    // Kakao PAY
+    PAY_CANCEL(HttpStatus.BAD_REQUEST,"KP001","결제가 취소되었습니다"),
+    PAY_FAIL(HttpStatus.INTERNAL_SERVER_ERROR,"KP002","결제를 실패했습니다");
 
     private final HttpStatus status;
     private final String code;
