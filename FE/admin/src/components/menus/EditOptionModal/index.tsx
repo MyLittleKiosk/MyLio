@@ -12,6 +12,8 @@ import CompleteModal from '@/components/common/CompleteModal';
 import { OptionGroup } from '@/types/options';
 import {
   useAddOptionDetail,
+  useDeleteOptionDetail,
+  useEditOptionDetail,
   useEditOptionGroup,
 } from '@/service/queries/option';
 import useModalStore from '@/stores/useModalStore';
@@ -40,6 +42,8 @@ const EditOptionModal = ({ row }: Props) => {
 
   const { mutate: editOptionGroup } = useEditOptionGroup();
   const { mutate: addOptionDetail } = useAddOptionDetail();
+  const { mutate: editOptionDetail } = useEditOptionDetail();
+  const { mutate: deleteOptionDetail } = useDeleteOptionDetail();
 
   function handleOptionGroupEdit(e: React.FormEvent) {
     e.preventDefault();
@@ -65,8 +69,46 @@ const EditOptionModal = ({ row }: Props) => {
     );
   }
 
-  function handleOptionDetailEdit(e: React.FormEvent) {
-    e.preventDefault();
+  function handleOptionDetailEdit(optionDetailId: number) {
+    editOptionDetail(
+      {
+        optionDetailId,
+        value: optionDetailValueEdit[optionDetailId],
+        additionalPrice: optionDetailPriceEdit[optionDetailId],
+      },
+      {
+        onSuccess: () => {
+          openModal(
+            <CompleteModal
+              title='옵션 상세 수정'
+              description='옵션 상세 수정이 완료되었습니다.'
+              buttonText='확인'
+            />,
+            'sm'
+          );
+        },
+      }
+    );
+  }
+
+  function handleOptionDetailDelete(optionDetailId: number) {
+    deleteOptionDetail(
+      {
+        optionDetailId,
+      },
+      {
+        onSuccess: () => {
+          openModal(
+            <CompleteModal
+              title='옵션 상세 삭제'
+              description='옵션 상세 삭제가 완료되었습니다.'
+              buttonText='확인'
+            />,
+            'sm'
+          );
+        },
+      }
+    );
   }
 
   function handleOptionDetailAdd(e: React.FormEvent) {
@@ -134,69 +176,79 @@ const EditOptionModal = ({ row }: Props) => {
         </div>
       </form>
 
-      <form onSubmit={handleOptionDetailEdit}>
-        <div className='flex flex-col gap-4 w-full'>
-          <p className='w-[10%] font-preSemiBold text-md'>옵션 상세</p>
-          <table className='w-[90%] border-collapse'>
-            <thead className='w-full border-b border-subContent'>
-              <tr className='w-full font-preRegular text-sm text-content2'>
-                <th className='w-[30%] p-2'>옵션 상세명</th>
-                <th className='w-[30%]'>추가 가격</th>
-                <th className='w-[20%]'>수정</th>
-                <th className='w-[20%]'>삭제</th>
+      <div className='flex flex-col gap-4 w-full'>
+        <p className='w-[10%] font-preSemiBold text-md'>옵션 상세</p>
+        <table className='w-[90%] border-collapse'>
+          <thead className='w-full border-b border-subContent'>
+            <tr className='w-full font-preRegular text-sm text-content2'>
+              <th className='w-[30%] p-2'>옵션 상세명</th>
+              <th className='w-[30%]'>추가 가격</th>
+              <th className='w-[20%]'>수정</th>
+              <th className='w-[20%]'>삭제</th>
+            </tr>
+          </thead>
+          <tbody>
+            {row.optionDetail.map((optionDetail, index) => (
+              <tr key={optionDetail.optionDetailId} className='w-full'>
+                <td className='w-[30%] text-center p-2'>
+                  <Input
+                    inputId={`optionDetailValueEdit-${optionDetail.optionDetailId}`}
+                    inputType='text'
+                    inputValue={optionDetailValueEdit[index]}
+                    onChange={(e) =>
+                      setOptionDetailValueEdit(
+                        optionDetailValueEdit.map((value, i) =>
+                          i === index ? e.target.value : value
+                        )
+                      )
+                    }
+                    placeholder='옵션 상세명'
+                    inputClassName='w-[60%] mx-auto'
+                  />
+                </td>
+                <td className='w-[30%] text-center'>
+                  <Input
+                    inputId={`optionDetailPriceEdit-${optionDetail.optionDetailId}`}
+                    inputType='number'
+                    inputValue={optionDetailPriceEdit[index]}
+                    onChange={(e) =>
+                      setOptionDetailPriceEdit(
+                        optionDetailPriceEdit.map((value, i) =>
+                          i === index ? Number(e.target.value) : value
+                        )
+                      )
+                    }
+                    placeholder='추가 가격'
+                    inputClassName='w-[60%] mx-auto'
+                  />
+                </td>
+                <td className='w-[20%] text-center'>
+                  <button
+                    id='optionDetailEdit'
+                    className='w-full flex justify-center cursor-pointer'
+                    onClick={() =>
+                      handleOptionDetailEdit(optionDetail.optionDetailId)
+                    }
+                  >
+                    <IconEdit />
+                  </button>
+                </td>
+                <td className='w-[20%] text-center'>
+                  <button
+                    id='optionDetailDelete'
+                    className='w-full flex justify-center cursor-pointer'
+                    onClick={() =>
+                      handleOptionDetailDelete(optionDetail.optionDetailId)
+                    }
+                  >
+                    <IconTrashCan fillColor='#D44848' />
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {row.optionDetail.map((optionDetail, index) => (
-                <tr key={optionDetail.optionDetailId} className='w-full'>
-                  <td className='w-[30%] text-center p-2'>
-                    <Input
-                      inputId={`optionDetailValueEdit-${optionDetail.optionDetailId}`}
-                      inputType='text'
-                      inputValue={optionDetailValueEdit[index]}
-                      onChange={(e) =>
-                        setOptionDetailValueEdit(
-                          optionDetailValueEdit.map((value, i) =>
-                            i === index ? e.target.value : value
-                          )
-                        )
-                      }
-                      placeholder='옵션 상세명'
-                      inputClassName='w-[60%] mx-auto'
-                    />
-                  </td>
-                  <td className='w-[30%] text-center'>
-                    <Input
-                      inputId={`optionDetailPriceEdit-${optionDetail.optionDetailId}`}
-                      inputType='number'
-                      inputValue={optionDetailPriceEdit[index]}
-                      onChange={(e) =>
-                        setOptionDetailPriceEdit(
-                          optionDetailPriceEdit.map((value, i) =>
-                            i === index ? Number(e.target.value) : value
-                          )
-                        )
-                      }
-                      placeholder='추가 가격'
-                      inputClassName='w-[60%] mx-auto'
-                    />
-                  </td>
-                  <td className='w-[20%] text-center'>
-                    <div className='flex justify-center'>
-                      <IconEdit onClick={() => {}} />
-                    </div>
-                  </td>
-                  <td className='w-[20%] text-center'>
-                    <div className='flex justify-center'>
-                      <IconTrashCan onClick={() => {}} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </form>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <form onSubmit={handleOptionDetailAdd}>
         <div className='flex gap-4 items-center'>

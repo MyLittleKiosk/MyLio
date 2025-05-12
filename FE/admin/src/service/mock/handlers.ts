@@ -95,6 +95,22 @@ export const handlers = [
     });
   }),
 
+  http.patch(`${baseUrl}/option_detail/:optionDetailId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.delete(`${baseUrl}/option_detail/:optionDetailId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
   http.get(`${baseUrl}/accounts/role`, () => {
     return HttpResponse.json(userRole);
   }),

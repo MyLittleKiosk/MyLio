@@ -3,7 +3,9 @@ import { OptionList } from '@/types/options';
 import {
   addOptionDetail,
   addOptionGroup,
+  deleteOptionDetail,
   deleteOptionGroup,
+  editOptionDetail,
   editOptionGroup,
   getOptions,
 } from '@/service/apis/option';
@@ -107,10 +109,45 @@ const useAddOptionDetail = () => {
   });
 };
 
+const useEditOptionDetail = () => {
+  return useMutation({
+    mutationFn: ({
+      optionDetailId,
+      value,
+      additionalPrice,
+    }: {
+      optionDetailId: number;
+      value: string;
+      additionalPrice: number;
+    }) => editOptionDetail({ optionDetailId, value, additionalPrice }),
+    onSuccess: () => {},
+    onError: (error) => {
+      if (error instanceof Error) {
+        alert(error.message);
+      }
+    },
+  });
+};
+
+const useDeleteOptionDetail = () => {
+  return useMutation({
+    mutationFn: ({ optionDetailId }: { optionDetailId: number }) =>
+      deleteOptionDetail({ optionDetailId }),
+    onSuccess: () => {},
+    onError: (error) => {
+      if (error instanceof Error) {
+        alert(error.message);
+      }
+    },
+  });
+};
+
 export {
   useGetOptions,
   useAddOptionGroup,
-  useAddOptionDetail,
   useEditOptionGroup,
   useDeleteOptionGroup,
+  useAddOptionDetail,
+  useEditOptionDetail,
+  useDeleteOptionDetail,
 };

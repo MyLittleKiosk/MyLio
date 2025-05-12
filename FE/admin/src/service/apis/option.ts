@@ -1,6 +1,7 @@
 import { CustomError } from '@/types/apiResponse';
 import authClient from '@/service/authClient';
 
+//옵션 전체 조회
 export async function getOptions() {
   try {
     const res = await authClient.get(`/option`);
@@ -109,5 +110,52 @@ export async function addOptionDetail({
       throw new Error(errorMessage);
     }
     throw new Error('unknown error');
+  }
+}
+
+//옵션 상세 수정
+export async function editOptionDetail({
+  optionDetailId,
+  value,
+  additionalPrice,
+}: {
+  optionDetailId: number;
+  value: string;
+  additionalPrice: number;
+}) {
+  try {
+    const res = await authClient.patch(`/option_detail/${optionDetailId}`, {
+      value,
+      additionalPrice,
+      status: 'REGISTERED',
+    });
+    return res.data;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      const customError = error as CustomError;
+      const errorMessage =
+        customError.response?.data?.error?.message || error.message;
+      throw new Error(errorMessage);
+    }
+    throw new Error('unknown error');
+  }
+}
+
+//옵션 상세 삭제
+export async function deleteOptionDetail({
+  optionDetailId,
+}: {
+  optionDetailId: number;
+}) {
+  try {
+    const res = await authClient.delete(`/option_detail/${optionDetailId}`);
+    return res.data;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      const customError = error as CustomError;
+      const errorMessage =
+        customError.response?.data?.error?.message || error.message;
+      throw new Error(errorMessage);
+    }
   }
 }
