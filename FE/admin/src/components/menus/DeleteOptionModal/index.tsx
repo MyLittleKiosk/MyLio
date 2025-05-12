@@ -13,21 +13,18 @@ const DeleteOptionModal = ({ row }: Props) => {
   const { mutate: deleteOptionGroup } = useDeleteOptionGroup();
 
   function handleDeleteOptionGroup(optionId: number) {
-    deleteOptionGroup(
-      { optionId },
-      {
-        onSuccess: () => {
-          openModal(
-            <CompleteModal
-              title='삭제 성공'
-              description='삭제에 성공했습니다.'
-              buttonText='확인'
-            />,
-            'sm'
-          );
-        },
-      }
-    );
+    deleteOptionGroup(optionId, {
+      onSuccess: () => {
+        openModal(
+          <CompleteModal
+            title='삭제 성공'
+            description='삭제에 성공했습니다.'
+            buttonText='확인'
+          />,
+          'sm'
+        );
+      },
+    });
   }
 
   return (
