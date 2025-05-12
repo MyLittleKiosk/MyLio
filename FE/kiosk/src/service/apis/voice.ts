@@ -38,12 +38,12 @@ export const sendAudioToClova = async (
   }
 };
 
-export const gcpTts = async (text: string) => {
+export const gcpTts = async (text: string): Promise<Blob> => {
   try {
     const formData = new FormData();
     formData.append('text', text);
 
-    const response = await voiceClient.post('/voice/google/tts', formData, {
+    const response = await voiceClient.post('/google/tts', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -51,7 +51,7 @@ export const gcpTts = async (text: string) => {
     });
     console.log('response:', response);
 
-    return response;
+    return response.data;
   } catch (error) {
     console.error('FastAPI 백엔드 요청 중 오류 발생:', error);
     throw error;
