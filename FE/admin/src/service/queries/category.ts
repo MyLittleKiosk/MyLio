@@ -5,6 +5,7 @@ import { CategoryType } from '@/types/categories';
 
 import {
   addCategory,
+  deleteCategory,
   editCategory,
   getCategory,
 } from '@/service/apis/category';
@@ -61,6 +62,23 @@ export const useEditCategory = () => {
     onError: (error) => {
       if (error instanceof Error) {
         alert(error.message);
+      }
+    },
+  });
+};
+
+export const useDeleteCategory = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (categoryId: number) => deleteCategory(categoryId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['category'] });
+    },
+    onError: (error) => {
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert('알 수 없는 오류가 발생했습니다.');
       }
     },
   });

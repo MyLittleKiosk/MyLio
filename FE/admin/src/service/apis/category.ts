@@ -57,4 +57,19 @@ async function editCategory(
   }
 }
 
-export { getCategory, addCategory, editCategory };
+async function deleteCategory(categoryId: number) {
+  try {
+    const res = await authClient.delete(`/category/${categoryId}`);
+    return res.data;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      const customError = error as CustomError;
+      const errorMessage =
+        customError.response?.data?.error?.message || error.message;
+      throw new Error(errorMessage);
+    }
+    throw new Error('unknown error');
+  }
+}
+
+export { getCategory, addCategory, editCategory, deleteCategory };

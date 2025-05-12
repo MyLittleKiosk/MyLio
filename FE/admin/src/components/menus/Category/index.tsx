@@ -4,6 +4,7 @@ import Button from '@/components/common/Button';
 import Table from '@/components/common/Table';
 import AddCategoryModal from '@/components/menus/AddCategoryModal';
 import EditCategoryModal from '@/components/menus/EditCategoryModal';
+import DeleteCategoryModal from '@/components/menus/DeleteCategoryModal';
 
 import { CategoryType } from '@/types/categories';
 import { NavItemType } from '@/types/menus';
@@ -46,6 +47,9 @@ const Category = ({ selectedNav }: { selectedNav: NavItemType }) => {
         data={categoryList as CategoryType[]}
         onEdit={(row) => {
           openModal(<EditCategoryModal row={row} />);
+        }}
+        onDelete={(row) => {
+          openModal(<DeleteCategoryModal row={row} />);
         }}
       />
     </div>
