@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Main from '@/pages/Main';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
@@ -8,16 +8,20 @@ import { useOrderRequest } from '@/service/queries/useOrderRequest';
 import useOrderStore from '@/stores/useOrderStore';
 import { DEFAULT_COMMENT } from '@/datas/COMMENT';
 import { useLogout } from '@/service/queries/useLogout';
-
+import useKioskStore from '@/stores/useKioskStore';
 const OrderLayout = () => {
   const { pathname } = useLocation();
-  const [userChat, setUserChat] = useState<string>('');
+  const [userChat] = useState<string>('');
   const { order } = useOrderStore();
   const { mutate: orderRequest } = useOrderRequest();
   const { mutate: logout } = useLogout();
-
-  const handleRecognitionResult = (text: string) => {
-    setUserChat(text);
+  const { kioskId } = useKioskStore();
+  const navigate = useNavigate();
+  function handleLogout() {
+    logout(kioskId);
+    navigate('/');
+  }
+  function handleRecognitionResult(text: string) {
     orderRequest({
       text: text,
       screenState: order.screenState,
@@ -28,7 +32,7 @@ const OrderLayout = () => {
       payment: order.payment,
       storeId: order.storeId,
     });
-  };
+  }
 
   return (
     // 배경 색은 추후 변경 예정
@@ -58,7 +62,7 @@ const OrderLayout = () => {
             <Link to='detail'>상세</Link>
           </li>
         </ul>
-        <button onClick={() => logout(3)}>로그아웃</button>
+        <button onClick={handleLogout}>로그아웃</button>
       </div>
       <header
         className={clsx(
