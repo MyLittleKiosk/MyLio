@@ -44,7 +44,8 @@ const AddOptionDetailModal = ({ row }: AddOptionDetailModalProps) => {
               title='추가 성공'
               description='옵션 상세 추가가 완료되었습니다.'
               buttonText='확인'
-            />
+            />,
+            'sm'
           );
         },
       }
