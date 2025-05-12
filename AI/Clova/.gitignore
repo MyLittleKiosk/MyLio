@@ -8,3 +8,6 @@ __pycache__/
 # SSL
 localhost-key.pem
 localhost.pem
+
+# Google TTS
+gcp-tts-key.json
