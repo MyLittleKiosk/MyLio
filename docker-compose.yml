@@ -88,7 +88,7 @@ services:
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
       GOOGLE_APPLICATION_CREDENTIALS: /run/secret/gcp-tts-key.json
     volumes:
-      - ${GOOGLE_APPLICATION_CREDENTIALS}/gcp-tts-key.json:/run/secret/gcp-tts-key.json:ro
+      - ${GCP_KEY_PATH}:/run/secret/gcp-tts-key.json:ro
     ports:
       - "${VOICE_PORT}:${VOICE_CONTAINER_PORT}"
     restart: always
