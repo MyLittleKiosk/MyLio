@@ -7,14 +7,19 @@ import IconTrashCan from '@/assets/icons/IconTrashCan';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import ModalHeader from '@/components/common/Modal/ModalHeader';
+import CompleteModal from '@/components/common/CompleteModal';
 
 import { OptionGroup } from '@/types/options';
+import { useEditOptionGroup } from '@/service/queries/option';
+import useModalStore from '@/stores/useModalStore';
 
 interface Props {
   row: OptionGroup;
 }
 
 const EditOptionModal = ({ row }: Props) => {
+  const { openModal } = useModalStore();
+
   const [optionGroupNameKrEdit, setOptionGroupNameKrEdit] = useState(
     row.optionNameKr
   );
@@ -29,8 +34,31 @@ const EditOptionModal = ({ row }: Props) => {
   );
   const [optionDetailValueAdd, setOptionDetailValueAdd] = useState('');
   const [optionDetailPriceAdd, setOptionDetailPriceAdd] = useState(0);
+
+  const { mutate: editOptionGroup } = useEditOptionGroup();
+
   function handleOptionGroupEdit(e: React.FormEvent) {
     e.preventDefault();
+
+    editOptionGroup(
+      {
+        optionId: row.optionId,
+        optionNameKr: optionGroupNameKrEdit,
+        optionNameEn: optionGroupNameEnEdit,
+      },
+      {
+        onSuccess: () => {
+          openModal(
+            <CompleteModal
+              title='옵션 그룹명 수정'
+              description='옵션 그룹명 수정이 완료되었습니다.'
+              buttonText='확인'
+            />,
+            'sm'
+          );
+        },
+      }
+    );
   }
 
   function handleOptionDetailEdit(e: React.FormEvent) {
@@ -70,8 +98,8 @@ const EditOptionModal = ({ row }: Props) => {
           />
           <Button
             buttonId='optionGroupNameEdit'
-            buttonType='button'
-            text='저장'
+            buttonType='submit'
+            text='수정'
             className='w-[15%]'
           />
         </div>

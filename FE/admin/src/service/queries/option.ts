@@ -1,8 +1,10 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { OptionList } from '@/types/options';
 import {
   addOptionDetail,
   addOptionGroup,
+  deleteOptionGroup,
+  editOptionGroup,
   getOptions,
 } from '@/service/apis/option';
 import useModalStore from '@/stores/useModalStore';
@@ -21,7 +23,9 @@ const useGetOptions = () => {
 };
 
 const useAddOptionGroup = () => {
+  const queryClient = new QueryClient();
   const { closeModal } = useModalStore();
+
   return useMutation({
     mutationFn: ({
       optionNameKr,
@@ -31,6 +35,7 @@ const useAddOptionGroup = () => {
       optionNameEn: string;
     }) => addOptionGroup({ optionNameKr, optionNameEn }),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['options'] });
       alert('등록에 성공했습니다.');
       closeModal();
     },
@@ -42,6 +47,46 @@ const useAddOptionGroup = () => {
   });
 };
 
+const useEditOptionGroup = () => {
+  const queryClient = new QueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      optionId,
+      optionNameKr,
+      optionNameEn,
+    }: {
+      optionId: number;
+      optionNameKr: string;
+      optionNameEn: string;
+    }) => editOptionGroup({ optionId, optionNameKr, optionNameEn }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['options'] });
+    },
+    onError: (error) => {
+      if (error instanceof Error) {
+        alert(error.message);
+      }
+    },
+  });
+};
+
+const useDeleteOptionGroup = () => {
+  const queryClient = new QueryClient();
+
+  return useMutation({
+    mutationFn: ({ optionId }: { optionId: number }) =>
+      deleteOptionGroup({ optionId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['options'] });
+    },
+    onError: (error) => {
+      if (error instanceof Error) {
+        alert(error.message);
+      }
+    },
+  });
+};
 const useAddOptionDetail = () => {
   return useMutation({
     mutationFn: ({
@@ -62,4 +107,10 @@ const useAddOptionDetail = () => {
   });
 };
 
-export { useGetOptions, useAddOptionGroup, useAddOptionDetail };
+export {
+  useGetOptions,
+  useAddOptionGroup,
+  useAddOptionDetail,
+  useEditOptionGroup,
+  useDeleteOptionGroup,
+};

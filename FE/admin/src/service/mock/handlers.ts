@@ -71,6 +71,22 @@ export const handlers = [
     });
   }),
 
+  http.patch(`${baseUrl}/option/:optionId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.delete(`${baseUrl}/option/:optionId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
   http.post(`${baseUrl}/option_detail/:optionId`, () => {
     return HttpResponse.json({
       success: true,

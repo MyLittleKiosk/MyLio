@@ -5,6 +5,7 @@ import Table from '@/components/common/Table';
 import AddOptionGroupModal from '@/components/menus/AddOptionGroupModal';
 import AddOptionDetailModal from '@/components/menus/AddOptionDetailModal';
 import EditOptionModal from '@/components/menus/EditOptionModal';
+import DeleteOptionModal from '@/components/menus/DeleteOptionModal';
 
 import { NavItemType } from '@/types/menus';
 import { OptionGroup } from '@/types/options';
@@ -46,6 +47,9 @@ const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
         }}
         onEdit={(row) => {
           openModal(<EditOptionModal row={row} />, 'lg');
+        }}
+        onDelete={(row) => {
+          openModal(<DeleteOptionModal row={row} />);
         }}
       />
     </div>
