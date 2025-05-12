@@ -10,7 +10,10 @@ import ModalHeader from '@/components/common/Modal/ModalHeader';
 import CompleteModal from '@/components/common/CompleteModal';
 
 import { OptionGroup } from '@/types/options';
-import { useEditOptionGroup } from '@/service/queries/option';
+import {
+  useAddOptionDetail,
+  useEditOptionGroup,
+} from '@/service/queries/option';
 import useModalStore from '@/stores/useModalStore';
 
 interface Props {
@@ -32,10 +35,11 @@ const EditOptionModal = ({ row }: Props) => {
   const [optionDetailPriceEdit, setOptionDetailPriceEdit] = useState(
     row.optionDetail.map((optionDetail) => optionDetail.additionalPrice)
   );
-  const [optionDetailValueAdd, setOptionDetailValueAdd] = useState('');
+  const [optionDetailNameAdd, setOptionDetailNameAdd] = useState('');
   const [optionDetailPriceAdd, setOptionDetailPriceAdd] = useState(0);
 
   const { mutate: editOptionGroup } = useEditOptionGroup();
+  const { mutate: addOptionDetail } = useAddOptionDetail();
 
   function handleOptionGroupEdit(e: React.FormEvent) {
     e.preventDefault();
@@ -67,6 +71,31 @@ const EditOptionModal = ({ row }: Props) => {
 
   function handleOptionDetailAdd(e: React.FormEvent) {
     e.preventDefault();
+
+    if (!optionDetailNameAdd || !optionDetailPriceAdd) {
+      alert('모든 필드를 입력해주세요.');
+      return;
+    }
+
+    addOptionDetail(
+      {
+        optionId: row.optionId,
+        value: optionDetailNameAdd,
+        additionalPrice: Number(optionDetailPriceAdd),
+      },
+      {
+        onSuccess: () => {
+          openModal(
+            <CompleteModal
+              title='추가 성공'
+              description='옵션 상세 추가가 완료되었습니다.'
+              buttonText='확인'
+            />,
+            'sm'
+          );
+        },
+      }
+    );
   }
 
   return (
@@ -173,10 +202,10 @@ const EditOptionModal = ({ row }: Props) => {
         <div className='flex gap-4 items-center'>
           <p className='font-preSemiBold text-md'>옵션 상세 추가</p>
           <Input
-            inputId={`optionDetailValueAdd`}
+            inputId={`optionDetailNameAdd`}
             inputType='text'
-            inputValue={optionDetailValueAdd}
-            onChange={(e) => setOptionDetailValueAdd(e.target.value)}
+            inputValue={optionDetailNameAdd}
+            onChange={(e) => setOptionDetailNameAdd(e.target.value)}
             placeholder='옵션 상세명'
             inputClassName='w-[80%]'
           />
@@ -190,7 +219,9 @@ const EditOptionModal = ({ row }: Props) => {
             inputClassName='w-[80%]'
           />
 
-          <IconAdd onClick={() => {}} />
+          <button type='submit' className='cursor-pointer'>
+            <IconAdd />
+          </button>
         </div>
       </form>
     </div>
