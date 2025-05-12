@@ -11,10 +11,6 @@ const OPTION_COLUMNS: Column<OptionGroup>[] = [
     accessor: 'optionDetail' as keyof OptionGroup,
   },
   {
-    header: '옵션 상세 추가',
-    accessor: 'optionDetailAdd' as keyof OptionGroup,
-  },
-  {
     header: '편집',
     accessor: 'edit' as keyof OptionGroup,
   },
