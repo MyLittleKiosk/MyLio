@@ -163,7 +163,7 @@ const EditOptionModal = ({ row }: Props) => {
             className='w-[30%]'
           />
           <Button
-            buttonId='optionGroupNameEdit'
+            buttonId='optionGroupNameEditBtn'
             buttonType='submit'
             text='수정'
             className='w-[15%]'
