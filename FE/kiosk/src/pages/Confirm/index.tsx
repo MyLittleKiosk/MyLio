@@ -8,7 +8,11 @@ const Confirm = () => {
       <div className='flex flex-col gap-2 mt-10 w-full overflow-y-auto'>
         {order.contents.map((item) => (
           <div key={item.menuId} className='flex items-center gap-2'>
-            <img src={item.imageUrl} alt={item.name} />
+            <img
+              src={item.imageUrl}
+              alt={item.name}
+              className='w-20 h-20 object-cover rounded-lg'
+            />
             <div className='flex flex-col w-1/2'>
               <h2 className='text-lg font-preBold'>{item.name}</h2>
               <p>{formatNumber(item.totalPrice)}</p>
