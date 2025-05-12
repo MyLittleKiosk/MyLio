@@ -4,6 +4,7 @@ import Button from '@/components/common/Button';
 import Table from '@/components/common/Table';
 import AddOptionGroupModal from '@/components/menus/AddOptionGroupModal';
 import AddOptionDetailModal from '@/components/menus/AddOptionDetailModal';
+import EditOptionModal from '@/components/menus/EditOptionModal';
 
 import { NavItemType } from '@/types/menus';
 import { OptionGroup } from '@/types/options';
@@ -42,6 +43,9 @@ const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
         data={options}
         onAdd={(row) => {
           openModal(<AddOptionDetailModal row={row} />);
+        }}
+        onEdit={(row) => {
+          openModal(<EditOptionModal row={row} />, 'lg');
         }}
       />
     </div>

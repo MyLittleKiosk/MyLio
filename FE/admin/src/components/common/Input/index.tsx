@@ -7,6 +7,7 @@ interface InputProps {
   inputType: string;
   inputValue: string | number;
   className?: string;
+  inputClassName?: string;
   error?: boolean;
   disabled?: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -21,6 +22,7 @@ const Input = ({
   inputValue,
   onChange,
   className,
+  inputClassName,
   error = false,
   disabled = false,
   onKeyDown,
@@ -34,14 +36,14 @@ const Input = ({
       onChange={onChange}
       className={`${
         error ? 'border-2 border-error' : 'border border-subContent'
-      } rounded-md p-2 font-preRegular w-full h-[40px] box-border`}
+      } rounded-md p-2 font-preRegular h-[40px] box-border ${inputClassName || 'w-full'}`}
       disabled={disabled}
       onKeyDown={onKeyDown}
     />
   );
 
   return (
-    <div className={`${className} flex items-center`}>
+    <div className={`flex items-center ${className || ''}`}>
       {label ? (
         <label className='flex gap-4 items-center w-full'>
           <span className='w-[10%] min-w-[80px] max-w-[100px] text-md font-preSemiBold whitespace-wrap break-keep'>
