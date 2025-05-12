@@ -62,7 +62,7 @@ const Modal = () => {
           variants={modalVariants}
           ref={dialog}
           onClick={handleBackdropClick}
-          className={`w-[50%] min-w-[200px] max-w-[600px] fixed top-0 z-50 mx-auto rounded-lg`}
+          className={`w-[30%] min-w-[200px] max-w-[600px] fixed top-0 z-50 mx-auto rounded-lg`}
         >
           {modalContent}
         </motion.dialog>
