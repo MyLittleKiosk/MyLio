@@ -236,8 +236,11 @@ describe('옵션관리 페이지', () => {
     cy.get('#addOptionDetail')
       .click({ force: true })
       .then(() => {
-        // alert 메시지 확인
-        cy.wrap(alertStub).should('be.calledWith', '등록에 성공했습니다.');
+        // 모달이 나타나는지 확인
+        cy.contains('dialog', '추가 성공').should('exist');
+
+        // 확인 버튼 클릭
+        cy.contains('button', '확인').click();
       });
 
     // 모달이 닫혔는지 확인

@@ -41,7 +41,7 @@ const AddOptionDetailModal = ({ row }: AddOptionDetailModalProps) => {
         onSuccess: () => {
           openModal(
             <CompleteModal
-              title='옵션 상세 추가'
+              title='추가 성공'
               description='옵션 상세 추가가 완료되었습니다.'
               buttonText='확인'
             />
