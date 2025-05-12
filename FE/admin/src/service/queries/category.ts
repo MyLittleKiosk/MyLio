@@ -1,9 +1,13 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { PaginationResponse, Response } from '@/types/apiResponse';
 import { CategoryType } from '@/types/categories';
 
-import { getCategory, postCategory } from '@/service/apis/category';
+import {
+  addCategory,
+  editCategory,
+  getCategory,
+} from '@/service/apis/category';
 import useModalStore from '@/stores/useModalStore';
 
 export const useGetCategory = (page?: number) => {
@@ -19,15 +23,40 @@ export const useGetCategory = (page?: number) => {
   };
 };
 
-export const usePostCategory = () => {
+export const useAddCategory = () => {
+  const queryClient = useQueryClient();
   const { closeModal } = useModalStore();
 
   return useMutation({
     mutationFn: ({ nameKr, nameEn }: { nameKr: string; nameEn: string }) =>
-      postCategory(nameKr, nameEn),
+      addCategory(nameKr, nameEn),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['category'] });
       alert('등록에 성공했습니다.');
       closeModal();
+    },
+    onError: (error) => {
+      if (error instanceof Error) {
+        alert(error.message);
+      }
+    },
+  });
+};
+
+export const useEditCategory = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      categoryId,
+      nameKr,
+      nameEn,
+    }: {
+      categoryId: number;
+      nameKr: string;
+      nameEn: string;
+    }) => editCategory(categoryId, nameKr, nameEn),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['category'] });
     },
     onError: (error) => {
       if (error instanceof Error) {
