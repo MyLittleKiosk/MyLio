@@ -7,6 +7,14 @@ class OptionMatcher:
     
     def match_option(self, options: List[Dict[str, Any]], option_name: str, option_value: str) -> Optional[Dict[str, Any]]:
         """옵션 매핑 함수"""
+        # 입력 검증 추가
+        if not options or not option_name or not option_value:
+            print(f"[옵션 매칭] 유효하지 않은 입력: options={bool(options)}, name={bool(option_name)}, value={bool(option_value)}")
+            return None
+        
+        # 디버깅을 위한 로그 추가
+        print(f"옵션 매핑: 이름={option_name}, 값={option_value}, 사용 가능한 옵션={options}")
+        
         # 디버깅을 위한 로그 추가
         print(f"옵션 매핑: 이름={option_name}, 값={option_value}, 사용 가능한 옵션={options}")
     
