@@ -1,5 +1,7 @@
 package com.ssafy.mylio.domain.payment.service;
 
+import com.ssafy.mylio.domain.order.service.OrderService;
+import com.ssafy.mylio.domain.payment.dto.request.KakaoPayApproveRequestDto;
 import com.ssafy.mylio.domain.payment.dto.request.PayRequestDto;
 import com.ssafy.mylio.domain.payment.dto.response.ApproveResponseDto;
 import com.ssafy.mylio.domain.payment.dto.response.ReadyResponseDto;
@@ -40,6 +42,8 @@ public class KakaoPayService {
     private static final String REDIS_KEY_PREFIX = "pay:tid:";
     private static final String CID = "TC0ONETIME";
 
+    private final OrderService orderService;
+
     public Mono<ReadyResponseDto> readyToPay(Integer userId, PayRequestDto payRequestDto){
         Map<String, Object> body = new HashMap<>();
         body.put("cid", CID);
@@ -77,16 +81,16 @@ public class KakaoPayService {
 
     }
 
-    public Mono<ApproveResponseDto> approveToPay(String orderId, String pgToken, Integer userId){
+    public Mono<ApproveResponseDto> approveToPay(KakaoPayApproveRequestDto dto, Integer userId, Integer storeId){
         // Redis에서 TID 조회
-        String tid = redisTemplate.opsForValue().get(REDIS_KEY_PREFIX + orderId);
+        String tid = redisTemplate.opsForValue().get(REDIS_KEY_PREFIX + dto.getOrderId());
 
         Map<String, Object> body = new HashMap<>();
         body.put("cid", CID);
         body.put("tid", tid);
-        body.put("partner_order_id", orderId);
+        body.put("partner_order_id", dto.getOrderId());
         body.put("partner_user_id", userId);
-        body.put("pg_token", pgToken);
+        body.put("pg_token", dto.getPgToken());
 
         return webClient.post()
                 .uri(APPROVE_URL)
@@ -100,6 +104,11 @@ public class KakaoPayService {
                             return Mono.error(new RuntimeException("카카오페이 요청 실패: " + errorBody));
                         })
                 )
-                .bodyToMono(ApproveResponseDto.class);
+                .bodyToMono(ApproveResponseDto.class)
+                .flatMap(approveResponse -> {
+                    // 3. 결제 승인 성공 → 주문 저장
+                    return orderService.saveOrderAfterKakaoPay(storeId, dto.getCart())
+                            .thenReturn(approveResponse); // 저장 성공 후 응답 리턴
+                });
     }
 }

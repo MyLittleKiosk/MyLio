@@ -1,5 +1,6 @@
 package com.ssafy.mylio.domain.payment.controller;
 
+import com.ssafy.mylio.domain.payment.dto.request.KakaoPayApproveRequestDto;
 import com.ssafy.mylio.domain.payment.dto.request.PayRequestDto;
 import com.ssafy.mylio.domain.payment.dto.response.ApproveResponseDto;
 import com.ssafy.mylio.domain.payment.dto.response.ReadyResponseDto;
@@ -36,15 +37,15 @@ public class PaymentController {
         return CommonResponse.ok(kakaoPayService.readyToPay(userId, payRequestDto).block());
     }
 
-    @GetMapping("/success")
+    @PostMapping("/success")
     @Operation(summary = "카카오페이 결제 성공", description = "카카오페이 결제 성공")
     public Mono<ResponseEntity<CommonResponse<ApproveResponseDto>>> paySuccess(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestParam("pg_token") String pgToken,
-            @RequestParam("orderId") String orderId) {
+            @RequestBody KakaoPayApproveRequestDto kakaoDto) {
 
         Integer userId = authenticationUtil.getCurrentUserId(userPrincipal);
-        return kakaoPayService.approveToPay(orderId, pgToken, userId)
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+        return kakaoPayService.approveToPay(kakaoDto, userId, storeId)
                 .map(result -> CommonResponse.ok(result));
     }
 
