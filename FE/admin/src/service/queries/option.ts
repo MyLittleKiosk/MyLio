@@ -43,8 +43,6 @@ const useAddOptionGroup = () => {
 };
 
 const useAddOptionDetail = () => {
-  const { closeModal } = useModalStore();
-
   return useMutation({
     mutationFn: ({
       optionId,
@@ -55,10 +53,7 @@ const useAddOptionDetail = () => {
       value: string;
       additionalPrice: number;
     }) => addOptionDetail({ optionId, value, additionalPrice }),
-    onSuccess: () => {
-      alert('등록에 성공했습니다.');
-      closeModal();
-    },
+    onSuccess: () => {},
     onError: (error) => {
       if (error instanceof Error) {
         alert(error.message);

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import ModalHeader from '@/components/common/Modal/ModalHeader';
+import CompleteModal from '@/components/common/CompleteModal';
 
 import useModalStore from '@/stores/useModalStore';
 
@@ -11,7 +12,7 @@ import { OptionGroup } from '@/types/options';
 import { useAddOptionDetail } from '@/service/queries/option';
 
 const AddOptionDetailModal = ({ row }: { row: OptionGroup }) => {
-  const { closeModal } = useModalStore();
+  const { closeModal, openModal } = useModalStore();
 
   const [optionDetailName, setOptionDetailName] = useState('');
   const [optionDetailPrice, setOptionDetailPrice] = useState('');
@@ -26,11 +27,24 @@ const AddOptionDetailModal = ({ row }: { row: OptionGroup }) => {
       return;
     }
 
-    addOptionDetail({
-      optionId: row.optionId,
-      value: optionDetailName,
-      additionalPrice: Number(optionDetailPrice),
-    });
+    addOptionDetail(
+      {
+        optionId: row.optionId,
+        value: optionDetailName,
+        additionalPrice: Number(optionDetailPrice),
+      },
+      {
+        onSuccess: () => {
+          openModal(
+            <CompleteModal
+              title='옵션 상세 추가'
+              description='옵션 상세 추가가 완료되었습니다.'
+              buttonText='확인'
+            />
+          );
+        },
+      }
+    );
   }
 
   return (
