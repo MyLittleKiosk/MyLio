@@ -82,6 +82,22 @@ export async function deleteOptionGroup(optionId: number) {
   }
 }
 
+//옵션 상세 조회
+export async function getOptionDetail(optionId: number) {
+  try {
+    const res = await authClient.get(`/option_detail/${optionId}`);
+    return res.data;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      const customError = error as CustomError;
+      const errorMessage =
+        customError.response?.data?.error?.message || error.message;
+      throw new Error(errorMessage);
+    }
+    throw new Error('unknown error');
+  }
+}
+
 //옵션 상세 추가
 export async function addOptionDetail(
   optionId: number,

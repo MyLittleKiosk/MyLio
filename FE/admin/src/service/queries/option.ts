@@ -7,6 +7,7 @@ import {
   deleteOptionGroup,
   editOptionDetail,
   editOptionGroup,
+  getOptionDetail,
   getOptions,
 } from '@/service/apis/option';
 import useModalStore from '@/stores/useModalStore';
@@ -88,7 +89,23 @@ const useDeleteOptionGroup = () => {
     },
   });
 };
+
+const useGetOptionDetail = (optionId: number) => {
+  const query = useQuery({
+    queryKey: ['optionDetail', optionId],
+    queryFn: () => getOptionDetail(optionId),
+  });
+
+  return {
+    data: query.data?.data?.optionDetails,
+    isLoading: query.isLoading,
+    isError: query.isError,
+  };
+};
+
 const useAddOptionDetail = () => {
+  const queryClient = new QueryClient();
+
   return useMutation({
     mutationFn: ({
       optionId,
@@ -99,7 +116,9 @@ const useAddOptionDetail = () => {
       value: string;
       additionalPrice: number;
     }) => addOptionDetail(optionId, value, additionalPrice),
-    onSuccess: () => {},
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['optionDetail'] });
+    },
     onError: (error) => {
       if (error instanceof Error) {
         alert(error.message);
@@ -109,6 +128,8 @@ const useAddOptionDetail = () => {
 };
 
 const useEditOptionDetail = () => {
+  const queryClient = new QueryClient();
+
   return useMutation({
     mutationFn: ({
       optionDetailId,
@@ -119,7 +140,9 @@ const useEditOptionDetail = () => {
       value: string;
       additionalPrice: number;
     }) => editOptionDetail(optionDetailId, value, additionalPrice),
-    onSuccess: () => {},
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['optionDetail'] });
+    },
     onError: (error) => {
       if (error instanceof Error) {
         alert(error.message);
@@ -129,9 +152,13 @@ const useEditOptionDetail = () => {
 };
 
 const useDeleteOptionDetail = () => {
+  const queryClient = new QueryClient();
+
   return useMutation({
     mutationFn: (optionDetailId: number) => deleteOptionDetail(optionDetailId),
-    onSuccess: () => {},
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['optionDetail'] });
+    },
     onError: (error) => {
       if (error instanceof Error) {
         alert(error.message);
@@ -145,6 +172,7 @@ export {
   useAddOptionGroup,
   useEditOptionGroup,
   useDeleteOptionGroup,
+  useGetOptionDetail,
   useAddOptionDetail,
   useEditOptionDetail,
   useDeleteOptionDetail,
