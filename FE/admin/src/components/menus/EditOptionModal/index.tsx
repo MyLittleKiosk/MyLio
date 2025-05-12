@@ -219,7 +219,7 @@ const EditOptionModal = ({ row }: Props) => {
             inputClassName='w-[80%]'
           />
 
-          <button type='submit' className='cursor-pointer'>
+          <button id='optionDetailAdd' type='submit' className='cursor-pointer'>
             <IconAdd />
           </button>
         </div>

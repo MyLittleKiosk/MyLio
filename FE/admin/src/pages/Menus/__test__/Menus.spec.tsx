@@ -201,22 +201,128 @@ describe('옵션관리 페이지', () => {
     cy.contains('dialog', '옵션 그룹 추가').should('not.exist');
   });
 
+  it('옵션 그룹을 수정할 수 있다.', () => {
+    //given - 메뉴 관리 페이지 - 옵션 탭에 접근한다.
+    cy.visit('/menus');
+    cy.get('#옵션').click();
+
+    //when - 옵션 목록의 첫 번째 항목의 수정 버튼을 클릭한다.
+    cy.get('table tbody tr')
+      .first()
+      .find('td')
+      .eq(2) // 수정 버튼이 있는 셀
+      .find('#edit')
+      .click();
+
+    // 수정 모달이 나타나는지 확인
+    cy.contains('옵션 편집').should('exist');
+
+    // 현재 옵션 그룹명이 입력 필드에 있는지 확인
+    cy.get('#optionGroupNameEdit').should(
+      'have.value',
+      OPTION_LIST.data.options[0].optionNameKr
+    );
+    cy.get('#optionGroupNameEnEdit').should(
+      'have.value',
+      OPTION_LIST.data.options[0].optionNameEn
+    );
+
+    // 옵션 그룹명 수정
+    const updatedName = '수정된 옵션명';
+    cy.get('#optionGroupNameEdit').clear().type(updatedName);
+
+    // API 요청 인터셉트 설정
+    cy.intercept(
+      'PATCH',
+      `/api/option/${OPTION_LIST.data.options[0].optionId}`,
+      {
+        statusCode: 200,
+        body: {
+          success: true,
+          data: {},
+          timestamp: new Date().toISOString(),
+        },
+      }
+    ).as('editOptionGroup');
+
+    // 수정 버튼 클릭
+    cy.get('#optionGroupNameEdit')
+      .parents('form')
+      .find('button[type="submit"]')
+      .click();
+
+    // 성공 모달이 나타나는지 확인
+    cy.contains('dialog', '옵션 그룹명 수정').should('exist');
+    cy.contains('옵션 그룹명 수정이 완료되었습니다.').should('exist');
+
+    // 성공 모달의 확인 버튼 클릭
+    cy.contains('button', '확인').click();
+  });
+
+  it('옵션 그룹을 삭제할 수 있다.', () => {
+    //given - 메뉴 관리 페이지 - 옵션 탭에 접근한다.
+    cy.visit('/menus');
+    cy.get('#옵션').click();
+
+    //when - 옵션 목록의 첫 번째 항목의 삭제 아이콘을 클릭한다.
+    cy.get('table tbody tr')
+      .first()
+      .find('td')
+      .last()
+      .find('svg') // 삭제 아이콘(IconTrashCan)
+      .click();
+
+    // 삭제 확인 모달이 나타나는지 확인
+    cy.contains('삭제 확인').should('exist');
+
+    // API 요청 인터셉트 설정
+    cy.intercept(
+      'DELETE',
+      `/api/option/${OPTION_LIST.data.options[0].optionId}`,
+      {
+        statusCode: 200,
+        body: {
+          success: true,
+          data: {},
+          timestamp: new Date().toISOString(),
+        },
+      }
+    ).as('deleteOption');
+
+    // 삭제 버튼 클릭
+    cy.contains('button', '삭제').click();
+
+    // 성공 모달이 나타나는지 확인
+    cy.contains('삭제 성공').should('exist');
+
+    // 성공 모달의 확인 버튼 클릭
+    cy.contains('button', '확인').click();
+
+    // 모달이 닫혔는지 확인
+    cy.contains('삭제 확인').should('not.exist');
+  });
+
   it('옵션 상세를 추가할 수 있다.', () => {
     //given - 메뉴 관리 페이지 - 옵션 탭에 접근한다.
     cy.visit('/menus');
     cy.get('#옵션').click();
 
-    //when - 옵션 상세 추가 버튼을 클릭하고, 한글 옵션 상세명을 입력한다.
-    cy.get('#optionDetailAdd').click();
+    //when - 옵션 목록의 첫 번째 항목의 수정 버튼을 클릭한다.
+    cy.get('table tbody tr')
+      .first()
+      .find('td')
+      .eq(2) // 수정 버튼이 있는 셀
+      .find('#edit')
+      .click();
 
     // 모달이 나타나는지 확인
     cy.contains('dialog', '옵션 상세 추가').should('exist');
 
     // 옵션 상세명 입력
-    cy.get('#optionDetailName').type('사이즈');
+    cy.get('#optionDetailNameAdd').type('사이즈');
 
     // 가격 입력
-    cy.get('#optionDetailPrice').type('1000');
+    cy.get('#optionDetailPriceAdd').type('1000');
 
     // API 요청 인터셉트 설정 (클릭 직전에 설정)
     cy.intercept('POST', '/api/option_detail/:optionId', {
@@ -228,12 +334,8 @@ describe('옵션관리 페이지', () => {
       },
     }).as('addOptionDetail');
 
-    // alert 메시지를 확인하기 위한 spy 설정
-    const alertStub = cy.stub();
-    cy.on('window:alert', alertStub);
-
     // 추가 버튼 클릭
-    cy.get('#addOptionDetail')
+    cy.get('#optionDetailAdd')
       .click({ force: true })
       .then(() => {
         // 모달이 나타나는지 확인
