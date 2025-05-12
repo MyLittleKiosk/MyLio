@@ -17,8 +17,9 @@ const Menus = () => {
               className='flex flex-col items-center justify-center w-[1/4] h-[180px] text-center whitespace-nowrap tracking-[-0.1em] rounded-3xl'
             >
               <img
-                // src={item.imageUrl}
-                src={'/src/assets/images/defaultDrink.png'}
+                src={item.imageUrl}
+                // src={'/src/assets/images/defaultDrink.png'}
+
                 alt={item.name}
                 className='w-full h-[90px] max-w-[90px] mx-auto'
               />

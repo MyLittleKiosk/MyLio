@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Main from '@/pages/Main';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
@@ -8,16 +8,20 @@ import { useOrderRequest } from '@/service/queries/useOrderRequest';
 import useOrderStore from '@/stores/useOrderStore';
 import { DEFAULT_COMMENT } from '@/datas/COMMENT';
 import { useLogout } from '@/service/queries/useLogout';
-
+import useKioskStore from '@/stores/useKioskStore';
 const OrderLayout = () => {
   const { pathname } = useLocation();
-  const [userChat, setUserChat] = useState<string>('');
-  const { order } = useOrderStore();
+  const [userChat] = useState<string>('');
+  const { order, resetOrder } = useOrderStore();
   const { mutate: orderRequest } = useOrderRequest();
   const { mutate: logout } = useLogout();
-
-  const handleRecognitionResult = (text: string) => {
-    setUserChat(text);
+  const { kioskId } = useKioskStore();
+  const navigate = useNavigate();
+  function handleLogout() {
+    logout(kioskId);
+    navigate('/');
+  }
+  function handleRecognitionResult(text: string) {
     orderRequest({
       text: text,
       screenState: order.screenState,
@@ -28,14 +32,27 @@ const OrderLayout = () => {
       payment: order.payment,
       storeId: order.storeId,
     });
-  };
+  }
+  function handleSessionReset() {
+    resetOrder();
+    orderRequest({
+      text: '',
+      screenState: 'MAIN',
+      language: 'KR',
+      sessionId: null,
+      cart: [],
+      contents: order.contents,
+      payment: order.payment,
+      storeId: order.storeId,
+    });
+  }
 
   return (
     // 배경 색은 추후 변경 예정
     <div className='flex flex-col h-dvh bg-gradient-to-b from-primary to-white justify-between'>
       {/* 임시 네비게이터 */}
       <div className='flex justify-center items-center z-10 fixed top-0 left-0 w-full h-[100px]'>
-        <ul className='flex justify-center items-center gap-4 bg-white rounded-xl p-4'>
+        <ul className='flex justify-center items-center gap-4 rounded-xl p-4'>
           <li>
             <Link to='/kiosk'>홈</Link>
           </li>
@@ -58,7 +75,10 @@ const OrderLayout = () => {
             <Link to='detail'>상세</Link>
           </li>
         </ul>
-        <button onClick={() => logout(3)}>로그아웃</button>
+        <div className='flex gap-4'>
+          <button onClick={handleLogout}>로그아웃</button>
+          <button onClick={handleSessionReset}>세션 초기화</button>
+        </div>
       </div>
       <header
         className={clsx(

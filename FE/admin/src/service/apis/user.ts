@@ -22,7 +22,7 @@ export async function login(
 
 export async function getRole(): Promise<Response<User>> {
   try {
-    const res = await client.get('/accounts/role');
+    const res = await client.get('/account/role');
     return res.data;
   } catch (error: unknown) {
     if (error instanceof Error) {

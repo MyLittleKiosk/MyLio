@@ -63,6 +63,22 @@ export const handlers = [
     return HttpResponse.json(OPTION_LIST);
   }),
 
+  http.post(`${baseUrl}/option`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.post(`${baseUrl}/option_detail/:optionId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
   http.get(`${baseUrl}/accounts/role`, () => {
     return HttpResponse.json(userRole);
   }),

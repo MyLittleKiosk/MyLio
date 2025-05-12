@@ -13,4 +13,5 @@ export interface TableProps<T> {
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
   onView?: (row: T) => void;
+  onAdd?: (row: T) => void;
 }

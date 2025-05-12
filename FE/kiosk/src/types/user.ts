@@ -1,5 +1,8 @@
 export type User = {
-  userId: number;
-  userName: string;
-  role: 'KIOSK';
+  storeId: number;
+  storeName: string;
+  kioskId: number;
+  accountId: number;
+  role: string;
+  startOrder: string;
 };

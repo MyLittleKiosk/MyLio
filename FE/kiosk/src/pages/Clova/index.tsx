@@ -1,6 +1,6 @@
 import ChatContainer from '@/components/Chat/ChatContainer';
 import VoiceAnimation from '@/components/Chat/VoiceAnimation';
-import { sendAudioToClova } from '@/service/apis/clova';
+import { sendAudioToClova } from '@/service/apis/voice';
 import { ClovaResponse } from '@/types/clova';
 import { AxiosError } from 'axios';
 import { useState } from 'react';

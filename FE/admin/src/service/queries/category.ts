@@ -21,6 +21,7 @@ export const useGetCategory = (page?: number) => {
 
 export const usePostCategory = () => {
   const { closeModal } = useModalStore();
+
   return useMutation({
     mutationFn: ({ nameKr, nameEn }: { nameKr: string; nameEn: string }) =>
       postCategory(nameKr, nameEn),
