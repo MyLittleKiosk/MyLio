@@ -9,6 +9,8 @@ import com.ssafy.mylio.domain.order.dto.common.OptionsDto;
 import com.ssafy.mylio.domain.order.dto.response.ContentsResponseDto;
 import com.ssafy.mylio.domain.order.dto.response.OrderResponseDto;
 import com.ssafy.mylio.domain.order.util.OrderJsonMapper;
+import com.ssafy.mylio.global.error.code.ErrorCode;
+import com.ssafy.mylio.global.error.exception.CustomException;
 import com.ssafy.mylio.global.security.auth.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +64,7 @@ public class OrderValidatorService {
 
     private ContentsResponseDto validateAndCorrect(ContentsResponseDto content, List<String> missingOptNames) {
         menuRepository.findById(content.getMenuId())
-                .orElseThrow(() -> new IllegalStateException("menu not found"));
+                .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", content.getMenuId()));
 
         List<MenuOptionMap> maps = menuOptionRepository.findAllWithDetailByMenuId(content.getMenuId());
         if (maps.isEmpty()) return content;
