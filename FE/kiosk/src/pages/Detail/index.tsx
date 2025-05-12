@@ -1,4 +1,3 @@
-import { formatNumber } from '@/utils/formatNumber';
 import useOrderStore from '@/stores/useOrderStore';
 const Detail = () => {
   const { order } = useOrderStore();
@@ -12,10 +11,10 @@ const Detail = () => {
               src={order.contents[0].imageUrl}
               alt='drink'
             />
-            <div className='font-preBold text-xl flex flex-col gap-4'>
+            {/* <div className='font-preBold text-xl flex flex-col gap-4'>
               <h1>{order.contents[0].name}</h1>
               <span>{formatNumber(order.contents[0].basePrice)}원</span>
-            </div>
+            </div> */}
           </div>
           <div>
             <span className='text-xs text-gray-500 font-preBold'>

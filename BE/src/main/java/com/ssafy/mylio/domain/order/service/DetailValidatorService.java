@@ -35,6 +35,7 @@ public class DetailValidatorService {
     private final OrderJsonMapper mapper;
 
     public Mono<OrderResponseDto> validate(String pyJson, UserPrincipal user) {
+        log.info("영양정보 검증 로직 진입 : {}", pyJson);
         return Mono.fromCallable(() -> parseAndValidate(mapper.parse(pyJson, user), user))
                 .subscribeOn(Schedulers.boundedElastic());
     }
