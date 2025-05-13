@@ -7,8 +7,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class NutritionTemplateUpdateRequestDto {
-    @Schema(example = "1")
-    private Integer nutritionTemplateId;
     @Schema(example = "단백질")
     private String nutritionTemplateName;
     @Schema(example = "protein")

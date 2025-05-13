@@ -48,13 +48,13 @@ public class NutritionTemplateService {
     }
 
     @Transactional
-    public void updateNutritionTemplate(String userType, NutritionTemplateUpdateRequestDto updateRequestDto){
+    public void updateNutritionTemplate(String userType, Integer nutritionId, NutritionTemplateUpdateRequestDto updateRequestDto){
         // 관리자인지 검증
         validateSuperAdmin(userType);
 
         // 영양성분 조회
-        NutritionTemplate nutritionTemplate = nutritionTemplateRepository.findById(updateRequestDto.getNutritionTemplateId())
-                .orElseThrow(()-> new CustomException(ErrorCode.NUTRITION_TEMPLATE_NOT_FOUND,"nutritionId", updateRequestDto.getNutritionTemplateId()));
+        NutritionTemplate nutritionTemplate = nutritionTemplateRepository.findById(nutritionId)
+                .orElseThrow(()-> new CustomException(ErrorCode.NUTRITION_TEMPLATE_NOT_FOUND,"nutritionId", nutritionId));
 
         // 영양성분 업데이트
         nutritionTemplate.update(
