@@ -94,9 +94,11 @@ services:
       GOOGLE_TTS_API_URL: ${GOOGLE_TTS_API_URL}
       GOOGLE_TTS_API_SECRET: ${GOOGLE_TTS_API_SECRET}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
-      GOOGLE_APPLICATION_CREDENTIALS: /run/secret/gcp-tts-key
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/gcp-tts-key.json
     secrets:
-      - gcp-tts-key
+      - source: gcp-tts-key
+        target: gcp-tts-key.json
+        mode: 0400
     ports:
       - "${VOICE_PORT}:${VOICE_CONTAINER_PORT}"
     restart: always
