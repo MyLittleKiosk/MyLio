@@ -51,12 +51,12 @@ const fillMissingData = (
  *
  * @returns 그래프에 사용할 데이터 셋 옵션들
  */
-const formatSalesData = (
+export function formatSalesData(
   data: SalesTrendType[],
   chartType: 'month' | 'year',
   year?: number,
   month?: number
-): ChartData<'line'> => {
+): ChartData<'line'> {
   const processedData = fillMissingData(data, chartType, year, month);
 
   return {
@@ -77,6 +77,4 @@ const formatSalesData = (
       },
     ],
   };
-};
-
-export default formatSalesData;
+}

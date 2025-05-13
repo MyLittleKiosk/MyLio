@@ -1,8 +1,7 @@
 export type OrderType = {
   orderId: string;
-  orderStore: string;
-  orderDate: string;
-  orderPrice: number;
+  orderedAt: string;
+  totalPrice: number;
   orderType: string;
-  orderPayment: string;
+  paidBy: string;
 };

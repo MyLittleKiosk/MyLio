@@ -1,5 +1,5 @@
-import React from 'react';
 import clsx from 'clsx';
+import React from 'react';
 interface InputProps {
   label?: string;
   inputId: string;
@@ -11,6 +11,8 @@ interface InputProps {
   error?: boolean;
   errorMessage?: string;
   disabled?: boolean;
+  minDate?: string;
+  maxDate?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
@@ -28,6 +30,8 @@ const Input = ({
   errorMessage,
   disabled = false,
   onKeyDown,
+  minDate,
+  maxDate,
 }: InputProps) => {
   const inputElement = (
     <div className='w-full'>
@@ -46,6 +50,8 @@ const Input = ({
         )}
         disabled={disabled}
         onKeyDown={onKeyDown}
+        min={minDate}
+        max={maxDate}
       />
       {errorMessage && (
         <span className='text-error text-sm font-preMedium'>
