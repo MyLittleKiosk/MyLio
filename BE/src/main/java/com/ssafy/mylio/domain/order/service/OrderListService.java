@@ -41,7 +41,6 @@ public class OrderListService {
     public OrderDetailResponseDto getOrderDetail(Integer orderId){
         Orders order = getOrder(orderId);
         List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(orderId);
-        System.out.println(orderItems.size()+"++++++++++++++++++++++++++++++++");
         List<OrderItemResponseDto> orderItemsRes = new ArrayList<>();
 
         for(OrderItem orderItem : orderItems){
