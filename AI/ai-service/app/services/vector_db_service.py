@@ -188,8 +188,43 @@ class VectorDBService:
     
     def _format_menu_as_text(self, menu: Dict[str, Any], store_id: int) -> str:
         """메뉴 정보를 검색 가능한 텍스트로 포맷팅"""
-        # 기본 메뉴 정보
+        # 메뉴 타입/카테고리를 우선적으로 강조
+        category_name = menu.get("category_name", "")
+        
+        # 1. 카테고리 강조
+        category_emphasis = ""
+        if menu.get("category_id") == 107:  # 디저트 카테고리
+            category_emphasis = "디저트 카테고리 디저트 카테고리 디저트 " * 3
+        elif "에이드" in menu.get("name_kr", ""):
+            category_emphasis = "에이드 음료 에이드 음료 에이드 " * 3
+        # ... 다른 카테고리
+        
+        # 2. 특수 속성 강조
+        special_emphasis = ""
+        if "디카페인" in menu.get("name_kr", ""):
+            special_emphasis = "디카페인 카페인없음 디카페인 카페인없음 " * 3
+        
+        # 3. 우유 포함 여부 강조
+        milk_emphasis = ""
+        has_milk = False
+        # 이름에 우유 관련 키워드가 있는지 확인
+        if any(keyword in menu.get("name_kr", "").lower() for keyword in ["우유", "밀크", "라떼"]):
+            has_milk = True
+        # 원재료에 우유가 있는지 확인
+        for ing in menu.get("ingredients", []):
+            if "우유" in ing.get("name_kr", "").lower():
+                has_milk = True
+        
+        if has_milk:
+            milk_emphasis = "우유 포함 유제품 포함 우유 " * 3
+        else:
+            milk_emphasis = "우유 없음 유제품 없음 우유 미포함 " * 3
+        
+        # 기본 메뉴 정보 + 강조 텍스트
         lines = [
+            category_emphasis,
+            special_emphasis,
+            milk_emphasis,
             f"메뉴: {menu.get('name_kr', '')}",
             f"영문명: {menu.get('name_en', '')}",
             f"가격: {menu.get('price', 0)}원",
@@ -302,7 +337,7 @@ class VectorDBService:
             lines.append(f"관련 키워드: {', '.join(special_keywords)}")
         return "\n".join(lines)
     
-    def search(self, query: str, store_id: Optional[int] = None, k: int = 5) -> List[Dict[str, Any]]:
+    def search(self, query: str, store_id: Optional[int] = None, category_filter: Optional[str] = None, k: int = 5) -> List[Dict[str, Any]]:
         """벡터 검색 실행"""
         try:
             start_time = time.time()
@@ -311,6 +346,10 @@ class VectorDBService:
             where_filter = None
             if store_id is not None:
                 where_filter = {"store_id": str(store_id)}
+        
+            # 카테고리 필터 추가 (예: '에이드' 검색 시 에이드 카테고리만)
+            if category_filter:
+                where_filter["category_name"] = category_filter
             
             # ChromaDB 검색 수행
             results = self.collection.query(

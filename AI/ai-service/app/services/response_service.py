@@ -1,6 +1,7 @@
 # app/services/response_service.py
 from typing import Dict, Any, List
 from app.models.schemas import Language, ResponseStatus
+from app.models.schemas import ResponseStatus
 
 class ResponseService:
     """다국어 응답 생성 서비스"""
