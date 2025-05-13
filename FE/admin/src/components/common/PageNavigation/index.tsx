@@ -25,10 +25,18 @@ const PageNavigation = ({ pageInfo, onChangePage }: Props) => {
 
   return (
     <div className='flex items-center justify-center gap-2 font-preRegular'>
-      <div className='cursor-pointer' onClick={() => onChangePage(1)}>
+      <div
+        id='firstPage'
+        className='cursor-pointer'
+        onClick={() => onChangePage(1)}
+      >
         처음
       </div>
-      <div className='cursor-pointer' onClick={() => onChangePage(prevBtn)}>
+      <div
+        id='prevPage'
+        className='cursor-pointer'
+        onClick={() => onChangePage(prevBtn)}
+      >
         이전
       </div>
       <div className='flex items-center justify-center gap-2'>
@@ -47,10 +55,15 @@ const PageNavigation = ({ pageInfo, onChangePage }: Props) => {
           </div>
         ))}
       </div>
-      <div className='cursor-pointer' onClick={() => onChangePage(nextBtn)}>
+      <div
+        id='nextPage'
+        className='cursor-pointer'
+        onClick={() => onChangePage(nextBtn)}
+      >
         다음
       </div>
       <div
+        id='lastPage'
         className='cursor-pointer'
         onClick={() => onChangePage(pageInfo.totalPages)}
       >
