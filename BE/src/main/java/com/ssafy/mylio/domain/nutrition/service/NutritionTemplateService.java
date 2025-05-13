@@ -32,17 +32,17 @@ public class NutritionTemplateService {
     }
 
     @Transactional
-    public void addNutritionTemplate(String userType, NutritionTemplateRequestDto dto){
+    public void addNutritionTemplate(String userType, NutritionTemplateRequestDto requestDto){
         // 관리자인지 검증
         validateSuperAdmin(userType);
 
         // 이름이 똑같은 영양성분 있는지 조회
-        if(nutritionTemplateRepository.existsByNameKr(dto.getNutritionTemplateName())){
-            throw new CustomException(ErrorCode.NUTRITION_TEMPLATE_ALREADY_EXISTS, "name", dto.getNutritionTemplateName());
+        if(nutritionTemplateRepository.existsByNameKr(requestDto.getNutritionTemplateName())){
+            throw new CustomException(ErrorCode.NUTRITION_TEMPLATE_ALREADY_EXISTS, "name", requestDto.getNutritionTemplateName());
         }
 
         // 없다면 영양성분 등록
-        NutritionTemplate nutritionTemplate = dto.toEntity();
+        NutritionTemplate nutritionTemplate = requestDto.toEntity();
         nutritionTemplateRepository.save(nutritionTemplate);
     }
 

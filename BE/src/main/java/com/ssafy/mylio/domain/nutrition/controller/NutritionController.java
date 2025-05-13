@@ -73,9 +73,9 @@ public class NutritionController {
     @ApiErrorCodeExamples({ErrorCode.NUTRITION_TEMPLATE_ALREADY_EXISTS})
     public ResponseEntity<CommonResponse<Void>> adminNutritionAdd(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestBody NutritionTemplateRequestDto dto) {
+            @RequestBody NutritionTemplateRequestDto requestDto) {
         String userType = authenticationUtil.getCurrntUserType(userPrincipal);
-        nutritionTemplateService.addNutritionTemplate(userType, dto);
+        nutritionTemplateService.addNutritionTemplate(userType, requestDto);
         return CommonResponse.ok();
     }
 }
