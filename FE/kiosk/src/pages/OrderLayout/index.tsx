@@ -2,13 +2,13 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Main from '@/pages/Main';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import RecordButton from '@/components/Chat/RecordButton';
 import { useState } from 'react';
 import { useOrderRequest } from '@/service/queries/useOrderRequest';
 import useOrderStore from '@/stores/useOrderStore';
 import { DEFAULT_COMMENT } from '@/datas/COMMENT';
 import { useLogout } from '@/service/queries/useLogout';
 import useKioskStore from '@/stores/useKioskStore';
+import Footer from '@/pages/OrderLayout/Footer';
 
 const OrderLayout = () => {
   const { pathname } = useLocation();
@@ -18,6 +18,7 @@ const OrderLayout = () => {
   const { mutate: logout } = useLogout();
   const { kioskId } = useKioskStore();
   const navigate = useNavigate();
+
   function handleLogout() {
     logout(kioskId);
     navigate('/');
@@ -108,25 +109,11 @@ const OrderLayout = () => {
       >
         <Outlet />
       </motion.main>
-      {(pathname === '/kiosk/search' ||
-        pathname === '/kiosk' ||
-        pathname === '/kiosk/order' ||
-        pathname === '/kiosk/detail') && (
-        <div className='flex justify-around px-4 pt-4 items-center fixed bottom-4 left-0 w-full h-[250px] bg-white'>
-          <div className='px-4 flex justify-start items-center gap-4 bg-gray-200 w-[80%] h-full rounded-xl overflow-y-auto'>
-            {order.cart.map((item) => (
-              <div
-                key={item.cartId}
-                className='w-1/4 h-[80%] flex flex-col bg-white rounded-xl justify-center items-center gap-2'
-              >
-                <img src={item.imageUrl} alt={item.name} />
-                <p className='text-sm'>{item.quantity}</p>
-              </div>
-            ))}
-          </div>
-          <RecordButton onRecognitionResult={handleRecognitionResult} />
-        </div>
-      )}
+      <Footer
+        order={order}
+        handleRecognitionResult={handleRecognitionResult}
+        pathname={pathname}
+      />
     </div>
   );
 };
