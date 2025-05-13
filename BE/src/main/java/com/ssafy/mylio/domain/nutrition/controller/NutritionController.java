@@ -63,7 +63,7 @@ public class NutritionController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam(name="keyword", required = false) String keyword,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        String userType = userPrincipal.getUserType();
+        String userType = authenticationUtil.getCurrntUserType(userPrincipal);
         return CommonResponse.ok(nutritionTemplateService.getNutritionTemplate(userType, keyword, pageable));
     }
 }
