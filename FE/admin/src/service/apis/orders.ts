@@ -2,11 +2,11 @@ import authClient from '@/service/authClient';
 import { CustomError, PaginationResponse, Response } from '@/types/apiResponse';
 import { OrderType } from '@/types/orders';
 
-export const getOrders = async (
+export async function getOrders(
   startDate?: string,
   endDate?: string,
   pageable?: number
-): Promise<Response<PaginationResponse<OrderType>>> => {
+): Promise<Response<PaginationResponse<OrderType>>> {
   try {
     const params = {
       startDate,
@@ -14,11 +14,11 @@ export const getOrders = async (
       pageable: pageable || 1,
     };
 
-    const response = await authClient.get('/order_list', {
+    const res = await authClient.get('/order_list', {
       params,
     });
 
-    return response.data;
+    return res.data;
   } catch (error: unknown) {
     if (error instanceof Error) {
       const customError = error as CustomError;
@@ -28,4 +28,4 @@ export const getOrders = async (
     }
     throw new Error('unknown error');
   }
-};
+}
