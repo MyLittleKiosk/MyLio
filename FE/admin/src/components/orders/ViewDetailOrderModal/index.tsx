@@ -20,22 +20,24 @@ const ViewDetailOrderModal = ({ initialData }: ViewDetailOrderModalProps) => {
       </div>
       <div>
         <table className='w-full'>
-          <tr className='text-md text-longContent font-preRegular'>
-            <td className='w-[50%]'>
-              <span className='font-preBold'>날짜/시간: </span>
-              <span>{initialData.orderedAt}</span>
-            </td>
-          </tr>
-          <tr className='text-md text-longContent font-preRegular'>
-            <td className='w-[50%]'>
-              <span className='font-preBold'>결제정보: </span>
-              <span>{initialData.paidBy}</span>
-            </td>
-            <td className='w-[50%]'>
-              <span className='font-preBold'>주문유형: </span>
-              <span>{initialData.orderType}</span>
-            </td>
-          </tr>
+          <tbody>
+            <tr className='text-md text-longContent font-preRegular'>
+              <td className='w-[50%]'>
+                <span className='font-preBold'>날짜/시간: </span>
+                <span>{initialData.orderedAt}</span>
+              </td>
+            </tr>
+            <tr className='text-md text-longContent font-preRegular'>
+              <td className='w-[50%]'>
+                <span className='font-preBold'>결제정보: </span>
+                <span>{initialData.paidBy}</span>
+              </td>
+              <td className='w-[50%]'>
+                <span className='font-preBold'>주문유형: </span>
+                <span>{initialData.orderType}</span>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
 
