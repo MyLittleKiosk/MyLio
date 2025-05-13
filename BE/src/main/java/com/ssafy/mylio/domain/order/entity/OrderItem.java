@@ -4,6 +4,7 @@ import com.ssafy.mylio.domain.menu.entity.Menu;
 import com.ssafy.mylio.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -25,4 +26,8 @@ public class OrderItem extends BaseEntity {
 
     @Column(name = "price", nullable = false)
     private Integer price;
+
+    @Builder.Default
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity = 1;
 }
