@@ -10,6 +10,8 @@ interface InputProps {
   inputClassName?: string;
   error?: boolean;
   disabled?: boolean;
+  minDate?: string;
+  maxDate?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
@@ -26,6 +28,8 @@ const Input = ({
   error = false,
   disabled = false,
   onKeyDown,
+  minDate,
+  maxDate,
 }: InputProps) => {
   const inputElement = (
     <input
@@ -39,6 +43,8 @@ const Input = ({
       } rounded-md p-2 font-preRegular h-[40px] box-border ${inputClassName || 'w-full'}`}
       disabled={disabled}
       onKeyDown={onKeyDown}
+      min={minDate}
+      max={maxDate}
     />
   );
 
