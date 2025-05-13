@@ -54,6 +54,7 @@ public enum ErrorCode {
 
     // Nutrition
     NUTRITION_TEMPLATE_NOT_FOUND(HttpStatus.NOT_FOUND, "N001", "존재하지 않는 영양정보 템플릿입니다"),
+    NUTRITION_TEMPLATE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST,"N002","이미 존재하는 영양정보 템플릿입니다"),
 
     // Ingredient
     INGREDIENT_TEMPLATE_NOT_FOUND(HttpStatus.NOT_FOUND, "I001", "존재하지 않는 원재료 템플릿입니다"),
