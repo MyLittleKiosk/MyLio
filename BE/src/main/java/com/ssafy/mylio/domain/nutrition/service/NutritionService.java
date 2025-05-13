@@ -69,9 +69,4 @@ public class NutritionService {
 
     }
 
-    public Page<Void> nutritionTemplateSelect(String userType, String keyword, Pageable pageable) {
-
-        return null;
-    }
-
 }
