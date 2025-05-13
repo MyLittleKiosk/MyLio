@@ -58,7 +58,7 @@ public class NutritionController {
 
     @GetMapping
     @Operation(summary = "슈퍼관리자 영양성분 조회", description = "슈퍼관리자가 영양성분을 조회할 수 있습니다")
-    @ApiErrorCodeExamples({})
+    @ApiErrorCodeExamples({ErrorCode.FORBIDDEN_ACCESS})
     public ResponseEntity<CommonResponse<CustomPage<NutritionTemplateResponseDto>>> adminNutritionSelect(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam(name="keyword", required = false) String keyword,
