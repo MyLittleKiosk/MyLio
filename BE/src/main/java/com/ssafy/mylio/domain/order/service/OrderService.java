@@ -13,6 +13,7 @@ import com.ssafy.mylio.domain.order.entity.Orders;
 import com.ssafy.mylio.domain.order.repository.OrderItemOptionRepository;
 import com.ssafy.mylio.domain.order.repository.OrderItemRepository;
 import com.ssafy.mylio.domain.order.repository.OrdersRepository;
+import com.ssafy.mylio.domain.payment.dto.response.ApproveResponseDto;
 import com.ssafy.mylio.domain.payment.entity.PaymentMethod;
 import com.ssafy.mylio.domain.store.entity.Store;
 import com.ssafy.mylio.domain.store.repository.StoreRepository;
@@ -23,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -91,4 +94,54 @@ public class OrderService {
 
         return Mono.just(resp);
     }
+
+    @Transactional
+    public Mono<Void> saveOrderAfterKakaoPay(Integer storeId, List<CartResponseDto> cart) {
+
+        return Mono.fromRunnable(() -> {
+            // 1. 매장 조회
+            Store store = storeRepository.findById(storeId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND, "storeId", storeId));
+
+            // 2. Orders 저장
+            Orders orders = Orders.builder()
+                    .store(store)
+                    .paymentMethod(PaymentMethod.PAY)
+                    .totalPrice(cart.stream().mapToInt(CartResponseDto::getTotalPrice).sum())
+                    .isToGo(true)
+                    .build();
+
+            orderRepository.save(orders);
+
+            // 3. Cart → OrderItem + OrderItemOption 매핑
+            for (CartResponseDto cartItem : cart) {
+                Menu menu = menuRepository.findById(cartItem.getMenuId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", cartItem.getMenuId()));
+
+                OrderItem orderItem = OrderItem.builder()
+                        .order(orders)
+                        .menu(menu)
+                        .price(cartItem.getTotalPrice())
+                        .build();
+
+                orderItemRepository.save(orderItem);
+
+                for (OptionsDto optionsDto : cartItem.getSelectedOptions()) {
+                    OptionDetail optionDetail = optionDetailRepository.findById(
+                                    optionsDto.getOptionDetails().get(0).getOptionDetailId())
+                            .orElseThrow(() -> new CustomException(ErrorCode.OPTION_DETAIL_NOT_FOUND,
+                                    "optionDetailId", optionsDto.getOptionDetails().get(0).getOptionDetailId()));
+
+                    OrderItemOption orderItemOption = OrderItemOption.builder()
+                            .orderItem(orderItem)
+                            .optionDetail(optionDetail)
+                            .price(orderItem.getPrice()) // 옵션 가격이 orders 가격과 동일한 구조면 유지
+                            .build();
+
+                    orderItemOptionRepository.save(orderItemOption);
+                }
+            }
+        }).then(); // Mono<Void> 리턴
+    }
+
 }
