@@ -65,7 +65,7 @@ const Table = <T extends object>({
       case 'price':
       case 'orderPrice':
         return `₩${String(row[column.accessor as keyof T]).toLocaleString()}`;
-      case 'status':
+      case 'isActivate':
         return (
           <div
             className={`ms-2 w-3 h-3 rounded-full ${

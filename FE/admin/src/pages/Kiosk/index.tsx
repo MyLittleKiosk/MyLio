@@ -69,7 +69,7 @@ const Kiosk = () => {
           );
         }}
         onDelete={(row) => {
-          alert(row.id);
+          alert(row.kioskId);
         }}
       />
       <Modal />

@@ -3,20 +3,19 @@ import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 import Select from '@/components/common/Select';
 import useModalStore from '@/stores/useModalStore';
+import { KioskType } from '@/types/kiosk';
 
 interface AddKioskModalProps {
-  initialData?: {
-    name: string;
-    id: string;
-    status: boolean;
-  };
+  initialData?: KioskType;
   onSave: () => void;
 }
 
 const AddKioskModal = ({ initialData, onSave }: AddKioskModalProps) => {
   const [kioskName, setKioskName] = useState(initialData?.name || '');
-  const [groupName, setGroupName] = useState(initialData?.id || '');
-  const [status, setStatus] = useState(initialData?.status || '활성화');
+  const [groupName, setGroupName] = useState(initialData?.startOrder || '');
+  const [status, setStatus] = useState(
+    initialData?.isActivate ? '활성화' : '비활성화'
+  );
 
   const { closeModal } = useModalStore();
 
