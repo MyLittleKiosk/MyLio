@@ -68,7 +68,7 @@ const Table = <T extends object>({
       case 'orderPrice':
       case 'totalPrice':
         return formatMoney(Number(row[column.accessor as keyof T]));
-      case 'status':
+      case 'isActivate':
         return (
           <div
             className={`ms-2 w-3 h-3 rounded-full ${
