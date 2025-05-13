@@ -1,5 +1,9 @@
 version: '3.8'
 
+secrets:
+  gcp-tts-key:
+    file: ${GCP_KEY_PATH}
+
 services:
   nginx:
     image: nginx:latest
@@ -90,9 +94,9 @@ services:
       GOOGLE_TTS_API_URL: ${GOOGLE_TTS_API_URL}
       GOOGLE_TTS_API_SECRET: ${GOOGLE_TTS_API_SECRET}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
-      GOOGLE_APPLICATION_CREDENTIALS: /run/secret/gcp-tts-key.json
-    volumes:
-      - ${GOOGLE_APPLICATION_CREDENTIALS}:/run/secret/gcp-tts-key.json:ro
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secret/gcp-tts-key
+    secrets:
+      - gcp-tts-key
     ports:
       - "${VOICE_PORT}:${VOICE_CONTAINER_PORT}"
     restart: always
