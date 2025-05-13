@@ -2,6 +2,7 @@ import mic from '@/assets/icons/mic.svg';
 import { useAudioRecord } from '@/hooks/useAudioRecord';
 import { sendAudioToClova } from '@/service/apis/voice';
 import { useState } from 'react';
+import clsx from 'clsx';
 
 interface Props {
   onRecognitionResult: (text: string) => void;
