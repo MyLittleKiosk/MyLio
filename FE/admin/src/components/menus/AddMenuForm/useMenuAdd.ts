@@ -240,8 +240,24 @@ export const useMenuAdd = (): UseMenuAddReturn => {
       return;
     }
 
+    const nutrientTemplateId = Number(nutrientId);
+
+    // 동일한 templateId를를 가진 영양성분이 이미 존재하는지 확인
+    const isDuplicate =
+      menuAddData.nutritionInfo.some(
+        (nutrient) => nutrient.nutritionTemplateId === nutrientTemplateId
+      ) ||
+      selectedNutrientList.some(
+        (nutrient) => nutrient.nutrientTemplateId === nutrientTemplateId
+      );
+
+    if (isDuplicate) {
+      alert('동일한 영양성분이 이미 추가되어 있습니다.');
+      return;
+    }
+
     const newNutrient = {
-      nutritionTemplateId: Number(nutrientId),
+      nutritionTemplateId: nutrientTemplateId,
       nutritionValue: value,
     };
 
@@ -253,7 +269,7 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     setSelectedNutrientList((prev) => [
       ...prev,
       {
-        nutrientTemplateId: Number(nutrientId),
+        nutrientTemplateId: nutrientTemplateId,
         nutrientName: selectedNutrient?.nameKr || '',
         nutrientValue: value,
       },
