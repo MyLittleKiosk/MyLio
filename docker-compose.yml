@@ -70,6 +70,10 @@ services:
       S3_ACCESS_KEY: ${S3_ACCESS_KEY}
       S3_SECRET_KEY: ${S3_SECRET_KEY}
 
+      KAKAO_PAY_SECRET: ${KAKAO_PAY_SECRET}
+      KAKAO_READY_URL: ${KAKAO_READY_URL}
+      KAKAO_APPROVE_URL: ${KAKAO_APPROVE_URL}
+
     networks:
       - app-network
 
