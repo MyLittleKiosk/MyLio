@@ -117,6 +117,12 @@ export const useMenuAdd = (): UseMenuAddReturn => {
   const clearImage = () => {
     setImageFile(null);
     setImagePreview(null);
+
+    // Reset the file input element
+    const fileInput = document.getElementById('imageFile') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -184,8 +190,13 @@ export const useMenuAdd = (): UseMenuAddReturn => {
   }
 
   const handleTagAdd = () => {
-    if (tagValueKR === '' || tagValueEN === '') {
+    if (tagValueKR === '') {
       alert('태그명을 정확하게 입력해주세요.');
+      return;
+    }
+
+    if (tagValueEN === '') {
+      alert('태그영문명을 정확하게 입력해주세요. 번역하기 버튼을 눌러주세요.');
       return;
     }
 
@@ -364,7 +375,7 @@ export const useMenuAdd = (): UseMenuAddReturn => {
   };
 
   function checkValidation() {
-    if (menuAddData.nameKr === '') {
+    if (menuAddData.nameKr === '' || menuAddData.nameEn === '') {
       return false;
     }
 
@@ -373,6 +384,10 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     }
 
     if (menuAddData.price === 0) {
+      return false;
+    }
+
+    if (menuAddData.tags.length === 0) {
       return false;
     }
 
