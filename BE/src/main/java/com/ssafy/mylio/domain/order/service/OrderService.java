@@ -13,7 +13,6 @@ import com.ssafy.mylio.domain.order.entity.Orders;
 import com.ssafy.mylio.domain.order.repository.OrderItemOptionRepository;
 import com.ssafy.mylio.domain.order.repository.OrderItemRepository;
 import com.ssafy.mylio.domain.order.repository.OrdersRepository;
-import com.ssafy.mylio.domain.payment.dto.response.ApproveResponseDto;
 import com.ssafy.mylio.domain.payment.entity.PaymentMethod;
 import com.ssafy.mylio.domain.store.entity.Store;
 import com.ssafy.mylio.domain.store.repository.StoreRepository;
@@ -71,6 +70,7 @@ public class OrderService {
             OrderItem orderItem = OrderItem.builder()
                     .menu(menu)
                     .order(orders)
+                    .quantity(cartResponseDto.getQuantity())
                     .price(cartResponseDto.getTotalPrice())
                     .build();
 
@@ -122,6 +122,7 @@ public class OrderService {
                         .order(orders)
                         .menu(menu)
                         .price(cartItem.getTotalPrice())
+                        .quantity(cartItem.getQuantity())
                         .build();
 
                 orderItemRepository.save(orderItem);

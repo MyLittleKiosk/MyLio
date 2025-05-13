@@ -1,5 +1,6 @@
 package com.ssafy.mylio.domain.order.service;
 
+import com.ssafy.mylio.domain.menu.entity.Menu;
 import com.ssafy.mylio.domain.menu.repository.MenuRepository;
 import com.ssafy.mylio.domain.options.entity.MenuOptionMap;
 import com.ssafy.mylio.domain.options.entity.OptionDetail;
@@ -63,7 +64,7 @@ public class OrderValidatorService {
     // ---------------- 검증 & 교정 ----------------
 
     private ContentsResponseDto validateAndCorrect(ContentsResponseDto content, List<String> missingOptNames) {
-        menuRepository.findById(content.getMenuId())
+        Menu menu = menuRepository.findById(content.getMenuId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", content.getMenuId()));
 
         List<MenuOptionMap> maps = menuOptionRepository.findAllWithDetailByMenuId(content.getMenuId());
@@ -113,8 +114,10 @@ public class OrderValidatorService {
                     return o.toBuilder().optionDetails(sel == null ? List.of() : List.of(sel)).build();
                 }).toList();
 
+        // 이미지 URL이 없으면 DB에서 조회해서 넣기
         return content.toBuilder()
                 .options(canonical)
+                .imageUrl((content.getImageUrl() == null || content.getImageUrl().isEmpty()) ? menu.getImageUrl() : content.getImageUrl())
                 .selectedOption(selectedOnly)
                 .build();
     }
