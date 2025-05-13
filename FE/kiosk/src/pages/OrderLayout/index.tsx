@@ -9,6 +9,7 @@ import useOrderStore from '@/stores/useOrderStore';
 import { DEFAULT_COMMENT } from '@/datas/COMMENT';
 import { useLogout } from '@/service/queries/useLogout';
 import useKioskStore from '@/stores/useKioskStore';
+
 const OrderLayout = () => {
   const { pathname } = useLocation();
   const [userChat] = useState<string>('');
@@ -90,7 +91,6 @@ const OrderLayout = () => {
           userChat={userChat}
           gptChat={order.reply ? order.reply : DEFAULT_COMMENT}
         />
-        <RecordButton onRecognitionResult={handleRecognitionResult} />
       </header>
       <motion.main
         className='rounded-t-xl bg-white shadow-t-2xl flex flex-col justify-center items-center'
@@ -108,6 +108,25 @@ const OrderLayout = () => {
       >
         <Outlet />
       </motion.main>
+      {(pathname === '/kiosk/search' ||
+        pathname === '/kiosk' ||
+        pathname === '/kiosk/order' ||
+        pathname === '/kiosk/detail') && (
+        <div className='flex justify-around px-4 pt-4 items-center fixed bottom-4 left-0 w-full h-[250px] bg-white'>
+          <div className='px-4 flex justify-start items-center gap-4 bg-gray-200 w-[80%] h-full rounded-xl overflow-y-auto'>
+            {order.cart.map((item) => (
+              <div
+                key={item.cartId}
+                className='w-1/4 h-[80%] flex flex-col bg-white rounded-xl justify-center items-center gap-2'
+              >
+                <img src={item.imageUrl} alt={item.name} />
+                <p className='text-sm'>{item.quantity}</p>
+              </div>
+            ))}
+          </div>
+          <RecordButton onRecognitionResult={handleRecognitionResult} />
+        </div>
+      )}
     </div>
   );
 };
