@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
@@ -27,6 +27,7 @@ const MenuForm = () => {
     selectedNutrientList,
     selectedIngredient,
     selectedNutrient,
+    selectedOptions,
     setMenuAddData,
     handleTagAdd,
     handleTagDelete,
@@ -38,77 +39,20 @@ const MenuForm = () => {
     handleIngredientChange,
     handleNutrientChange,
     setNutritionValue,
+    updateOptionInfo,
   } = useMenuFormContext();
 
   const { data: options, isLoading } = useGetOptions();
 
-  const [selectedOptions, setSelectedOptions] = useState<
-    {
-      optionId: number;
-      isSelected: boolean;
-      isRequired: boolean;
-      selectedDetails: number[];
-    }[]
-  >([]);
+  // 옵션 정보가 변경될 때마다 menuAddData 업데이트
+  useEffect(() => {
+    updateOptionInfo();
+  }, [selectedOptions]);
 
   async function translateName() {
     const translatedValue = await translator(menuAddData.nameKr);
     setMenuAddData({ ...menuAddData, nameEn: translatedValue });
   }
-
-  const handleOptionSelect = (optionId: number) => {
-    setSelectedOptions((prev) => {
-      const exists = prev.find((option) => option.optionId === optionId);
-      if (exists) {
-        return prev.map((option) =>
-          option.optionId === optionId
-            ? { ...option, isSelected: !option.isSelected }
-            : option
-        );
-      }
-      return [
-        ...prev,
-        {
-          optionId,
-          isSelected: true,
-          isRequired: false,
-          selectedDetails: [],
-        },
-      ];
-    });
-  };
-
-  const handleDetailSelect = (optionId: number, detailId: number) => {
-    setSelectedOptions((prev) => {
-      const option = prev.find((opt) => opt.optionId === optionId);
-      if (!option) return prev;
-
-      return prev.map((opt) =>
-        opt.optionId === optionId
-          ? {
-              ...opt,
-              selectedDetails: opt.selectedDetails.includes(detailId)
-                ? opt.selectedDetails.filter((id) => id !== detailId)
-                : [...opt.selectedDetails, detailId],
-            }
-          : opt
-      );
-    });
-  };
-
-  const handleRequiredSelect = (optionId: number) => {
-    setSelectedOptions((prev) => {
-      const exists = prev.find((option) => option.optionId === optionId);
-      if (exists) {
-        return prev.map((option) =>
-          option.optionId === optionId
-            ? { ...option, isRequired: !option.isRequired }
-            : option
-        );
-      }
-      return prev;
-    });
-  };
 
   if (!options || isLoading) {
     return <div>Loading...</div>;
@@ -360,13 +304,7 @@ const MenuForm = () => {
         <h2 className='text-md font-preSemiBold min-w-[80px] max-w-[100px]'>
           옵션 그룹
         </h2>
-        <OptionTable
-          options={options}
-          onOptionSelect={handleOptionSelect}
-          onDetailSelect={handleDetailSelect}
-          onRequiredSelect={handleRequiredSelect}
-          selectedOptions={selectedOptions}
-        />
+        <OptionTable options={options} />
       </div>
     </div>
   );

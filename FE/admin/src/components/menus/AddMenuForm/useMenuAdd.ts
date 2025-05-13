@@ -4,6 +4,7 @@ import { MenuAdd } from '@/types/menus';
 import { CategoryType } from '@/types/categories';
 import { IngredientType } from '@/types/ingredient';
 import { NutrientType } from '@/types/nutrient';
+import { OptionInfoType } from '@/types/options';
 
 import { CATEGORY_LIST } from '@/service/mock/dummies/category';
 
@@ -24,6 +25,12 @@ interface UseMenuAddReturn {
   }[];
   selectedIngredient: IngredientType | null;
   selectedNutrient: NutrientType | null;
+  selectedOptions: {
+    optionId: number;
+    isSelected: boolean;
+    isRequired: boolean;
+    selectedDetails: number[];
+  }[];
   setNutritionValue: (value: number) => void;
   handleCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleTagInputChange: (type: 'KR' | 'EN', value: string) => void;
@@ -35,6 +42,10 @@ interface UseMenuAddReturn {
   handleNutrientAdd: (nutrientId: string, value: number) => void;
   handleNutrientChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleNutrientRemove: (nutrientId: number) => void;
+  handleOptionSelect: (optionId: number) => void;
+  handleDetailSelect: (optionId: number, detailId: number) => void;
+  handleRequiredSelect: (optionId: number) => void;
+  updateOptionInfo: () => void;
   resetForm: () => void;
   setMenuAddData: (data: MenuAdd) => void;
 }
@@ -75,6 +86,14 @@ export const useMenuAdd = (): UseMenuAddReturn => {
   const [selectedNutrient, setSelectedNutrient] = useState<NutrientType | null>(
     null
   );
+  const [selectedOptions, setSelectedOptions] = useState<
+    {
+      optionId: number;
+      isSelected: boolean;
+      isRequired: boolean;
+      selectedDetails: number[];
+    }[]
+  >([]);
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = CATEGORY_LIST.data.content.find(
@@ -96,17 +115,35 @@ export const useMenuAdd = (): UseMenuAddReturn => {
   };
 
   function handleIngredientChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const selected = INGREDIENT_LIST.content.find(
-      (ingredient) => ingredient.ingredientId.toString() === e.target.value
-    );
+    const selected = INGREDIENT_LIST.content.find((ingredient) => {
+      return ingredient.ingredientId === Number(e.target.value);
+    });
 
     if (!selected) {
       alert('원재료를 선택해주세요.');
       return;
     }
 
-    setSelectedIngredient(selected || null);
-    handleIngredientAdd(selected?.ingredientId.toString());
+    // 이미 선택된 원재료인지 확인
+    const isDuplicate =
+      menuAddData.ingredientInfo.includes(selected.ingredientId) ||
+      selectedIngredientList.includes(selected.nameKr);
+
+    if (isDuplicate) {
+      alert('이미 선택된 원재료입니다.');
+      return;
+    }
+
+    setSelectedIngredient(selected);
+
+    // 원재료 ID 추가
+    setMenuAddData((prev) => ({
+      ...prev,
+      ingredientInfo: [...prev.ingredientInfo, selected.ingredientId],
+    }));
+
+    // 원재료 이름 추가
+    setSelectedIngredientList((prev) => [...prev, selected.nameKr]);
   }
 
   function handleNutrientChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -194,6 +231,101 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     );
   };
 
+  const handleOptionSelect = (optionId: number) => {
+    setSelectedOptions((prev) => {
+      const exists = prev.find((option) => option.optionId === optionId);
+      if (exists) {
+        return prev.map((option) =>
+          option.optionId === optionId
+            ? { ...option, isSelected: !option.isSelected }
+            : option
+        );
+      }
+      return [
+        ...prev,
+        {
+          optionId,
+          isSelected: true,
+          isRequired: false,
+          selectedDetails: [],
+        },
+      ];
+    });
+  };
+
+  const handleDetailSelect = (optionId: number, detailId: number) => {
+    setSelectedOptions((prev) => {
+      const option = prev.find((opt) => opt.optionId === optionId);
+      if (!option) {
+        return [
+          ...prev,
+          {
+            optionId,
+            isSelected: true,
+            isRequired: false,
+            selectedDetails: [detailId],
+          },
+        ];
+      }
+
+      return prev.map((opt) =>
+        opt.optionId === optionId
+          ? {
+              ...opt,
+              selectedDetails: opt.selectedDetails.includes(detailId)
+                ? opt.selectedDetails.filter((id) => id !== detailId)
+                : [...opt.selectedDetails, detailId],
+            }
+          : opt
+      );
+    });
+  };
+
+  const handleRequiredSelect = (optionId: number) => {
+    setSelectedOptions((prev) => {
+      const exists = prev.find((option) => option.optionId === optionId);
+      if (exists) {
+        return prev.map((option) =>
+          option.optionId === optionId
+            ? { ...option, isRequired: !option.isRequired }
+            : option
+        );
+      }
+      return [
+        ...prev,
+        {
+          optionId,
+          isSelected: true,
+          isRequired: true,
+          selectedDetails: [],
+        },
+      ];
+    });
+  };
+
+  const updateOptionInfo = () => {
+    const optionInfo: OptionInfoType[] = [];
+
+    selectedOptions.forEach((option) => {
+      if (option.isSelected) {
+        if (option.selectedDetails.length > 0) {
+          option.selectedDetails.forEach((detailId) => {
+            optionInfo.push({
+              optionId: option.optionId,
+              isRequired: option.isRequired,
+              optionDetailId: detailId,
+            });
+          });
+        }
+      }
+    });
+
+    setMenuAddData((prev) => ({
+      ...prev,
+      optionInfo,
+    }));
+  };
+
   const resetForm = () => {
     setMenuAddData(initialMenuData);
     setSelectedCategory(null);
@@ -202,6 +334,7 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     setNutritionValue(0);
     setSelectedIngredientList([]);
     setSelectedNutrientList([]);
+    setSelectedOptions([]);
   };
 
   return {
@@ -214,6 +347,7 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     selectedNutrient,
     selectedIngredientList,
     selectedNutrientList,
+    selectedOptions,
     setMenuAddData,
     setNutritionValue,
     handleCategoryChange,
@@ -226,6 +360,10 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     handleIngredientRemove,
     handleNutrientAdd,
     handleNutrientRemove,
+    handleOptionSelect,
+    handleDetailSelect,
+    handleRequiredSelect,
+    updateOptionInfo,
     resetForm,
   };
 };

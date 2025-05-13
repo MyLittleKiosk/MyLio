@@ -1,25 +1,18 @@
 import { OptionDetailType, OptionGroup } from '@/types/options';
+import { useMenuFormContext } from '@/components/menus/AddMenuForm/MenuFormContext';
 
 interface OptionTableProps {
   options: OptionGroup[];
-  onOptionSelect: (optionId: number) => void;
-  onDetailSelect: (optionId: number, detailId: number) => void;
-  onRequiredSelect: (optionId: number) => void;
-  selectedOptions: {
-    optionId: number;
-    isSelected: boolean;
-    isRequired: boolean;
-    selectedDetails: number[];
-  }[];
 }
 
-const OptionTable = ({
-  options,
-  onOptionSelect,
-  onDetailSelect,
-  onRequiredSelect,
-  selectedOptions,
-}: OptionTableProps) => {
+const OptionTable = ({ options }: OptionTableProps) => {
+  const {
+    selectedOptions,
+    handleOptionSelect,
+    handleDetailSelect,
+    handleRequiredSelect,
+  } = useMenuFormContext();
+
   return (
     <table className='w-full border-collapse'>
       <thead className='border-b border-subContent'>
@@ -56,7 +49,7 @@ const OptionTable = ({
                       <input
                         type='checkbox'
                         checked={selectedOption?.isSelected || false}
-                        onChange={() => onOptionSelect(option.optionId)}
+                        onChange={() => handleOptionSelect(option.optionId)}
                       />
                     </td>
                     <td
@@ -77,7 +70,7 @@ const OptionTable = ({
                       ) || false
                     }
                     onChange={() =>
-                      onDetailSelect(option.optionId, detail.optionDetailId)
+                      handleDetailSelect(option.optionId, detail.optionDetailId)
                     }
                   />
                 </td>
@@ -89,7 +82,7 @@ const OptionTable = ({
                     <input
                       type='checkbox'
                       checked={selectedOption?.isRequired || false}
-                      onChange={() => onRequiredSelect(option.optionId)}
+                      onChange={() => handleRequiredSelect(option.optionId)}
                     />
                   </td>
                 )}
