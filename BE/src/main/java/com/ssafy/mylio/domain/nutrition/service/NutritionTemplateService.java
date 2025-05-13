@@ -1,5 +1,6 @@
 package com.ssafy.mylio.domain.nutrition.service;
 
+import com.ssafy.mylio.domain.nutrition.dto.request.NutritionTemplateRequestDto;
 import com.ssafy.mylio.domain.nutrition.dto.response.NutritionTemplateResponseDto;
 import com.ssafy.mylio.domain.nutrition.entity.NutritionTemplate;
 import com.ssafy.mylio.domain.nutrition.repository.NutritionTemplateRepository;
@@ -18,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class NutritionTemplateService {
 
-    private final StoreRepository storeRepository;
     private final NutritionTemplateRepository nutritionTemplateRepository;
 
     public CustomPage<NutritionTemplateResponseDto> getNutritionTemplate(String userType, String keyword, Pageable pageable) {
@@ -29,6 +29,21 @@ public class NutritionTemplateService {
         Page<NutritionTemplate> nutritionTemplates = nutritionTemplateRepository.findAllByKeyword(keyword, pageable);
 
         return new CustomPage<>(nutritionTemplates.map(NutritionTemplateResponseDto::of));
+    }
+
+    @Transactional
+    public void addNutritionTemplate(String userType, NutritionTemplateRequestDto dto){
+        // 관리자인지 검증
+        validateSuperAdmin(userType);
+
+        // 이름이 똑같은 영양성분 있는지 조회
+        if(nutritionTemplateRepository.existsByNameKr(dto.getNutritionTemplateName())){
+            throw new CustomException(ErrorCode.NUTRITION_TEMPLATE_ALREADY_EXISTS, "name", dto.getNutritionTemplateName());
+        }
+
+        // 없다면 영양성분 등록
+        NutritionTemplate nutritionTemplate = dto.toEntity();
+        nutritionTemplateRepository.save(nutritionTemplate);
     }
 
     private void validateSuperAdmin(String userType){

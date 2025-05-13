@@ -1,5 +1,6 @@
 package com.ssafy.mylio.domain.nutrition.controller;
 
+import com.ssafy.mylio.domain.nutrition.dto.request.NutritionTemplateRequestDto;
 import com.ssafy.mylio.domain.nutrition.dto.request.NutritionValuePostRequestDto;
 import com.ssafy.mylio.domain.nutrition.dto.response.NutritionResponseDto;
 import com.ssafy.mylio.domain.nutrition.dto.response.NutritionTemplateResponseDto;
@@ -65,5 +66,16 @@ public class NutritionController {
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         String userType = userPrincipal.getUserType();
         return CommonResponse.ok(nutritionTemplateService.getNutritionTemplate(userType, keyword, pageable));
+    }
+
+    @PostMapping
+    @Operation(summary = "슈퍼관리자 영양성분 템플릿 등록", description = "슈퍼관리자가 영양성분 템플릿을 등록할 수 있습니다")
+    @ApiErrorCodeExamples({ErrorCode.NUTRITION_TEMPLATE_ALREADY_EXISTS})
+    public ResponseEntity<CommonResponse<Void>> adminNutritionAdd(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestBody NutritionTemplateRequestDto dto) {
+        String userType = authenticationUtil.getCurrntUserType(userPrincipal);
+        nutritionTemplateService.addNutritionTemplate(userType, dto);
+        return CommonResponse.ok();
     }
 }

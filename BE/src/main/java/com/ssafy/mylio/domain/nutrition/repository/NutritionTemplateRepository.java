@@ -13,9 +13,11 @@ public interface NutritionTemplateRepository extends JpaRepository<NutritionTemp
 
     @Query("""
         SELECT n FROM NutritionTemplate n
-        WHERE (:keyword IS NULL OR :keyword = '' OR 
-               LOWER(n.nameKr) LIKE LOWER(CONCAT('%', :keyword, '%')) OR 
+        WHERE (:keyword IS NULL OR :keyword = '' OR
+               LOWER(n.nameKr) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
                LOWER(n.nameEn) LIKE LOWER(CONCAT('%', :keyword, '%')))
         """)
     Page<NutritionTemplate> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+    boolean existsByNameKr(String nameKr);
 }
