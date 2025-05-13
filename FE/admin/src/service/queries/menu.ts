@@ -22,7 +22,7 @@ const useAddMenu = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ menu, file }: { menu: MenuAdd; file?: string }) =>
+    mutationFn: ({ menu, file }: { menu: MenuAdd; file?: File }) =>
       addMenu(menu, file),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['menus'] });

@@ -31,6 +31,8 @@ interface UseMenuAddReturn {
     isRequired: boolean;
     selectedDetails: number[];
   }[];
+  imageFile: File | null;
+  imagePreview: string | null;
   setNutritionValue: (value: number) => void;
   handleCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleTagInputChange: (type: 'KR' | 'EN', value: string) => void;
@@ -45,13 +47,14 @@ interface UseMenuAddReturn {
   handleOptionSelect: (optionId: number) => void;
   handleDetailSelect: (optionId: number, detailId: number) => void;
   handleRequiredSelect: (optionId: number) => void;
+  handleImageChange: (file: File) => void;
+  clearImage: () => void;
   updateOptionInfo: () => void;
   resetForm: () => void;
   setMenuAddData: (data: MenuAdd) => void;
 }
 
 const initialMenuData: MenuAdd = {
-  imageUrl: '',
   nameKr: '',
   nameEn: '',
   categoryId: 0,
@@ -65,6 +68,9 @@ const initialMenuData: MenuAdd = {
 
 export const useMenuAdd = (): UseMenuAddReturn => {
   const [menuAddData, setMenuAddData] = useState<MenuAdd>(initialMenuData);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(
     null
   );
@@ -94,6 +100,22 @@ export const useMenuAdd = (): UseMenuAddReturn => {
       selectedDetails: number[];
     }[]
   >([]);
+
+  const handleImageChange = (file: File) => {
+    setImageFile(file);
+
+    // Create preview URL for the image
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const clearImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+  };
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = CATEGORY_LIST.data.content.find(
@@ -335,6 +357,8 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     setSelectedIngredientList([]);
     setSelectedNutrientList([]);
     setSelectedOptions([]);
+    setImageFile(null);
+    setImagePreview(null);
   };
 
   return {
@@ -348,6 +372,8 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     selectedIngredientList,
     selectedNutrientList,
     selectedOptions,
+    imageFile,
+    imagePreview,
     setMenuAddData,
     setNutritionValue,
     handleCategoryChange,
@@ -363,6 +389,8 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     handleOptionSelect,
     handleDetailSelect,
     handleRequiredSelect,
+    handleImageChange,
+    clearImage,
     updateOptionInfo,
     resetForm,
   };

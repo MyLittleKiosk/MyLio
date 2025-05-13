@@ -6,7 +6,6 @@ import { TagType } from '@/types/tags';
 
 export type MenuType = {
   menuId: number;
-  imageUrl: string;
   nameKr: string;
   nameEn: string;
   category: string;
@@ -18,7 +17,6 @@ export type MenuType = {
 };
 
 export interface MenuAdd {
-  imageUrl: string;
   nameKr: string;
   nameEn: string;
   categoryId: number;

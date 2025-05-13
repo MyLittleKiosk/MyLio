@@ -28,6 +28,7 @@ const MenuForm = () => {
     selectedIngredient,
     selectedNutrient,
     selectedOptions,
+    imagePreview,
     setMenuAddData,
     handleTagAdd,
     handleTagDelete,
@@ -39,6 +40,8 @@ const MenuForm = () => {
     handleIngredientChange,
     handleNutrientChange,
     setNutritionValue,
+    handleImageChange,
+    clearImage,
     updateOptionInfo,
   } = useMenuFormContext();
 
@@ -170,9 +173,9 @@ const MenuForm = () => {
         <div className='flex flex-col gap-2 font-preRegular'>
           <div className='flex gap-2 items-center'>
             <div className='flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-content2 rounded-lg bg-gray-50 hover:bg-subContent/50 transition-colors'>
-              {menuAddData.imageUrl ? (
+              {imagePreview ? (
                 <img
-                  src={menuAddData.imageUrl}
+                  src={imagePreview}
                   alt='메뉴 이미지'
                   className='w-full h-full object-contain'
                 />
@@ -198,25 +201,29 @@ const MenuForm = () => {
                       return;
                     }
 
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                      setMenuAddData({
-                        ...menuAddData,
-                        imageUrl: e.target?.result as string,
-                      });
-                    };
-                    reader.readAsDataURL(file);
+                    handleImageChange(file);
                   }
                 }}
               />
             </div>
-            <button
-              type='button'
-              onClick={() => document.getElementById('imageFile')?.click()}
-              className='h-10 mt-2 px-4 py-2 bg-white border border-subContent rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50'
-            >
-              이미지 업로드
-            </button>
+            <div className='flex flex-col gap-2'>
+              <button
+                type='button'
+                onClick={() => document.getElementById('imageFile')?.click()}
+                className='h-10 px-4 py-2 bg-white border border-subContent rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50'
+              >
+                이미지 업로드
+              </button>
+              {imagePreview && (
+                <button
+                  type='button'
+                  onClick={clearImage}
+                  className='h-10 px-4 py-2 bg-white border border-subContent rounded-md shadow-sm text-sm font-medium text-red-500 hover:bg-gray-50'
+                >
+                  이미지 삭제
+                </button>
+              )}
+            </div>
           </div>
           <p className='text-xs text-content font-preMedium'>
             권장 크기: 500×500 픽셀, 최대 2MB

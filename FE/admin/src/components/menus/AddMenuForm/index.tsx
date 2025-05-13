@@ -29,17 +29,20 @@ const AddMenuFormContent = ({
 }: {
   setIsAddMenuClicked: (value: boolean) => void;
 }) => {
-  const { menuAddData } = useMenuFormContext();
+  const { menuAddData, imageFile } = useMenuFormContext();
   const { openModal } = useModalStore();
 
   const { mutate: addMenu } = useAddMenu();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     console.log('menuAddData', menuAddData);
+    console.log('imageFile', imageFile);
+
     // API 호출
     addMenu(
-      { menu: menuAddData, file: '' },
+      { menu: menuAddData, file: imageFile || undefined },
       {
         onSuccess: () => {
           openModal(

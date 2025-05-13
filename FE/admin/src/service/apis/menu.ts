@@ -19,7 +19,7 @@ export async function getMenus(page?: number, categoryId?: number) {
   }
 }
 
-export async function addMenu(menu: MenuAdd, file?: string) {
+export async function addMenu(menu: MenuAdd, file?: File) {
   try {
     const res = await authClient.post('/menus', {
       file: file,
