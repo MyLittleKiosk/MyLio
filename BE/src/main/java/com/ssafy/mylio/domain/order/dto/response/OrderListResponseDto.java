@@ -4,12 +4,13 @@ import com.ssafy.mylio.domain.order.entity.Orders;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
 
 @Getter
-@Builder
+@SuperBuilder
 public class OrderListResponseDto {
 
     @Schema(example = "1")
@@ -18,7 +19,7 @@ public class OrderListResponseDto {
     @Schema(example = "2023-04-22 14:30")
     private LocalDateTime orderedAt;
 
-    @Schema(example = "15,500")
+    @Schema(example = "15500")
     private Integer totalPrice;
 
     @Schema(example = "매장")
