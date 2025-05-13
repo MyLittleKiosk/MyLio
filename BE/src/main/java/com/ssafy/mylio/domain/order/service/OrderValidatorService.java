@@ -115,14 +115,9 @@ public class OrderValidatorService {
                 }).toList();
 
         // 이미지 URL이 없으면 DB에서 조회해서 넣기
-        String imgUrl = content.getImageUrl();
-        if (imgUrl == null || imgUrl.isEmpty()) {
-            imgUrl = menu.getImageUrl();
-        }
-
         return content.toBuilder()
                 .options(canonical)
-                .imageUrl(imgUrl)
+                .imageUrl((content.getImageUrl() == null || content.getImageUrl().isEmpty()) ? menu.getImageUrl() : content.getImageUrl())
                 .selectedOption(selectedOnly)
                 .build();
     }
