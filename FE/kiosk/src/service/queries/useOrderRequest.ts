@@ -13,12 +13,17 @@ export function useOrderRequest() {
     onSuccess: async (data) => {
       const state = data.data.screenState;
       setOrder(data.data);
-      if (data.data.reply) {
-        const voice = await gcpTts(data.data.reply);
-        const audio = new Audio(URL.createObjectURL(voice));
-        audio.play();
+      try {
+        if (data.data.reply) {
+          const voice = await gcpTts(data.data.reply);
+          const audio = new Audio(URL.createObjectURL(voice));
+          audio.play();
+        }
+      } catch (error) {
+        console.error('음성 출력 중 오류 발생:', error);
+      } finally {
+        navigate(`/kiosk${parseState(state)}`);
       }
-      navigate(`/kiosk${parseState(state)}`);
     },
   });
 }

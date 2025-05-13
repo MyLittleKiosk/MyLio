@@ -2,13 +2,14 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Main from '@/pages/Main';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import RecordButton from '@/components/Chat/RecordButton';
 import { useState } from 'react';
 import { useOrderRequest } from '@/service/queries/useOrderRequest';
 import useOrderStore from '@/stores/useOrderStore';
 import { DEFAULT_COMMENT } from '@/datas/COMMENT';
 import { useLogout } from '@/service/queries/useLogout';
 import useKioskStore from '@/stores/useKioskStore';
+import Footer from '@/pages/OrderLayout/Footer';
+
 const OrderLayout = () => {
   const { pathname } = useLocation();
   const [userChat] = useState<string>('');
@@ -17,6 +18,7 @@ const OrderLayout = () => {
   const { mutate: logout } = useLogout();
   const { kioskId } = useKioskStore();
   const navigate = useNavigate();
+
   function handleLogout() {
     logout(kioskId);
     navigate('/');
@@ -90,7 +92,6 @@ const OrderLayout = () => {
           userChat={userChat}
           gptChat={order.reply ? order.reply : DEFAULT_COMMENT}
         />
-        <RecordButton onRecognitionResult={handleRecognitionResult} />
       </header>
       <motion.main
         className='rounded-t-xl bg-white shadow-t-2xl flex flex-col justify-center items-center'
@@ -108,6 +109,11 @@ const OrderLayout = () => {
       >
         <Outlet />
       </motion.main>
+      <Footer
+        order={order}
+        handleRecognitionResult={handleRecognitionResult}
+        pathname={pathname}
+      />
     </div>
   );
 };
