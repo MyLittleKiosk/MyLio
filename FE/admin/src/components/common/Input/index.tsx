@@ -1,5 +1,5 @@
 import React from 'react';
-
+import clsx from 'clsx';
 interface InputProps {
   label?: string;
   inputId: string;
@@ -37,13 +37,15 @@ const Input = ({
         type={inputType}
         value={inputValue}
         onChange={onChange}
-        className={`${
+        className={clsx(
+          'rounded-md p-2 font-preRegular h-[40px] box-border',
+          inputClassName || 'w-full',
           error ? 'border-2 border-error' : 'border border-subContent'
-        } rounded-md p-2 font-preRegular h-[40px] box-border ${inputClassName || 'w-full'}`}
+        )}
         disabled={disabled}
         onKeyDown={onKeyDown}
       />
-      {error && (
+      {errorMessage && (
         <span className='text-error text-sm font-preMedium'>
           {errorMessage}
         </span>
