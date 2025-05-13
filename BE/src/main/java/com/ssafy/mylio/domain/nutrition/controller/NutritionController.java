@@ -1,6 +1,7 @@
 package com.ssafy.mylio.domain.nutrition.controller;
 
 import com.ssafy.mylio.domain.nutrition.dto.request.NutritionTemplateRequestDto;
+import com.ssafy.mylio.domain.nutrition.dto.request.NutritionTemplateUpdateRequestDto;
 import com.ssafy.mylio.domain.nutrition.dto.request.NutritionValuePostRequestDto;
 import com.ssafy.mylio.domain.nutrition.dto.response.NutritionResponseDto;
 import com.ssafy.mylio.domain.nutrition.dto.response.NutritionTemplateResponseDto;
@@ -76,6 +77,18 @@ public class NutritionController {
             @RequestBody NutritionTemplateRequestDto requestDto) {
         String userType = authenticationUtil.getCurrntUserType(userPrincipal);
         nutritionTemplateService.addNutritionTemplate(userType, requestDto);
+        return CommonResponse.ok();
+    }
+
+    @PatchMapping("/{nutrition_id}")
+    @Operation(summary = "슈퍼관리자 영양성분 템플릿 수정", description = "슈퍼관리자가 영양성분 템플릿을 수정할 수 있습니다")
+    @ApiErrorCodeExamples({ErrorCode.NUTRITION_TEMPLATE_NOT_FOUND})
+    public ResponseEntity<CommonResponse<Void>> adminNutritionUpdate(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable("nutrition_id") Integer nutritionId,
+            @RequestBody NutritionTemplateUpdateRequestDto updateRequestDto) {
+        String userType = authenticationUtil.getCurrntUserType(userPrincipal);
+        nutritionTemplateService.updateNutritionTemplate(userType, nutritionId, updateRequestDto);
         return CommonResponse.ok();
     }
 }
