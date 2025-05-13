@@ -8,19 +8,22 @@ import useOrderStore from '@/stores/useOrderStore';
 import { DEFAULT_COMMENT } from '@/datas/COMMENT';
 import { useLogout } from '@/service/queries/useLogout';
 import Footer from '@/pages/OrderLayout/Footer';
-
+import { useRefresh } from '@/service/queries/useRefresh';
 const OrderLayout = () => {
   const { pathname } = useLocation();
   const [userChat] = useState<string>('');
   const { order, resetOrder } = useOrderStore();
   const { mutate: orderRequest } = useOrderRequest();
   const { mutate: logout } = useLogout();
+  const { mutate: refresh } = useRefresh();
   const navigate = useNavigate();
 
   useEffect(() => {
     const kioskId = localStorage.getItem('kioskId');
     if (!kioskId) {
       navigate('/');
+    } else {
+      refresh();
     }
   }, [navigate]);
 

@@ -42,3 +42,18 @@ export const logout = async (kioskId: number): Promise<ApiResponse<void>> => {
     throw new Error('unknown error');
   }
 };
+
+export const refresh = async (): Promise<ApiResponse<User>> => {
+  try {
+    const response = await client.post('/auth/refresh');
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      const customError = error as CustomError;
+      const errorMessage =
+        customError.response?.data?.error?.message || error.message;
+      throw new Error(errorMessage);
+    }
+    throw new Error('unknown error');
+  }
+};

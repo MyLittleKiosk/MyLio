@@ -1,11 +1,13 @@
 import Button from '@/components/common/Button';
 import { useLogin } from '@/service/queries/useLogin';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 const Login = () => {
   const { mutate: login } = useLogin();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const kioskIdRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!emailRef.current || !passwordRef.current || !kioskIdRef.current) {
@@ -18,6 +20,13 @@ const Login = () => {
       kioskId: Number(kioskIdRef.current?.value),
     });
   }
+
+  useEffect(() => {
+    const kioskId = localStorage.getItem('kioskId');
+    if (kioskId) {
+      navigate('/kiosk');
+    }
+  }, []);
 
   return (
     <>
