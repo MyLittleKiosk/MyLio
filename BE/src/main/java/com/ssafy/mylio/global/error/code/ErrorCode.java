@@ -25,6 +25,7 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT,"A006","중복된 이메일입니다."),
     // Menu
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 메뉴입니다"),
+    MENU_STORE_NOT_MATCH(HttpStatus.BAD_REQUEST,"M002","매장에 없는 메뉴입니다"),
 
     //Kiosk
     KIOSK_SESSION_NOT_FOUND(HttpStatus.NOT_FOUND,"K001","존재하지 않는 키오스크 입니다."),

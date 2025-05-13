@@ -1,8 +1,10 @@
 package com.ssafy.mylio.domain.nutrition.controller;
 
+import com.ssafy.mylio.domain.nutrition.dto.response.NutritionResponseDto;
 import com.ssafy.mylio.domain.nutrition.service.NutritionService;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
 import com.ssafy.mylio.global.common.response.CommonResponse;
+import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.security.auth.UserPrincipal;
 import com.ssafy.mylio.global.util.AuthenticationUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/nutrition")
 @RequiredArgsConstructor
@@ -26,14 +30,13 @@ public class NutritionController {
 
     @GetMapping("/{menu_id}")
     @Operation(summary = "영양성분을 조회합니다", description = "메뉴 ID로 영양성분을 조회합니다")
-    @ApiErrorCodeExamples({})
-    public ResponseEntity<CommonResponse<Void>> getNutritionInfo(
+    @ApiErrorCodeExamples({ErrorCode.MENU_NOT_FOUND, ErrorCode.MENU_STORE_NOT_MATCH})
+    public ResponseEntity<CommonResponse<List<NutritionResponseDto>>> getNutritionInfo(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("menu_id") Integer menuId) {
 
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
-        nutritionService.getNutritionInfo(storeId, menuId);
-        return CommonResponse.ok();
+        return CommonResponse.ok(nutritionService.getNutritionInfo(storeId, menuId));
     }
 
 }
