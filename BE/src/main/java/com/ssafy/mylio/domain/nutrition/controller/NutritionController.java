@@ -2,8 +2,11 @@ package com.ssafy.mylio.domain.nutrition.controller;
 
 import com.ssafy.mylio.domain.nutrition.dto.request.NutritionValuePostRequestDto;
 import com.ssafy.mylio.domain.nutrition.dto.response.NutritionResponseDto;
+import com.ssafy.mylio.domain.nutrition.dto.response.NutritionTemplateResponseDto;
 import com.ssafy.mylio.domain.nutrition.service.NutritionService;
+import com.ssafy.mylio.domain.nutrition.service.NutritionTemplateService;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
+import com.ssafy.mylio.global.common.CustomPage;
 import com.ssafy.mylio.global.common.response.CommonResponse;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.security.auth.UserPrincipal;
@@ -11,7 +14,6 @@ import com.ssafy.mylio.global.util.AuthenticationUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -29,6 +31,7 @@ public class NutritionController {
 
     private final AuthenticationUtil authenticationUtil;
     private final NutritionService nutritionService;
+    private final NutritionTemplateService nutritionTemplateService;
 
     @GetMapping("/{menu_id}")
     @Operation(summary = "영양성분 조회", description = "메뉴 ID로 영양성분을 조회합니다")
@@ -56,12 +59,11 @@ public class NutritionController {
     @GetMapping
     @Operation(summary = "슈퍼관리자 영양성분 조회", description = "슈퍼관리자가 영양성분을 조회할 수 있습니다")
     @ApiErrorCodeExamples({})
-    public ResponseEntity<CommonResponse<Page<Void>>> adminNutritionSelect(
+    public ResponseEntity<CommonResponse<CustomPage<NutritionTemplateResponseDto>>> adminNutritionSelect(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam(name="keyword", required = false) String keyword,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         String userType = userPrincipal.getUserType();
-        nutritionService.nutritionTemplateSelect(userType, keyword, pageable);
-        return CommonResponse.ok();
+        return CommonResponse.ok(nutritionTemplateService.getNutritionTemplate(userType, keyword, pageable));
     }
 }
