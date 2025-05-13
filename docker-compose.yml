@@ -1,9 +1,5 @@
 version: '3.8'
 
-# secrets:
-#   gcp-tts-key:
-#     file: ${GCP_KEY_PATH}
-
 services:
   nginx:
     image: nginx:latest
@@ -94,10 +90,10 @@ services:
       GOOGLE_TTS_API_URL: ${GOOGLE_TTS_API_URL}
       GOOGLE_TTS_API_SECRET: ${GOOGLE_TTS_API_SECRET}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
-      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/gcp-tts-key.json
-    # secrets:
-    #   - source: gcp-tts-key
-    #     target: gcp-tts-key.json
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/gcp-tts-key
+    secrets:
+      - gcp-tts-key
+
     ports:
       - "${VOICE_PORT}:${VOICE_CONTAINER_PORT}"
     restart: always
@@ -175,6 +171,10 @@ services:
       - /home/ubuntu/MyLio/frontend/kiosk/default.conf:/etc/nginx/conf.d/default.conf
     networks:
       - app-network
+
+secrets:
+  gcp-tts-key:
+    file: ./secrets/gcp-tts-key.json
 
 networks:
   app-network:
