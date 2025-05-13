@@ -1,11 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import { login } from '../apis/user';
 import { useNavigate } from 'react-router-dom';
-import useKioskStore from '@/stores/useKioskStore';
 
 export function useLogin() {
   const navigate = useNavigate();
-  const { setKioskId } = useKioskStore();
   return useMutation({
     mutationFn: ({
       email,
@@ -17,7 +15,7 @@ export function useLogin() {
       kioskId: number;
     }) => login(email, password, kioskId),
     onSuccess: ({ data }) => {
-      setKioskId(data.kioskId);
+      localStorage.setItem('kioskId', data.kioskId.toString());
       navigate('/kiosk');
     },
     onError: (error) => {
