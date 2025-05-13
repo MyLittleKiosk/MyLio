@@ -10,6 +10,7 @@ import Button from '@/components/common/Button';
 import CompleteModal from '@/components/common/CompleteModal';
 import { ORDER_COLUMNS } from '@/datas/orderList';
 import useModalStore from '@/stores/useModalStore';
+import { OrderType } from '@/types/orders';
 
 const Orders = () => {
   const { openModal } = useModalStore();
@@ -102,7 +103,7 @@ const Orders = () => {
           title='주문 목록'
           description={`총 ${ordersData?.length || 0}개의 주문이 있습니다.`}
           columns={ORDER_COLUMNS}
-          data={ordersData || []}
+          data={ordersData as OrderType[]}
           onView={(row) => {
             openModal(<ViewDetailOrderModal initialData={row} />);
           }}
