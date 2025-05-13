@@ -39,7 +39,7 @@ public class NutritionController {
 
     @PostMapping("/{menu_id}")
     @Operation(summary = "영양성분 등록", description = "메뉴 ID의 영양성분을 새로 등록합니다")
-    @ApiErrorCodeExamples({})
+    @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND,ErrorCode.MENU_NOT_FOUND, ErrorCode.MENU_STORE_NOT_MATCH, ErrorCode.NUTRITION_TEMPLATE_NOT_FOUND})
     public ResponseEntity<CommonResponse<Void>> nutritionAdd(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("menu_id") Integer menuId,
