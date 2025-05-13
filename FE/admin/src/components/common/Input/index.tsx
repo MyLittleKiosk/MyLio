@@ -1,5 +1,5 @@
 import React from 'react';
-
+import clsx from 'clsx';
 interface InputProps {
   label?: string;
   inputId: string;
@@ -9,6 +9,7 @@ interface InputProps {
   className?: string;
   inputClassName?: string;
   error?: boolean;
+  errorMessage?: string;
   disabled?: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -24,28 +25,40 @@ const Input = ({
   className,
   inputClassName,
   error = false,
+  errorMessage,
   disabled = false,
   onKeyDown,
 }: InputProps) => {
   const inputElement = (
-    <input
-      id={inputId}
-      placeholder={placeholder}
-      type={inputType}
-      value={inputValue}
-      onChange={onChange}
-      className={`${
-        error ? 'border-2 border-error' : 'border border-subContent'
-      } rounded-md p-2 font-preRegular h-[40px] box-border ${inputClassName || 'w-full'}`}
-      disabled={disabled}
-      onKeyDown={onKeyDown}
-    />
+    <div className='w-full'>
+      <input
+        id={inputId}
+        placeholder={placeholder}
+        type={inputType}
+        value={inputValue}
+        onChange={onChange}
+        className={clsx(
+          'rounded-md p-2 font-preRegular h-[40px] box-border',
+          inputClassName || 'w-full',
+          error
+            ? 'border-2 border-error focus:ring-1 focus:ring-error focus:ring-inset focus:outline-none'
+            : 'border border-subContent'
+        )}
+        disabled={disabled}
+        onKeyDown={onKeyDown}
+      />
+      {errorMessage && (
+        <span className='text-error text-sm font-preMedium'>
+          {errorMessage}
+        </span>
+      )}
+    </div>
   );
 
   return (
     <div className={`flex items-center ${className || ''}`}>
       {label ? (
-        <label className='flex gap-4 items-center w-full'>
+        <label className='flex gap-4 items-start w-full'>
           <span className='w-[10%] min-w-[80px] max-w-[100px] text-md font-preSemiBold whitespace-wrap break-keep'>
             {label}
           </span>

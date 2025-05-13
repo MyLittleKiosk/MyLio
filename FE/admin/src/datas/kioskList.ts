@@ -1,41 +1,40 @@
 import { PaginationResponse } from '@/types/apiResponse';
+import { KioskType } from '@/types/kiosk';
 import { Column } from '@/types/tableProps';
 
-interface KioskItem {
-  name: string;
-  id: string;
-  status: boolean;
-}
-
-const KIOSK_COLUMNS: Column<KioskItem>[] = [
-  { header: '키오스크명', accessor: 'name' as keyof KioskItem },
-  { header: '키오스크 ID', accessor: 'id' as keyof KioskItem },
-  { header: '상태', accessor: 'status' as keyof KioskItem },
-  { header: '편집', accessor: 'edit' as keyof KioskItem },
-  { header: '삭제', accessor: 'delete' as keyof KioskItem },
+const KIOSK_COLUMNS: Column<KioskType>[] = [
+  { header: '키오스크명', accessor: 'name' as keyof KioskType },
+  { header: '키오스크 ID', accessor: 'kioskId' as keyof KioskType },
+  { header: '상태', accessor: 'isActivate' as keyof KioskType },
+  { header: '편집', accessor: 'edit' as keyof KioskType },
+  { header: '삭제', accessor: 'delete' as keyof KioskType },
 ];
 
-const KIOSK_LIST: PaginationResponse<KioskItem> = {
+const KIOSK_LIST: PaginationResponse<KioskType> = {
   content: [
     {
       name: '키오스크 A',
-      id: 'kiosk_001',
-      status: true,
+      kioskId: 1,
+      startOrder: 'A',
+      isActivate: true,
     },
     {
       name: '키오스크 B',
-      id: 'kiosk_002',
-      status: true,
+      kioskId: 2,
+      startOrder: 'B',
+      isActivate: true,
     },
     {
       name: '키오스크 C',
-      id: 'kiosk_003',
-      status: false,
+      kioskId: 3,
+      startOrder: 'C',
+      isActivate: false,
     },
     {
       name: '키오스크 D',
-      id: 'kiosk_004',
-      status: true,
+      kioskId: 4,
+      startOrder: 'D',
+      isActivate: true,
     },
   ],
   pageNumber: 1,

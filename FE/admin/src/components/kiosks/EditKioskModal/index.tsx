@@ -5,11 +5,16 @@ import Button from '@/components/common/Button';
 import CompleteModal from '@/components/common/CompleteModal';
 
 import useModalStore from '@/stores/useModalStore';
-import { useAddKiosk } from '@/service/queries/kiosk';
+import { useUpdateKiosk } from '@/service/queries/kiosk';
+import { KioskType } from '@/types/kiosk';
 
-const AddKioskModal = () => {
-  const [kioskName, setKioskName] = useState('');
-  const [groupName, setGroupName] = useState('');
+interface Props {
+  row: KioskType;
+}
+
+const EditKioskModal = ({ row }: Props) => {
+  const [kioskName, setKioskName] = useState(row.name);
+  const [groupName, setGroupName] = useState(row.startOrder);
 
   const [groupNameError, setGroupNameError] = useState({
     error: false,
@@ -17,7 +22,7 @@ const AddKioskModal = () => {
   });
 
   const { openModal, closeModal } = useModalStore();
-  const { mutate: addKiosk } = useAddKiosk();
+  const { mutate: updateKiosk } = useUpdateKiosk();
 
   function handleGroupNameChange(value: string) {
     if (/^[A-Z]$/.test(value) || value === '') {
@@ -41,14 +46,14 @@ const AddKioskModal = () => {
       return;
     }
 
-    addKiosk(
-      { name: kioskName, startOrder: groupName },
+    updateKiosk(
+      { kioskId: row.kioskId, name: kioskName, startOrder: groupName },
       {
         onSuccess: () => {
           openModal(
             <CompleteModal
-              title='등록 성공'
-              description='키오스크 등록에 성공했습니다.'
+              title='수정 성공'
+              description='키오스크 수정에 성공했습니다.'
               buttonText='닫기'
             />
           );
@@ -60,9 +65,9 @@ const AddKioskModal = () => {
   return (
     <div className='bg-white rounded-xl p-8 flex flex-col gap-6'>
       <div>
-        <h2 className='text-xl font-preBold mb-1'>키오스크 등록</h2>
+        <h2 className='text-xl font-preBold mb-1'>키오스크 정보 수정</h2>
         <p className='text-sm text-gray-500 mb-4'>
-          키오스크 정보를 등록합니다.
+          키오스크 정보를 수정합니다.
         </p>
         <div className='flex flex-col gap-4'>
           <Input
@@ -88,15 +93,10 @@ const AddKioskModal = () => {
       </div>
       <div className='flex justify-end gap-2 mt-4'>
         <Button buttonType='button' text='취소' cancel onClick={closeModal} />
-        <Button
-          buttonType='button'
-          text='저장'
-          buttonId='saveAddKiosk'
-          onClick={handleSave}
-        />
+        <Button buttonType='button' text='저장' onClick={handleSave} />
       </div>
     </div>
   );
 };
 
-export default AddKioskModal;
+export default EditKioskModal;

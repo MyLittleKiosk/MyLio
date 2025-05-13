@@ -24,6 +24,7 @@ import {
   DUMMY_SALES_BY_YEAR_2024,
   DUMMY_SALES_BY_YEAR_2025,
 } from './dummies/statistics';
+import { KIOSK_LIST } from '@/datas/kioskList';
 
 const baseUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
@@ -171,6 +172,14 @@ export const handlers = [
     });
   }),
 
+  http.post(`${baseUrl}/category`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
   http.get(`${baseUrl}/account?pageable=1`, () => {
     const response: Response<PaginationResponse<AccountType>> = {
       success: true,
@@ -186,14 +195,6 @@ export const handlers = [
       timestamp: new Date().toISOString(),
     };
     return HttpResponse.json(response);
-  }),
-
-  http.post(`${baseUrl}/category`, () => {
-    return HttpResponse.json({
-      success: true,
-      data: {},
-      timestamp: new Date().toISOString(),
-    });
   }),
 
   http.get(`${baseUrl}/account/detail`, () => {
@@ -220,6 +221,61 @@ export const handlers = [
     return HttpResponse.json({
       success: true,
       data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.get(`${baseUrl}/kiosk`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: KIOSK_LIST,
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.post(`${baseUrl}/kiosk`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {
+        kioskId: 1,
+        startOrder: 'A',
+        name: '키오스크 01',
+        isActivate: false,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.get(`${baseUrl}/kiosk/:kioskId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {
+        kioskId: 1,
+        startOrder: 'A',
+        name: '키오스크 01',
+        isActivate: false,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.delete(`${baseUrl}/kiosk/:kioskId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.patch(`${baseUrl}/kiosk/:kioskId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {
+        kioskId: 1,
+        startOrder: 'A',
+        name: '키오스크 01',
+        isActivate: false,
+      },
       timestamp: new Date().toISOString(),
     });
   }),

@@ -528,16 +528,16 @@ describe('옵션관리 페이지', () => {
     cy.visit('/menus');
     cy.get('#옵션').click();
 
-    //when - 옵션 목록의 첫 번째 항목의 수정 버튼을 클릭한다.
+    //when - 옵션 목록의 첫 번째 항목의 삭제제 버튼을 클릭한다.
     cy.get('table tbody tr')
       .first()
       .find('td')
-      .eq(2) // 수정 버튼이 있는 셀
-      .find('#edit')
+      .eq(2) // 삭제 버튼이 있는 셀
+      .find('#delete')
       .click();
 
-    // 수정 모달이 나타나는지 확인
-    cy.contains('옵션 편집').should('exist');
+    // 삭제 모달이 나타나는지 확인
+    cy.contains('삭제 확인').should('exist');
 
     // 옵션 상세 테이블이 존재하는지 확인
     cy.contains('옵션 상세').should('exist');
