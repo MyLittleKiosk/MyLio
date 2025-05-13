@@ -2,6 +2,7 @@
 import copy
 from typing import Dict, List, Any, Optional
 from app.db.mysql_connector import MySQLConnector
+from app.models.schemas import ResponseStatus
 
 class MenuService:
     def __init__(self, db: MySQLConnector):

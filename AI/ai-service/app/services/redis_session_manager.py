@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List, Union
 
 from app.db.redis_connector import RedisConnector
+from app.models.schemas import ResponseStatus
 
 class RedisSessionManager:
     """Redis 기반 사용자 세션 관리 서비스"""
@@ -100,7 +101,7 @@ class RedisSessionManager:
         return self._save_session(session_id, existing_session)
     
     def add_to_cart(self, session_id: str, menu_item: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """장바구니에 메뉴 추가"""
+        """장바구니에 메뉴 추가 (중복 저장 문제 해결)"""
         session = self.get_session(session_id)
         if not session:
             print(f"[카트 추가 실패] 세션 없음: {session_id}")
@@ -112,9 +113,10 @@ class RedisSessionManager:
         
         print(f"[카트 추가 전] 세션 ID: {session_id}, 장바구니 항목 수: {len(session['cart'])}")
 
-        # 최적화된 메뉴 항목 생성
+        # 메뉴 데이터 최소화 (필요한 필드만 유지)
+        cart_id = str(uuid.uuid4())
         optimized_item = {
-            "cart_id": str(uuid.uuid4()),  # 장바구니 내 고유 ID
+            "cart_id": cart_id,
             "menu_id": menu_item.get("menu_id"),
             "quantity": menu_item.get("quantity", 1),
             "name": menu_item.get("name"),
@@ -123,15 +125,40 @@ class RedisSessionManager:
             "base_price": menu_item.get("base_price", 0),
             "total_price": menu_item.get("total_price", 0),
             "image_url": menu_item.get("image_url"),
-            "selected_options": menu_item.get("selected_options", []),
+            "selected_options": []
         }
         
-        # 기존 장바구니 항목과 비교
+        # 선택된 옵션 최소화 (옵션 ID 중복 제거)
+        added_option_ids = set()
+        for opt in menu_item.get("selected_options", []):
+            option_id = opt.get("option_id")
+            if option_id and option_id not in added_option_ids:
+                added_option_ids.add(option_id)
+                
+                # 최소한의 데이터만 복사
+                minimal_opt = {
+                    "option_id": option_id,
+                    "option_name": opt.get("option_name"),
+                    "is_selected": True
+                }
+                
+                # 옵션 상세 정보 한 개만 복사
+                if "option_details" in opt and opt["option_details"]:
+                    detail = opt["option_details"][0]
+                    minimal_opt["option_details"] = [{
+                        "id": detail.get("id"),
+                        "value": detail.get("value"),
+                        "additional_price": detail.get("additional_price", 0)
+                    }]
+                
+                optimized_item["selected_options"].append(minimal_opt)
+        
+        # 중복 메뉴 확인 (같은 메뉴+옵션 조합이면 수량만 증가)
         found = False
         for i, item in enumerate(session["cart"]):
             if self._is_same_menu_item(item, optimized_item):
                 # 동일 메뉴 발견 시 수량 증가
-                session["cart"][i]["quantity"] += menu_item.get("quantity", 1)
+                session["cart"][i]["quantity"] += optimized_item.get("quantity", 1)
                 found = True
                 print(f"[카트 업데이트] 기존 항목 수량 증가: {item.get('name')}, 새 수량: {session['cart'][i]['quantity']}")
                 break
@@ -141,26 +168,8 @@ class RedisSessionManager:
             session["cart"].append(optimized_item)
             print(f"[카트 추가] 새 항목: {optimized_item.get('name')}, 옵션: {[opt.get('option_name') for opt in optimized_item.get('selected_options', [])]}")
         
-        # 세션 업데이트
-        session["last_accessed"] = datetime.now().isoformat()
-
-        # 저장 전 장바구니 상태 로깅
-        print(f"[카트 저장 전] 세션 ID: {session_id}, 장바구니 항목 수: {len(session['cart'])}, 항목: {[item.get('name') for item in session['cart']]}")
-
-        # 세션 저장
-        save_result = self._save_session(session_id, session)
-        
-        # 저장 확인 및 로깅
-        if save_result:
-            print(f"[카트 업데이트 성공] 세션 ID: {session_id}, 장바구니 항목 수: {len(session['cart'])}, 항목: {[item.get('name') for item in session['cart']]}")
-        else:
-            print(f"[카트 업데이트 실패] 세션 ID: {session_id}, Redis 저장 오류")
-        
-        # 변경 후 실제 장바구니 확인
-        verify_session = self.get_session(session_id)
-        if verify_session:
-            verify_cart = verify_session.get("cart", [])
-            print(f"[카트 검증] 세션 ID: {session_id}, 실제 장바구니 항목 수: {len(verify_cart)}, 항목: {[item.get('name') for item in verify_cart]}")
+        # 세션 저장 (한 번만 호출)
+        self._save_session(session_id, session)
         
         return session["cart"]
     
@@ -226,35 +235,67 @@ class RedisSessionManager:
         return 0
     
     def _save_session(self, session_id: str, session_data: Dict[str, Any]) -> bool:
-        """세션 데이터를 Redis에 저장"""
+        """세션 데이터를 Redis에 저장 (중복 데이터 최소화)"""
         try:
             session_key = f"{self.prefix}{session_id}"
-            print(f"[Redis 저장] 세션 ID: {session_id}")
             
-            # 정제된 데이터 생성 (깊은 복사 대신 필요한 필드만 선택)
-            sanitized_data = self._sanitize_session_data(session_data)
+            # 마지막 접근 시간 업데이트
+            session_data["last_accessed"] = datetime.now().isoformat()
+            
+            # 세션 데이터 정리 (중복 제거 및 최소화)
+            cleaned_data = self._sanitize_session_data(session_data)
             
             try:
-                session_json = json.dumps(sanitized_data)
-                print(f"[Redis 저장] JSON 변환 성공: {len(session_json)} 바이트")
+                # JSON 직렬화
+                session_json = json.dumps(cleaned_data)
+                json_size = len(session_json)
+                
+                # 크기가 너무 크면 추가 정리
+                if json_size > 50 * 1024:  # 50KB 초과
+                    print(f"[세션 저장] 세션 크기가 큼: {json_size/1024:.2f}KB, 추가 정리 적용")
+                    
+                    # history 완전 제거
+                    if "history" in cleaned_data:
+                        del cleaned_data["history"]
+                    
+                    # 장바구니 최소화 (5개까지만 유지)
+                    if "cart" in cleaned_data and len(cleaned_data["cart"]) > 5:
+                        cleaned_data["cart"] = cleaned_data["cart"][-5:]
+                    
+                    # 다시 직렬화
+                    session_json = json.dumps(cleaned_data)
+                    print(f"[세션 저장] 정리 후 크기: {len(session_json)/1024:.2f}KB")
+            
             except Exception as json_error:
-                print(f"[Redis 저장] JSON 변환 실패: {json_error}")
-                # 최소 데이터만 저장
+                print(f"[세션 저장] JSON 변환 실패: {json_error}")
+                
+                # 최소 필수 데이터만 저장
                 minimal_data = {
                     "id": session_id,
+                    "created_at": session_data.get("created_at", datetime.now().isoformat()),
                     "last_accessed": datetime.now().isoformat(),
-                    "cart": session_data.get("cart", []),  # 원본 카트 보존
-                    "last_state": {}
+                    "cart": []
                 }
-                session_json = json.dumps(minimal_data)
                 
-            # Redis에 저장
+                # 카트 데이터 추가 (간소화)
+                if "cart" in session_data:
+                    for item in session_data["cart"][:3]:  # 최대 3개만 저장
+                        minimal_data["cart"].append({
+                            "cart_id": item.get("cart_id", str(uuid.uuid4())),
+                            "menu_id": item.get("menu_id"),
+                            "name": item.get("name", ""),
+                            "quantity": item.get("quantity", 1)
+                        })
+                
+                session_json = json.dumps(minimal_data)
+            
+            # Redis에 저장 (TTL 설정)
             self.redis.setex(session_key, self.timeout, session_json)
             
             return True
                 
         except Exception as e:
-            print(f"세션 저장 오류: {e}")
+            print(f"[세션 저장 오류] {e}")
             import traceback
             traceback.print_exc()
             return False
@@ -285,7 +326,7 @@ class RedisSessionManager:
         return selected_options1 == selected_options2
     
     def _sanitize_session_data(self, session_data: Dict[str, Any]) -> Dict[str, Any]:
-        """세션 데이터에서 순환 참조를 제거"""
+        """세션 데이터에서 중복 데이터 제거 및 최적화"""
         # 깊은 복사 대신 필요한 필드만 새 객체로 복사
         sanitized = {}
         
@@ -305,28 +346,32 @@ class RedisSessionManager:
                     if k in item:
                         safe_item[k] = item[k]
                 
-                # 선택된 옵션 안전하게 복사
+                # 선택된 옵션 안전하게 복사 (중복 제거)
                 if "selected_options" in item:
                     safe_item["selected_options"] = []
+                    added_option_ids = set()  # 중복 옵션 ID 추적
+                    
                     for opt in item["selected_options"]:
+                        option_id = opt.get("option_id")
+                        if option_id in added_option_ids:
+                            # 이미 추가된 옵션은 건너뛰기
+                            continue
+                        
+                        added_option_ids.add(option_id)
                         safe_opt = {
-                            "option_id": opt.get("option_id"),
+                            "option_id": option_id,
                             "option_name": opt.get("option_name"),
-                            "option_name_en": opt.get("option_name_en"),
-                            "required": opt.get("required", False),
-                            "is_selected": opt.get("is_selected", True)
+                            "is_selected": True
                         }
                         
-                        # 옵션 상세 정보 복사
+                        # 옵션 상세 정보 한 개만 복사 (첫번째)
                         if "option_details" in opt and opt["option_details"]:
-                            safe_opt["option_details"] = []
-                            for detail in opt["option_details"]:
-                                safe_detail = {
-                                    "id": detail.get("id"),
-                                    "value": detail.get("value"),
-                                    "additional_price": detail.get("additional_price", 0)
-                                }
-                                safe_opt["option_details"].append(safe_detail)
+                            detail = opt["option_details"][0]
+                            safe_opt["option_details"] = [{
+                                "id": detail.get("id"),
+                                "value": detail.get("value"),
+                                "additional_price": detail.get("additional_price", 0)
+                            }]
                         
                         safe_item["selected_options"].append(safe_opt)
                 
@@ -337,93 +382,102 @@ class RedisSessionManager:
             sanitized["last_state"] = {}
             last_state = session_data["last_state"]
             
-            # pending_option 복사
+            # pending_option 복사 (간소화)
             if "pending_option" in last_state:
                 pending_opt = last_state["pending_option"]
                 sanitized["last_state"]["pending_option"] = {
                     "option_id": pending_opt.get("option_id"),
                     "option_name": pending_opt.get("option_name"),
-                    "option_name_en": pending_opt.get("option_name_en"),
                     "required": pending_opt.get("required", False)
                 }
                 
-                # 옵션 상세 정보 복사
+                # 옵션 상세 정보 복사 (참조 필요한 최소 정보만)
                 if "option_details" in pending_opt:
                     sanitized["last_state"]["pending_option"]["option_details"] = []
                     for detail in pending_opt.get("option_details", []):
-                        safe_detail = {
+                        sanitized["last_state"]["pending_option"]["option_details"].append({
                             "id": detail.get("id"),
-                            "value": detail.get("value"),
-                            "additional_price": detail.get("additional_price", 0)
-                        }
-                        sanitized["last_state"]["pending_option"]["option_details"].append(safe_detail)
+                            "value": detail.get("value")
+                        })
             
-            # menu 복사 
+            # menu 복사 (중복 제거 및 간소화)
             if "menu" in last_state:
                 menu = last_state["menu"]
                 sanitized["last_state"]["menu"] = {
                     "menu_id": menu.get("menu_id"),
                     "name": menu.get("name"),
                     "base_price": menu.get("base_price", 0),
-                    "total_price": menu.get("total_price", 0),
-                    "image_url": menu.get("image_url", ""),
-                    "is_corrected": menu.get("is_corrected", False),
-                    "original_name": menu.get("original_name", None)
+                    "total_price": menu.get("total_price", 0)
                 }
                 
-                # 옵션 정보 복사 (개선)
+                # 옵션 정보 복사 (필수만 최소화)
                 if "options" in menu:
                     sanitized["last_state"]["menu"]["options"] = []
+                    required_only = []
+                    
                     for option in menu.get("options", []):
-                        safe_option = {
-                            "option_id": option.get("option_id"),
-                            "option_name": option.get("option_name"),
-                            "option_name_en": option.get("option_name_en", ""),
-                            "required": option.get("required", False),
-                            "is_selected": option.get("is_selected", False),
-                            "selected_id": option.get("selected_id")
-                        }
-                        
-                        if "option_details" in option:
-                            safe_option["option_details"] = []
-                            for detail in option.get("option_details", []):
-                                safe_detail = {
-                                    "id": detail.get("id"),
-                                    "value": detail.get("value"),
-                                    "additional_price": detail.get("additional_price", 0)
-                                }
-                                safe_option["option_details"].append(safe_detail)
-                        
-                        sanitized["last_state"]["menu"]["options"].append(safe_option)
+                        # 필수 옵션 또는 이미 선택된 옵션만 저장
+                        if option.get("required", False) or option.get("is_selected", False):
+                            # 중복 필드 제거 및 최소 정보만 포함
+                            min_option = {
+                                "option_id": option.get("option_id"),
+                                "option_name": option.get("option_name"),
+                                "required": option.get("required", False),
+                                "is_selected": option.get("is_selected", False)
+                            }
+                            
+                            # 선택된 옵션이면 ID 추가
+                            if option.get("is_selected", False):
+                                min_option["selected_id"] = option.get("selected_id")
+                            
+                            # 옵션 상세 정보는 최소화
+                            if "option_details" in option:
+                                min_option["option_details"] = []
+                                for detail in option.get("option_details", []):
+                                    min_option["option_details"].append({
+                                        "id": detail.get("id"),
+                                        "value": detail.get("value")
+                                    })
+                            
+                            required_only.append(min_option)
+                    
+                    sanitized["last_state"]["menu"]["options"] = required_only
                 
-                # 선택된 옵션 정보 복사 (중요 추가)
+                # 선택된 옵션 정보 복사 (중복 제거)
                 if "selected_options" in menu:
                     sanitized["last_state"]["menu"]["selected_options"] = []
+                    added_option_ids = set()  # 중복 옵션 ID 추적
+                    
                     for option in menu.get("selected_options", []):
-                        safe_option = {
-                            "option_id": option.get("option_id"),
+                        option_id = option.get("option_id")
+                        if option_id in added_option_ids:
+                            # 이미 추가된 옵션은 건너뛰기
+                            continue
+                        
+                        added_option_ids.add(option_id)
+                        min_option = {
+                            "option_id": option_id,
                             "option_name": option.get("option_name"),
-                            "option_name_en": option.get("option_name_en", ""),
-                            "required": option.get("required", False),
-                            "is_selected": option.get("is_selected", True)
+                            "is_selected": True
                         }
                         
-                        if "option_details" in option:
-                            safe_option["option_details"] = []
-                            for detail in option.get("option_details", []):
-                                safe_detail = {
-                                    "id": detail.get("id"),
-                                    "value": detail.get("value"),
-                                    "additional_price": detail.get("additional_price", 0)
-                                }
-                                safe_option["option_details"].append(safe_detail)
+                        # 옵션 상세 정보 한 개만 복사 (첫번째)
+                        if "option_details" in option and option["option_details"]:
+                            detail = option["option_details"][0]
+                            min_option["option_details"] = [{
+                                "id": detail.get("id"),
+                                "value": detail.get("value"),
+                                "additional_price": detail.get("additional_price", 0)
+                            }]
                         
-                        sanitized["last_state"]["menu"]["selected_options"].append(safe_option)
+                        sanitized["last_state"]["menu"]["selected_options"].append(min_option)
         
-        # 대화 기록 복사
+        # 대화 기록 최소화 - 최근 3개만 유지
         if "history" in session_data:
             sanitized["history"] = []
-            for entry in session_data.get("history", [])[:10]:  # 최근 10개만 저장
+            recent_history = session_data.get("history", [])[-3:]  # 최근 3개만
+            
+            for entry in recent_history:
                 safe_entry = {
                     "user_input": entry.get("user_input", ""),
                     "timestamp": entry.get("timestamp", "")
@@ -441,52 +495,223 @@ class RedisSessionManager:
                 
                 sanitized["history"].append(safe_entry)
         
-        # 컨텍스트 정보 복사
-        if "context" in session_data:
-            context = session_data["context"]
-            sanitized["context"] = {}
-            
-            # 화면 및 세션 상태 컨텍스트
-            if "current_screen" in context:
-                sanitized["context"]["current_screen"] = context["current_screen"]
-            if "screen_history" in context:
-                sanitized["context"]["screen_history"] = context["screen_history"]
-            if "conversation_intent" in context:
-                sanitized["context"]["conversation_intent"] = context["conversation_intent"]
-            
-            # LLM/랭체인 관련 컨텍스트
-            if "selected_examples" in context:
-                sanitized["context"]["selected_examples"] = context["selected_examples"]
-            if "llm_response_keys" in context:
-                sanitized["context"]["llm_response_keys"] = context["llm_response_keys"]
-            if "prompt_context" in context:
-                sanitized["context"]["prompt_context"] = context["prompt_context"]
-            
-            # 메뉴 및 주문 맥락
-            if "menu_keywords" in context:
-                sanitized["context"]["menu_keywords"] = context["menu_keywords"]
-            if "option_patterns" in context:
-                sanitized["context"]["option_patterns"] = context["option_patterns"]
-            if "order_intent_state" in context:
-                sanitized["context"]["order_intent_state"] = context["order_intent_state"]
-            
-            # 벡터 검색 관련 컨텍스트
-            if "last_search_query" in context:
-                sanitized["context"]["last_search_query"] = context["last_search_query"]
-            if "search_results" in context:
-                # 검색 결과의 핵심 정보만 저장 (전체 문서는 아님)
-                sanitized["context"]["search_results"] = [
-                    {"menu_id": r.get("menu_id"), "name": r.get("name_kr"), "similarity": r.get("similarity")}
-                    for r in context["search_results"][:5]  # 상위 5개만 저장
-                ] if isinstance(context["search_results"], list) else []
-            
-            # 기타 단순 타입의 컨텍스트 정보 보존
-            for key, value in context.items():
-                if key not in sanitized["context"]:
-                    # 직렬화 가능한 단순 타입만 저장
-                    if isinstance(value, (str, int, float, bool)):
-                        sanitized["context"][key] = value
-                    elif isinstance(value, (list, dict)) and len(str(value)) < 1000:  # 크기 제한
-                        sanitized["context"][key] = value
+        # 컨텍스트 정보 저장 안함 (대부분 불필요)
+        # 세션 크기 축소를 위해 제외
         
         return sanitized
+    
+    def delete_session(self, session_id: str) -> bool:
+        """세션 명시적 삭제"""
+        if not session_id:
+            return False
+        
+        try:
+            # 세션 키 구성
+            session_key = f"{self.prefix}{session_id}"
+            
+            # Redis에서 세션 삭제
+            deleted = self.redis.delete(session_key)
+            
+            # 인메모리 캐시가 있는 경우 캐시에서도 삭제
+            if hasattr(self, '_session_cache') and session_id in self._session_cache:
+                del self._session_cache[session_id]
+            
+            print(f"[세션 삭제] 세션 ID: {session_id}, 결과: {deleted > 0}")
+            return deleted > 0
+        
+        except Exception as e:
+            print(f"[세션 삭제 오류] 세션 ID: {session_id}, 오류: {e}")
+            return False
+
+    def cleanup_expired_sessions(self, max_idle_time_minutes: int = 60) -> int:
+        """오래된 세션 정리"""
+        try:
+            import time
+            from datetime import datetime, timedelta
+            
+            # 현재 시간
+            current_time = datetime.now()
+            cutoff_time = current_time - timedelta(minutes=max_idle_time_minutes)
+            cutoff_time_iso = cutoff_time.isoformat()
+            
+            # 모든 세션 키 조회
+            session_keys = self.redis.keys(f"{self.prefix}*")
+            
+            deleted_count = 0
+            for key in session_keys:
+                try:
+                    # 세션 데이터 로드
+                    session_data = self.redis.get(key)
+                    if not session_data:
+                        continue
+                    
+                    # JSON 파싱
+                    session = json.loads(session_data)
+                    
+                    # 마지막 접근 시간 확인
+                    last_accessed = session.get("last_accessed")
+                    if not last_accessed:
+                        continue
+                    
+                    # 마지막 접근 시간이 기준 시간보다 오래된 경우 삭제
+                    if last_accessed < cutoff_time_iso:
+                        session_id = key.decode('utf-8').replace(self.prefix, "")
+                        if self.delete_session(session_id):
+                            deleted_count += 1
+                
+                except Exception as e:
+                    # 개별 세션 처리 중 오류 무시하고 계속 진행
+                    print(f"[세션 정리 중 오류] 키: {key}, 오류: {e}")
+                    continue
+            
+            print(f"[세션 정리 완료] 삭제된 세션 수: {deleted_count}")
+            return deleted_count
+        
+        except Exception as e:
+            print(f"[세션 정리 오류] {e}")
+            return 0
+
+    def get_all_sessions_info(self) -> Dict[str, Any]:
+        """모든 세션 정보 요약"""
+        try:
+            # 모든 세션 키 조회
+            session_keys = self.redis.keys(f"{self.prefix}*")
+            
+            total_count = len(session_keys)
+            active_sessions = []
+            total_size = 0
+            
+            # 샘플링 (최대 100개)
+            sample_keys = session_keys[:100] if len(session_keys) > 100 else session_keys
+            
+            for key in sample_keys:
+                try:
+                    # 세션 데이터 로드
+                    session_data = self.redis.get(key)
+                    if not session_data:
+                        continue
+                    
+                    # 데이터 크기 측정
+                    size = len(session_data)
+                    total_size += size
+                    
+                    # 세션 ID 추출
+                    session_id = key.decode('utf-8').replace(self.prefix, "")
+                    
+                    # JSON 파싱
+                    session = json.loads(session_data)
+                    
+                    # 세션 요약 정보
+                    active_sessions.append({
+                        "id": session_id,
+                        "last_accessed": session.get("last_accessed", ""),
+                        "cart_items": len(session.get("cart", [])),
+                        "history_count": len(session.get("history", [])),
+                        "data_size": size,
+                    })
+                
+                except Exception as e:
+                    # 개별 세션 처리 중 오류 무시하고 계속 진행
+                    print(f"[세션 정보 수집 중 오류] 키: {key}, 오류: {e}")
+                    continue
+            
+            # 평균 세션 크기 계산
+            avg_size = total_size / len(sample_keys) if sample_keys else 0
+            estimated_total_size = avg_size * total_count
+            
+            return {
+                "total_sessions": total_count,
+                "sampled_sessions": len(sample_keys),
+                "avg_session_size_bytes": avg_size,
+                "estimated_total_size_mb": estimated_total_size / (1024 * 1024),
+                "active_sessions": active_sessions
+            }
+        
+        except Exception as e:
+            print(f"[세션 정보 수집 오류] {e}")
+            return {
+                "error": str(e),
+                "total_sessions": 0,
+                "active_sessions": []
+            }
+
+    def cleanup_large_sessions(self, max_size_kb: int = 100) -> int:
+        """비정상적으로 큰 세션 정리"""
+        try:
+            # 모든 세션 키 조회
+            session_keys = self.redis.keys(f"{self.prefix}*")
+            
+            deleted_count = 0
+            for key in session_keys:
+                try:
+                    # 세션 데이터 로드
+                    session_data = self.redis.get(key)
+                    if not session_data:
+                        continue
+                    
+                    # 데이터 크기 측정
+                    size_kb = len(session_data) / 1024
+                    
+                    # 사이즈가 기준보다 크면 삭제
+                    if size_kb > max_size_kb:
+                        session_id = key.decode('utf-8').replace(self.prefix, "")
+                        print(f"[큰 세션 발견] 세션 ID: {session_id}, 크기: {size_kb:.2f} KB")
+                        
+                        # 가능하면 세션을 정리하고 다시 저장 (완전 삭제 대신)
+                        try:
+                            session = json.loads(session_data)
+                            
+                            # 최소 필드만 남김
+                            minimal_session = {
+                                "id": session.get("id", session_id),
+                                "created_at": session.get("created_at", ""),
+                                "last_accessed": session.get("last_accessed", ""),
+                                "cart": session.get("cart", [])[:5]  # 최대 5개 항목만 유지
+                            }
+                            
+                            # 다시 저장
+                            minimal_data = json.dumps(minimal_session)
+                            self.redis.setex(key, self.timeout, minimal_data)
+                            print(f"[세션 최소화] 세션 ID: {session_id}, 새 크기: {len(minimal_data) / 1024:.2f} KB")
+                            deleted_count += 1
+                        except:
+                            # 정리 실패 시 완전 삭제
+                            if self.redis.delete(key):
+                                deleted_count += 1
+                
+                except Exception as e:
+                    # 개별 세션 처리 중 오류 무시하고 계속 진행
+                    print(f"[세션 정리 중 오류] 키: {key}, 오류: {e}")
+                    continue
+            
+            print(f"[큰 세션 정리 완료] 처리된 세션 수: {deleted_count}")
+            return deleted_count
+        
+        except Exception as e:
+            print(f"[세션 정리 오류] {e}")
+            return 0
+
+    def set_session_timeout(self, session_id: str, timeout_seconds: int = None) -> bool:
+        """특정 세션의 TTL 변경"""
+        if not session_id:
+            return False
+        
+        try:
+            session_key = f"{self.prefix}{session_id}"
+            
+            # 현재 세션 데이터 가져오기
+            session_data = self.redis.get(session_key)
+            if not session_data:
+                return False
+            
+            # 타임아웃 설정 (기본값: 인스턴스 기본 타임아웃)
+            timeout = timeout_seconds if timeout_seconds is not None else self.timeout
+            
+            # 세션 데이터 유지하고 타임아웃만 갱신
+            self.redis.expire(session_key, timeout)
+            
+            return True
+        
+        except Exception as e:
+            print(f"[세션 타임아웃 설정 오류] 세션 ID: {session_id}, 오류: {e}")
+            return False

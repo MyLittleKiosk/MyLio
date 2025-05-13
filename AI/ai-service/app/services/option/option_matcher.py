@@ -7,6 +7,14 @@ class OptionMatcher:
     
     def match_option(self, options: List[Dict[str, Any]], option_name: str, option_value: str) -> Optional[Dict[str, Any]]:
         """옵션 매핑 함수"""
+        # 입력 검증 추가
+        if not options or not option_name or not option_value:
+            print(f"[옵션 매칭] 유효하지 않은 입력: options={bool(options)}, name={bool(option_name)}, value={bool(option_value)}")
+            return None
+        
+        # 디버깅을 위한 로그 추가
+        print(f"옵션 매핑: 이름={option_name}, 값={option_value}, 사용 가능한 옵션={options}")
+        
         # 디버깅을 위한 로그 추가
         print(f"옵션 매핑: 이름={option_name}, 값={option_value}, 사용 가능한 옵션={options}")
     
@@ -240,13 +248,16 @@ class OptionMatcher:
         return ResponseStatus.READY_TO_ADD_CART
     
     def calculate_total_price(self, menu: Dict[str, Any]) -> int:
-        """선택된 옵션을 포함한 총 가격 계산"""
+        """메뉴의 총 가격 계산 (옵션 포함)"""
         base_price = menu.get("base_price", 0)
+        quantity = menu.get("quantity", 1)
+        
+        # 선택된 옵션의 추가 가격 계산
         additional_price = 0
-        
         for option in menu.get("selected_options", []):
-            if option.get("option_details"):
-                option_detail = option["option_details"][0]
-                additional_price += option_detail.get("additional_price", 0)
+            option_details = option.get("option_details", [])
+            if option_details:
+                additional_price += option_details[0].get("additional_price", 0)
         
-        return base_price + additional_price
+        # (기본 가격 + 추가 가격) * 수량
+        return (base_price + additional_price) * quantity
