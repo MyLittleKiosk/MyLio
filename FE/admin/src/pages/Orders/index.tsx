@@ -35,7 +35,7 @@ const Orders = () => {
   }
 
   function handleSearch() {
-    if (startSearchValue > endSearchValue) {
+    if (endSearchValue && startSearchValue > endSearchValue) {
       openModal(
         <CompleteModal
           title='주문 검색 오류'
