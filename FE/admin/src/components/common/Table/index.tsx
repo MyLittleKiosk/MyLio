@@ -2,7 +2,7 @@ import IconEdit from '@/assets/icons/IconEdit';
 import IconTrashCan from '@/assets/icons/IconTrashCan';
 
 import { Column, TableProps } from '@/types/tableProps';
-
+import formatMoney from '@/utils/formatMoney';
 const Table = <T extends object>({
   title,
   description,
@@ -64,7 +64,8 @@ const Table = <T extends object>({
         );
       case 'price':
       case 'orderPrice':
-        return `₩${String(row[column.accessor as keyof T]).toLocaleString()}`;
+      case 'totalPrice':
+        return formatMoney(Number(row[column.accessor as keyof T]));
       case 'status':
         return (
           <div

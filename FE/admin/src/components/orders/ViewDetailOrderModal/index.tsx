@@ -1,6 +1,7 @@
 import { DETAIL_ORDERS } from '@/datas/orderList';
 import useModalStore from '@/stores/useModalStore';
 import { OrderType } from '@/types/orders';
+import formatMoney from '@/utils/formatMoney';
 
 interface ViewDetailOrderModalProps {
   initialData: OrderType;
@@ -54,7 +55,7 @@ const ViewDetailOrderModal = ({ initialData }: ViewDetailOrderModalProps) => {
               <tr key={index} className='text-sm font-preRegular'>
                 <td className='px-4 py-3'>{order.productName}</td>
                 <td>{order.productQuantity}</td>
-                <td>{order.productPrice}</td>
+                <td>{formatMoney(order.productPrice)}</td>
                 <td>
                   {order.productOption ? (
                     <span>{order.productOption}</span>
@@ -71,7 +72,7 @@ const ViewDetailOrderModal = ({ initialData }: ViewDetailOrderModalProps) => {
       <div>
         <span className='text-md text-longContent font-preBold'>총 금액 :</span>
         <span className='text-md text-longContent font-preBold'>
-          ₩{initialData.totalPrice}
+          {formatMoney(initialData.totalPrice)}
         </span>
       </div>
 
