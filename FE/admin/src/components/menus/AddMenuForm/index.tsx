@@ -1,10 +1,14 @@
 import React from 'react';
 
+import useModalStore from '@/stores/useModalStore';
+
 import Button from '@/components/common/Button';
 import ModalHeader from '@/components/common/Modal/ModalHeader';
 import MenuForm from '@/components/menus/AddMenuForm/MenuForm';
-
-import useModalStore from '@/stores/useModalStore';
+import {
+  MenuFormProvider,
+  useMenuFormContext,
+} from '@/components/menus/AddMenuForm/MenuFormContext';
 
 interface Props {
   setIsAddMenuClicked: (value: boolean) => void;
@@ -13,8 +17,29 @@ interface Props {
 const AddMenuForm = ({ setIsAddMenuClicked }: Props) => {
   const { closeModal } = useModalStore();
 
+  return (
+    <MenuFormProvider>
+      <AddMenuFormContent
+        setIsAddMenuClicked={setIsAddMenuClicked}
+        closeModal={closeModal}
+      />
+    </MenuFormProvider>
+  );
+};
+
+const AddMenuFormContent = ({
+  setIsAddMenuClicked,
+  closeModal,
+}: {
+  setIsAddMenuClicked: (value: boolean) => void;
+  closeModal: () => void;
+}) => {
+  const { menuAddData } = useMenuFormContext();
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    console.log('menuAddData', menuAddData);
+    // API 호출
     closeModal();
   }
 

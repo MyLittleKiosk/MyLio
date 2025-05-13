@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import { useMenuAdd } from '@/components/menus/AddMenuForm/useMenuAdd';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 import Button from '@/components/common/Button';
@@ -16,6 +15,7 @@ import IconImage from '@/assets/icons/IconImage';
 import NUTRIENT_LIST from '@/datas/NutrientList';
 import INGREDIENT_LIST from '@/datas/IngredientList';
 import translator from '@/utils/translator';
+import { useMenuFormContext } from './MenuFormContext';
 
 const MenuForm = () => {
   const {
@@ -38,7 +38,7 @@ const MenuForm = () => {
     handleIngredientChange,
     handleNutrientChange,
     setNutritionValue,
-  } = useMenuAdd();
+  } = useMenuFormContext();
 
   const { data: options, isLoading } = useGetOptions();
 
