@@ -70,12 +70,12 @@ const deleteKiosk = async (kioskId: number) => {
 const updateKiosk = async (
   kioskId: number,
   name: string,
-  start_order: string
+  startOrder: string
 ) => {
   try {
     const res = await authClient.patch(`/kiosk/${kioskId}`, {
       name,
-      start_order,
+      startOrder,
     });
     return res.data;
   } catch (error: unknown) {

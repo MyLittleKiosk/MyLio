@@ -8,18 +8,16 @@ import Table from '@/components/common/Table';
 import Modal from '@/components/common/Modal';
 import AddKioskModal from '@/components/kiosks/AddKioskModal';
 import EditKioskModal from '@/components/kiosks/EditKioskModal';
-import CompleteModal from '@/components/common/CompleteModal';
 
 import { KIOSK_COLUMNS } from '@/datas/kioskList';
 
 import useModalStore from '@/stores/useModalStore';
-import { useDeleteKiosk, useGetKioskList } from '@/service/queries/kiosk';
-import { KioskType } from '@/types/kiosk';
+import { useGetKioskList } from '@/service/queries/kiosk';
+import DeleteKioskModal from '@/components/kiosks/DeleteKioskModal';
 
 const Kiosk = () => {
   const { openModal } = useModalStore();
   const { data: kioskList, isLoading } = useGetKioskList();
-  const { mutate: deleteKiosk } = useDeleteKiosk();
 
   const [searchValue, setSearchValue] = useState('');
   const [selected, setSelected] = useState('');
@@ -30,20 +28,6 @@ const Kiosk = () => {
 
   function handleSelectChange(e: React.ChangeEvent<HTMLSelectElement>) {
     setSelected(e.target.value);
-  }
-
-  function handleDelete(row: KioskType) {
-    deleteKiosk(row.kioskId, {
-      onSuccess: () => {
-        openModal(
-          <CompleteModal
-            title='삭제 성공'
-            description='키오스크 삭제에 성공했습니다.'
-            buttonText='확인'
-          />
-        );
-      },
-    });
   }
 
   if (isLoading) {
@@ -92,7 +76,7 @@ const Kiosk = () => {
           openModal(<EditKioskModal row={row} />);
         }}
         onDelete={(row) => {
-          handleDelete(row);
+          openModal(<DeleteKioskModal row={row} />);
         }}
       />
       <Modal />

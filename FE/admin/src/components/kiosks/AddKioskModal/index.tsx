@@ -102,7 +102,12 @@ const AddKioskModal = () => {
       </div>
       <div className='flex justify-end gap-2 mt-4'>
         <Button buttonType='button' text='취소' cancel onClick={closeModal} />
-        <Button buttonType='button' text='저장' onClick={handleSave} />
+        <Button
+          buttonType='button'
+          text='저장'
+          buttonId='saveAddKiosk'
+          onClick={handleSave}
+        />
       </div>
     </div>
   );
