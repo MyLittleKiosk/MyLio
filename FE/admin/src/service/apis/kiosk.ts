@@ -20,9 +20,9 @@ const getKioskList = async (keyword?: string, page?: number) => {
 };
 
 //키오스크 등록
-const addKiosk = async (name: string, start_order: string) => {
+const addKiosk = async (name: string, startOrder: string) => {
   try {
-    const res = await authClient.post('/kiosk', { name, start_order });
+    const res = await authClient.post('/kiosk', { name, startOrder });
     return res.data;
   } catch (error: unknown) {
     if (error instanceof Error) {

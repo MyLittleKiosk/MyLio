@@ -1,23 +1,25 @@
 import React, { useState } from 'react';
+
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 import Select from '@/components/common/Select';
+import CompleteModal from '@/components/common/CompleteModal';
+
 import useModalStore from '@/stores/useModalStore';
-import { KioskType } from '@/types/kiosk';
+import { useAddKiosk } from '@/service/queries/kiosk';
 
-interface AddKioskModalProps {
-  initialData?: KioskType;
-  onSave: () => void;
-}
+const AddKioskModal = () => {
+  const [kioskName, setKioskName] = useState('');
+  const [groupName, setGroupName] = useState('');
+  const [status, setStatus] = useState('활성화');
 
-const AddKioskModal = ({ initialData, onSave }: AddKioskModalProps) => {
-  const [kioskName, setKioskName] = useState(initialData?.name || '');
-  const [groupName, setGroupName] = useState(initialData?.startOrder || '');
-  const [status, setStatus] = useState(
-    initialData?.isActivate ? '활성화' : '비활성화'
-  );
+  const [groupNameError, setGroupNameError] = useState({
+    error: false,
+    message: '',
+  });
 
-  const { closeModal } = useModalStore();
+  const { openModal, closeModal } = useModalStore();
+  const { mutate: addKiosk } = useAddKiosk();
 
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
     setStatus(e.target.value);
@@ -26,15 +28,41 @@ const AddKioskModal = ({ initialData, onSave }: AddKioskModalProps) => {
   function handleGroupNameChange(value: string) {
     if (/^[A-Z]$/.test(value) || value === '') {
       setGroupName(value);
+      setGroupNameError({
+        error: false,
+        message: '',
+      });
+    } else {
+      setGroupNameError({
+        error: true,
+        message: '그룹명은 "대문자 + 한 글자"로 입력해주세요.',
+      });
     }
+  }
+
+  function handleSave() {
+    addKiosk(
+      { name: kioskName, startOrder: groupName },
+      {
+        onSuccess: () => {
+          openModal(
+            <CompleteModal
+              title='등록 성공'
+              description='키오스크 등록에 성공했습니다.'
+              buttonText='닫기'
+            />
+          );
+        },
+      }
+    );
   }
 
   return (
     <div className='w-[420px] bg-white rounded-xl p-8 flex flex-col gap-6'>
       <div>
-        <h2 className='text-xl font-preBold mb-1'>키오스크 수정</h2>
+        <h2 className='text-xl font-preBold mb-1'>키오스크 등록</h2>
         <p className='text-sm text-gray-500 mb-4'>
-          키오스크 정보를 수정합니다.
+          키오스크 정보를 등록합니다.
         </p>
         <div className='flex flex-col gap-4'>
           <Input
@@ -45,6 +73,7 @@ const AddKioskModal = ({ initialData, onSave }: AddKioskModalProps) => {
             inputValue={kioskName}
             onChange={(e) => setKioskName(e.target.value)}
           />
+
           <Input
             inputId='groupName'
             label='그룹명 (A-Z)'
@@ -52,6 +81,8 @@ const AddKioskModal = ({ initialData, onSave }: AddKioskModalProps) => {
             inputType='text'
             inputValue={groupName}
             onChange={(e) => handleGroupNameChange(e.target.value)}
+            error={groupNameError.error}
+            errorMessage={groupNameError.message}
           />
           <label className='flex gap-4 items-center w-full'>
             <span className='min-w-[80px] max-w-[100px] text-md font-preSemiBold whitespace-nowrap'>
@@ -71,7 +102,7 @@ const AddKioskModal = ({ initialData, onSave }: AddKioskModalProps) => {
       </div>
       <div className='flex justify-end gap-2 mt-4'>
         <Button buttonType='button' text='취소' cancel onClick={closeModal} />
-        <Button buttonType='button' text='저장' onClick={onSave} />
+        <Button buttonType='button' text='저장' onClick={handleSave} />
       </div>
     </div>
   );

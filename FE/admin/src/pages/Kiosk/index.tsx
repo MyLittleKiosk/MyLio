@@ -13,7 +13,7 @@ import { KIOSK_COLUMNS, KIOSK_LIST } from '@/datas/kioskList';
 import useModalStore from '@/stores/useModalStore';
 
 const Kiosk = () => {
-  const { openModal, closeModal } = useModalStore();
+  const { openModal } = useModalStore();
   const [searchValue, setSearchValue] = useState('');
   const [selected, setSelected] = useState('');
 
@@ -50,10 +50,10 @@ const Kiosk = () => {
         </div>
         <Button
           buttonType='button'
-          text='키오스크 추가'
+          text='키오스크 등록'
           icon={<IconAdd fillColor='white' />}
           onClick={() => {
-            openModal(<AddKioskModal onSave={() => closeModal()} />);
+            openModal(<AddKioskModal />);
           }}
           className='w-[11%] items-center justify-center'
         />
@@ -63,10 +63,8 @@ const Kiosk = () => {
         description='총 6개의 키오스크가 있습니다.'
         columns={KIOSK_COLUMNS}
         data={KIOSK_LIST.content}
-        onEdit={(row) => {
-          openModal(
-            <AddKioskModal initialData={row} onSave={() => closeModal()} />
-          );
+        onEdit={() => {
+          openModal(<AddKioskModal />);
         }}
         onDelete={(row) => {
           alert(row.kioskId);

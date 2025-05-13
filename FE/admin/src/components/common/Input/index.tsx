@@ -9,6 +9,7 @@ interface InputProps {
   className?: string;
   inputClassName?: string;
   error?: boolean;
+  errorMessage?: string;
   disabled?: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -24,22 +25,30 @@ const Input = ({
   className,
   inputClassName,
   error = false,
+  errorMessage,
   disabled = false,
   onKeyDown,
 }: InputProps) => {
   const inputElement = (
-    <input
-      id={inputId}
-      placeholder={placeholder}
-      type={inputType}
-      value={inputValue}
-      onChange={onChange}
-      className={`${
-        error ? 'border-2 border-error' : 'border border-subContent'
-      } rounded-md p-2 font-preRegular h-[40px] box-border ${inputClassName || 'w-full'}`}
-      disabled={disabled}
-      onKeyDown={onKeyDown}
-    />
+    <div>
+      <input
+        id={inputId}
+        placeholder={placeholder}
+        type={inputType}
+        value={inputValue}
+        onChange={onChange}
+        className={`${
+          error ? 'border-2 border-error' : 'border border-subContent'
+        } rounded-md p-2 font-preRegular h-[40px] box-border ${inputClassName || 'w-full'}`}
+        disabled={disabled}
+        onKeyDown={onKeyDown}
+      />
+      {error && (
+        <span className='text-error text-sm font-preMedium'>
+          {errorMessage}
+        </span>
+      )}
+    </div>
   );
 
   return (
