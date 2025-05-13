@@ -47,7 +47,7 @@ public class NutritionService {
     }
 
     @Transactional
-    public void nutritionInfoAdd(Integer storeId, Integer menuId, NutritionValuePostRequestDto dto){
+    public void nutritionInfoAdd(Integer storeId, Integer menuId, NutritionValuePostRequestDto postRequestDto){
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(()-> new CustomException(ErrorCode.STORE_NOT_FOUND, "storeId", storeId));
 
@@ -59,10 +59,10 @@ public class NutritionService {
                     .addParameter("storeId", storeId);
         }
 
-        NutritionTemplate nutritionTemplate = nutritionTemplateRepository.findById(dto.getNutritionTemplateId())
-                .orElseThrow(() -> new CustomException(ErrorCode.NUTRITION_TEMPLATE_NOT_FOUND, "nutritionTemplateId", dto.getNutritionTemplateId()));
+        NutritionTemplate nutritionTemplate = nutritionTemplateRepository.findById(postRequestDto.getNutritionTemplateId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NUTRITION_TEMPLATE_NOT_FOUND, "nutritionTemplateId", postRequestDto.getNutritionTemplateId()));
 
-        NutritionValue nutritionValue = dto.toEntity(store, menu, nutritionTemplate);
+        NutritionValue nutritionValue = postRequestDto.toEntity(store, menu, nutritionTemplate);
         nutritionRepository.save(nutritionValue);
 
     }

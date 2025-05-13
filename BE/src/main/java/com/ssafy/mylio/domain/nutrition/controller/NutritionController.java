@@ -43,9 +43,9 @@ public class NutritionController {
     public ResponseEntity<CommonResponse<Void>> nutritionAdd(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("menu_id") Integer menuId,
-            @RequestBody NutritionValuePostRequestDto dto) {
+            @RequestBody NutritionValuePostRequestDto postRequestDto) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
-        nutritionService.nutritionInfoAdd(storeId, menuId, dto);
+        nutritionService.nutritionInfoAdd(storeId, menuId, postRequestDto);
         return CommonResponse.ok();
     }
 
