@@ -22,6 +22,7 @@ const MenuForm = () => {
     menuAddData,
     selectedCategory,
     tagValueKR,
+    tagValueEN,
     nutritionValue,
     selectedIngredientList,
     selectedNutrientList,
@@ -30,6 +31,7 @@ const MenuForm = () => {
     selectedOptions,
     imagePreview,
     setMenuAddData,
+    setTagValueEN,
     handleTagAdd,
     handleTagDelete,
     handleCategoryChange,
@@ -55,6 +57,11 @@ const MenuForm = () => {
   async function translateName() {
     const translatedValue = await translator(menuAddData.nameKr);
     setMenuAddData({ ...menuAddData, nameEn: translatedValue });
+  }
+
+  async function translateTag() {
+    const translatedValue = await translator(tagValueKR);
+    setTagValueEN(translatedValue);
   }
 
   if (!options || isLoading) {
@@ -128,10 +135,10 @@ const MenuForm = () => {
       <div className='flex flex-col gap-2'>
         <div className='flex gap-2'>
           <Input
-            inputId='태그'
+            inputId='태그한글명'
             placeholder='달달 혹은 신메뉴'
             inputType='text'
-            label='태그'
+            label='태그 한글명'
             inputValue={tagValueKR}
             onChange={(e) => handleTagInputChange('KR', e.target.value)}
             onKeyDown={(e) => {
@@ -140,6 +147,27 @@ const MenuForm = () => {
               }
             }}
           />
+          <Input
+            inputId='태그영문명'
+            placeholder='sweet or new menu'
+            inputType='text'
+            inputValue={tagValueEN}
+            onChange={(e) => handleTagInputChange('EN', e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleTagAdd();
+              }
+            }}
+          />
+
+          <Button
+            buttonType='button'
+            text='번역하기'
+            onClick={() => {
+              translateTag();
+            }}
+          />
+
           <Button
             buttonType='button'
             text='추가'

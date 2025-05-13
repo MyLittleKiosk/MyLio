@@ -34,6 +34,7 @@ interface UseMenuAddReturn {
   imageFile: File | null;
   imagePreview: string | null;
   setNutritionValue: (value: number) => void;
+  setTagValueEN: (value: string) => void;
   handleCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleTagInputChange: (type: 'KR' | 'EN', value: string) => void;
   handleTagAdd: () => void;
@@ -52,6 +53,7 @@ interface UseMenuAddReturn {
   updateOptionInfo: () => void;
   resetForm: () => void;
   setMenuAddData: (data: MenuAdd) => void;
+  checkValidation: () => boolean;
 }
 
 const initialMenuData: MenuAdd = {
@@ -182,7 +184,7 @@ export const useMenuAdd = (): UseMenuAddReturn => {
   }
 
   const handleTagAdd = () => {
-    if (tagValueKR === '') {
+    if (tagValueKR === '' || tagValueEN === '') {
       alert('태그명을 정확하게 입력해주세요.');
       return;
     }
@@ -361,6 +363,42 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     setImagePreview(null);
   };
 
+  function checkValidation() {
+    if (menuAddData.nameKr === '') {
+      return false;
+    }
+
+    if (menuAddData.description === '') {
+      return false;
+    }
+
+    if (menuAddData.price === 0) {
+      return false;
+    }
+
+    if (selectedCategory === null) {
+      return false;
+    }
+
+    if (selectedIngredientList.length === 0) {
+      return false;
+    }
+
+    if (selectedNutrientList.length === 0) {
+      return false;
+    }
+
+    if (selectedOptions.length === 0) {
+      return false;
+    }
+
+    if (imageFile === null) {
+      return false;
+    }
+
+    return true;
+  }
+
   return {
     menuAddData,
     selectedCategory,
@@ -375,6 +413,7 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     imageFile,
     imagePreview,
     setMenuAddData,
+    setTagValueEN,
     setNutritionValue,
     handleCategoryChange,
     handleTagInputChange,
@@ -393,5 +432,6 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     clearImage,
     updateOptionInfo,
     resetForm,
+    checkValidation,
   };
 };

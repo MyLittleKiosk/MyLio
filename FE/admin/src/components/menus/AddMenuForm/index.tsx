@@ -29,13 +29,18 @@ const AddMenuFormContent = ({
 }: {
   setIsAddMenuClicked: (value: boolean) => void;
 }) => {
-  const { menuAddData, imageFile } = useMenuFormContext();
+  const { menuAddData, imageFile, checkValidation } = useMenuFormContext();
   const { openModal } = useModalStore();
 
   const { mutate: addMenu } = useAddMenu();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    if (!checkValidation()) {
+      alert('모든 항목을 입력해주세요.');
+      return;
+    }
 
     console.log('menuAddData', menuAddData);
     console.log('imageFile', imageFile);
