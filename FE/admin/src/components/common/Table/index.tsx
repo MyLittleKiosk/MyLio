@@ -2,7 +2,9 @@ import IconEdit from '@/assets/icons/IconEdit';
 import IconTrashCan from '@/assets/icons/IconTrashCan';
 
 import { Column, TableProps } from '@/types/tableProps';
+import { formatDate } from '@/utils/formatDate';
 import formatMoney from '@/utils/formatMoney';
+
 const Table = <T extends object>({
   title,
   description,
@@ -76,6 +78,8 @@ const Table = <T extends object>({
         );
       case 'password':
         return '********';
+      case 'orderedAt':
+        return formatDate(String(row[column.accessor as keyof T]));
       default:
         return String(row[column.accessor as keyof T]);
     }
