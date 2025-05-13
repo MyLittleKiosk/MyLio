@@ -83,6 +83,8 @@ services:
       dockerfile: Dockerfile
     image: ${VOICE_IMAGE_NAME}
     container_name: ${VOICE_CONTAINER_NAME}
+    secrets:
+      - gcp-tts-key
     environment:
       CLOVA_API_INVOKE_URL: ${CLOVA_API_INVOKE_URL}
       CLOVA_API_KEY_ID: ${CLOVA_API_KEY_ID}
@@ -90,9 +92,8 @@ services:
       GOOGLE_TTS_API_URL: ${GOOGLE_TTS_API_URL}
       GOOGLE_TTS_API_SECRET: ${GOOGLE_TTS_API_SECRET}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
-      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/gcp-tts-key
-    # secrets:
-    #   - gcp-tts-key
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/gcp-tts-key.json
+    
 
     ports:
       - "${VOICE_PORT}:${VOICE_CONTAINER_PORT}"
@@ -172,9 +173,9 @@ services:
     networks:
       - app-network
 
-# secrets:
-#   gcp-tts-key:
-#     file: ./secrets/gcp-tts-key.json
+secrets:
+  gcp-tts-key:
+    file: ./secrets/gcp-tts-key.json
 
 networks:
   app-network:
