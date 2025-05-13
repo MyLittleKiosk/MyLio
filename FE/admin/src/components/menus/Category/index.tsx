@@ -3,6 +3,8 @@ import IconAdd from '@/assets/icons/IconAdd';
 import Button from '@/components/common/Button';
 import Table from '@/components/common/Table';
 import AddCategoryModal from '@/components/menus/AddCategoryModal';
+import EditCategoryModal from '@/components/menus/EditCategoryModal';
+import DeleteCategoryModal from '@/components/menus/DeleteCategoryModal';
 
 import { CategoryType } from '@/types/categories';
 import { NavItemType } from '@/types/menus';
@@ -40,9 +42,15 @@ const Category = ({ selectedNav }: { selectedNav: NavItemType }) => {
       </div>
       <Table<CategoryType>
         title='카테고리 목록'
-        description={`총 6개의 카테고리가 있습니다.`}
+        description={`총 ${categoryList.length}개의 카테고리가 있습니다.`}
         columns={selectedNav.columns as Column<CategoryType>[]}
         data={categoryList as CategoryType[]}
+        onEdit={(row) => {
+          openModal(<EditCategoryModal row={row} />);
+        }}
+        onDelete={(row) => {
+          openModal(<DeleteCategoryModal row={row} />);
+        }}
       />
     </div>
   );

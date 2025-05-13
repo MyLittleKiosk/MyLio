@@ -63,6 +63,54 @@ export const handlers = [
     return HttpResponse.json(OPTION_LIST);
   }),
 
+  http.post(`${baseUrl}/option`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.patch(`${baseUrl}/option/:optionId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.delete(`${baseUrl}/option/:optionId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.post(`${baseUrl}/option_detail/:optionId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.patch(`${baseUrl}/option_detail/:optionDetailId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.delete(`${baseUrl}/option_detail/:optionDetailId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
   http.get(`${baseUrl}/accounts/role`, () => {
     return HttpResponse.json(userRole);
   }),
@@ -105,6 +153,22 @@ export const handlers = [
 
   http.get(`${baseUrl}/category?pageable:pageable`, () => {
     return HttpResponse.json(CATEGORY_LIST);
+  }),
+
+  http.patch(`${baseUrl}/category/:categoryId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.delete(`${baseUrl}/category/:categoryId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
   }),
 
   http.get(`${baseUrl}/account?pageable=1`, () => {

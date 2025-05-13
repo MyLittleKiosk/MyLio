@@ -45,6 +45,7 @@ const Table = <T extends object>({
       case 'edit':
         return (
           <button
+            id='edit'
             className='p-1 hover:bg-gray-100 rounded-md'
             onClick={() => onEdit?.(row)}
           >
@@ -54,6 +55,7 @@ const Table = <T extends object>({
       case 'delete':
         return (
           <button
+            id='delete'
             className='p-1 hover:bg-gray-100 rounded-md'
             onClick={() => onDelete?.(row)}
           >

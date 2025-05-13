@@ -3,8 +3,8 @@ import axios from 'axios';
 
 // Clova API 클라이언트 설정
 const baseUrl = import.meta.env.VITE_PUBLIC_VOICE_API_URL;
-
-const clovaClient = axios.create({
+// const baseUrl = 'https://localhost:8000';
+const voiceClient = axios.create({
   baseURL: baseUrl,
 });
 
@@ -27,9 +27,29 @@ export const sendAudioToClova = async (
     formData.append('file', audioBlob, 'recording.wav');
 
     // Clova API 엔드포인트로 요청 전송
-    const response = await clovaClient.post('/clova/stt', formData, {
+    const response = await voiceClient.post('/clova/stt', formData, {
       timeout: 30000,
     });
+
+    return response.data;
+  } catch (error) {
+    console.error('FastAPI 백엔드 요청 중 오류 발생:', error);
+    throw error;
+  }
+};
+
+export const gcpTts = async (text: string): Promise<Blob> => {
+  try {
+    const formData = new FormData();
+    formData.append('text', text);
+
+    const response = await voiceClient.post('/google/tts', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      responseType: 'blob', // mp3 받을 거면 blob으로
+    });
+    console.log('response:', response);
 
     return response.data;
   } catch (error) {

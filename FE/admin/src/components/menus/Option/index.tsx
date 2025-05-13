@@ -3,13 +3,15 @@ import IconAdd from '@/assets/icons/IconAdd';
 import Button from '@/components/common/Button';
 import Table from '@/components/common/Table';
 import AddOptionGroupModal from '@/components/menus/AddOptionGroupModal';
+import EditOptionModal from '@/components/menus/EditOptionModal';
+import DeleteOptionModal from '@/components/menus/DeleteOptionModal';
 
 import { NavItemType } from '@/types/menus';
 import { OptionGroup } from '@/types/options';
 import { Column } from '@/types/tableProps';
 
 import useModalStore from '@/stores/useModalStore';
-import useGetOptions from '@/service/queries/option';
+import { useGetOptions } from '@/service/queries/option';
 
 const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
   const { openModal } = useModalStore();
@@ -26,7 +28,7 @@ const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
         <h3 className='text-lg font-preMedium'>옵션 관리</h3>
         <Button
           buttonType='button'
-          text='옵션그룹 추가'
+          text='옵션 그룹 추가'
           icon={<IconAdd fillColor='white' />}
           onClick={() => {
             openModal(<AddOptionGroupModal />);
@@ -36,9 +38,15 @@ const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
       </div>
       <Table<OptionGroup>
         title='옵션 목록'
-        description={`총 6개의 옵션이 있습니다.`}
+        description={`총 ${options.length}개의 옵션이 있습니다.`}
         columns={selectedNav.columns as Column<OptionGroup>[]}
         data={options}
+        onEdit={(row) => {
+          openModal(<EditOptionModal row={row} />, 'lg');
+        }}
+        onDelete={(row) => {
+          openModal(<DeleteOptionModal row={row} />);
+        }}
       />
     </div>
   );

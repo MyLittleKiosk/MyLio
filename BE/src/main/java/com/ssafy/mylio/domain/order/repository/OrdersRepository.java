@@ -25,4 +25,20 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
             @Param("start")   LocalDateTime start,
             @Param("end")     LocalDateTime end
     );
+
+    @Query("""
+        SELECT COALESCE(SUM(o.totalPrice), 0) 
+        FROM Orders o 
+        WHERE o.store.id = :storeId 
+        AND DATE(o.createdAt) = CURRENT_DATE
+    """)
+    Integer getTodayTotalSales(@Param("storeId") Integer storeId);
+
+    @Query("""
+        SELECT COUNT(o) 
+        FROM Orders o 
+        WHERE o.store.id = :storeId 
+        AND DATE(o.createdAt) = CURRENT_DATE
+    """)
+    Integer getTodayOrderCount(@Param("storeId") Integer storeId);
 }

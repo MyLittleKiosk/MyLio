@@ -3,18 +3,24 @@ import React, { useState } from 'react';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import ModalHeader from '@/components/common/Modal/ModalHeader';
+import CompleteModal from '@/components/common/CompleteModal';
 
 import useModalStore from '@/stores/useModalStore';
 import translator from '@/utils/translator';
 
-import { useAddCategory } from '@/service/queries/category';
+import { useEditCategory } from '@/service/queries/category';
+import { CategoryType } from '@/types/categories';
 
-const AddCategoryModal = () => {
-  const { closeModal } = useModalStore();
-  const { mutate } = useAddCategory();
+interface Props {
+  row: CategoryType;
+}
 
-  const [categoryValueKr, setCategoryValueKr] = useState('');
-  const [categoryValueEn, setCategoryValueEn] = useState('');
+const EditCategoryModal = ({ row }: Props) => {
+  const { closeModal, openModal } = useModalStore();
+  const { mutate } = useEditCategory();
+
+  const [categoryValueKr, setCategoryValueKr] = useState(row.nameKr);
+  const [categoryValueEn, setCategoryValueEn] = useState(row.nameEn);
 
   async function translateCategoryValue() {
     const translatedValue = await translator(categoryValueKr);
@@ -23,16 +29,31 @@ const AddCategoryModal = () => {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    mutate({ nameKr: categoryValueKr, nameEn: categoryValueEn });
-
-    closeModal();
+    mutate(
+      {
+        categoryId: row.categoryId,
+        nameKr: categoryValueKr,
+        nameEn: categoryValueEn,
+      },
+      {
+        onSuccess: () => {
+          openModal(
+            <CompleteModal
+              title='수정 완료'
+              description='카테고리 수정이 완료되었습니다.'
+              buttonText='확인'
+            />
+          );
+        },
+      }
+    );
   }
 
   return (
     <div className='flex flex-col gap-8 px-10 py-8'>
       <ModalHeader
-        title='새 카테고리 추가'
-        description='새로운 카테고리를 입력하세요. '
+        title='카테고리 수정'
+        description='카테고리명을 수정하세요. '
       />
 
       <form onSubmit={handleSubmit}>
@@ -76,7 +97,7 @@ const AddCategoryModal = () => {
               }}
               cancel
             />
-            <Button buttonType='submit' text='추가' buttonId='addCategory' />
+            <Button buttonType='submit' text='수정' buttonId='addCategory' />
           </div>
         </div>
       </form>
@@ -84,4 +105,4 @@ const AddCategoryModal = () => {
   );
 };
 
-export default AddCategoryModal;
+export default EditCategoryModal;
