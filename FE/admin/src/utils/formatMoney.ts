@@ -3,12 +3,10 @@
  * @param money 숫자
  * @returns 원화 형식의 문자열
  */
-const formatMoney = (money: number) => {
+export function formatMoney(money: number) {
   return money.toLocaleString('ko-KR', {
     style: 'currency',
     currency: 'KRW',
     minimumFractionDigits: 0,
   });
-};
-
-export default formatMoney;
+}

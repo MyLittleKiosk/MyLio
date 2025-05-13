@@ -3,7 +3,7 @@
  * @param str 날짜 문자열
  * @returns 변환된 날짜 문자열
  */
-export const formatDate = (date: string) => {
+export function formatDate(date: string) {
   return new Date(date).toLocaleString('ko-KR', {
     year: 'numeric',
     month: '2-digit',
@@ -13,4 +13,4 @@ export const formatDate = (date: string) => {
     hour12: false,
     timeZone: 'Asia/Seoul',
   });
-};
+}

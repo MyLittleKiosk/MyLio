@@ -3,7 +3,7 @@ import IconTrashCan from '@/assets/icons/IconTrashCan';
 
 import { Column, TableProps } from '@/types/tableProps';
 import { formatDate } from '@/utils/formatDate';
-import formatMoney from '@/utils/formatMoney';
+import { formatMoney } from '@/utils/formatMoney';
 
 const Table = <T extends object>({
   title,

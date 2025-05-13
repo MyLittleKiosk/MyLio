@@ -3,7 +3,7 @@ import {
   DUMMY_SALES_BY_YEAR_2024,
 } from '@/service/mock/dummies/statistics';
 import { useGetSalesTrend } from '@/service/queries/statistics';
-import formatSalesData from '@/utils/formatSalesData';
+import { formatSalesData } from '@/utils/formatSalesData';
 import { Line } from 'react-chartjs-2';
 import { config } from './chart.config';
 
