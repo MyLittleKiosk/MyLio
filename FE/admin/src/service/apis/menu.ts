@@ -1,7 +1,8 @@
 import { CustomError } from '@/types/apiResponse';
 import authClient from '@/service/authClient';
+import { MenuAdd } from '@/types/menus';
 
-async function getMenus(page?: number, categoryId?: number) {
+export async function getMenus(page?: number, categoryId?: number) {
   try {
     const res = await authClient.get(
       `/menus?page=${page}&categoryId=${categoryId}`
@@ -18,4 +19,20 @@ async function getMenus(page?: number, categoryId?: number) {
   }
 }
 
-export default getMenus;
+export async function addMenu(menu: MenuAdd, file?: string) {
+  try {
+    const res = await authClient.post('/menus', {
+      file: file,
+      menuData: menu,
+    });
+    return res.data;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      const customError = error as CustomError;
+      const errorMessage =
+        customError.response?.data?.error?.message || error.message;
+      throw new Error(errorMessage);
+    }
+    throw new Error('unknown error');
+  }
+}

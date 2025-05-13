@@ -12,7 +12,7 @@ import { MenuType, NavItemType } from '@/types/menus';
 import { Column } from '@/types/tableProps';
 
 import { useGetCategory } from '@/service/queries/category';
-import useGetMenus from '@/service/queries/menu';
+import { useGetMenus } from '@/service/queries/menu';
 
 const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
   const [searchValue, setSearchValue] = useState('');

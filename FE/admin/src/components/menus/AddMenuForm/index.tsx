@@ -1,6 +1,7 @@
 import React from 'react';
 
 import useModalStore from '@/stores/useModalStore';
+import { useAddMenu } from '@/service/queries/menu';
 
 import Button from '@/components/common/Button';
 import ModalHeader from '@/components/common/Modal/ModalHeader';
@@ -9,38 +10,49 @@ import {
   MenuFormProvider,
   useMenuFormContext,
 } from '@/components/menus/AddMenuForm/MenuFormContext';
+import CompleteModal from '@/components/common/CompleteModal';
 
 interface Props {
   setIsAddMenuClicked: (value: boolean) => void;
 }
 
 const AddMenuForm = ({ setIsAddMenuClicked }: Props) => {
-  const { closeModal } = useModalStore();
-
   return (
     <MenuFormProvider>
-      <AddMenuFormContent
-        setIsAddMenuClicked={setIsAddMenuClicked}
-        closeModal={closeModal}
-      />
+      <AddMenuFormContent setIsAddMenuClicked={setIsAddMenuClicked} />
     </MenuFormProvider>
   );
 };
 
 const AddMenuFormContent = ({
   setIsAddMenuClicked,
-  closeModal,
 }: {
   setIsAddMenuClicked: (value: boolean) => void;
-  closeModal: () => void;
 }) => {
   const { menuAddData } = useMenuFormContext();
+  const { openModal } = useModalStore();
+
+  const { mutate: addMenu } = useAddMenu();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log('menuAddData', menuAddData);
     // API 호출
-    closeModal();
+    addMenu(
+      { menu: menuAddData, file: '' },
+      {
+        onSuccess: () => {
+          openModal(
+            <CompleteModal
+              title='메뉴 추가 성공'
+              description='메뉴가 추가되었습니다.'
+              buttonText='확인'
+            />
+          );
+          setIsAddMenuClicked(false);
+        },
+      }
+    );
   }
 
   return (
