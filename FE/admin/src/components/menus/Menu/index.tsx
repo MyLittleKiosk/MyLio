@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
 
-import IconAdd from '@/assets/icons/IconAdd';
-
-import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
-import AddMenuModal from '@/components/menus/AddMenuModal';
 
 import STORE_LIST from '@/datas/storeList';
 
@@ -15,14 +11,10 @@ import { StoreType } from '@/types/stores';
 import { MenuType, NavItemType } from '@/types/menus';
 import { Column } from '@/types/tableProps';
 
-import useModalStore from '@/stores/useModalStore';
-
 import { useGetCategory } from '@/service/queries/category';
 import useGetMenus from '@/service/queries/menu';
 
 const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
-  const { openModal } = useModalStore();
-
   const [searchValue, setSearchValue] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(
     null
@@ -82,15 +74,6 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
           className='w-[11%]'
           getOptionLabel={(option) => option.storeName}
           getOptionValue={(option) => option.storeName}
-        />
-        <Button
-          buttonType='button'
-          text='메뉴 추가'
-          icon={<IconAdd fillColor='white' />}
-          onClick={() => {
-            openModal(<AddMenuModal />);
-          }}
-          className='w-[11%] items-center justify-center'
         />
       </div>
       <Table<MenuType>
