@@ -1,6 +1,7 @@
 package com.ssafy.mylio.domain.nutrition.service;
 
 import com.ssafy.mylio.domain.nutrition.dto.request.NutritionTemplateRequestDto;
+import com.ssafy.mylio.domain.nutrition.dto.request.NutritionTemplateUpdateRequestDto;
 import com.ssafy.mylio.domain.nutrition.dto.response.NutritionTemplateResponseDto;
 import com.ssafy.mylio.domain.nutrition.entity.NutritionTemplate;
 import com.ssafy.mylio.domain.nutrition.repository.NutritionTemplateRepository;
@@ -44,6 +45,22 @@ public class NutritionTemplateService {
         // 없다면 영양성분 등록
         NutritionTemplate nutritionTemplate = dto.toEntity();
         nutritionTemplateRepository.save(nutritionTemplate);
+    }
+
+    @Transactional
+    public void updateNutritionTemplate(String userType, NutritionTemplateUpdateRequestDto updateRequestDto){
+        // 관리자인지 검증
+        validateSuperAdmin(userType);
+
+        // 영양성분 조회
+        NutritionTemplate nutritionTemplate = nutritionTemplateRepository.findById(updateRequestDto.getNutritionTemplateId())
+                .orElseThrow(()-> new CustomException(ErrorCode.NUTRITION_TEMPLATE_NOT_FOUND,"nutritionId", updateRequestDto.getNutritionTemplateId()));
+
+        // 영양성분 업데이트
+        nutritionTemplate.update(
+                updateRequestDto.getNutritionTemplateName(),
+                updateRequestDto.getNutritionTemplateNameEn(),
+                updateRequestDto.getNutritionTemplateType());
     }
 
     private void validateSuperAdmin(String userType){
