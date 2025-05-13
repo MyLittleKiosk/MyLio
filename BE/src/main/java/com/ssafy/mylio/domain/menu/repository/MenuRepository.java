@@ -13,7 +13,12 @@ import java.util.List;
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, Integer> {
 
-    @Query("SELECT m FROM Menu m WHERE m.store.id = :storeId")
+    @Query("""
+            SELECT m
+            FROM Menu m
+            WHERE m.store.id = :storeId
+            AND m.status!=  'DELETED'
+            """)
     List<Menu> findAllByStoreId(@Param("storeId")  Integer storeId);
 
     @Query("""
