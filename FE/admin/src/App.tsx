@@ -1,6 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
 
-import MSWInit from '@/components/common/MSWInit';
 import Layout from '@/components/layout';
 
 import Accounts from '@/pages/Accounts';
@@ -30,7 +29,7 @@ function App() {
         </Route>
         <Route path='/login' element={<Login />} />
       </Routes>
-      <MSWInit />
+      {/* <MSWInit /> */}
     </QueryClientProvider>
   );
 }
