@@ -9,7 +9,7 @@ interface Props {
 }
 
 const DeleteKioskModal = ({ row }: Props) => {
-  const { openModal } = useModalStore();
+  const { openModal, closeModal } = useModalStore();
   const { mutate: deleteKiosk } = useDeleteKiosk();
 
   function handleDeleteKiosk(kioskId: number) {
@@ -34,13 +34,21 @@ const DeleteKioskModal = ({ row }: Props) => {
         &quot;{row.name}&quot; 키오스크를 삭제하시겠습니까?
       </p>
 
-      <div>
+      <div className='flex gap-4 items-center mt-4'>
+        <Button
+          buttonType='button'
+          text='취소'
+          buttonId='cancelDeleteKioskBtn'
+          onClick={closeModal}
+          className='w-full'
+          cancel
+        />
         <Button
           buttonType='button'
           text='삭제'
           buttonId='deleteKioskBtn'
           onClick={() => handleDeleteKiosk(row.kioskId)}
-          className='w-full mt-4 flex justify-center'
+          className='w-full'
         />
       </div>
     </div>
