@@ -35,8 +35,8 @@ public class OrderListController {
     @Operation(summary = "주문 목록 조회", description = "전체 주문 목록을 조회합니다")
     public ResponseEntity<CommonResponse<CustomPage<OrderListResponseDto>>> getOrderList(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestParam(name="start_date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(name="end_date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(name="startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(name="endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
           )
     {
