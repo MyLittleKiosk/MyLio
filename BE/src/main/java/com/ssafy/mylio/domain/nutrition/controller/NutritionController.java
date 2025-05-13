@@ -11,6 +11,10 @@ import com.ssafy.mylio.global.util.AuthenticationUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -49,4 +53,15 @@ public class NutritionController {
         return CommonResponse.ok();
     }
 
+    @GetMapping
+    @Operation(summary = "슈퍼관리자 영양성분 조회", description = "슈퍼관리자가 영양성분을 조회할 수 있습니다")
+    @ApiErrorCodeExamples({})
+    public ResponseEntity<CommonResponse<Page<Void>>> adminNutritionSelect(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestParam(name="keyword", required = false) String keyword,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        String userType = userPrincipal.getUserType();
+        nutritionService.nutritionTemplateSelect(userType, keyword, pageable);
+        return CommonResponse.ok();
+    }
 }

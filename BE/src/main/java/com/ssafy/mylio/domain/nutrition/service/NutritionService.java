@@ -13,6 +13,8 @@ import com.ssafy.mylio.domain.store.repository.StoreRepository;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,6 +67,11 @@ public class NutritionService {
         NutritionValue nutritionValue = dto.toEntity(store, menu, nutritionTemplate);
         nutritionRepository.save(nutritionValue);
 
+    }
+
+    public Page<Void> nutritionTemplateSelect(String userType, String keyword, Pageable pageable) {
+
+        return null;
     }
 
 }
