@@ -2,7 +2,8 @@ import { DETAIL_ORDERS } from '@/datas/orderList';
 import useModalStore from '@/stores/useModalStore';
 import { OrderType } from '@/types/orders';
 import { formatDate } from '@/utils/formatDate';
-import formatMoney from '@/utils/formatMoney';
+import { formatMoney } from '@/utils/formatMoney';
+
 interface ViewDetailOrderModalProps {
   initialData: OrderType;
 }

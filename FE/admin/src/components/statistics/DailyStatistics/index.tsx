@@ -1,5 +1,5 @@
 import { useGetStatisticsByDaily } from '@/service/queries/statistics';
-import formatMoney from '@/utils/formatMoney';
+import { formatMoney } from '@/utils/formatMoney';
 
 const DailyStatistics = () => {
   const { data, isLoading } = useGetStatisticsByDaily();
