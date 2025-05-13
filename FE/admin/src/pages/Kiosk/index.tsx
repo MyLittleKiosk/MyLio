@@ -7,13 +7,17 @@ import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
 import Modal from '@/components/common/Modal';
 import AddKioskModal from '@/components/kiosks/AddKioskModal';
+import EditKioskModal from '@/components/kiosks/EditKioskModal';
 
-import { KIOSK_COLUMNS, KIOSK_LIST } from '@/datas/kioskList';
+import { KIOSK_COLUMNS } from '@/datas/kioskList';
 
 import useModalStore from '@/stores/useModalStore';
+import { useGetKioskList } from '@/service/queries/kiosk';
 
 const Kiosk = () => {
   const { openModal } = useModalStore();
+  const { data: kioskList, isLoading } = useGetKioskList();
+
   const [searchValue, setSearchValue] = useState('');
   const [selected, setSelected] = useState('');
 
@@ -23,6 +27,10 @@ const Kiosk = () => {
 
   function handleSelectChange(e: React.ChangeEvent<HTMLSelectElement>) {
     setSelected(e.target.value);
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -60,11 +68,11 @@ const Kiosk = () => {
       </div>
       <Table
         title='키오스크 목록'
-        description='총 6개의 키오스크가 있습니다.'
+        description={`총 ${kioskList.length}개의 키오스크가 있습니다.`}
         columns={KIOSK_COLUMNS}
-        data={KIOSK_LIST.content}
-        onEdit={() => {
-          openModal(<AddKioskModal />);
+        data={kioskList}
+        onEdit={(row) => {
+          openModal(<EditKioskModal row={row} />);
         }}
         onDelete={(row) => {
           alert(row.kioskId);
