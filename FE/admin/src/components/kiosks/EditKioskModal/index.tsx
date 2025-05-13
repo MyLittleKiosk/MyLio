@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
-import Select from '@/components/common/Select';
 import CompleteModal from '@/components/common/CompleteModal';
 
 import useModalStore from '@/stores/useModalStore';
@@ -16,7 +15,6 @@ interface Props {
 const EditKioskModal = ({ row }: Props) => {
   const [kioskName, setKioskName] = useState(row.name);
   const [groupName, setGroupName] = useState(row.startOrder);
-  const [status, setStatus] = useState(row.isActivate ? '활성화' : '비활성화');
 
   const [groupNameError, setGroupNameError] = useState({
     error: false,
@@ -26,13 +24,8 @@ const EditKioskModal = ({ row }: Props) => {
   const { openModal, closeModal } = useModalStore();
   const { mutate: updateKiosk } = useUpdateKiosk();
 
-  function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    setStatus(e.target.value);
-  }
-
   function handleGroupNameChange(value: string) {
     if (/^[A-Z]$/.test(value) || value === '') {
-      setGroupName(value);
       setGroupNameError({
         error: false,
         message: '',
@@ -40,12 +33,19 @@ const EditKioskModal = ({ row }: Props) => {
     } else {
       setGroupNameError({
         error: true,
-        message: '그룹명은 "대문자 + 한 글자"로 입력해주세요.',
+        message: '알파벳 한 글자만 입력 가능합니다.',
       });
     }
+
+    setGroupName(value.toUpperCase());
   }
 
   function handleSave() {
+    if (kioskName === '' || groupName === '' || groupNameError.error) {
+      alert('올바르지 않은 키오스크명 혹은 그룹명입니다.');
+      return;
+    }
+
     updateKiosk(
       { kioskId: row.kioskId, name: kioskName, startOrder: groupName },
       {
@@ -63,7 +63,7 @@ const EditKioskModal = ({ row }: Props) => {
   }
 
   return (
-    <div className='w-[420px] bg-white rounded-xl p-8 flex flex-col gap-6'>
+    <div className='bg-white rounded-xl p-8 flex flex-col gap-6'>
       <div>
         <h2 className='text-xl font-preBold mb-1'>키오스크 정보 수정</h2>
         <p className='text-sm text-gray-500 mb-4'>
@@ -89,20 +89,6 @@ const EditKioskModal = ({ row }: Props) => {
             error={groupNameError.error}
             errorMessage={groupNameError.message}
           />
-          <label className='flex gap-4 items-center w-full'>
-            <span className='min-w-[80px] max-w-[100px] text-md font-preSemiBold whitespace-nowrap'>
-              활성화 여부
-            </span>
-            <Select
-              options={['활성화', '비활성화']}
-              selected={status}
-              onChange={handleStatusChange}
-              placeholder='전체'
-              className='w-full h-full'
-              getOptionLabel={(option) => option as string}
-              getOptionValue={(option) => option as string}
-            />
-          </label>
         </div>
       </div>
       <div className='flex justify-end gap-2 mt-4'>
