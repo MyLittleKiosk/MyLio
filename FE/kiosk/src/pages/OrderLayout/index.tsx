@@ -3,12 +3,12 @@ import Main from '@/pages/Main';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { useOrderRequest } from '@/service/queries/useOrderRequest';
+import { useOrderRequest } from '@/service/queries/user';
 import useOrderStore from '@/stores/useOrderStore';
 import { DEFAULT_COMMENT } from '@/datas/COMMENT';
-import { useLogout } from '@/service/queries/useLogout';
+import { useLogout, useRefresh } from '@/service/queries/user';
 import Footer from '@/pages/OrderLayout/Footer';
-import { useRefresh } from '@/service/queries/useRefresh';
+
 const OrderLayout = () => {
   const { pathname } = useLocation();
   const [userChat] = useState<string>('');

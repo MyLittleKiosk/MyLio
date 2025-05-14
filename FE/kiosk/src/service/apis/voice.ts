@@ -18,9 +18,9 @@ const voiceClient = axios.create({
  * @param audioBlob - 전송할 오디오 Blob 데이터
  * @returns 백엔드 API 응답 데이터
  */
-export const sendAudioToClova = async (
+export async function sendAudioToClova(
   audioBlob: Blob
-): Promise<ClovaResponse> => {
+): Promise<ClovaResponse> {
   try {
     // FormData를 사용하여 Blob 데이터 전송
     const formData = new FormData();
@@ -36,9 +36,9 @@ export const sendAudioToClova = async (
     console.error('FastAPI 백엔드 요청 중 오류 발생:', error);
     throw error;
   }
-};
+}
 
-export const gcpTts = async (text: string): Promise<Blob> => {
+export async function gcpTts(text: string): Promise<Blob> {
   try {
     const formData = new FormData();
     formData.append('text', text);
@@ -56,4 +56,4 @@ export const gcpTts = async (text: string): Promise<Blob> => {
     console.error('FastAPI 백엔드 요청 중 오류 발생:', error);
     throw error;
   }
-};
+}

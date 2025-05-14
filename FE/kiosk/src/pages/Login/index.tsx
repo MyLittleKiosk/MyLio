@@ -1,5 +1,5 @@
 import Button from '@/components/common/Button';
-import { useLogin } from '@/service/queries/useLogin';
+import { useLogin } from '@/service/queries/user';
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 const Login = () => {

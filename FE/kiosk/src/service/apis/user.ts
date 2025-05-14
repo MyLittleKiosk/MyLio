@@ -3,11 +3,11 @@ import { ApiResponse, CustomError } from '@/types/apiResponse';
 import type { User } from '@/types/user';
 import authClient from '../authClient';
 
-export const login = async (
+export async function login(
   email: string,
   password: string,
   kioskId: number
-): Promise<ApiResponse<User>> => {
+): Promise<ApiResponse<User>> {
   try {
     const response = await client.post('/auth/login/kiosk', {
       email,
@@ -24,9 +24,9 @@ export const login = async (
     }
     throw new Error('unknown error');
   }
-};
+}
 
-export const logout = async (kioskId: number): Promise<ApiResponse<void>> => {
+export async function logout(kioskId: number): Promise<ApiResponse<void>> {
   try {
     const response = await authClient.post('/auth/logout', {
       kioskId,
@@ -41,9 +41,9 @@ export const logout = async (kioskId: number): Promise<ApiResponse<void>> => {
     }
     throw new Error('unknown error');
   }
-};
+}
 
-export const refresh = async (): Promise<ApiResponse<User>> => {
+export async function refresh(): Promise<ApiResponse<User>> {
   try {
     const response = await client.post('/auth/refresh');
     return response.data;
@@ -56,4 +56,4 @@ export const refresh = async (): Promise<ApiResponse<User>> => {
     }
     throw new Error('unknown error');
   }
-};
+}
