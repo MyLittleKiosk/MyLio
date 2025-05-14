@@ -70,7 +70,10 @@ const AddMenuFormContent = ({
         description='새로운 메뉴 정보를 입력하세요. 추가 후 상세 정보를 편집할 수 있습니다.'
       />
 
-      <form onSubmit={handleSubmit} className='overflow-y-auto'>
+      <form
+        onSubmit={handleSubmit}
+        className='overflow-y-auto w-full flex flex-col items-center'
+      >
         <MenuForm />
 
         <div className='w-full mt-8 flex justify-end gap-2'>

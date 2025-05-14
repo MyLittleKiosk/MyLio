@@ -69,8 +69,8 @@ const MenuForm = () => {
   }
 
   return (
-    <div className='flex flex-col gap-4'>
-      <div className='flex gap-5 items-center'>
+    <div className='flex flex-col gap-4 items-center justify-center w-[60%]'>
+      <div className='flex gap-5 items-center w-full'>
         <Input
           id='메뉴명'
           placeholder='아이스아메리카노'
@@ -80,6 +80,7 @@ const MenuForm = () => {
           onChange={(e) =>
             setMenuAddData({ ...menuAddData, nameKr: e.target.value })
           }
+          className='w-[40%]'
         />
         <Button
           type='button'
@@ -87,6 +88,7 @@ const MenuForm = () => {
           onClick={() => {
             translateName();
           }}
+          className='w-[17%]'
         />
         <Input
           id='메뉴영문명'
@@ -97,6 +99,7 @@ const MenuForm = () => {
           onChange={(e) =>
             setMenuAddData({ ...menuAddData, nameEn: e.target.value })
           }
+          className='w-[40%]'
         />
       </div>
 
@@ -108,6 +111,7 @@ const MenuForm = () => {
         placeholder='카테고리를 선택하세요.'
         getOptionLabel={(option) => option.nameKr}
         getOptionValue={(option) => option.categoryId.toString()}
+        className='w-full'
       />
 
       <Input
@@ -121,6 +125,7 @@ const MenuForm = () => {
         onChange={(e) =>
           setMenuAddData({ ...menuAddData, price: Number(e.target.value) })
         }
+        className='w-full'
       />
 
       <Input
@@ -132,6 +137,7 @@ const MenuForm = () => {
         onChange={(e) =>
           setMenuAddData({ ...menuAddData, description: e.target.value })
         }
+        className='w-full'
       />
 
       <div className='flex flex-col gap-2'>
@@ -148,6 +154,7 @@ const MenuForm = () => {
                 handleTagAdd();
               }
             }}
+            className='w-[40%]'
           />
           <Input
             id='태그영문명'
@@ -160,6 +167,7 @@ const MenuForm = () => {
                 handleTagAdd();
               }
             }}
+            className='w-[22%]'
           />
 
           <Button
@@ -168,6 +176,7 @@ const MenuForm = () => {
             onClick={() => {
               translateTag();
             }}
+            className='w-[17%]'
           />
 
           <Button
@@ -175,6 +184,7 @@ const MenuForm = () => {
             text='추가'
             icon={<IconAdd fillColor='white' />}
             onClick={handleTagAdd}
+            className='w-[17%]'
           />
         </div>
         <div className='flex flex-wrap gap-2'>
@@ -261,7 +271,7 @@ const MenuForm = () => {
         </div>
       </div>
 
-      <div className='flex flex-col gap-2'>
+      <div className='flex flex-col gap-2 w-full'>
         <Select
           options={INGREDIENT_LIST.content}
           label='원재료'
@@ -270,21 +280,23 @@ const MenuForm = () => {
           getOptionLabel={(option) => option.nameKr}
           getOptionValue={(option) => option.ingredientId.toString()}
           onChange={handleIngredientChange}
+          className='w-full'
         />
-        <div className='flex gap-2'>
+        <div className='flex gap-2 w-full'>
           {selectedIngredientList.map((ingredient) => (
             <p
               key={ingredient}
-              className='px-2 py-1 text-sm border border-subContent rounded-full font-preLight'
+              className='px-2 py-1 text-sm border border-subContent rounded-full font-preLight cursor-pointer flex gap-1 items-center hover:bg-subContent/50'
               onClick={() => handleIngredientRemove(ingredient)}
             >
               {ingredient}
+              <IconTrashCan width={12} height={12} />
             </p>
           ))}
         </div>
       </div>
 
-      <div className='flex flex-col gap-2'>
+      <div className='flex flex-col gap-2 w-full'>
         <div className='flex gap-2'>
           <Select
             options={NUTRIENT_LIST.content}
@@ -327,19 +339,20 @@ const MenuForm = () => {
             return (
               <p
                 key={nutrient.nutrientTemplateId}
-                className='px-2 py-1 text-sm border border-subContent rounded-full font-preLight'
+                className='px-2 py-1 text-sm border border-subContent rounded-full font-preLight cursor-pointer flex gap-1 items-center hover:bg-subContent/50'
                 onClick={() =>
                   handleNutrientRemove(nutrient.nutrientTemplateId)
                 }
               >
                 {nutrient.nutrientName + ' ' + nutrient.nutrientValue}
+                <IconTrashCan width={12} height={12} />
               </p>
             );
           })}
         </div>
       </div>
 
-      <div>
+      <div className='w-full'>
         <h2 className='text-md font-preSemiBold min-w-[80px] max-w-[100px]'>
           옵션 그룹
         </h2>

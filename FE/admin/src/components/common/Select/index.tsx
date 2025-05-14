@@ -27,8 +27,7 @@ const Select = <T,>({
     <select
       className={clsx(
         'w-full rounded-md p-2 font-preRegular',
-        error ? 'border-2 border-error' : 'border border-subContent',
-        className
+        error ? 'border-2 border-error' : 'border border-subContent'
       )}
       value={selected ? getOptionValue(selected) : ''}
       {...props}
