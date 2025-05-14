@@ -1,39 +1,37 @@
-import React from 'react';
+import clsx from 'clsx';
+import React, { SelectHTMLAttributes } from 'react';
 
-interface SelectProps<T> {
-  id?: string;
+type SelectProps<T> = SelectHTMLAttributes<HTMLSelectElement> & {
   label?: string;
   options: T[];
   selected: T | null;
   placeholder: string;
   className?: string;
   error?: boolean;
-  disabled?: boolean;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   getOptionLabel: (option: T) => string;
   getOptionValue: (option: T) => string;
-}
+};
 
 const Select = <T,>({
-  id,
   options,
   label,
   selected,
   placeholder,
   className,
   error = false,
-  disabled = false,
-  onChange,
   getOptionLabel,
   getOptionValue,
+  ...props
 }: SelectProps<T>) => {
   const selectElement = (
     <select
-      id={id}
-      className={`w-full ${error ? 'border-2 border-error' : 'border border-subContent'} rounded-md p-2 font-preRegular`}
-      onChange={onChange}
+      className={clsx(
+        'w-full rounded-md p-2 font-preRegular',
+        error ? 'border-2 border-error' : 'border border-subContent',
+        className
+      )}
       value={selected ? getOptionValue(selected) : ''}
-      disabled={disabled}
+      {...props}
     >
       <option value={placeholder} className='font-preRegular'>
         {placeholder}

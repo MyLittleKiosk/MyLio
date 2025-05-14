@@ -1,46 +1,29 @@
 import clsx from 'clsx';
-import React from 'react';
-interface InputProps {
+import React, { InputHTMLAttributes } from 'react';
+
+type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
-  inputId: string;
-  placeholder: string;
-  inputType: string;
-  inputValue: string | number;
-  className?: string;
-  inputClassName?: string;
   error?: boolean;
   errorMessage?: string;
-  disabled?: boolean;
   minDate?: string;
   maxDate?: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-}
+  className?: string;
+  inputClassName?: string;
+};
 
 const Input = ({
   label,
-  inputId,
-  placeholder,
-  inputType,
-  inputValue,
-  onChange,
-  className,
   inputClassName,
   error = false,
   errorMessage,
-  disabled = false,
-  onKeyDown,
   minDate,
   maxDate,
+  className,
+  ...props
 }: InputProps) => {
   const inputElement = (
     <div className='w-full'>
       <input
-        id={inputId}
-        placeholder={placeholder}
-        type={inputType}
-        value={inputValue}
-        onChange={onChange}
         className={clsx(
           'rounded-md p-2 font-preRegular h-[40px] box-border',
           inputClassName || 'w-full',
@@ -48,10 +31,9 @@ const Input = ({
             ? 'border-2 border-error focus:ring-1 focus:ring-error focus:ring-inset focus:outline-none'
             : 'border border-subContent'
         )}
-        disabled={disabled}
-        onKeyDown={onKeyDown}
         min={minDate}
         max={maxDate}
+        {...props}
       />
       {errorMessage && (
         <span className='text-error text-sm font-preMedium'>
