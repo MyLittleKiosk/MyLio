@@ -1,5 +1,6 @@
 package com.ssafy.mylio.domain.menuIngredient.service;
 
+import com.ssafy.mylio.domain.menuIngredient.dto.request.IngredientTemplateRequestDto;
 import com.ssafy.mylio.domain.menuIngredient.dto.response.IngredientTemplateResponseDto;
 import com.ssafy.mylio.domain.menuIngredient.entity.IngredientTemplate;
 import com.ssafy.mylio.domain.menuIngredient.repository.IngredientTemplateRepository;
@@ -32,5 +33,22 @@ public class IngredientService {
         Page<IngredientTemplate> ingredientList = ingredientTemplateRepository.findAllByKeyword(keyword, pageable);
 
         return new CustomPage<>(ingredientList.map(IngredientTemplateResponseDto::of));
+    }
+
+    @Transactional
+    public void ingredientTemplateAdd(String userType, IngredientTemplateRequestDto requestDto){
+        // userType 검증 (관리자인지)
+        if(!userType.equals("SUPER")){
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS, "userType", userType);
+        }
+
+        // 등록된 원재료가 있는지 조회
+        if(ingredientTemplateRepository.existsByNameKr(requestDto.getIngredientTemplateName())){
+            throw new CustomException(ErrorCode.INGREDIENT_TEMPLATE_ALREADY_EXISTS, "name", requestDto.getIngredientTemplateName());
+        }
+
+        // 등록
+        IngredientTemplate ingredientTemplate = requestDto.toEntity();
+        ingredientTemplateRepository.save(ingredientTemplate);
     }
 }

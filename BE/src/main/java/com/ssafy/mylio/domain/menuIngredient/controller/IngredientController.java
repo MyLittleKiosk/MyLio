@@ -1,6 +1,7 @@
 package com.ssafy.mylio.domain.menuIngredient.controller;
 
 
+import com.ssafy.mylio.domain.menuIngredient.dto.request.IngredientTemplateRequestDto;
 import com.ssafy.mylio.domain.menuIngredient.dto.response.IngredientTemplateResponseDto;
 import com.ssafy.mylio.domain.menuIngredient.service.IngredientService;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
@@ -17,10 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/ingredient")
@@ -40,6 +38,17 @@ class IngredientController {
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         String userType = authenticationUtil.getCurrntUserType(userPrincipal);
         return CommonResponse.ok(ingredientService.getIngredientList(userType, keyword, pageable));
+    }
+
+    @PostMapping
+    @Operation(summary = "원재료 등록", description = "원재료를 등록할 수 있습니다")
+    @ApiErrorCodeExamples({ErrorCode.FORBIDDEN_ACCESS, ErrorCode.INGREDIENT_TEMPLATE_ALREADY_EXISTS})
+    public ResponseEntity<CommonResponse<Void>> ingredientTemplateAdd(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestBody IngredientTemplateRequestDto requestDto) {
+        String userType = authenticationUtil.getCurrntUserType(userPrincipal);
+        ingredientService.ingredientTemplateAdd(userType, requestDto);
+        return CommonResponse.ok();
     }
 
 }

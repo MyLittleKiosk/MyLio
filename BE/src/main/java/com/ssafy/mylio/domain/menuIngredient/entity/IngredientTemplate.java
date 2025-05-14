@@ -4,6 +4,7 @@ import com.ssafy.mylio.global.common.entity.BaseEntity;
 import com.ssafy.mylio.global.common.status.TrackableStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -21,6 +22,7 @@ public class IngredientTemplate extends BaseEntity {
     @Column(name = "name_en", nullable = false, length = 100)
     private String nameEn;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private TrackableStatus status = TrackableStatus.REGISTERED;
