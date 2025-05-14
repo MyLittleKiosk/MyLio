@@ -11,51 +11,6 @@ import { CATEGORY_LIST } from '@/service/mock/dummies/category';
 import INGREDIENT_LIST from '@/datas/IngredientList';
 import NUTRIENT_LIST from '@/datas/NutrientList';
 
-interface UseMenuAddReturn {
-  menuAddData: MenuAdd;
-  selectedCategory: CategoryType | null;
-  tagValueKR: string;
-  tagValueEN: string;
-  nutritionValue: number;
-  selectedIngredientList: string[];
-  selectedNutrientList: {
-    nutrientTemplateId: number;
-    nutrientName: string;
-    nutrientValue: number;
-  }[];
-  selectedIngredient: IngredientType | null;
-  selectedNutrient: NutrientType | null;
-  selectedOptions: {
-    optionId: number;
-    isSelected: boolean;
-    isRequired: boolean;
-    selectedDetails: number[];
-  }[];
-  imageFile: File | null;
-  imagePreview: string | null;
-  setNutritionValue: (value: number) => void;
-  setTagValueEN: (value: string) => void;
-  handleCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  handleTagInputChange: (type: 'KR' | 'EN', value: string) => void;
-  handleTagAdd: () => void;
-  handleTagDelete: (tagKR: string) => void;
-  handleIngredientAdd: (ingredientId: string) => void;
-  handleIngredientChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  handleIngredientRemove: (ingredient: string) => void;
-  handleNutrientAdd: (nutrientId: string, value: number) => void;
-  handleNutrientChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  handleNutrientRemove: (nutrientId: number) => void;
-  handleOptionSelect: (optionId: number) => void;
-  handleDetailSelect: (optionId: number, detailId: number) => void;
-  handleRequiredSelect: (optionId: number) => void;
-  handleImageChange: (file: File) => void;
-  clearImage: () => void;
-  updateOptionInfo: () => void;
-  resetForm: () => void;
-  setMenuAddData: (data: MenuAdd) => void;
-  checkValidation: () => boolean;
-}
-
 const initialMenuData: MenuAdd = {
   nameKr: '',
   nameEn: '',
@@ -68,7 +23,7 @@ const initialMenuData: MenuAdd = {
   optionInfo: [],
 };
 
-export const useMenuAdd = (): UseMenuAddReturn => {
+export const useMenuAdd = () => {
   const [menuAddData, setMenuAddData] = useState<MenuAdd>(initialMenuData);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -78,10 +33,18 @@ export const useMenuAdd = (): UseMenuAddReturn => {
   );
   const [tagValueKR, setTagValueKR] = useState<string>('');
   const [tagValueEN, setTagValueEN] = useState<string>('');
+
   const [nutritionValue, setNutritionValue] = useState<number>(0);
+
+  const [selectedIngredient, setSelectedIngredient] =
+    useState<IngredientType | null>(null);
   const [selectedIngredientList, setSelectedIngredientList] = useState<
-    string[]
+    IngredientType[]
   >([]);
+
+  const [selectedNutrient, setSelectedNutrient] = useState<NutrientType | null>(
+    null
+  );
   const [selectedNutrientList, setSelectedNutrientList] = useState<
     {
       nutrientTemplateId: number;
@@ -89,11 +52,7 @@ export const useMenuAdd = (): UseMenuAddReturn => {
       nutrientValue: number;
     }[]
   >([]);
-  const [selectedIngredient, setSelectedIngredient] =
-    useState<IngredientType | null>(null);
-  const [selectedNutrient, setSelectedNutrient] = useState<NutrientType | null>(
-    null
-  );
+
   const [selectedOptions, setSelectedOptions] = useState<
     {
       optionId: number;
@@ -103,7 +62,7 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     }[]
   >([]);
 
-  const handleImageChange = (file: File) => {
+  function handleImageChange(file: File) {
     setImageFile(file);
 
     // Create preview URL for the image
@@ -112,9 +71,9 @@ export const useMenuAdd = (): UseMenuAddReturn => {
       setImagePreview(e.target?.result as string);
     };
     reader.readAsDataURL(file);
-  };
+  }
 
-  const clearImage = () => {
+  function clearImage() {
     setImageFile(null);
     setImagePreview(null);
 
@@ -123,9 +82,9 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     if (fileInput) {
       fileInput.value = '';
     }
-  };
+  }
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  function handleCategoryChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const selected = CATEGORY_LIST.data.content.find(
       (category) => category.categoryId.toString() === e.target.value
     );
@@ -134,15 +93,15 @@ export const useMenuAdd = (): UseMenuAddReturn => {
       ...prev,
       categoryId: selected?.categoryId || 0,
     }));
-  };
+  }
 
-  const handleTagInputChange = (type: 'KR' | 'EN', value: string) => {
+  function handleTagInputChange(type: 'KR' | 'EN', value: string) {
     if (type === 'KR') {
       setTagValueKR(value);
     } else {
       setTagValueEN(value);
     }
-  };
+  }
 
   function handleIngredientChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const selected = INGREDIENT_LIST.content.find((ingredient) => {
@@ -154,10 +113,13 @@ export const useMenuAdd = (): UseMenuAddReturn => {
       return;
     }
 
+    console.log('메뉴 add data', menuAddData.ingredientInfo);
+    console.log('', selectedIngredientList);
+
     // 이미 선택된 원재료인지 확인
     const isDuplicate =
       menuAddData.ingredientInfo.includes(selected.ingredientId) ||
-      selectedIngredientList.includes(selected.nameKr);
+      selectedIngredientList.includes(selected);
 
     if (isDuplicate) {
       alert('이미 선택된 원재료입니다.');
@@ -169,11 +131,24 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     // 원재료 ID 추가
     setMenuAddData((prev) => ({
       ...prev,
-      ingredientInfo: [...prev.ingredientInfo, selected.ingredientId],
+      ingredientInfo: [...prev.ingredientInfo, Number(selected.ingredientId)],
     }));
 
     // 원재료 이름 추가
-    setSelectedIngredientList((prev) => [...prev, selected.nameKr]);
+    setSelectedIngredientList((prev) => [...prev, selected]);
+  }
+
+  function handleIngredientRemove(ingredient: IngredientType) {
+    setMenuAddData((prev) => ({
+      ...prev,
+      ingredientInfo: prev.ingredientInfo.filter(
+        (item) => item !== ingredient.ingredientId
+      ),
+    }));
+
+    setSelectedIngredientList((prev) =>
+      prev.filter((item) => item.ingredientId !== ingredient.ingredientId)
+    );
   }
 
   function handleNutrientChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -220,19 +195,6 @@ export const useMenuAdd = (): UseMenuAddReturn => {
       tags: prev.tags.filter((tag) => tag.tagKr !== tagKR),
     }));
   }
-
-  const handleIngredientAdd = (ingredientId: string) => {
-    setMenuAddData((prev) => ({
-      ...prev,
-      ingredientInfo: [...prev.ingredientInfo, Number(ingredientId)],
-    }));
-  };
-
-  const handleIngredientRemove = (ingredient: string) => {
-    setSelectedIngredientList((prev) =>
-      prev.filter((item) => item !== ingredient)
-    );
-  };
 
   const handleNutrientAdd = (nutrientId: string, value: number) => {
     if (!nutrientId || !value) {
@@ -452,7 +414,6 @@ export const useMenuAdd = (): UseMenuAddReturn => {
     handleTagDelete,
     handleIngredientChange,
     handleNutrientChange,
-    handleIngredientAdd,
     handleIngredientRemove,
     handleNutrientAdd,
     handleNutrientRemove,

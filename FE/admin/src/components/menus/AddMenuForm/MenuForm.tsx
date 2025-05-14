@@ -36,10 +36,10 @@ const MenuForm = () => {
     handleTagDelete,
     handleCategoryChange,
     handleTagInputChange,
+    handleIngredientChange,
     handleIngredientRemove,
     handleNutrientAdd,
     handleNutrientRemove,
-    handleIngredientChange,
     handleNutrientChange,
     setNutritionValue,
     handleImageChange,
@@ -285,11 +285,11 @@ const MenuForm = () => {
         <div className='flex gap-2 w-full'>
           {selectedIngredientList.map((ingredient) => (
             <p
-              key={ingredient}
+              key={ingredient.ingredientId}
               className='px-2 py-1 text-sm border border-subContent rounded-full font-preLight cursor-pointer flex gap-1 items-center hover:bg-subContent/50'
               onClick={() => handleIngredientRemove(ingredient)}
             >
-              {ingredient}
+              {ingredient.nameKr}
               <IconTrashCan width={12} height={12} />
             </p>
           ))}
