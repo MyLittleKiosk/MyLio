@@ -1,7 +1,7 @@
 import { PaginationResponse, Response } from '@/types/apiResponse';
-import { MenuType } from '@/types/menus';
+import { MenuResponseType } from '@/types/menus';
 
-const MENU_LIST: Response<PaginationResponse<MenuType>> = {
+const MENU_LIST: Response<PaginationResponse<MenuResponseType>> = {
   success: true,
   data: {
     content: [

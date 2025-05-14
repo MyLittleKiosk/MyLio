@@ -16,6 +16,19 @@ export type MenuType = {
   tags: string[];
 };
 
+export type MenuResponseType = {
+  menuId: number;
+  imageUrl: string;
+  nameKr: string;
+  nameEn: string;
+  category: string;
+  storeName: string;
+  description: string;
+  price: number;
+  status: string;
+  tags: string[];
+};
+
 export interface MenuAdd {
   nameKr: string;
   nameEn: string;
