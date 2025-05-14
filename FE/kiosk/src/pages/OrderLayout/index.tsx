@@ -3,7 +3,7 @@ import Main from '@/pages/Main';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { useOrderRequest } from '@/service/queries/user';
+import { useOrderRequest } from '@/service/queries/order';
 import useOrderStore from '@/stores/useOrderStore';
 import { DEFAULT_COMMENT } from '@/datas/COMMENT';
 import { useLogout, useRefresh } from '@/service/queries/user';

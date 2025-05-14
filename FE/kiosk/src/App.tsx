@@ -8,6 +8,7 @@ import Order from '@/pages/Order';
 import OrderLayout from '@/pages/OrderLayout';
 import Pay from '@/pages/Pay';
 import SelectPay from '@/pages/SelectPay';
+import Success from '@/pages/Pay/Success';
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -29,6 +30,7 @@ function App() {
             <Route path='select-pay' element={<SelectPay />} />
             <Route path='confirm' element={<Confirm />} />
             <Route path='detail' element={<Detail />} />
+            <Route path='success' element={<Success />} />
           </Route>
         </Routes>
       </QueryClientProvider>
