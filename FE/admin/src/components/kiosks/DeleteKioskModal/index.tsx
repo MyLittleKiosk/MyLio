@@ -36,17 +36,17 @@ const DeleteKioskModal = ({ row }: Props) => {
 
       <div className='flex gap-4 items-center mt-4'>
         <Button
-          buttonType='button'
+          type='button'
           text='취소'
-          buttonId='cancelDeleteKioskBtn'
+          id='cancelDeleteKioskBtn'
           onClick={closeModal}
           className='w-full'
           cancel
         />
         <Button
-          buttonType='button'
+          type='button'
           text='삭제'
-          buttonId='deleteKioskBtn'
+          id='deleteKioskBtn'
           onClick={() => handleDeleteKiosk(row.kioskId)}
           className='w-full'
         />

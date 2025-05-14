@@ -60,16 +60,16 @@ const EditCategoryModal = ({ row }: Props) => {
         <div className='w-full flex flex-col gap-2 '>
           <div className='w-full flex items-center gap-2'>
             <Input
-              inputId='categoryAdd'
+              id='categoryAdd'
               label='카테고리명'
-              inputType='text'
+              type='text'
               onChange={(e) => setCategoryValueKr(e.target.value)}
-              inputValue={categoryValueKr}
+              value={categoryValueKr}
               placeholder='카테고리명을 입력하세요.'
             />
 
             <Button
-              buttonType='button'
+              type='button'
               text='번역하기'
               onClick={() => {
                 translateCategoryValue();
@@ -80,9 +80,9 @@ const EditCategoryModal = ({ row }: Props) => {
           <div className='w-full flex items-center gap-2'>
             <span className='font-preSemiBold text-md'>카테고리 영문명</span>
             <Input
-              inputId='engCategory'
-              inputType='text'
-              inputValue={categoryValueEn}
+              id='engCategory'
+              type='text'
+              value={categoryValueEn}
               placeholder='번역 대기 중'
               onChange={(e) => setCategoryValueEn(e.target.value)}
             />
@@ -90,14 +90,14 @@ const EditCategoryModal = ({ row }: Props) => {
 
           <div className='flex justify-end gap-2'>
             <Button
-              buttonType='button'
+              type='button'
               text='취소'
               onClick={() => {
                 closeModal();
               }}
               cancel
             />
-            <Button buttonType='submit' text='수정' buttonId='addCategory' />
+            <Button type='submit' text='수정' id='addCategory' />
           </div>
         </div>
       </form>

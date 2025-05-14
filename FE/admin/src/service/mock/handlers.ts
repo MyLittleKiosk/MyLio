@@ -60,6 +60,14 @@ export const handlers = [
     return HttpResponse.json(MENU_LIST);
   }),
 
+  http.post(`${baseUrl}/menus`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
   http.get(`${baseUrl}/option`, () => {
     return HttpResponse.json(OPTION_LIST);
   }),

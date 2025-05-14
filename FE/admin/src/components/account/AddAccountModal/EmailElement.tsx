@@ -24,11 +24,11 @@ const EmailElement = ({
     <>
       <div className='flex items-center gap-2'>
         <Input
-          inputId='email-local-part-input'
+          id='email-local-part-input'
           label='이메일'
           placeholder='이메일 아이디를 입력하세요.'
-          inputType='text'
-          inputValue={emailId}
+          type='text'
+          value={emailId}
           onChange={(e) => {
             onEmailIdChange(e.target.value);
           }}

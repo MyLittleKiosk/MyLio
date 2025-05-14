@@ -53,33 +53,33 @@ const MyPassword = () => {
     <form className='w-full flex flex-col items-center gap-5'>
       <div className='w-full flex flex-col gap-5'>
         <Input
-          inputId='nowPassword'
+          id='nowPassword'
           label='현재 비밀번호'
           placeholder='현재 비밀번호'
-          inputType='password'
-          inputValue={nowPassword}
+          type='password'
+          value={nowPassword}
           onChange={(e) => {
             setNowPassword(e.target.value);
             if (error) setError(''); // 입력 시 에러 메시지 초기화
           }}
         />
         <Input
-          inputId='newPassword'
+          id='newPassword'
           label='새 비밀번호'
           placeholder='새 비밀번호 (8~16자, 영문, 숫자, 특수문자 포함)'
-          inputType='password'
-          inputValue={newPassword}
+          type='password'
+          value={newPassword}
           onChange={(e) => {
             setNewPassword(e.target.value);
             if (error) setError(''); // 입력 시 에러 메시지 초기화
           }}
         />
         <Input
-          inputId='newPasswordCheck'
+          id='newPasswordCheck'
           label='새 비밀번호 확인'
           placeholder='새 비밀번호 확인'
-          inputType='password'
-          inputValue={newPasswordCheck}
+          type='password'
+          value={newPasswordCheck}
           onChange={(e) => {
             setNewPasswordCheck(e.target.value);
             if (error) setError(''); // 입력 시 에러 메시지 초기화
@@ -88,7 +88,7 @@ const MyPassword = () => {
       </div>
       {error && <p className='text-error mt-2 text-sm'>{error}</p>}
       <Button
-        buttonType='button'
+        type='button'
         text='변경'
         onClick={handlePatchAccountPassword}
         className='mt-4 w-full md:w-auto'

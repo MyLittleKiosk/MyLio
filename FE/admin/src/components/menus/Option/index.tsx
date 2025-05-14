@@ -27,7 +27,7 @@ const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
       <div className='flex gap-2 max-h-[10%] w-full items-center justify-between'>
         <h3 className='text-lg font-preMedium'>옵션 관리</h3>
         <Button
-          buttonType='button'
+          type='button'
           text='옵션 그룹 추가'
           icon={<IconAdd fillColor='white' />}
           onClick={() => {
