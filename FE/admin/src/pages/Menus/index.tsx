@@ -21,7 +21,7 @@ const Menus = () => {
         <div className='flex justify-between'>
           <h1 className='text-2xl font-preBold h-[5%]'>메뉴 목록</h1>
           <Button
-            buttonType='button'
+            type='button'
             text='메뉴 추가'
             icon={<IconAdd fillColor='white' />}
             onClick={() => {
