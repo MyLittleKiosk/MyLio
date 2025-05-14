@@ -2,12 +2,11 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Main from '@/pages/Main';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
-import { useOrderRequest } from '@/service/queries/useOrderRequest';
+import { useEffect, useState } from 'react';
+import { useOrderRequest } from '@/service/queries/user';
 import useOrderStore from '@/stores/useOrderStore';
 import { DEFAULT_COMMENT } from '@/datas/COMMENT';
-import { useLogout } from '@/service/queries/useLogout';
-import useKioskStore from '@/stores/useKioskStore';
+import { useLogout, useRefresh } from '@/service/queries/user';
 import Footer from '@/pages/OrderLayout/Footer';
 
 const OrderLayout = () => {
@@ -16,13 +15,22 @@ const OrderLayout = () => {
   const { order, resetOrder } = useOrderStore();
   const { mutate: orderRequest } = useOrderRequest();
   const { mutate: logout } = useLogout();
-  const { kioskId } = useKioskStore();
+  const { mutate: refresh } = useRefresh();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const kioskId = localStorage.getItem('kioskId');
+    if (!kioskId) {
+      navigate('/');
+    } else {
+      refresh();
+    }
+  }, [navigate]);
+
   function handleLogout() {
-    logout(kioskId);
-    navigate('/');
+    logout();
   }
+
   function handleRecognitionResult(text: string) {
     orderRequest({
       text: text,
