@@ -1,8 +1,8 @@
-import { Pagenation } from '@/types/apiResponse';
+import { Pagination } from '@/types/apiResponse';
 import clsx from 'clsx';
 
 interface Props {
-  pageInfo: Pagenation;
+  pageInfo: Pagination;
   onChangePage: (page: number) => void;
 }
 

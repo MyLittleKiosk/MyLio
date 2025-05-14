@@ -11,7 +11,7 @@ import CompleteModal from '@/components/common/CompleteModal';
 import PageNavigation from '@/components/common/PageNavigation';
 import { ORDER_COLUMNS } from '@/datas/orderList';
 import useModalStore from '@/stores/useModalStore';
-import { Pagenation } from '@/types/apiResponse';
+import { Pagination } from '@/types/apiResponse';
 import { OrderType } from '@/types/orders';
 
 const Orders = () => {
@@ -129,7 +129,7 @@ const Orders = () => {
           }}
         />
         <PageNavigation
-          pageInfo={pageInfo as Pagenation}
+          pageInfo={pageInfo as Pagination}
           onChangePage={(page: number) => handlePageChange(page)}
         />
         <Modal />

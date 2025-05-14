@@ -9,11 +9,11 @@ export type CustomError = Error & {
   response: { data: { error: { message: string } } };
 };
 
-export interface PaginationResponse<T> extends Pagenation {
+export interface PaginationResponse<T> extends Pagination {
   content: T[];
 }
 
-export interface Pagenation {
+export interface Pagination {
   pageNumber: number;
   totalPages: number;
   totalElements: number;
