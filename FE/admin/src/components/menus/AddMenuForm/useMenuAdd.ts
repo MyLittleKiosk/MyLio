@@ -254,7 +254,14 @@ export const useMenuAdd = () => {
       if (exists) {
         return prev.map((option) =>
           option.optionId === optionId
-            ? { ...option, isSelected: !option.isSelected }
+            ? {
+                ...option,
+                isSelected: !option.isSelected,
+                selectedDetails: !option.isSelected
+                  ? option.selectedDetails
+                  : [],
+                isRequired: false,
+              }
             : option
         );
       }
