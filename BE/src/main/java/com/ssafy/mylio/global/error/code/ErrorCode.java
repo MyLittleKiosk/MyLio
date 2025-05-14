@@ -58,6 +58,7 @@ public enum ErrorCode {
 
     // Ingredient
     INGREDIENT_TEMPLATE_NOT_FOUND(HttpStatus.NOT_FOUND, "I001", "존재하지 않는 원재료 템플릿입니다"),
+    INGREDIENT_TEMPLATE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST,"I002","이미 존재하는 원재료 템플릿입니다"),
 
     // AI
     SCREEN_STATE_NOT_FOUND(HttpStatus.BAD_REQUEST,"AI001","렌더링 할 수 없는 STATE 입니다"),
