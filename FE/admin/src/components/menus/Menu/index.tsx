@@ -50,10 +50,9 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
     <div className='flex flex-col gap-2'>
       <div className='flex gap-2 max-h-[10%] w-full justify-between'>
         <Input
-          inputId='searchMenu'
+          id='searchMenu'
           placeholder='메뉴명 또는 설명으로 검색'
-          inputType='text'
-          inputValue={searchValue}
+          value={searchValue}
           onChange={handleSearchChange}
           className='w-[65%]'
         />

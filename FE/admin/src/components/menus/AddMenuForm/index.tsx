@@ -75,14 +75,14 @@ const AddMenuFormContent = ({
 
         <div className='w-full mt-8 flex justify-end gap-2'>
           <Button
-            buttonType='button'
+            type='button'
             text='취소'
             onClick={() => {
               setIsAddMenuClicked(false);
             }}
             cancel
           />
-          <Button buttonType='submit' text='추가' />
+          <Button type='submit' text='추가' />
         </div>
       </form>
     </div>

@@ -72,28 +72,28 @@ const MenuForm = () => {
     <div className='flex flex-col gap-4'>
       <div className='flex gap-5 items-center'>
         <Input
-          inputId='메뉴명'
+          id='메뉴명'
           placeholder='아이스아메리카노'
-          inputType='text'
+          type='text'
           label='메뉴명'
-          inputValue={menuAddData.nameKr}
+          value={menuAddData.nameKr}
           onChange={(e) =>
             setMenuAddData({ ...menuAddData, nameKr: e.target.value })
           }
         />
         <Button
-          buttonType='button'
+          type='button'
           text='번역하기'
           onClick={() => {
             translateName();
           }}
         />
         <Input
-          inputId='메뉴영문명'
+          id='메뉴영문명'
           placeholder='Ice Americano'
-          inputType='text'
+          type='text'
           label='메뉴 영문명'
-          inputValue={menuAddData.nameEn}
+          value={menuAddData.nameEn}
           onChange={(e) =>
             setMenuAddData({ ...menuAddData, nameEn: e.target.value })
           }
@@ -111,22 +111,24 @@ const MenuForm = () => {
       />
 
       <Input
-        inputId='가격'
+        id='가격'
         placeholder='1000'
-        inputType='number'
+        type='number'
+        min={0}
+        max={1000000}
         label='가격'
-        inputValue={menuAddData.price}
+        value={menuAddData.price}
         onChange={(e) =>
           setMenuAddData({ ...menuAddData, price: Number(e.target.value) })
         }
       />
 
       <Input
-        inputId='설명'
+        id='설명'
         placeholder='아이스아메리카노 추가 설명'
-        inputType='text'
+        type='text'
         label='설명'
-        inputValue={menuAddData.description}
+        value={menuAddData.description}
         onChange={(e) =>
           setMenuAddData({ ...menuAddData, description: e.target.value })
         }
@@ -135,11 +137,11 @@ const MenuForm = () => {
       <div className='flex flex-col gap-2'>
         <div className='flex gap-2'>
           <Input
-            inputId='태그한글명'
+            id='태그한글명'
             placeholder='달달 혹은 신메뉴'
-            inputType='text'
+            type='text'
             label='태그 한글명'
-            inputValue={tagValueKR}
+            value={tagValueKR}
             onChange={(e) => handleTagInputChange('KR', e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
@@ -148,10 +150,10 @@ const MenuForm = () => {
             }}
           />
           <Input
-            inputId='태그영문명'
+            id='태그영문명'
             placeholder='sweet or new menu'
-            inputType='text'
-            inputValue={tagValueEN}
+            type='text'
+            value={tagValueEN}
             onChange={(e) => handleTagInputChange('EN', e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
@@ -161,7 +163,7 @@ const MenuForm = () => {
           />
 
           <Button
-            buttonType='button'
+            type='button'
             text='번역하기'
             onClick={() => {
               translateTag();
@@ -169,7 +171,7 @@ const MenuForm = () => {
           />
 
           <Button
-            buttonType='button'
+            type='button'
             text='추가'
             icon={<IconAdd fillColor='white' />}
             onClick={handleTagAdd}
@@ -296,10 +298,12 @@ const MenuForm = () => {
           />
 
           <Input
-            inputId='영양성분값'
+            id='영양성분값'
             placeholder='12'
-            inputType='number'
-            inputValue={nutritionValue}
+            type='number'
+            min={0}
+            max={1000000}
+            value={nutritionValue}
             onChange={(e) => {
               setNutritionValue(Number(e.target.value));
             }}
@@ -308,7 +312,7 @@ const MenuForm = () => {
 
           <Button
             icon={<IconAdd fillColor='white' />}
-            buttonType='button'
+            type='button'
             onClick={() =>
               handleNutrientAdd(
                 selectedNutrient?.nutrientTemplateId.toString() || '',

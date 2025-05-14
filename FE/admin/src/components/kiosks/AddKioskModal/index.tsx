@@ -66,20 +66,20 @@ const AddKioskModal = () => {
         </p>
         <div className='flex flex-col gap-4'>
           <Input
-            inputId='kioskName'
+            id='kioskName'
             label='키오스크명'
             placeholder='키오스크명을 입력하세요'
-            inputType='text'
-            inputValue={kioskName}
+            type='text'
+            value={kioskName}
             onChange={(e) => setKioskName(e.target.value)}
           />
 
           <Input
-            inputId='groupName'
+            id='groupName'
             label='그룹명 (A-Z)'
             placeholder='그룹명을 입력하세요'
-            inputType='text'
-            inputValue={groupName}
+            type='text'
+            value={groupName}
             onChange={(e) => handleGroupNameChange(e.target.value)}
             error={groupNameError.error}
             errorMessage={groupNameError.message}
@@ -87,11 +87,11 @@ const AddKioskModal = () => {
         </div>
       </div>
       <div className='flex justify-end gap-2 mt-4'>
-        <Button buttonType='button' text='취소' cancel onClick={closeModal} />
+        <Button type='button' text='취소' cancel onClick={closeModal} />
         <Button
-          buttonType='button'
+          type='button'
           text='저장'
-          buttonId='saveAddKiosk'
+          id='saveAddKiosk'
           onClick={handleSave}
         />
       </div>

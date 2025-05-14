@@ -36,7 +36,7 @@ const DeleteCategoryModal = ({ row }: Props) => {
 
       <div>
         <Button
-          buttonType='button'
+          type='button'
           text='삭제'
           onClick={() => handleDeleteCategory(row.categoryId)}
           className='w-full mt-4 flex justify-center'

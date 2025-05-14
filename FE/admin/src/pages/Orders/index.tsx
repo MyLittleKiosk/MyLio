@@ -69,30 +69,30 @@ const Orders = () => {
         <div className='flex gap-2 max-h-[10%] w-full justify-between'>
           <div className='flex gap-2 w-full'>
             <Input
-              inputId='startSearchOrder'
+              id='startSearchOrder'
               placeholder=''
-              inputType='date'
-              inputValue={startSearchValue}
+              type='date'
+              value={startSearchValue}
               maxDate={endSearchValue}
               onChange={handleSearchChange}
             />
             <Input
-              inputId='endSearchOrder'
+              id='endSearchOrder'
               placeholder=''
-              inputType='date'
-              inputValue={endSearchValue}
+              type='date'
+              value={endSearchValue}
               minDate={startSearchValue}
               onChange={handleEndSearchChange}
             />
             <Button
-              buttonId='searchBtnId'
-              buttonType='button'
+              id='searchBtnId'
+              type='button'
               text='검색'
               onClick={handleSearch}
             />
             <Button
-              buttonId='resetBtnId'
-              buttonType='button'
+              id='resetBtnId'
+              type='button'
               text='전체'
               onClick={handleReset}
               className='bg-gray-500 hover:bg-gray-600'

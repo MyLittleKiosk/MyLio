@@ -145,26 +145,26 @@ const EditOptionModal = ({ row }: Props) => {
       <form onSubmit={handleOptionGroupEdit}>
         <div className='w-full flex gap-4'>
           <Input
-            inputId='optionGroupNameEdit'
+            id='optionGroupNameEdit'
             label='옵션 그룹명'
-            inputType='text'
+            type='text'
             onChange={(e) => setOptionGroupNameKrEdit(e.target.value)}
             placeholder='한글명'
-            inputValue={optionGroupNameKrEdit}
+            value={optionGroupNameKrEdit}
             className='w-[60%]'
           />
 
           <Input
-            inputId='optionGroupNameEnEdit'
-            inputType='text'
+            id='optionGroupNameEnEdit'
+            type='text'
             onChange={(e) => setOptionGroupNameEnEdit(e.target.value)}
             placeholder='영문명'
-            inputValue={optionGroupNameEnEdit}
+            value={optionGroupNameEnEdit}
             className='w-[30%]'
           />
           <Button
-            buttonId='optionGroupNameEditBtn'
-            buttonType='submit'
+            id='optionGroupNameEditBtn'
+            type='submit'
             text='수정'
             className='w-[15%]'
           />
@@ -187,9 +187,9 @@ const EditOptionModal = ({ row }: Props) => {
               <tr key={optionDetail.optionDetailId} className='w-full'>
                 <td className='w-[30%] text-center p-2'>
                   <Input
-                    inputId={`optionDetailValueEdit-${optionDetail.optionDetailId}`}
-                    inputType='text'
-                    inputValue={optionDetailValueEdit[index]}
+                    id={`optionDetailValueEdit-${optionDetail.optionDetailId}`}
+                    type='text'
+                    value={optionDetailValueEdit[index]}
                     onChange={(e) =>
                       setOptionDetailValueEdit(
                         optionDetailValueEdit.map((value, i) =>
@@ -203,9 +203,11 @@ const EditOptionModal = ({ row }: Props) => {
                 </td>
                 <td className='w-[30%] text-center'>
                   <Input
-                    inputId={`optionDetailPriceEdit-${optionDetail.optionDetailId}`}
-                    inputType='number'
-                    inputValue={optionDetailPriceEdit[index]}
+                    id={`optionDetailPriceEdit-${optionDetail.optionDetailId}`}
+                    type='number'
+                    value={optionDetailPriceEdit[index]}
+                    min={0}
+                    max={1000000}
                     onChange={(e) =>
                       setOptionDetailPriceEdit(
                         optionDetailPriceEdit.map((value, i) =>
@@ -249,18 +251,20 @@ const EditOptionModal = ({ row }: Props) => {
         <div className='flex gap-4 items-center'>
           <p className='font-preSemiBold text-md'>옵션 상세 추가</p>
           <Input
-            inputId={`optionDetailNameAdd`}
-            inputType='text'
-            inputValue={optionDetailNameAdd}
+            id={`optionDetailNameAdd`}
+            type='text'
+            value={optionDetailNameAdd}
             onChange={(e) => setOptionDetailNameAdd(e.target.value)}
             placeholder='옵션 상세명'
             inputClassName='w-[80%]'
           />
 
           <Input
-            inputId={`optionDetailPriceAdd`}
-            inputType='number'
-            inputValue={optionDetailPriceAdd}
+            id={`optionDetailPriceAdd`}
+            type='number'
+            min={0}
+            max={1000000}
+            value={optionDetailPriceAdd}
             onChange={(e) => setOptionDetailPriceAdd(Number(e.target.value))}
             placeholder='추가 가격'
             inputClassName='w-[80%]'

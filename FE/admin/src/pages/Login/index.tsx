@@ -33,20 +33,20 @@ const Login = () => {
       <section className='w-[400px] bg-white rounded-xl shadow-lg p-10 flex flex-col gap-6 box-border'>
         <h1 className='text-2xl font-preBold text-center mb-4'>로그인</h1>
         <Input
-          inputId='email'
+          id='email'
           placeholder='이메일'
-          inputType='text'
+          type='text'
           className='box-border'
-          inputValue={email}
+          value={email}
           onChange={handleEmailChange}
           error={error.email}
         />
         <Input
-          inputId='password'
+          id='password'
           placeholder='비밀번호'
+          type='password'
           className='box-border'
-          inputType='password'
-          inputValue={password}
+          value={password}
           onChange={handlePasswordChange}
           error={error.password}
         />
@@ -66,7 +66,7 @@ const Login = () => {
           </label>
         </div>
         <Button
-          buttonType='submit'
+          type='submit'
           className='w-full h-[50px] flex justify-center items-center mt-4 font-preSemiBold bg-[#5B8CFF] hover:bg-[#4072e6]'
           onClick={handleLogin}
           text='로그인'
