@@ -9,7 +9,7 @@ const Loading = () => {
         alt='loading'
         loading='lazy'
       />
-      <p className='font-preBold text-xl text-content'>
+      <p className='font-preBold text-xl text-content text-center whitespace-pre-line'>
         {LOADING_TEXT[Math.floor(Math.random() * LOADING_TEXT.length)]}
       </p>
     </div>
