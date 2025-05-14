@@ -220,6 +220,8 @@ class ResponseGenerator:
         # 중요
         - 다른 언어를 섞지 말고 반드시 {language_text}로만 응답하세요.
         - 템플릿 변수({menu_name} 같은 형식)를 사용하지 않고 실제 값을 직접 사용하세요.
+        - 영양 정보나 원재료 정보를 요청받은 경우, 반드시 컨텍스트에서 제공된 실제 데이터만 사용하세요.
+        - 영양 정보나 원재료 정보가 없는 경우, 임의로 생성하지 말고 정보가 없다고 안내하세요.
 
         # 응답 생성
         {language_text}로 자연스러운 응답을 생성해주세요:
@@ -273,13 +275,41 @@ class ResponseGenerator:
         context_info = f"화면 상태: {context.get('screen_state', 'MAIN')}\n"
         context_info += f"응답 상태: {context.get('status', 'UNKNOWN')}\n"
         
+        # 메뉴 상세 정보 추가
+        if "menu" in context:
+            menu = context["menu"]
+            context_info += f"\n메뉴 상세 정보:\n"
+            context_info += f"이름: {menu.get('name_kr', '')}\n"
+            context_info += f"설명: {menu.get('description', '')}\n"
+            
+            # 영양 정보 추가
+            if "nutrition" in context:
+                nutrition_data = context["nutrition"]
+                if nutrition_data:
+                    context_info += "영양 성분:\n"
+                    for item in nutrition_data:
+                        name = item.get("name", "")
+                        formatted = item.get("formatted", "")
+                        context_info += f"- {name}: {formatted}\n"
+                else:
+                    context_info += "영양 성분 정보 없음\n"
+            
+            # 원재료 정보 추가
+            if "ingredients" in context:
+                ingredients = context["ingredients"]
+                if ingredients:
+                    ingredient_names = [ing.get("name_kr", "") for ing in ingredients]
+                    context_info += f"원재료: {', '.join(ingredient_names)}\n"
+                else:
+                    context_info += "원재료 정보 없음\n"
+        
         # 장바구니 정보 추가
         if "cart" in context and context["cart"]:
             cart_items = []
             for item in context["cart"]:
                 cart_items.append(f"{item.get('name', '')} x {item.get('quantity', 1)}개")
             
-            context_info += f"장바구니: {', '.join(cart_items)}\n"
+            context_info += f"\n장바구니: {', '.join(cart_items)}\n"
         
         # 검색 결과 정보 추가
         if "search_results" in context and context["search_results"]:
