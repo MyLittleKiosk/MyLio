@@ -32,64 +32,68 @@ const OptionTable = ({ options }: OptionTableProps) => {
         </tr>
       </thead>
       <tbody className='divide-y divide-subContent'>
-        {options.map((option) => {
-          const selectedOption = selectedOptions.find(
-            (selected) => selected.optionId === option.optionId
-          );
+        {options &&
+          options.map((option) => {
+            const selectedOption = selectedOptions.find(
+              (selected) => selected.optionId === option.optionId
+            );
 
-          return option.optionDetail.map(
-            (detail: OptionDetailType, index: number) => (
-              <tr key={`${option.optionId}-${detail.optionDetailId}`}>
-                {index === 0 && (
-                  <>
+            return option.optionDetail.map(
+              (detail: OptionDetailType, index: number) => (
+                <tr key={`${option.optionId}-${detail.optionDetailId}`}>
+                  {index === 0 && (
+                    <>
+                      <td
+                        rowSpan={option.optionDetail.length}
+                        className='text-center'
+                      >
+                        <input
+                          type='checkbox'
+                          checked={selectedOption?.isSelected || false}
+                          onChange={() => handleOptionSelect(option.optionId)}
+                        />
+                      </td>
+                      <td
+                        rowSpan={option.optionDetail.length}
+                        className='px-4 py-3 text-sm font-preRegular text-center'
+                      >
+                        {option.optionNameKr}
+                      </td>
+                    </>
+                  )}
+                  <td className='px-4 py-3 text-sm font-preRegular flex gap-2 items-center justify-center'>
+                    <span className='w-[50%]'>{detail.optionDetailValue}</span>
+                    <input
+                      type='checkbox'
+                      checked={
+                        selectedOption?.selectedDetails.includes(
+                          detail.optionDetailId
+                        ) || false
+                      }
+                      onChange={() =>
+                        handleDetailSelect(
+                          option.optionId,
+                          detail.optionDetailId
+                        )
+                      }
+                    />
+                  </td>
+                  {index === 0 && (
                     <td
                       rowSpan={option.optionDetail.length}
                       className='text-center'
                     >
                       <input
                         type='checkbox'
-                        checked={selectedOption?.isSelected || false}
-                        onChange={() => handleOptionSelect(option.optionId)}
+                        checked={selectedOption?.isRequired || false}
+                        onChange={() => handleRequiredSelect(option.optionId)}
                       />
                     </td>
-                    <td
-                      rowSpan={option.optionDetail.length}
-                      className='px-4 py-3 text-sm font-preRegular text-center'
-                    >
-                      {option.optionNameKr}
-                    </td>
-                  </>
-                )}
-                <td className='px-4 py-3 text-sm font-preRegular flex gap-2 items-center justify-center'>
-                  <span className='w-[50%]'>{detail.optionDetailValue}</span>
-                  <input
-                    type='checkbox'
-                    checked={
-                      selectedOption?.selectedDetails.includes(
-                        detail.optionDetailId
-                      ) || false
-                    }
-                    onChange={() =>
-                      handleDetailSelect(option.optionId, detail.optionDetailId)
-                    }
-                  />
-                </td>
-                {index === 0 && (
-                  <td
-                    rowSpan={option.optionDetail.length}
-                    className='text-center'
-                  >
-                    <input
-                      type='checkbox'
-                      checked={selectedOption?.isRequired || false}
-                      onChange={() => handleRequiredSelect(option.optionId)}
-                    />
-                  </td>
-                )}
-              </tr>
-            )
-          );
-        })}
+                  )}
+                </tr>
+              )
+            );
+          })}
       </tbody>
     </table>
   );
