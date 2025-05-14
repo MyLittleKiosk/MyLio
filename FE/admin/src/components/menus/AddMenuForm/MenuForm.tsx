@@ -149,11 +149,6 @@ const MenuForm = () => {
             label='태그 한글명'
             value={tagValueKR}
             onChange={(e) => handleTagInputChange('KR', e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleTagAdd();
-              }
-            }}
             className='w-[40%]'
           />
           <Input
@@ -162,11 +157,6 @@ const MenuForm = () => {
             type='text'
             value={tagValueEN}
             onChange={(e) => handleTagInputChange('EN', e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleTagAdd();
-              }
-            }}
             className='w-[22%]'
           />
 
