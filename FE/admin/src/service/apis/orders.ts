@@ -5,13 +5,13 @@ import { OrderType } from '@/types/orders';
 export async function getOrders(
   startDate?: string,
   endDate?: string,
-  pageable?: number
+  page?: number
 ): Promise<Response<PaginationResponse<OrderType>>> {
   try {
     const params = {
       startDate,
       endDate,
-      pageable: pageable || 1,
+      page: page || 1,
     };
 
     const res = await authClient.get('/order_list', {

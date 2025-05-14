@@ -27,7 +27,7 @@ export function formatPieChartData<T extends Record<string, string | number>>(
   rawData: T[],
   labelKey: keyof T
 ): ChartData<'pie'> {
-  if (rawData === undefined) {
+  if (rawData === undefined || rawData.length === 0) {
     return {
       labels: ['데이터 없음'],
       datasets: [
