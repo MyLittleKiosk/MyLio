@@ -16,6 +16,7 @@ export function useOrderRequest() {
       const state = data.data.screenState;
       setOrder(data.data);
       try {
+        navigate(`/kiosk${parseState(state)}`);
         if (data.data.reply) {
           const voice = await gcpTts(data.data.reply);
           const audio = new Audio(URL.createObjectURL(voice));
@@ -23,8 +24,6 @@ export function useOrderRequest() {
         }
       } catch (error) {
         console.error('음성 출력 중 오류 발생:', error);
-      } finally {
-        navigate(`/kiosk${parseState(state)}`);
       }
     },
   });
