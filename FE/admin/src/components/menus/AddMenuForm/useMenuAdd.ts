@@ -242,7 +242,7 @@ export const useMenuAdd = (): UseMenuAddReturn => {
 
     const nutrientTemplateId = Number(nutrientId);
 
-    // 동일한 templateId를를 가진 영양성분이 이미 존재하는지 확인
+    // 동일한 templateId를 가진 영양성분이 이미 존재하는지 확인
     const isDuplicate =
       menuAddData.nutritionInfo.some(
         (nutrient) => nutrient.nutritionTemplateId === nutrientTemplateId
