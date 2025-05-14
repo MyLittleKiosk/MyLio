@@ -23,11 +23,8 @@ public class IngredientService {
     private final IngredientTemplateRepository ingredientTemplateRepository;
 
     public CustomPage<IngredientTemplateResponseDto> getIngredientList(String userType, String keyword, Pageable pageable){
-
         // userType 검증 (관리자인지)
-        if(!userType.equals("SUPER")){
-            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS, "userType", userType);
-        }
+        validateUserType(userType);
 
         // 모든 원재료 목록 조회
         Page<IngredientTemplate> ingredientList = ingredientTemplateRepository.findAllByKeyword(keyword, pageable);
@@ -38,9 +35,7 @@ public class IngredientService {
     @Transactional
     public void ingredientTemplateAdd(String userType, IngredientTemplateRequestDto requestDto){
         // userType 검증 (관리자인지)
-        if(!userType.equals("SUPER")){
-            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS, "userType", userType);
-        }
+        validateUserType(userType);
 
         // 등록된 원재료가 있는지 조회
         if(ingredientTemplateRepository.existsByNameKr(requestDto.getIngredientTemplateName())){
@@ -50,5 +45,11 @@ public class IngredientService {
         // 등록
         IngredientTemplate ingredientTemplate = requestDto.toEntity();
         ingredientTemplateRepository.save(ingredientTemplate);
+    }
+
+    private void validateUserType(String userType){
+        if(!userType.equals("SUPER")){
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS, "userType", userType);
+        }
     }
 }
