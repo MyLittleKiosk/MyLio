@@ -87,120 +87,89 @@ class OptionMatcher:
                         "option_name_en": option.get("option_name_en"),
                         "required": option.get("required", False),
                         "is_selected": True,
-                        "option_details": [matched_detail]
+                        "option_details": [{
+                            "id": matched_detail.get("id"),
+                            "value": matched_detail.get("value"),
+                            "additional_price": matched_detail.get("additional_price", 0)
+                        }]
                     }
         
         return None
     
     def parse_option_response(self, text: str, pending_option: Dict[str, Any], menu: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """사용자 응답에서 옵션 값 파싱"""
-        text = text.lower().strip()
+        text = text.lower()
+        option_name = pending_option.get("option_name", "").lower()
         option_details = pending_option.get("option_details", [])
         
-        # 옵션 종류별 특수 처리
-        option_name = pending_option.get("option_name", "").lower()
+        # Helper function to create option response
+        def create_option_response(detail: Dict[str, Any]) -> Dict[str, Any]:
+            return {
+                "option_id": pending_option.get("option_id"),
+                "option_name": pending_option.get("option_name"),
+                "option_name_en": pending_option.get("option_name_en"),
+                "required": pending_option.get("required", False),
+                "is_selected": True,
+                "option_details": [{
+                    "id": detail.get("id"),
+                    "value": detail.get("value"),
+                    "additional_price": detail.get("additional_price", 0)
+                }]
+            }
         
         # 1. 사이즈 옵션 처리
         if "사이즈" in option_name or "size" in option_name:
             if any(kw in text for kw in ["small", "s", "작은", "스몰", "작게", "작은거", "작은 거"]):
-                # 작은 사이즈 선택
                 for detail in option_details:
                     if detail.get("value", "").lower() in ["s", "small"]:
-                        return {
-                            "option_id": pending_option.get("option_id"),
-                            "option_name": pending_option.get("option_name"),
-                            "option_name_en": pending_option.get("option_name_en"),
-                            "required": pending_option.get("required", False),
-                            "is_selected": True,
-                            "selected_id": detail.get("id"),
-                            "option_details": [detail]
-                        }
+                        return create_option_response(detail)
             
-            elif any(kw in text for kw in ["medium", "m", "미디엄", "중간", "보통", "중간거", "중간 거"]):
-                # 중간 사이즈 선택
+            elif any(kw in text for kw in ["medium", "m", "중간", "미디움", "보통", "중간거", "중간 거"]):
                 for detail in option_details:
                     if detail.get("value", "").lower() in ["m", "medium"]:
-                        return {
-                            "option_id": pending_option.get("option_id"),
-                            "option_name": pending_option.get("option_name"),
-                            "option_name_en": pending_option.get("option_name_en"),
-                            "required": pending_option.get("required", False),
-                            "is_selected": True,
-                            "selected_id": detail.get("id"),
-                            "option_details": [detail]
-                        }
+                        return create_option_response(detail)
             
-            elif any(kw in text for kw in ["large", "l", "라지", "큰", "크게", "큰거", "큰 거"]):
-                # 큰 사이즈 선택
+            elif any(kw in text for kw in ["large", "l", "큰", "라지", "크게", "큰거", "큰 거"]):
                 for detail in option_details:
                     if detail.get("value", "").lower() in ["l", "large"]:
-                        return {
-                            "option_id": pending_option.get("option_id"),
-                            "option_name": pending_option.get("option_name"),
-                            "option_name_en": pending_option.get("option_name_en"),
-                            "required": pending_option.get("required", False),
-                            "is_selected": True,
-                            "selected_id": detail.get("id"),
-                            "option_details": [detail]
-                        }
+                        return create_option_response(detail)
         
         # 2. 온도 옵션 처리
         elif "온도" in option_name or "temperature" in option_name:
-            if any(kw in text for kw in ["hot", "따뜻", "뜨겁", "따듯", "따뜻한", "뜨거운"]):
-                # HOT 선택
+            if any(kw in text for kw in ["hot", "뜨거운", "따뜻한", "따듯한", "핫"]):
                 for detail in option_details:
-                    if detail.get("value", "").lower() in ["hot", "따뜻한", "뜨거운"]:
-                        return {
-                            "option_id": pending_option.get("option_id"),
-                            "option_name": pending_option.get("option_name"),
-                            "option_name_en": pending_option.get("option_name_en"),
-                            "required": pending_option.get("required", False),
-                            "is_selected": True,
-                            "selected_id": detail.get("id"),
-                            "option_details": [detail]
-                        }
+                    if detail.get("value", "").lower() == "hot":
+                        return create_option_response(detail)
             
-            elif any(kw in text for kw in ["ice", "아이스", "차가운", "시원", "아이스로", "차갑"]):
-                # ICE 선택
+            elif any(kw in text for kw in ["ice", "차가운", "시원한", "아이스", "아이스로", "차갑게"]):
                 for detail in option_details:
-                    if detail.get("value", "").lower() in ["ice", "아이스", "차가운"]:
-                        return {
-                            "option_id": pending_option.get("option_id"),
-                            "option_name": pending_option.get("option_name"),
-                            "option_name_en": pending_option.get("option_name_en"),
-                            "required": pending_option.get("required", False),
-                            "is_selected": True,
-                            "selected_id": detail.get("id"),
-                            "option_details": [detail]
-                        }
+                    if detail.get("value", "").lower() == "ice":
+                        return create_option_response(detail)
         
-        # 3. 일반 옵션 값 매칭 시도
-        for detail in option_details:
-            detail_value = detail.get("value", "").lower()
-            if detail_value in text or any(word in detail_value for word in text.split()):
-                return {
-                    "option_id": pending_option.get("option_id"),
-                    "option_name": pending_option.get("option_name"),
-                    "option_name_en": pending_option.get("option_name_en"),
-                    "required": pending_option.get("required", False),
-                    "is_selected": True,
-                    "selected_id": detail.get("id"),
-                    "option_details": [detail]
-                }
+        # 3. 샷 추가 옵션 처리
+        elif "샷" in option_name or "shot" in option_name:
+            if any(kw in text for kw in ["yes", "네", "응", "추가", "샷추가", "샷 추가"]):
+                for detail in option_details:
+                    if detail.get("value", "").lower() == "yes":
+                        return create_option_response(detail)
+            
+            elif any(kw in text for kw in ["no", "아니요", "아니", "추가안해", "추가 안해"]):
+                for detail in option_details:
+                    if detail.get("value", "").lower() == "no":
+                        return create_option_response(detail)
         
-        # 매칭 실패
         return None
     
     def apply_option_to_menu(self, menu: Dict[str, Any], selected_option: Dict[str, Any]) -> None:
         """메뉴에 선택된 옵션 적용"""
-         # 1. 기존 옵션 리스트에서 해당 옵션 업데이트
+        # 1. 기존 옵션 리스트에서 해당 옵션 업데이트
         for i, option in enumerate(menu.get("options", [])):
             if option.get("option_id") == selected_option.get("option_id"):
                 menu["options"][i]["is_selected"] = True
-                menu["options"][i]["selected_id"] = selected_option.get("selected_id")
+                if selected_option.get("option_details"):
+                    menu["options"][i]["selected_id"] = selected_option["option_details"][0]["id"]
 
-
-        # 선택된 옵션 목록에 추가/업데이트
+        # 2. 선택된 옵션 목록에 추가/업데이트
         found = False
         for i, option in enumerate(menu.get("selected_options", [])):
             if option.get("option_id") == selected_option.get("option_id"):
@@ -209,12 +178,11 @@ class OptionMatcher:
                 break
         
         if not found:
-            menu.setdefault("selected_options", []).append(selected_option)
-            # if "selected_options" not in menu:
-            #     menu["selected_options"] = []
-            # menu["selected_options"].append(selected_option)
+            if "selected_options" not in menu:
+                menu["selected_options"] = []
+            menu["selected_options"].append(selected_option)
         
-        # 총 가격 재계산
+        # 3. 총 가격 재계산
         menu["total_price"] = self.calculate_total_price(menu)
     
     def get_next_required_option(self, menu: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -248,16 +216,16 @@ class OptionMatcher:
         return ResponseStatus.READY_TO_ADD_CART
     
     def calculate_total_price(self, menu: Dict[str, Any]) -> int:
-        """메뉴의 총 가격 계산 (옵션 포함)"""
-        base_price = menu.get("base_price", 0)
+        """메뉴의 총 가격 계산"""
+        total_price = menu.get("base_price", 0)
         quantity = menu.get("quantity", 1)
         
         # 선택된 옵션의 추가 가격 계산
-        additional_price = 0
         for option in menu.get("selected_options", []):
-            option_details = option.get("option_details", [])
-            if option_details:
-                additional_price += option_details[0].get("additional_price", 0)
+            for detail in option.get("option_details", []):
+                total_price += detail.get("additional_price", 0)
         
-        # (기본 가격 + 추가 가격) * 수량
-        return (base_price + additional_price) * quantity
+        # 수량 적용
+        total_price *= quantity
+        
+        return total_price

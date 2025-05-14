@@ -586,7 +586,7 @@ class IntentRecognizer:
                         "menu_name": "아메리카노",
                         "attribute": "nutrition",
                         "post_text": "아메리카노 영양 성분 알려줘",
-                        "reply": "아메리카노의 영양 성분이에요."
+                        "reply": "아메리카노의 영양 성분을 알려드릴게요."
                     }
                 },
                 {
@@ -596,7 +596,7 @@ class IntentRecognizer:
                         "confidence": 0.9,
                         "attribute": "ingredients",
                         "post_text": "이 메뉴 원재료가 뭐야?",
-                        "reply": "이 메뉴뉴는 우유, 바닐라 시럽, 에스프레소로 만들어져요."
+                        "reply": "죄송합니다. 이 메뉴의 원재료 정보가 없네요."
                     }
                 }
             ]
