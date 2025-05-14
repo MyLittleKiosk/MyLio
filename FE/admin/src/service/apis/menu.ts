@@ -3,10 +3,14 @@ import authClient from '@/service/authClient';
 import { MenuAdd } from '@/types/menus';
 
 export async function getMenus(page?: number, categoryId?: number) {
+  const params = {
+    page: page || 1,
+    categoryId: categoryId || 0,
+  };
   try {
-    const res = await authClient.get(
-      `/menus?page=${page}&categoryId=${categoryId}`
-    );
+    const res = await authClient.get('/menu', {
+      params,
+    });
     return res.data;
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -21,7 +25,7 @@ export async function getMenus(page?: number, categoryId?: number) {
 
 export async function addMenu(menu: MenuAdd, file?: File) {
   try {
-    const res = await authClient.post('/menus', {
+    const res = await authClient.post('/menu', {
       file: file,
       menuData: menu,
     });
