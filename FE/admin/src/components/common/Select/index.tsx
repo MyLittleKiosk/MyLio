@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { SelectHTMLAttributes } from 'react';
+import { SelectHTMLAttributes } from 'react';
 
 type SelectProps<T> = SelectHTMLAttributes<HTMLSelectElement> & {
   label?: string;
