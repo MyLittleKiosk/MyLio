@@ -252,15 +252,17 @@ export const useMenuAdd = () => {
     setSelectedOptions((prev) => {
       const exists = prev.find((option) => option.optionId === optionId);
       if (exists) {
+        // If we're unselecting the option, clear the selectedDetails
+        const newIsSelected = !exists.isSelected;
         return prev.map((option) =>
           option.optionId === optionId
             ? {
                 ...option,
-                isSelected: !option.isSelected,
-                selectedDetails: !option.isSelected
-                  ? option.selectedDetails
-                  : [],
-                isRequired: false,
+                isSelected: newIsSelected,
+                // If we're unselecting, clear the selectedDetails
+                selectedDetails: newIsSelected ? option.selectedDetails : [],
+                // If we're unselecting, also clear isRequired
+                isRequired: newIsSelected ? option.isRequired : false,
               }
             : option
         );
@@ -292,10 +294,13 @@ export const useMenuAdd = () => {
         ];
       }
 
+      const isAddingDetail = !option.selectedDetails.includes(detailId);
+
       return prev.map((opt) =>
         opt.optionId === optionId
           ? {
               ...opt,
+              isSelected: isAddingDetail ? true : opt.isSelected,
               selectedDetails: opt.selectedDetails.includes(detailId)
                 ? opt.selectedDetails.filter((id) => id !== detailId)
                 : [...opt.selectedDetails, detailId],
@@ -311,7 +316,11 @@ export const useMenuAdd = () => {
       if (exists) {
         return prev.map((option) =>
           option.optionId === optionId
-            ? { ...option, isRequired: !option.isRequired }
+            ? {
+                ...option,
+                isRequired: !option.isRequired,
+                isSelected: !option.isRequired ? true : option.isSelected,
+              }
             : option
         );
       }
