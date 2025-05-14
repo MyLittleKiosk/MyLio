@@ -103,6 +103,38 @@ export const useMenuAdd = () => {
     }
   }
 
+  function handleTagAdd() {
+    if (tagValueKR === '') {
+      alert('태그명을 정확하게 입력해주세요.');
+      return;
+    }
+
+    if (tagValueEN === '') {
+      alert('태그영문명을 정확하게 입력해주세요. 번역하기 버튼을 눌러주세요.');
+      return;
+    }
+
+    setMenuAddData((prev) => ({
+      ...prev,
+      tags: [
+        ...prev.tags,
+        {
+          tagKr: tagValueKR,
+          tagEn: tagValueEN,
+        },
+      ],
+    }));
+    setTagValueKR('');
+    setTagValueEN('');
+  }
+
+  function handleTagDelete(tagKR: string) {
+    setMenuAddData((prev) => ({
+      ...prev,
+      tags: prev.tags.filter((tag) => tag.tagKr !== tagKR),
+    }));
+  }
+
   function handleIngredientChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const selected = INGREDIENT_LIST.content.find((ingredient) => {
       return ingredient.ingredientId === Number(e.target.value);
@@ -112,9 +144,6 @@ export const useMenuAdd = () => {
       alert('원재료를 선택해주세요.');
       return;
     }
-
-    console.log('메뉴 add data', menuAddData.ingredientInfo);
-    console.log('', selectedIngredientList);
 
     // 이미 선택된 원재료인지 확인
     const isDuplicate =
@@ -164,39 +193,7 @@ export const useMenuAdd = () => {
     setSelectedNutrient(selected || null);
   }
 
-  const handleTagAdd = () => {
-    if (tagValueKR === '') {
-      alert('태그명을 정확하게 입력해주세요.');
-      return;
-    }
-
-    if (tagValueEN === '') {
-      alert('태그영문명을 정확하게 입력해주세요. 번역하기 버튼을 눌러주세요.');
-      return;
-    }
-
-    setMenuAddData((prev) => ({
-      ...prev,
-      tags: [
-        ...prev.tags,
-        {
-          tagKr: tagValueKR,
-          tagEn: tagValueEN,
-        },
-      ],
-    }));
-    setTagValueKR('');
-    setTagValueEN('');
-  };
-
-  function handleTagDelete(tagKR: string) {
-    setMenuAddData((prev) => ({
-      ...prev,
-      tags: prev.tags.filter((tag) => tag.tagKr !== tagKR),
-    }));
-  }
-
-  const handleNutrientAdd = (nutrientId: string, value: number) => {
+  function handleNutrientAdd(nutrientId: string, value: number) {
     if (!nutrientId || !value) {
       alert('영양성분을 정확히 입력해주세요.');
       return;
@@ -236,15 +233,22 @@ export const useMenuAdd = () => {
         nutrientValue: value,
       },
     ]);
-  };
+  }
 
-  const handleNutrientRemove = (nutrientId: number) => {
+  function handleNutrientRemove(nutrientId: number) {
+    setMenuAddData((prev) => ({
+      ...prev,
+      nutritionInfo: prev.nutritionInfo.filter(
+        (item) => item.nutritionTemplateId !== nutrientId
+      ),
+    }));
+
     setSelectedNutrientList((prev) =>
       prev.filter((item) => item.nutrientTemplateId !== nutrientId)
     );
-  };
+  }
 
-  const handleOptionSelect = (optionId: number) => {
+  function handleOptionSelect(optionId: number) {
     setSelectedOptions((prev) => {
       const exists = prev.find((option) => option.optionId === optionId);
       if (exists) {
@@ -264,9 +268,9 @@ export const useMenuAdd = () => {
         },
       ];
     });
-  };
+  }
 
-  const handleDetailSelect = (optionId: number, detailId: number) => {
+  function handleDetailSelect(optionId: number, detailId: number) {
     setSelectedOptions((prev) => {
       const option = prev.find((opt) => opt.optionId === optionId);
       if (!option) {
@@ -292,9 +296,9 @@ export const useMenuAdd = () => {
           : opt
       );
     });
-  };
+  }
 
-  const handleRequiredSelect = (optionId: number) => {
+  function handleRequiredSelect(optionId: number) {
     setSelectedOptions((prev) => {
       const exists = prev.find((option) => option.optionId === optionId);
       if (exists) {
@@ -314,9 +318,9 @@ export const useMenuAdd = () => {
         },
       ];
     });
-  };
+  }
 
-  const updateOptionInfo = () => {
+  function updateOptionInfo() {
     const optionInfo: OptionInfoType[] = [];
 
     selectedOptions.forEach((option) => {
@@ -337,9 +341,9 @@ export const useMenuAdd = () => {
       ...prev,
       optionInfo,
     }));
-  };
+  }
 
-  const resetForm = () => {
+  function resetForm() {
     setMenuAddData(initialMenuData);
     setSelectedCategory(null);
     setTagValueKR('');
@@ -350,7 +354,7 @@ export const useMenuAdd = () => {
     setSelectedOptions([]);
     setImageFile(null);
     setImagePreview(null);
-  };
+  }
 
   function checkValidation() {
     if (menuAddData.nameKr === '' || menuAddData.nameEn === '') {
