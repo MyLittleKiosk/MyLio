@@ -30,7 +30,13 @@ class IntentService:
         self.intent_recognizer = IntentRecognizer(api_key, menu_service)
         
         # 프로세서 초기화
-        self.order_processor = OrderProcessor(self.response_generator, menu_service, session_manager)
+        self.order_processor = OrderProcessor(
+            self.response_generator, 
+            menu_service, 
+            session_manager,
+            self.intent_recognizer  # 새로운 인자 추가
+        )
+        
         self.search_processor = SearchProcessor(self.response_generator, menu_service, session_manager)
         self.payment_processor = PaymentProcessor(self.response_generator, menu_service, session_manager)
         self.detail_processor = DetailProcessor(self.response_generator, menu_service, session_manager)
@@ -129,6 +135,13 @@ class IntentService:
                 
                 self.session_manager.add_to_history(session_id, text, response)
                 return response
+            # 3. 대기열 처리 추가
+            # 현재 진행 중인 주문이 없지만 대기열에 주문이 있는 경우
+            elif "order_queue" in session and session["order_queue"]:
+                next_menu = session["order_queue"][0]
+                
+                # 대기열에서 첫 번째 메뉴를 꺼내서 옵션 처리 시작
+                return self._start_queued_menu_processing(next_menu, text, language, screen_state, store_id, session)
             
             # 3. 의도 인식 - 통합 의도 인식기 사용
             print("[요청 처리] 신규 의도 인식 시작")
@@ -145,10 +158,12 @@ class IntentService:
             updated_session = self.session_manager.get_session(session_id)
             print(f"[요청 처리] 프로세서 처리 후 장바구니: {len(updated_session.get('cart', []))}")
             
-            # 응답에 장바구니 보강 - 세션에서 최신 장바구니 정보를 가져와 응답에 추가
-            if "data" in response and "cart" in response["data"]:
-                response["data"]["cart"] = updated_session.get("cart", [])
-                print(f"[응답 보강] 최종 장바구니 항목 수: {len(response['data']['cart'])}")
+            # 중요: 응답에 장바구니 보강 - 세션에서 최신 장바구니 정보를 가져와 응답에 추가
+            if "data" in response:
+                # 여기가 가장 중요한 변경: 항상 최신 장바구니 정보를 가져와서 응답에 포함
+                latest_cart = self.session_manager.get_cart(session_id)
+                response["data"]["cart"] = latest_cart
+                print(f"[응답 보강] 최종 장바구니 항목 수: {len(latest_cart)}")
             
             # 5. 대화 기록 저장
             self.session_manager.add_to_history(session_id, text, response)
