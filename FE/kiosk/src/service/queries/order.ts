@@ -30,9 +30,11 @@ export function useOrderRequest() {
 }
 
 export function useRequestPay() {
+  const { order } = useOrderStore();
   return useMutation({
     mutationFn: (payRequest: PayRequest) => requestPay(payRequest),
     onSuccess: (data) => {
+      sessionStorage.setItem('cartItem', JSON.stringify(order.cart));
       window.location.href = data.data.next_redirect_pc_url;
     },
     onError: (error) => {
@@ -42,7 +44,6 @@ export function useRequestPay() {
 }
 
 export function usePostSuccess() {
-  const { order } = useOrderStore();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: ({
@@ -52,10 +53,14 @@ export function usePostSuccess() {
       orderId: string;
       pgToken: string;
     }) => {
-      return postSuccess({ orderId, pgToken, cart: order.cart });
+      return postSuccess({
+        orderId,
+        pgToken,
+        cart: JSON.parse(sessionStorage.getItem('cartItem') || '[]'),
+      });
     },
     onSuccess: () => {
-      alert('결제 성공');
+      sessionStorage.removeItem('cartItem');
       navigate('/kiosk/pay/success');
     },
     onError: (error) => {

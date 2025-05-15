@@ -15,24 +15,12 @@ const PayLoading = () => {
     const orderId = searchParams.get('orderId');
 
     if (pgToken && orderId) {
-      postSuccess(
-        { orderId, pgToken },
-        {
-          onSuccess: () => {
-            navigate('/kiosk/pay-success');
-          },
-          onError: () => {
-            navigate('/kiosk/pay-fail');
-          },
-        }
-      );
-    } else {
-      if (!order.sessionId) {
-        alert('세션 ID가 없습니다.');
-        navigate('/kiosk/select-pay');
-      }
+      postSuccess({ orderId, pgToken });
+    } else if (!order.sessionId) {
+      alert('세션 ID가 없습니다.');
+      navigate('/kiosk/select-pay');
     }
-  }, [location.search, navigate, postSuccess, order.sessionId]);
+  }, []);
 
   return (
     <div className='flex flex-col items-center justify-center w-full h-full'>
