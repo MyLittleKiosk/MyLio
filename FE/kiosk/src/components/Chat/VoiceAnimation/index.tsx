@@ -1,14 +1,13 @@
+import audioStore from '@/stores/audioStore';
 import { useEffect, useRef } from 'react';
-
-interface Props {
-  isRecording: boolean;
-  volume: number;
-}
 
 const BAR_COUNT = 20;
 const MIN_HEIGHT = 0.2; // 최소 높이 비율
 
-const VoiceAnimation = ({ isRecording, volume }: Props) => {
+const VoiceAnimation = () => {
+  const isRecording = audioStore((s) => s.isRecording);
+  const volume = audioStore((s) => s.volume);
+
   const containerRef = useRef<HTMLDivElement>(null); // 애니메이션 박스의 DOM 요소 참조
   const barRefs = useRef<Array<HTMLDivElement | null>>(
     Array(BAR_COUNT).fill(0)
