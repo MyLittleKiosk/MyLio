@@ -703,3 +703,39 @@ class IntentRecognizer:
             formatted_examples.append(example_text)
         
         return "\n\n".join(formatted_examples)
+
+    def generate_option_selection_response(self, menu: Dict[str, Any], option: Dict[str, Any], language: str) -> str:
+        """옵션 선택 안내 응답 생성"""
+        menu_name = menu.get("name", "")
+        option_name = option.get("option_name", "")
+        options_str = ", ".join(detail.get("value", "") for detail in option.get("option_details", []))
+        
+        # 컨텍스트 구성
+        context = {
+            "menu_name": menu_name,
+            "option_name": option_name,
+            "options_values": options_str,
+            "language": language
+        }
+        
+        # LLM으로 응답 생성
+        # 예: "아메리카노를 주문하셨네요. 사이즈를 선택해주세요. (S, M, L 중에서)"
+        prompt = f"""
+        사용자가 카페에서 {menu_name}를 주문하고 있습니다.
+        현재 {option_name} 옵션을 선택해야 합니다.
+        선택 가능한 옵션은 {options_str}입니다.
+        사용자의 언어는 {language}입니다.
+        
+        이 상황에서 옵션 선택을 안내하는 자연스러운 메시지를 생성해주세요. 해요체로 응답을 생성해주세요.
+        """
+        
+        # LLM 응답 생성 시도
+        try:
+            response = self._generate_llm_response(prompt)
+            if response and len(response) > 0:
+                return response
+        except Exception as e:
+            print(f"LLM 응답 생성 오류: {e}")
+        
+        # 실패 시 기본 응답 사용
+        return f"{menu_name}를 선택하셨네요. {option_name}을(를) 선택해주세요. ({options_str})"

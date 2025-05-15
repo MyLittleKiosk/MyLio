@@ -7,16 +7,18 @@ from app.services.option.option_matcher import OptionMatcher
 from app.services.response.response_generator import ResponseGenerator
 from app.services.response_service import ResponseService  
 from app.models.schemas import ResponseStatus
+from app.services.intent_recognizer import IntentRecognizer
 
 class OrderProcessor(BaseProcessor):
     """주문 처리 프로세서"""
     
-    def __init__(self, response_generator: ResponseGenerator, menu_service, session_manager):
+    def __init__(self, response_generator: ResponseGenerator, menu_service, session_manager, intent_recognizer):
         """프로세서 초기화"""
         self.response_generator = response_generator
         self.menu_service = menu_service
         self.session_manager = session_manager
         self.option_matcher = OptionMatcher()
+        self.intent_recognizer = intent_recognizer
     
     def process(self, intent_data: Dict[str, Any], text: str, language: str, screen_state: str, store_id: int, session: Dict[str, Any]) -> Dict[str, Any]:
         """주문 의도 처리"""
@@ -604,25 +606,30 @@ class OrderProcessor(BaseProcessor):
                 option_name = next_required_option.get("option_name")
                 options_str = ", ".join(detail.get("value") for detail in next_required_option.get("option_details", []))
                 
+                # 응답 생성 - 여기서 LLM이 자연스러운 응답 생성
+                reply = self.intent_recognizer.generate_option_selection_response(
+                    menu, next_required_option, language
+                )
+
                 # 컨텍스트 구성
-                context = {
-                    "status": ResponseStatus.MISSING_REQUIRED_OPTIONS,
-                    "screen_state": screen_state,
-                    "menu_name": menu.get("name"),
-                    "option_name": option_name,
-                    "options": options_str
-                }
+                # context = {
+                #     "status": ResponseStatus.MISSING_REQUIRED_OPTIONS,
+                #     "screen_state": screen_state,
+                #     "menu_name": menu.get("name"),
+                #     "option_name": option_name,
+                #     "options": options_str
+                # }
                 
-                # 의도 데이터 구성
-                intent_data = {
-                    "intent_type": IntentType.OPTION_SELECT,
-                    "confidence": 0.8,
-                    "menu_name": menu.get("name"),
-                    "option_name": option_name
-                }
+                # # 의도 데이터 구성
+                # intent_data = {
+                #     "intent_type": IntentType.OPTION_SELECT,
+                #     "confidence": 0.8,
+                #     "menu_name": menu.get("name"),
+                #     "option_name": option_name
+                # }
                 
                 # 응답 생성
-                reply = self.response_generator.generate_response(intent_data, language, context)
+                # reply = self.response_generator.generate_response(intent_data, language, context)
                 
                 # 다음 옵션 대기 상태 설정
                 session["last_state"] = {
@@ -728,33 +735,19 @@ class OrderProcessor(BaseProcessor):
                             }
                             self.session_manager._save_session(session_id, session)
                             
-                            # 옵션 선택 요청 응답 메시지 생성
-                            option_name = missing_option.get("option_name")
-                            options_str = ", ".join(detail.get("value") for detail in missing_option.get("option_details", []))
+                            # 직접 응답 구성 - LLM 응답에 의존하지 않고 하드코딩
+                            menu_name = next_menu.get("name", "")
+                            option_name = missing_option.get("option_name", "")
                             
-                            # 완료된 메뉴 정보도 포함하는 응답 생성
-                            context = {
-                                "status": ResponseStatus.MISSING_REQUIRED_OPTIONS,
-                                "screen_state": screen_state,
-                                "menu_name": next_menu.get("name"),
-                                "option_name": option_name,
-                                "options": options_str,
-                                "completed_menu": completed_menu_name
-                            }
+                            # 옵션 값 목록 문자열
+                            options_list = []
+                            for detail in missing_option.get("option_details", []):
+                                if detail and "value" in detail:
+                                    options_list.append(detail["value"])
+                            options_str = ", ".join(options_list)
                             
-                            intent_data = {
-                                "intent_type": IntentType.OPTION_SELECT,
-                                "confidence": 0.8,
-                                "menu_name": next_menu.get("name"),
-                                "option_name": option_name
-                            }
-                            
-                            # LLM으로 자연스러운 응답 생성
-                            reply = self.response_generator.generate_response(intent_data, language, context)
-                            
-                            # 기본 응답 구성 (LLM에서 응답이 오지 않은 경우)
-                            if not reply:
-                                reply = f"{completed_menu_name}을(를) 장바구니에 담았습니다. 이어서 {next_menu.get('name')}의 {option_name}을(를) 선택해주세요. ({options_str})"
+                            # 명시적 응답 구성 (템플릿 변수 사용 X)
+                            reply = f"{menu_name}를 선택하셨네요. {option_name}을(를) 선택해주세요. ({options_str})"
                             
                             # 응답 구성
                             return {
@@ -770,7 +763,7 @@ class OrderProcessor(BaseProcessor):
                                     "language": language,
                                     "session_id": session_id,
                                     "cart": session.get("cart", []),
-                                    "contents": [next_menu],  # 다음 메뉴를 현재 컨텐츠로 설정
+                                    "contents": [next_menu],
                                     "store_id": store_id
                                 }
                             }
@@ -807,7 +800,7 @@ class OrderProcessor(BaseProcessor):
                     reply = self.response_generator.generate_response(intent_data, language, context)
                     
                     if not reply:  # LLM 응답이 없는 경우 기본 응답
-                        reply = f"{completed_menu_name}을(를) 장바구니에 담았습니다. 더 필요한 것이 있으신가요?"
+                        reply = f"{completed_menu_name}을(를) 장바구니에 담았어요. 더 필요한 것이 있으신가요?"
                 
                 # 주문 완료 후 상태 초기화 (대기열 처리가 남아있지 않은 경우)
                 if not ("order_queue" in session and session["order_queue"]):
@@ -885,14 +878,23 @@ class OrderProcessor(BaseProcessor):
                 }
                 self.session_manager._save_session(session_id, session)
                 
-                option_name = missing_option.get("option_name")
-                options_str = ", ".join(detail.get("value") for detail in missing_option.get("option_details", []))
+                # # 변수 추출
+                # menu_name = next_menu.get("name", "")
+                # option_name = missing_option.get("option_name", "")
+                # options_list = []
+                # for detail in missing_option.get("option_details", []):
+                #     if detail and "value" in detail:
+                #         options_list.append(detail["value"])
+                # options_str = ", ".join(options_list)
                 
-                # 멀티 메뉴 완료 + 새 메뉴 옵션 요청 응답
-                menu_response = f"{completed_menu_name}과(와) {next_menu_name}을(를) 장바구니에 담았습니다."
-                option_response = f"이제 {next_menu.get('name')}의 {option_name}을(를) 선택해주세요. ({options_str})"
-                reply = f"{menu_response} {option_response}"
+                # # 직접 응답 구성 (템플릿 변수 사용 X)
+                # reply = f"{menu_name}를 선택하셨네요. {option_name}을(를) 선택해주세요. ({options_str})"
                 
+                # LLM으로 자연스러운 응답 생성
+                reply = self.intent_recognizer.generate_option_selection_response(
+                    next_menu, missing_option, language
+                )
+
                 return {
                     "intent_type": IntentType.OPTION_SELECT,
                     "confidence": 0.8,
@@ -945,6 +947,39 @@ class OrderProcessor(BaseProcessor):
         # 컨텐츠가 None이면 빈 리스트로 초기화
         if contents is None:
             contents = []
+
+         # 응답 메시지 확인 - 템플릿 변수가 있으면 치환 시도
+        final_reply = reply or intent_data.get("reply", "")
+        if '{' in final_reply and '}' in final_reply:
+            # 컨텍스트 구성 시도
+            context = {}
+            
+            # 메뉴 정보가 있으면 추가
+            if contents and len(contents) > 0:
+                menu = contents[0]
+                context["menu_name"] = menu.get("name", "")
+                
+                # 옵션 정보 추가
+                options_summary = ""
+                if menu.get("selected_options"):
+                    option_strs = []
+                    for opt in menu.get("selected_options", []):
+                        if opt.get("option_details"):
+                            option_value = opt["option_details"][0].get("value", "")
+                            option_strs.append(f"{opt['option_name']}: {option_value}")
+                    
+                    options_summary = f" ({', '.join(option_strs)})" if option_strs else ""
+                
+                context["options_summary"] = options_summary
+                
+                # 현재 필요한 옵션 정보 추가
+                if session.get("last_state", {}).get("pending_option"):
+                    pending_option = session["last_state"]["pending_option"]
+                    context["option_name"] = pending_option.get("option_name", "")
+                    context["options"] = ", ".join([detail.get("value", "") for detail in pending_option.get("option_details", [])])
+            
+            # 템플릿 변수 치환
+            final_reply = self._replace_template_vars(final_reply, context)
         
         return {
             "intent_type": intent_data.get("intent_type", IntentType.UNKNOWN),

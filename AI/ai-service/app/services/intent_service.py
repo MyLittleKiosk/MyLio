@@ -30,7 +30,13 @@ class IntentService:
         self.intent_recognizer = IntentRecognizer(api_key, menu_service)
         
         # 프로세서 초기화
-        self.order_processor = OrderProcessor(self.response_generator, menu_service, session_manager)
+        self.order_processor = OrderProcessor(
+            self.response_generator, 
+            menu_service, 
+            session_manager,
+            self.intent_recognizer  # 새로운 인자 추가
+        )
+        
         self.search_processor = SearchProcessor(self.response_generator, menu_service, session_manager)
         self.payment_processor = PaymentProcessor(self.response_generator, menu_service, session_manager)
         self.detail_processor = DetailProcessor(self.response_generator, menu_service, session_manager)
