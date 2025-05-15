@@ -1,10 +1,13 @@
 package com.ssafy.mylio.domain.order.controller;
 
 
+import com.ssafy.mylio.domain.order.dto.response.OrderDetailResponseDto;
 import com.ssafy.mylio.domain.order.dto.response.OrderListResponseDto;
 import com.ssafy.mylio.domain.order.service.OrderListService;
+import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
 import com.ssafy.mylio.global.common.CustomPage;
 import com.ssafy.mylio.global.common.response.CommonResponse;
+import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.security.auth.UserPrincipal;
 import com.ssafy.mylio.global.util.AuthenticationUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,10 +44,16 @@ public class OrderListController {
           )
     {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
-        System.out.println(storeId);
         return CommonResponse.ok(orderListService.getOrderList(storeId, startDate, endDate, pageable));
     }
 
-
+    @GetMapping("/{order_id}")
+    @Operation(summary = "주문 상세 조회", description = "주문의 상세 내용을 조회합니다")
+    @ApiErrorCodeExamples({ErrorCode.ORDER_NOT_FOUND})
+    public ResponseEntity<CommonResponse<OrderDetailResponseDto>> getOrderDetail(
+            @PathVariable("order_id") Integer orderId)
+    {
+        return CommonResponse.ok(orderListService.getOrderDetail(orderId));
+    }
 
 }

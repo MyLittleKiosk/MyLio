@@ -28,7 +28,8 @@ public enum ErrorCode {
     // Menu
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 메뉴입니다"),
     MENU_STORE_NOT_MATCH(HttpStatus.BAD_REQUEST,"M002","매장에 없는 메뉴입니다"),
-
+    // Order
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "O001", "존재하지 않는 주문입니다"),
     //Kiosk
     KIOSK_SESSION_NOT_FOUND(HttpStatus.NOT_FOUND,"K001","존재하지 않는 키오스크 입니다."),
     KIOSK_IN_USE(HttpStatus.CONFLICT,"K002","이미 사용중인 키오스크입니다."),
@@ -60,6 +61,7 @@ public enum ErrorCode {
 
     // Ingredient
     INGREDIENT_TEMPLATE_NOT_FOUND(HttpStatus.NOT_FOUND, "I001", "존재하지 않는 원재료 템플릿입니다"),
+    INGREDIENT_TEMPLATE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST,"I002","이미 존재하는 원재료 템플릿입니다"),
 
     // AI
     SCREEN_STATE_NOT_FOUND(HttpStatus.BAD_REQUEST,"AI001","렌더링 할 수 없는 STATE 입니다"),
