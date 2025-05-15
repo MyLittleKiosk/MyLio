@@ -461,7 +461,8 @@ class RedisSessionManager:
                     for detail in pending_opt.get("option_details", []):
                         sanitized["last_state"]["pending_option"]["option_details"].append({
                             "id": detail.get("id"),
-                            "value": detail.get("value")
+                            "value": detail.get("value"),
+                            "additional_price": detail.get("additional_price", 0)
                         })
             
             # menu 복사 (중복 제거 및 간소화)

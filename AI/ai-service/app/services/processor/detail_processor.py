@@ -121,10 +121,21 @@ class DetailProcessor(BaseProcessor):
             "menu_id": menu_id,
             "name": menu["name_kr"],
             "name_en": menu.get("name_en", ""),
-            "nutrition": menu.get("nutrition", {}),
-            "ingredients": menu.get("ingredients", []),
-            "description": menu.get("description", "")
+            "description": menu.get("description", ""),
+            "price": menu.get("price", 0),  # 가격 정보 추가
+            "image_url": menu.get("image_url", "")  # 이미지 URL 추가
         }
+
+        # 요청한 정보에 따라 선택적으로 정보 추가
+        attribute = intent_data.get("attribute", "")
+        if attribute in ["nutrition", "영양", "영양성분"]:
+            detailed_contents["nutrition"] = menu.get("nutrition", [])
+        elif attribute in ["ingredients", "원재료"]:
+            detailed_contents["ingredients"] = menu.get("ingredients", [])
+        else:
+            # 속성이 명시되지 않은 경우 모든 정보 포함
+            detailed_contents["nutrition"] = menu.get("nutrition", [])
+            detailed_contents["ingredients"] = menu.get("ingredients", [])
         
         # 7. 응답 반환
         return {
@@ -135,7 +146,7 @@ class DetailProcessor(BaseProcessor):
             "data": {
                 "pre_text": text,
                 "post_text": intent_data.get("post_text", text),
-                "reply": reply,
+                "reply": f"{intent_data.get('menu_name', '이 메뉴')}의 가격은 {menu.get('price', 0)}원이며, 영양정보는 다음과 같아요." if intent_data.get("attribute") == "nutrition" else reply,
                 "status": ResponseStatus.DETAIL,
                 "language": language,
                 "session_id": session.get("id", ""),

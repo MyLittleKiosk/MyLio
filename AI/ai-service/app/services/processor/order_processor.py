@@ -69,11 +69,32 @@ class OrderProcessor(BaseProcessor):
                     "base_price": menu_match["price"],
                     "total_price": menu_match["price"],
                     "image_url": menu_match.get("image_url", ""),
-                    "options": menu_match["options"].copy(),
+                    "options": [],  # 옵션 배열 초기화
                     "selected_options": [],
                     "is_corrected": menu_name.lower() != menu_match["name_kr"].lower(),
                     "original_name": menu_name if menu_name.lower() != menu_match["name_kr"].lower() else None
                 }
+
+                # 옵션 정보 복사 (additional_price 포함)
+                for option in menu_match["options"]:
+                    enriched_option = {
+                        "option_id": option.get("option_id"),
+                        "option_name": option.get("option_name"),
+                        "option_name_en": option.get("option_name_en"),
+                        "required": option.get("required", False),
+                        "is_selected": False,
+                        "option_details": []
+                    }
+                    
+                    # 옵션 상세 정보 복사 (additional_price 포함)
+                    for detail in option.get("option_details", []):
+                        enriched_option["option_details"].append({
+                            "id": detail.get("id"),
+                            "value": detail.get("value"),
+                            "additional_price": detail.get("additional_price", 0)
+                        })
+                    
+                    enriched_menu["options"].append(enriched_option)
                 
                 # 옵션 처리
                 recognized_options = menu_info.get("options", [])
@@ -93,6 +114,15 @@ class OrderProcessor(BaseProcessor):
                         
                         # 중복되지 않은 경우에만 추가
                         if not option_already_added:
+                            # 원본 옵션에서 additional_price 가져오기
+                            for original_option in menu_match["options"]:
+                                if original_option["option_id"] == matched_option["option_id"]:
+                                    for original_detail in original_option["option_details"]:
+                                        if original_detail["id"] == matched_option["option_details"][0]["id"]:
+                                            matched_option["option_details"][0]["additional_price"] = original_detail.get("additional_price", 0)
+                                            break
+                                    break
+                            
                             enriched_menu["selected_options"].append(matched_option)
                             
                             # options 배열에서 해당 옵션 업데이트
@@ -198,6 +228,22 @@ class OrderProcessor(BaseProcessor):
             
             if missing_option:
                 # 세션에 현재 상태 저장 (메뉴와 대기 중인 옵션)
+                pending_option = {
+                    "option_id": missing_option.get("option_id"),
+                    "option_name": missing_option.get("option_name"),
+                    "required": missing_option.get("required", False),
+                    "option_details": []
+                }
+                
+                # 옵션 상세 정보 복사 (additional_price 포함)
+                for detail in missing_option.get("option_details", []):
+                    detail_copy = {
+                        "id": detail.get("id"),
+                        "value": detail.get("value"),
+                        "additional_price": detail.get("additional_price", 0)  # additional_price 추가
+                    }
+                    pending_option["option_details"].append(detail_copy)
+                
                 session["last_state"] = {
                     "menu": first_menu,
                     "pending_option": missing_option
