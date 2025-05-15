@@ -14,7 +14,17 @@ import { Column } from '@/types/tableProps';
 import { useGetCategory } from '@/service/queries/category';
 import { useGetMenus } from '@/service/queries/menu';
 
-const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
+interface Props {
+  selectedNav: NavItemType;
+  setIsEditMenuClicked: (value: boolean) => void;
+  setClickedMenuId: (value: number) => void;
+}
+
+const Menu = ({
+  selectedNav,
+  setIsEditMenuClicked,
+  setClickedMenuId,
+}: Props) => {
   const [searchValue, setSearchValue] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(
     null
@@ -37,6 +47,11 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
       (store) => store.storeName === e.target.value
     );
     setSelectedStore(selected || null);
+  }
+
+  function handleEdit(menuId: number) {
+    setIsEditMenuClicked(true);
+    setClickedMenuId(menuId);
   }
 
   const { data: menus, isLoading: getMenusLoading } = useGetMenus();
@@ -80,6 +95,7 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
         description='총 6개의 메뉴가 있습니다.'
         columns={selectedNav.columns as Column<MenuType>[]}
         data={menus as MenuType[]}
+        onEdit={(row) => handleEdit(row.menuId)}
       />
     </div>
   );

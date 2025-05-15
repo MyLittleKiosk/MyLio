@@ -6,6 +6,7 @@ import Category from '@/components/menus/Category';
 import Option from '@/components/menus/Option';
 import AddMenuForm from '@/components/menus/AddMenuForm';
 import Button from '@/components/common/Button';
+import EditMenuForm from '@/components/menus/EditMenuForm';
 
 import { MENU_NAV_LIST } from '@/datas/menuList';
 import { NavItemType } from '@/types/menus';
@@ -14,6 +15,8 @@ import IconAdd from '@/assets/icons/IconAdd';
 const Menus = () => {
   const [selectedNav, setSelectedNav] = useState<NavItemType>(MENU_NAV_LIST[0]);
   const [isAddMenuClicked, setIsAddMenuClicked] = useState(false);
+  const [isEditMenuClicked, setIsEditMenuClicked] = useState(false);
+  const [clickedMenuId, setClickedMenuId] = useState<number | null>(null);
 
   return (
     <>
@@ -33,6 +36,11 @@ const Menus = () => {
 
         {isAddMenuClicked ? (
           <AddMenuForm setIsAddMenuClicked={setIsAddMenuClicked} />
+        ) : isEditMenuClicked ? (
+          <EditMenuForm
+            setIsEditMenuClicked={setIsEditMenuClicked}
+            clickedMenuId={clickedMenuId as number}
+          />
         ) : (
           <>
             <nav className='bg-subContent/50 rounded-md p-2 w-fit'>
@@ -55,7 +63,11 @@ const Menus = () => {
             </nav>
             <div>
               {selectedNav.title === '메뉴' && (
-                <Menu selectedNav={selectedNav} />
+                <Menu
+                  selectedNav={selectedNav}
+                  setIsEditMenuClicked={setIsEditMenuClicked}
+                  setClickedMenuId={setClickedMenuId}
+                />
               )}
               {selectedNav.title === '카테고리' && (
                 <Category selectedNav={selectedNav} />
