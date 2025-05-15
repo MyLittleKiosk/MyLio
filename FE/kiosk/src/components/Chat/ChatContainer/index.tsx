@@ -73,6 +73,7 @@ const ChatContainer = ({ userChat, gptChat, isExpand }: Props) => {
         <motion.div
           className='p-2 pe-1 flex justify-center items-center rounded-full'
           style={{
+            // boxShadow: 'inset 0px 0px 10px rgba(0, 0, 0, 0.25)',
             aspectRatio: '1/1', // 정사각형 비율 유지
             overflow: 'hidden',
           }}

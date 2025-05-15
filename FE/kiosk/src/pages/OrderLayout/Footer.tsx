@@ -29,14 +29,18 @@ const Footer = ({ order, handleRecognitionResult, pathname }: FooterProps) => {
       )}
     >
       {FOOTER_PATHS.includes(pathname) && (
-        <div className='px-4 flex justify-start items-center gap-4 bg-gray-200 w-[80%] h-full rounded-xl overflow-y-auto'>
+        <div className='px-4 flex justify-start items-center gap-4 bg-slate-100 w-[80%] h-full rounded-xl overflow-y-auto'>
           {order.cart.map((item) => (
             <div
               key={item.cartId}
               className='w-1/4 h-[80%] flex flex-col bg-white rounded-xl justify-center items-center gap-2'
             >
-              <img src={item.imageUrl} alt={item.name} />
-              <p className='text-sm'>{item.quantity}</p>
+              <img
+                src={item.imageUrl}
+                alt={item.name}
+                className='w-12 h-12 object-cover rounded-xl'
+              />
+              <p className='text-sm text-center font-bold'>{item.quantity}</p>
             </div>
           ))}
         </div>
