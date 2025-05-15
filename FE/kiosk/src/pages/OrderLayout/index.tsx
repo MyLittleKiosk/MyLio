@@ -60,11 +60,6 @@ const OrderLayout = () => {
   function testHandleRecognitionResult() {
     handleRecognitionResult(inputRef.current?.value || '');
   }
-  function pressEnter(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Enter') {
-      testHandleRecognitionResult();
-    }
-  }
 
   return (
     // 배경 색은 추후 변경 예정
@@ -98,8 +93,16 @@ const OrderLayout = () => {
           <button onClick={handleLogout}>로그아웃</button>
           <button onClick={handleSessionReset}>세션 초기화</button>
           <div className='flex gap-2 h-full'>
-            <input type='text' ref={inputRef} onKeyDown={pressEnter} />
-            <button onClick={testHandleRecognitionResult}>전송</button>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                testHandleRecognitionResult();
+              }}
+              className='flex gap-2 h-full'
+            >
+              <input type='text' ref={inputRef} />
+              <button type='submit'>전송</button>
+            </form>
           </div>
         </div>
       </div>

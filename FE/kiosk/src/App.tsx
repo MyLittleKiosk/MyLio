@@ -20,7 +20,7 @@ function App() {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <MSWInit />
+        {/* <MSWInit /> */}
         <Routes>
           <Route path='/' element={<Login />} />
           <Route path='/clova' element={<Clova />} />

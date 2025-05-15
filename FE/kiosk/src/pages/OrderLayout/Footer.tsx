@@ -50,7 +50,7 @@ const Footer = ({ order, handleRecognitionResult, pathname }: FooterProps) => {
             </button>
           </div>
           <div className='flex items-center gap-2 w-full'>
-            {cartList[page].map((item) => (
+            {cartList[page]?.map((item) => (
               <div
                 key={item.cartId}
                 className='w-1/4 h-[80%] flex flex-col bg-white rounded-xl justify-center items-center gap-2'
