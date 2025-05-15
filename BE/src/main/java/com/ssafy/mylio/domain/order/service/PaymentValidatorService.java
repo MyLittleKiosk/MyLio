@@ -1,5 +1,6 @@
 package com.ssafy.mylio.domain.order.service;
 
+import com.ssafy.mylio.domain.menu.entity.Menu;
 import com.ssafy.mylio.domain.menu.repository.MenuRepository;
 import com.ssafy.mylio.domain.options.entity.MenuOptionMap;
 import com.ssafy.mylio.domain.options.repository.MenuOptionRepository;
@@ -83,7 +84,7 @@ public class PaymentValidatorService {
     private CartResponseDto validateCartItem(CartResponseDto item) {
         Integer menuId = item.getMenuId();
 
-        menuRepository.findById(menuId)
+        Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(()-> new CustomException(ErrorCode.MENU_NOT_FOUND,"menuId", menuId));
 
         // 옵션 매핑 검증
@@ -120,6 +121,7 @@ public class PaymentValidatorService {
         }
         return item.toBuilder()
                 .selectedOptions(fixedSelected)
+                .imageUrl(item.getImageUrl() ==null ? menu.getImageUrl() : item.getImageUrl())
                 .build();
 
     }
