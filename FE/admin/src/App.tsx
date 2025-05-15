@@ -1,8 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
 
-import MSWInit from '@/components/common/MSWInit';
 import Layout from '@/components/layout';
 
+import MSWInit from '@/components/common/MSWInit';
 import Accounts from '@/pages/Accounts';
 import Kiosk from '@/pages/Kiosk';
 import Login from '@/pages/Login';

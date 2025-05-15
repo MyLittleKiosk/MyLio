@@ -1,267 +1,267 @@
 const DUMMY_SALES_BY_YEAR_2024 = [
   {
-    type: 8,
+    element: 8,
     sales: 900000,
   },
   {
-    type: 9,
+    element: 9,
     sales: 1000000,
   },
   {
-    type: 10,
+    element: 10,
     sales: 100000,
   },
   {
-    type: 11,
+    element: 11,
     sales: 1200000,
   },
   {
-    type: 12,
+    element: 12,
     sales: 600000,
   },
 ];
 
 const DUMMY_SALES_BY_YEAR_2025 = [
   {
-    type: 4,
+    element: 4,
     sales: 900000,
   },
   {
-    type: 9,
+    element: 9,
     sales: 1000000,
   },
   {
-    type: 7,
+    element: 7,
     sales: 100000,
   },
   {
-    type: 11,
+    element: 11,
     sales: 100000,
   },
   {
-    type: 12,
+    element: 12,
     sales: 300000,
   },
 ];
 
 const DUMMY_SALES_BY_MONTH_2024_05 = [
   {
-    type: 1,
+    element: 1,
     sales: 100000,
   },
   {
-    type: 2,
+    element: 2,
     sales: 200000,
   },
   {
-    type: 3,
+    element: 3,
     sales: 50000,
   },
   {
-    type: 4,
+    element: 4,
     sales: 180000,
   },
   {
-    type: 5,
+    element: 5,
     sales: 600000,
   },
   {
-    type: 6,
+    element: 6,
     sales: 700000,
   },
   {
-    type: 8,
+    element: 8,
     sales: 900000,
   },
   {
-    type: 9,
+    element: 9,
     sales: 1000000,
   },
   {
-    type: 10,
+    element: 10,
     sales: 100000,
   },
   {
-    type: 11,
+    element: 11,
     sales: 1200000,
   },
   {
-    type: 12,
+    element: 12,
     sales: 300000,
   },
   {
-    type: 13,
+    element: 13,
     sales: 1400000,
   },
   {
-    type: 14,
+    element: 14,
     sales: 1500000,
   },
   {
-    type: 15,
+    element: 15,
     sales: 600000,
   },
   {
-    type: 16,
+    element: 16,
     sales: 1700000,
   },
   {
-    type: 17,
+    element: 17,
     sales: 1800000,
   },
   {
-    type: 18,
+    element: 18,
     sales: 1900000,
   },
   {
-    type: 19,
+    element: 19,
     sales: 2000000,
   },
   {
-    type: 20,
+    element: 20,
     sales: 2100000,
   },
   {
-    type: 21,
+    element: 21,
     sales: 2200000,
   },
   {
-    type: 22,
+    element: 22,
     sales: 300000,
   },
   {
-    type: 23,
+    element: 23,
     sales: 2400000,
   },
   {
-    type: 24,
+    element: 24,
     sales: 2500000,
   },
   {
-    type: 25,
+    element: 25,
     sales: 2600000,
   },
   {
-    type: 26,
+    element: 26,
     sales: 700000,
   },
   {
-    type: 27,
+    element: 27,
     sales: 2800000,
   },
   {
-    type: 28,
+    element: 28,
     sales: 2900000,
   },
   {
-    type: 29,
+    element: 29,
     sales: 3000000,
   },
   {
-    type: 30,
+    element: 30,
     sales: 3100000,
   },
   {
-    type: 31,
+    element: 31,
     sales: 3200000,
   },
 ];
 
 const DUMMY_SALES_BY_MONTH_2025_08 = [
   {
-    type: 1,
+    element: 1,
     sales: 100000,
   },
   {
-    type: 2,
+    element: 2,
     sales: 200000,
   },
   {
-    type: 3,
+    element: 3,
     sales: 50000,
   },
   {
-    type: 4,
+    element: 4,
     sales: 180000,
   },
   {
-    type: 5,
+    element: 5,
     sales: 600000,
   },
   {
-    type: 6,
+    element: 6,
     sales: 700000,
   },
   {
-    type: 7,
+    element: 7,
     sales: 800000,
   },
   {
-    type: 8,
+    element: 8,
     sales: 900000,
   },
   {
-    type: 9,
+    element: 9,
     sales: 1000000,
   },
   {
-    type: 10,
+    element: 10,
     sales: 100000,
   },
   {
-    type: 13,
+    element: 13,
     sales: 1400000,
   },
   {
-    type: 14,
+    element: 14,
     sales: 1500000,
   },
   {
-    type: 15,
+    element: 15,
     sales: 600000,
   },
   {
-    type: 16,
+    element: 16,
     sales: 1700000,
   },
   {
-    type: 17,
+    element: 17,
     sales: 1800000,
   },
   {
-    type: 18,
+    element: 18,
     sales: 1900000,
   },
   {
-    type: 19,
+    element: 19,
     sales: 2000000,
   },
   {
-    type: 20,
+    element: 20,
     sales: 2100000,
   },
   {
-    type: 23,
+    element: 23,
     sales: 2400000,
   },
   {
-    type: 27,
+    element: 27,
     sales: 2800000,
   },
   {
-    type: 28,
+    element: 28,
     sales: 2900000,
   },
   {
-    type: 29,
+    element: 29,
     sales: 3000000,
   },
   {
-    type: 30,
+    element: 30,
     sales: 3100000,
   },
   {
-    type: 31,
+    element: 31,
     sales: 3200000,
   },
 ];

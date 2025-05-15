@@ -1,49 +1,50 @@
-import React from 'react';
+import clsx from 'clsx';
+import { InputHTMLAttributes } from 'react';
 
-interface InputProps {
+type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
-  inputId: string;
-  placeholder: string;
-  inputType: string;
-  inputValue: string | number;
+  error?: boolean;
+  errorMessage?: string;
+  minDate?: string;
+  maxDate?: string;
   className?: string;
   inputClassName?: string;
-  error?: boolean;
-  disabled?: boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-}
+};
 
 const Input = ({
   label,
-  inputId,
-  placeholder,
-  inputType,
-  inputValue,
-  onChange,
-  className,
   inputClassName,
   error = false,
-  disabled = false,
-  onKeyDown,
+  errorMessage,
+  minDate,
+  maxDate,
+  className,
+  ...props
 }: InputProps) => {
   const inputElement = (
-    <input
-      id={inputId}
-      placeholder={placeholder}
-      type={inputType}
-      value={inputValue}
-      onChange={onChange}
-      className={`${
-        error ? 'border-2 border-error' : 'border border-subContent'
-      } rounded-md p-2 font-preRegular h-[40px] box-border ${inputClassName || 'w-full'}`}
-      disabled={disabled}
-      onKeyDown={onKeyDown}
-    />
+    <div className='w-full'>
+      <input
+        className={clsx(
+          'rounded-md p-2 font-preRegular h-[40px] box-border',
+          inputClassName || 'w-full',
+          error
+            ? 'border-2 border-error focus:ring-1 focus:ring-error focus:ring-inset focus:outline-none'
+            : 'border border-subContent'
+        )}
+        min={minDate}
+        max={maxDate}
+        {...props}
+      />
+      {errorMessage && (
+        <span className='text-error text-sm font-preMedium'>
+          {errorMessage}
+        </span>
+      )}
+    </div>
   );
 
   return (
-    <div className={`flex items-center ${className || ''}`}>
+    <div className={`flex items-center ${className}`}>
       {label ? (
         <label className='flex gap-4 items-center w-full'>
           <span className='w-[10%] min-w-[80px] max-w-[100px] text-md font-preSemiBold whitespace-wrap break-keep'>

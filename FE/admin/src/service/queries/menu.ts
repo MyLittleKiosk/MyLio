@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import getMenus from '@/service/apis/menu';
+import { addMenu, getMenus } from '@/service/apis/menu';
 
-import { MenuType } from '@/types/menus';
+import { MenuAdd, MenuType } from '@/types/menus';
 import { PaginationResponse, Response } from '@/types/apiResponse';
 
 const useGetMenus = (page?: number, categoryId?: number) => {
@@ -18,4 +18,21 @@ const useGetMenus = (page?: number, categoryId?: number) => {
   };
 };
 
-export default useGetMenus;
+const useAddMenu = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ menu, file }: { menu: MenuAdd; file?: File }) =>
+      addMenu(menu, file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['menus'] });
+    },
+    onError: (error) => {
+      if (error instanceof Error) {
+        alert(error.message);
+      }
+    },
+  });
+};
+
+export { useGetMenus, useAddMenu };

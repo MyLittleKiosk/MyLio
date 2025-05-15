@@ -45,15 +45,15 @@ const Accounts = () => {
         <h1 className='text-2xl font-preBold h-[5%]'>계정 관리</h1>
         <div className='flex gap-2 max-h-[10%] w-full justify-between'>
           <Input
-            inputId='searchMenu'
+            id='searchMenu'
             placeholder='이름, 이메일, 매장 이름으로 검색'
-            inputType='text'
-            inputValue={searchValue}
+            type='text'
+            value={searchValue}
             onChange={handleSearchChange}
             className='w-[100%]'
           />
           <Button
-            buttonType='button'
+            type='button'
             text='계정 추가'
             icon={<IconAdd fillColor='white' />}
             onClick={() => {

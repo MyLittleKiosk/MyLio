@@ -19,7 +19,7 @@ const CompleteModal = ({ title, description, buttonText }: Props) => {
 
       <div className='mt-2'>
         <Button
-          buttonType='button'
+          type='button'
           text={buttonText}
           onClick={closeModal}
           className='w-full mt-4 flex justify-center'

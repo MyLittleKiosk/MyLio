@@ -1,78 +1,99 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
-import Select from '@/components/common/Select';
+import CompleteModal from '@/components/common/CompleteModal';
+
 import useModalStore from '@/stores/useModalStore';
+import { useAddKiosk } from '@/service/queries/kiosk';
 
-interface AddKioskModalProps {
-  initialData?: {
-    name: string;
-    id: string;
-    status: boolean;
-  };
-  onSave: () => void;
-}
+const AddKioskModal = () => {
+  const [kioskName, setKioskName] = useState('');
+  const [groupName, setGroupName] = useState('');
 
-const AddKioskModal = ({ initialData, onSave }: AddKioskModalProps) => {
-  const [kioskName, setKioskName] = useState(initialData?.name || '');
-  const [groupName, setGroupName] = useState(initialData?.id || '');
-  const [status, setStatus] = useState(initialData?.status || '활성화');
+  const [groupNameError, setGroupNameError] = useState({
+    error: false,
+    message: '',
+  });
 
-  const { closeModal } = useModalStore();
-
-  function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    setStatus(e.target.value);
-  }
+  const { openModal, closeModal } = useModalStore();
+  const { mutate: addKiosk } = useAddKiosk();
 
   function handleGroupNameChange(value: string) {
     if (/^[A-Z]$/.test(value) || value === '') {
-      setGroupName(value);
+      setGroupNameError({
+        error: false,
+        message: '',
+      });
+    } else {
+      setGroupNameError({
+        error: true,
+        message: '알파벳 한 글자만 입력 가능합니다.',
+      });
     }
+
+    setGroupName(value.toUpperCase());
+  }
+
+  function handleSave() {
+    if (kioskName === '' || groupName === '' || groupNameError.error) {
+      alert('올바르지 않은 키오스크명 혹은 그룹명입니다.');
+      return;
+    }
+
+    addKiosk(
+      { name: kioskName, startOrder: groupName },
+      {
+        onSuccess: () => {
+          openModal(
+            <CompleteModal
+              title='등록 성공'
+              description='키오스크 등록에 성공했습니다.'
+              buttonText='닫기'
+            />
+          );
+        },
+      }
+    );
   }
 
   return (
-    <div className='w-[420px] bg-white rounded-xl p-8 flex flex-col gap-6'>
+    <div className='bg-white rounded-xl p-8 flex flex-col gap-6'>
       <div>
-        <h2 className='text-xl font-preBold mb-1'>키오스크 수정</h2>
+        <h2 className='text-xl font-preBold mb-1'>키오스크 등록</h2>
         <p className='text-sm text-gray-500 mb-4'>
-          키오스크 정보를 수정합니다.
+          키오스크 정보를 등록합니다.
         </p>
         <div className='flex flex-col gap-4'>
           <Input
-            inputId='kioskName'
+            id='kioskName'
             label='키오스크명'
             placeholder='키오스크명을 입력하세요'
-            inputType='text'
-            inputValue={kioskName}
+            type='text'
+            value={kioskName}
             onChange={(e) => setKioskName(e.target.value)}
           />
+
           <Input
-            inputId='groupName'
+            id='groupName'
             label='그룹명 (A-Z)'
             placeholder='그룹명을 입력하세요'
-            inputType='text'
-            inputValue={groupName}
+            type='text'
+            value={groupName}
             onChange={(e) => handleGroupNameChange(e.target.value)}
+            error={groupNameError.error}
+            errorMessage={groupNameError.message}
           />
-          <label className='flex gap-4 items-center w-full'>
-            <span className='min-w-[80px] max-w-[100px] text-md font-preSemiBold whitespace-nowrap'>
-              활성화 여부
-            </span>
-            <Select
-              options={['활성화', '비활성화']}
-              selected={status}
-              onChange={handleStatusChange}
-              placeholder='전체'
-              className='w-full h-full'
-              getOptionLabel={(option) => option as string}
-              getOptionValue={(option) => option as string}
-            />
-          </label>
         </div>
       </div>
       <div className='flex justify-end gap-2 mt-4'>
-        <Button buttonType='button' text='취소' cancel onClick={closeModal} />
-        <Button buttonType='button' text='저장' onClick={onSave} />
+        <Button type='button' text='취소' cancel onClick={closeModal} />
+        <Button
+          type='button'
+          text='저장'
+          id='saveAddKiosk'
+          onClick={handleSave}
+        />
       </div>
     </div>
   );

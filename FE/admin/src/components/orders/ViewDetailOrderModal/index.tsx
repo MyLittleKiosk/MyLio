@@ -1,6 +1,8 @@
 import { DETAIL_ORDERS } from '@/datas/orderList';
 import useModalStore from '@/stores/useModalStore';
 import { OrderType } from '@/types/orders';
+import { formatDate } from '@/utils/formatDate';
+import { formatMoney } from '@/utils/formatMoney';
 
 interface ViewDetailOrderModalProps {
   initialData: OrderType;
@@ -19,26 +21,25 @@ const ViewDetailOrderModal = ({ initialData }: ViewDetailOrderModalProps) => {
       </div>
       <div>
         <table className='w-full'>
-          <tr className='text-md text-longContent font-preRegular'>
-            <td className='w-[50%]'>
-              <span className='font-preBold'>날짜/시간: </span>
-              <span>{initialData.orderDate}</span>
-            </td>
-            <td className='w-[50%]'>
-              <span className='font-preBold'>점포: </span>
-              <span>{initialData.orderStore}</span>
-            </td>
-          </tr>
-          <tr className='text-md text-longContent font-preRegular'>
-            <td className='w-[50%]'>
-              <span className='font-preBold'>결제정보: </span>
-              <span>{initialData.orderPayment}</span>
-            </td>
-            <td className='w-[50%]'>
-              <span className='font-preBold'>주문유형: </span>
-              <span>{initialData.orderType}</span>
-            </td>
-          </tr>
+          <tbody>
+            <tr className='text-md text-longContent font-preRegular'>
+              <td className='w-[50%]'>
+                <span className='font-preBold'>날짜/시간:</span>
+                <br />
+                <span>{formatDate(initialData.orderedAt)}</span>
+              </td>
+            </tr>
+            <tr className='text-md text-longContent font-preRegular'>
+              <td className='w-[50%]'>
+                <span className='font-preBold'>결제정보: </span>
+                <span>{initialData.paidBy}</span>
+              </td>
+              <td className='w-[50%]'>
+                <span className='font-preBold'>주문유형: </span>
+                <span>{initialData.orderType}</span>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
 
@@ -58,7 +59,7 @@ const ViewDetailOrderModal = ({ initialData }: ViewDetailOrderModalProps) => {
               <tr key={index} className='text-sm font-preRegular'>
                 <td className='px-4 py-3'>{order.productName}</td>
                 <td>{order.productQuantity}</td>
-                <td>{order.productPrice}</td>
+                <td>{formatMoney(order.productPrice)}</td>
                 <td>
                   {order.productOption ? (
                     <span>{order.productOption}</span>
@@ -75,7 +76,7 @@ const ViewDetailOrderModal = ({ initialData }: ViewDetailOrderModalProps) => {
       <div>
         <span className='text-md text-longContent font-preBold'>총 금액 :</span>
         <span className='text-md text-longContent font-preBold'>
-          ₩{initialData.orderPrice}
+          {formatMoney(initialData.totalPrice)}
         </span>
       </div>
 
