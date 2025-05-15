@@ -1,5 +1,15 @@
+import useOrderStore from '@/stores/useOrderStore';
+import KakaoPay from './KakaoPay';
+import CardPay from './CardPay';
+
 const Pay = () => {
-  return <div>Pay</div>;
+  const { order } = useOrderStore();
+  return (
+    <section className='flex flex-col w-full h-full px-10 pt-10'>
+      <h1 className='text-2xl font-preBold'>결제</h1>
+      {order.payment === 'PAY' ? <KakaoPay /> : <CardPay />}
+    </section>
+  );
 };
 
 export default Pay;
