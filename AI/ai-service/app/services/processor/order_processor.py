@@ -384,99 +384,6 @@ class OrderProcessor(BaseProcessor):
             "cart": session.get("cart", [])
         }
 
-        # # 3. 메뉴 상태 확인
-        # status = ResponseStatus.UNKNOWN
-        # if enriched_menus:
-        #     status = self.option_matcher.determine_menu_status(enriched_menus[0])
-        
-        # # 여기에서 필수 옵션 누락 상태 처리 (status 변수가 설정된 후에 처리)
-        # if status == ResponseStatus.MISSING_REQUIRED_OPTIONS and enriched_menus:
-        #     menu = enriched_menus[0]  # 첫 번째 메뉴 사용
-        #     menu_name = menu.get("name")
-            
-        #     # 첫 번째 누락된 필수 옵션 찾기
-        #     missing_option = None
-        #     for option in menu.get("options", []):
-        #         if option.get("required", True) and not option.get("is_selected", False):
-        #             missing_option = option
-        #             break
-            
-        #     if missing_option:
-        #         # 세션에 현재 상태 저장 (메뉴와 대기 중인 옵션)
-        #         session["last_state"] = {
-        #             "menu": menu,
-        #             "pending_option": missing_option
-        #         }
-                
-        #         # Redis에 세션 상태 즉시 업데이트 (중요!)
-        #         self.session_manager._save_session(session["id"], session)
-                
-        #         print(f"[세션 업데이트] 세션 ID: {session['id']}, last_state 설정됨: menu={menu_name}, option={missing_option.get('option_name')}")
-                
-        #         # 필수 옵션 선택 요청 응답 컨텍스트 구성
-        #         context = {
-        #             "status": ResponseStatus.MISSING_REQUIRED_OPTIONS,
-        #             "screen_state": screen_state,
-        #             "menu_name": menu_name,
-        #             "option_name": missing_option.get("option_name"),
-        #             "options": ", ".join([detail.get("value") for detail in missing_option.get("option_details", [])])
-        #         }
-                
-        #         # 응답 생성
-        #         reply = intent_data.get("reply") or self.response_generator.generate_response(intent_data, language, context)
-                
-        #         # 기존 장바구니 가져오기
-        #         if "cart" not in session:
-        #             session["cart"] = []
-                
-        #         return {
-        #             "intent_type": IntentType.OPTION_SELECT,  # 옵션 선택 의도로 변경
-        #             "confidence": intent_data.get("confidence", 0.8),
-        #             "raw_text": text,
-        #             "screen_state": ScreenState.ORDER,  # 주문 화면으로 설정
-        #             "data": {
-        #                 "pre_text": text,
-        #                 "post_text": intent_data.get("post_text", text),
-        #                 "reply": reply,
-        #                 "status": ResponseStatus.MISSING_REQUIRED_OPTIONS,
-        #                 "language": language,
-        #                 "session_id": session.get("id", ""),
-        #                 "cart": session["cart"],
-        #                 "contents": enriched_menus,
-        #                 "store_id": store_id
-        #             }
-        #         }
-        
-        # # 4. 응답 메시지 생성 (LLM 사용)
-        # context = {
-        #     "status": status,
-        #     "screen_state": screen_state,
-        #     "menus": enriched_menus,  # 실제 메뉴 객체를 전달
-        #     "cart": session.get("cart", [])
-        # }
-
-        # # LLM에 전달할 때 템플릿 변수 대신 실제 값을 전달
-        # if "reply" in intent_data:
-        #     # LLM에서 생성된 응답이 이미 있다면 그대로 사용
-        #     reply = intent_data["reply"]
-        # else:
-        #     # LLM을 통해 새로운 응답 생성
-        #     reply = self.response_generator.generate_response(intent_data, language, context)
-
-        # # 혹시 모를 템플릿 변수가 포함된 경우 정리
-        # if "{" in reply and "}" in reply:
-        #     import re
-        #     reply = re.sub(r'\{[^}]+\}', '', reply)
-
-        # # 5. 장바구니 처리 (READY_TO_ADD_CART 상태인 경우)
-        # cart = session.get("cart", [])
-        # if status == ResponseStatus.READY_TO_ADD_CART:
-        #     for menu in enriched_menus:
-        #         cart = self.session_manager.add_to_cart(session["id"], menu)
-
-        #     # 추가: 최신 장바구니 정보 다시 조회
-        #     cart = self.session_manager.get_cart(session["id"])
-
         # LLM 응답 생성
         reply = intent_data.get("reply") or self.response_generator.generate_response(intent_data, language, context)
         
@@ -611,26 +518,6 @@ class OrderProcessor(BaseProcessor):
                     menu, next_required_option, language
                 )
 
-                # 컨텍스트 구성
-                # context = {
-                #     "status": ResponseStatus.MISSING_REQUIRED_OPTIONS,
-                #     "screen_state": screen_state,
-                #     "menu_name": menu.get("name"),
-                #     "option_name": option_name,
-                #     "options": options_str
-                # }
-                
-                # # 의도 데이터 구성
-                # intent_data = {
-                #     "intent_type": IntentType.OPTION_SELECT,
-                #     "confidence": 0.8,
-                #     "menu_name": menu.get("name"),
-                #     "option_name": option_name
-                # }
-                
-                # 응답 생성
-                # reply = self.response_generator.generate_response(intent_data, language, context)
-                
                 # 다음 옵션 대기 상태 설정
                 session["last_state"] = {
                     "menu": menu,

@@ -158,10 +158,12 @@ class IntentService:
             updated_session = self.session_manager.get_session(session_id)
             print(f"[요청 처리] 프로세서 처리 후 장바구니: {len(updated_session.get('cart', []))}")
             
-            # 응답에 장바구니 보강 - 세션에서 최신 장바구니 정보를 가져와 응답에 추가
-            if "data" in response and "cart" in response["data"]:
-                response["data"]["cart"] = updated_session.get("cart", [])
-                print(f"[응답 보강] 최종 장바구니 항목 수: {len(response['data']['cart'])}")
+            # 중요: 응답에 장바구니 보강 - 세션에서 최신 장바구니 정보를 가져와 응답에 추가
+            if "data" in response:
+                # 여기가 가장 중요한 변경: 항상 최신 장바구니 정보를 가져와서 응답에 포함
+                latest_cart = self.session_manager.get_cart(session_id)
+                response["data"]["cart"] = latest_cart
+                print(f"[응답 보강] 최종 장바구니 항목 수: {len(latest_cart)}")
             
             # 5. 대화 기록 저장
             self.session_manager.add_to_history(session_id, text, response)
