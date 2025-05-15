@@ -14,7 +14,6 @@ interface Props {
  */
 const Main = ({ userChat, gptChat, isPending }: Props) => {
   const location = useLocation();
-  const { isRecording, volume } = useAudioRecord();
   const { mutate: tts } = useTTS();
   useEffect(() => {
     if (!isPending) {
