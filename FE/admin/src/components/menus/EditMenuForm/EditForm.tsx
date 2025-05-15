@@ -4,6 +4,7 @@ import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 import Button from '@/components/common/Button';
 import EditOptionTable from '@/components/menus/EditMenuForm/EditOptionTable';
+import { useMenuEditContext } from '@/components/menus/EditMenuForm/MenuEditContext';
 
 import { CATEGORY_LIST } from '@/service/mock/dummies/category';
 import { useGetOptions } from '@/service/queries/option';
@@ -15,7 +16,6 @@ import IconImage from '@/assets/icons/IconImage';
 import NUTRIENT_LIST from '@/datas/NutrientList';
 import INGREDIENT_LIST from '@/datas/IngredientList';
 import translator from '@/utils/translator';
-import { useMenuEditContext } from './MenuEditContext';
 
 const EditForm = () => {
   const {

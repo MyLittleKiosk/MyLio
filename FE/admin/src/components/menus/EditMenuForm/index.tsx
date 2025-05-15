@@ -10,7 +10,8 @@ import {
   useMenuEditContext,
 } from '@/components/menus/EditMenuForm/MenuEditContext';
 import CompleteModal from '@/components/common/CompleteModal';
-import EditForm from './EditForm';
+import EditForm from '@/components/menus/EditMenuForm/EditForm';
+
 import { MenuDetailGetType } from '@/types/menus';
 
 interface Props {
