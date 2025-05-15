@@ -53,7 +53,7 @@ class IntentRecognizer:
         )
         
         # LLM 응답 파싱
-        result = self._parse_llm_response(response)
+        result = self._parse_llm_response(response, store_id)
         
         # 디버깅 정보
         print(f"[의도 인식] 입력: '{text}', 인식 결과: {result}")
@@ -123,15 +123,12 @@ class IntentRecognizer:
             category_items = []
             
             for menu in menus:
-                # 기본 메뉴 정보
-                menu_info = [f"### {menu['name_kr']} ({menu.get('name_en', '')}): {menu['price']}원"]
+                # 기본 메뉴 정보 (ID만 포함)
+                menu_info = [f"{menu['name_kr']} [ID:{menu['id']}]"]
                 
-                if menu.get('description'):
-                    menu_info.append(f"설명: {menu['description']}")
-                
-                # 옵션 정보 추가
-                if menu.get('options'):
-                    options_info = ["#### 옵션:"]
+                # 옵션 정보 추가 (옵션 선택 시 필요)
+                if menu.get('options') and screen_state == ScreenState.ORDER:
+                    options_info = ["옵션:"]
                     for opt in menu['options']:
                         opt_name = opt.get('option_name', '')
                         required = "필수" if opt.get('required', False) else "선택"
@@ -142,35 +139,10 @@ class IntentRecognizer:
                             detail_items = []
                             for detail in opt['option_details']:
                                 value = detail.get('value', '')
-                                add_price = detail.get('additional_price', 0)
-                                price_info = f"+{add_price}원" if add_price > 0 else ""
-                                detail_items.append(f"  * {value} {price_info}")
+                                detail_items.append(f"  * {value}")
                             options_info.extend(detail_items)
                     
                     menu_info.append("\n".join(options_info))
-                
-                # 영양 성분 정보 추가
-                if menu.get('nutrition'):
-                    nutrition_info = ["#### 영양 성분:"]
-                    
-                    # nutrition이 리스트인 경우
-                    if isinstance(menu['nutrition'], list):
-                        for item in menu['nutrition']:
-                            name = item.get('name', '')
-                            formatted_value = item.get('formatted', '')
-                            nutrition_info.append(f"- {name}: {formatted_value}")
-                    # nutrition이 딕셔너리인 경우
-                    elif isinstance(menu['nutrition'], dict):
-                        for key, value in menu['nutrition'].items():
-                            nutrition_info.append(f"- {key}: {value}")
-                    
-                    menu_info.append("\n".join(nutrition_info))
-                
-                # 원재료 정보 추가
-                if menu.get('ingredients'):
-                    ingredients = [ing.get('name_kr', '') for ing in menu['ingredients']]
-                    if ingredients:
-                        menu_info.append(f"#### 원재료: {', '.join(ingredients)}")
                 
                 category_items.append("\n".join(menu_info))
             
@@ -180,7 +152,6 @@ class IntentRecognizer:
         cart = session.get("cart", [])
         if cart:
             cart_summary = ["## 현재 장바구니"]
-            
             for item in cart:
                 option_text = ""
                 if item.get("selected_options"):
@@ -189,18 +160,15 @@ class IntentRecognizer:
                         if opt.get("option_details"):
                             opt_value = opt["option_details"][0].get("value", "")
                             option_strs.append(f"{opt['option_name']}: {opt_value}")
-                    
                     if option_strs:
                         option_text = f" ({', '.join(option_strs)})"
-                
-                cart_summary.append(f"- {item['name']}{option_text} x {item['quantity']}개: {item['total_price']}원")
-            
+                cart_summary.append(f"- {item['name']}{option_text} x {item['quantity']}개")
             context_parts.append("\n".join(cart_summary))
         
         # 3. 화면 상태별 추가 컨텍스트
         if screen_state == ScreenState.ORDER and session.get("last_state", {}).get("menu"):
             menu = session["last_state"]["menu"]
-            context_parts.append(f"## 현재 선택된 메뉴\n{menu['name_kr']} ({menu['price']}원)")
+            context_parts.append(f"## 현재 선택된 메뉴\n{menu['name_kr']}")
         
         return "\n\n".join(context_parts)
     
@@ -223,7 +191,7 @@ class IntentRecognizer:
         
         return "\n".join(formatted_history)
     
-    def _parse_llm_response(self, response: str) -> Dict[str, Any]:
+    def _parse_llm_response(self, response: str, store_id: int = 1) -> Dict[str, Any]:
         """LLM 응답 파싱"""
         try:
             print(f"파싱할 LLM 응답: {response}")  # 디버깅용
@@ -242,7 +210,7 @@ class IntentRecognizer:
                     json_str = match.group(0).strip()
                 else:
                     json_str = response.strip()
-        
+            
             print(f"파싱된 JSON 문자열: {json_str}")  # 디버깅용
             
             # JSON 파싱
@@ -256,13 +224,46 @@ class IntentRecognizer:
             if isinstance(result["intent_type"], str):
                 result["intent_type"] = result["intent_type"].upper()
             
-            # 결제 수단 표준화 - KAKAOPAY는 PAY로 변환 (None 체크 추가)
-            if result.get("intent_type") == IntentType.PAYMENT and "payment_method" in result and result["payment_method"] is not None:
+            # 결제 수단 표준화 - KAKAOPAY는 PAY로 변환
+            if result.get("intent_type") == IntentType.PAYMENT and result.get("payment_method"):
                 if result["payment_method"].upper() == "KAKAOPAY":
                     result["payment_method"] = "PAY"
             
+            # SEARCH 의도일 때 메뉴 처리
+            if result.get("intent_type") == "SEARCH":
+                # 메뉴 정보 로드
+                store_menus = self.menu_service.get_store_menus(store_id)
+                
+                # LLM이 반환한 menus 배열이 있을 경우
+                if "menus" in result and isinstance(result["menus"], list):
+                    processed_menus = []
+                    
+                    for menu in result["menus"]:
+                        # menu_id가 이미 있는 경우
+                        if "menu_id" in menu:
+                            processed_menus.append(menu)
+                        # menu_name만 있는 경우, ID 찾아서 추가
+                        elif "menu_name" in menu:
+                            menu_name = menu["menu_name"]
+                            found_menu = self.menu_service.find_menu_by_name(menu_name, store_id)
+                            
+                            if found_menu:
+                                menu["menu_id"] = found_menu["id"]
+                                processed_menus.append(menu)
+                            else:
+                                # 유사한 이름 찾기 시도
+                                for menu_id, menu_info in store_menus.items():
+                                    if menu_name.lower() in menu_info["name_kr"].lower():
+                                        menu["menu_id"] = menu_id
+                                        processed_menus.append(menu)
+                                        break
+                    
+                    result["menus"] = processed_menus
+                else:
+                    result["menus"] = []
+            
             return result
-        
+            
         except Exception as e:
             print(f"LLM 응답 파싱 오류: {e}")
             print(f"원본 응답: {response}")
@@ -341,9 +342,15 @@ class IntentRecognizer:
         7. 응답 규칙:
         - 메뉴가 여러개인 경우 모든 메뉴에 대해서 응답값을 생성하지 말고 가장 첫번째에 있는 메뉴에 대해 필수 옵션값을 찾아내서 응답값을 만들어주세요.
         - 여려가지 메뉴를 찾아내는 과정에서 만약 여러개의 메뉴가 히스토리에 남아있는 경우 작은거요 한 후에 장바구니에 담았다고 하지 말고 그 다음 메뉴에 대해 옵션값을 적용할 수 있도록 응답값을 생성해주세요.
+        - "말씀해 주세요". -> "알려주세요"와 같이 응답을 생성할 때는 꼭 해요체를 써주세요.
+        
+        8. 검색 규칙:
+        - 디카페인을 물어보면 카페인이 들어가지 않은 메뉴를 찾아야해요. 메뉴 명에 "디카페인 아메리카노"와 같이 메뉴명에 디카페인이 들어간 메뉴를 찾아주세요.
+        - 디카페인 아메리카노와 아메리카노는 다른 메뉴에요. 디카페인음료를 물어볼때 "아메리카노", "콜드브루"는 제외시키고 "디카페인 아메리카노", "디카페인 콜드브루"와 같은 메뉴를 가져와야 해요.
+        - 전체 메뉴를 보여달라고 하면 전체 메뉴 리스트를 전부 보내야 합니다.
+        - 검색된 메뉴의 이름과 menu_id를 함께 보내야 합니다.
 
         주의: 응답을 생성할 때 템플릿 문자열이 아닌 실제 사용자에게 보여질 자연스러운 응답을 직접 생성해주세요.
-        꼭 해요체를 써주세요.
         "감자탕 있어?", "화장실이 어디야?" 와 같이 제공된 메뉴 이외의 질문을 한다면 "죄송하지만 대답할 수 없는 질문이네요. 카페와 관련된 질문을 해주시면 대답해드릴 수 있어요."라고 답변하고 screen_state는 MAIN으로 해주세요.
         
         # 복합 주문 예제
@@ -582,13 +589,25 @@ class IntentRecognizer:
             # 검색 예제
             "search": [
                 {
-                    "input": "커피 메뉴 알려주세요",
+                    "input": "전체 메뉴 보여줘",
                     "output": {
                         "intent_type": "SEARCH",
                         "confidence": 0.9,
-                        "search_query": "커피",
-                        "post_text": "커피 메뉴 알려주세요.",
-                        "reply": "커피 메뉴를 찾아볼게요. 총 5개의 메뉴가 있어요." 
+                        "search_query": "전체 메뉴",
+                        "menus": [
+                            {"menu_id": 17},
+                            {"menu_id": 18},
+                            {"menu_id": 19},
+                            {"menu_id": 20},
+                            {"menu_id": 21},
+                            {"menu_id": 22},
+                            {"menu_id": 23},
+                            {"menu_id": 24},
+                            {"menu_id": 25},
+                            
+                        ],  # 컨텍스트의 모든 메뉴 ID가 들어갈 자리
+                        "post_text": "전체 메뉴 보여줘",
+                        "reply": "전체 메뉴를 안내해드릴게요."
                     }
                 },
                 {
@@ -596,9 +615,32 @@ class IntentRecognizer:
                     "output": {
                         "intent_type": "SEARCH",
                         "confidence": 0.9,
-                        "search_query": "디카페인",
-                        "post_text": "디카페인 메뉴 있어?",
-                        "reply": "디카페인 메뉴는 총 3가지 메뉴가 있어요."
+                        "search_query": "디카페인 메뉴",
+                        "menus": [
+                            {"menu_id": 15},  # 디카페인 아메리카노
+                            {"menu_id": 16},  # 디카페인 콜드브루
+                            {"menu_id": 17}   # 디카페인 콜드브루 라떼
+                        ],
+                        "post_text": "디카페인 있어?",
+                        "reply": "디카페인 메뉴를 보여드릴게요."
+                    }
+                },
+                {
+                    "input": "차 종류 있어?",
+                    "output": {
+                        "intent_type": "SEARCH",
+                        "confidence": 0.9,
+                        "search_query": "차 종류",
+                        "menus": [
+                            {"menu_name": "페퍼민트", "menu_id": 114},
+                            {"menu_name": "히비스커스", "menu_id": 115},
+                            {"menu_name": "녹차", "menu_id": 116},
+                            {"menu_name": "얼그레이", "menu_id": 117},
+                            {"menu_name": "루이보스", "menu_id": 118},
+                            {"menu_name": "한라봉차", "menu_id": 119}
+                        ],
+                        "post_text": "차 종류 있어?",
+                        "reply": "차 종류는 페퍼민트, 히비스커스, 녹차, 얼그레이, 루이보스, 한라봉차가 있어요."
                     }
                 }
             ],
