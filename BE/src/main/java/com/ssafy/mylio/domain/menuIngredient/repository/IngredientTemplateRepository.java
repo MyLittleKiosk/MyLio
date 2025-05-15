@@ -18,4 +18,6 @@ public interface IngredientTemplateRepository extends JpaRepository<IngredientTe
                LOWER(it.nameEn) LIKE LOWER(CONCAT('%', :keyword, '%')))
         """)
     Page<IngredientTemplate> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+    boolean existsByNameKr(String nameKr);
 }
