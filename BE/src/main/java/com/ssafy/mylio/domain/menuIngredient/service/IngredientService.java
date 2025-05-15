@@ -23,8 +23,10 @@ public class IngredientService {
     private final IngredientTemplateRepository ingredientTemplateRepository;
 
     public CustomPage<IngredientTemplateResponseDto> getIngredientList(String userType, String keyword, Pageable pageable){
-        // userType 검증 (관리자인지)
-        validateUserType(userType);
+        // userType 검증
+        if(!(userType.equals("SUPER") || userType.equals("STORE"))){
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS, "userType", userType);
+        }
 
         // 모든 원재료 목록 조회
         Page<IngredientTemplate> ingredientList = ingredientTemplateRepository.findAllByKeyword(keyword, pageable);
