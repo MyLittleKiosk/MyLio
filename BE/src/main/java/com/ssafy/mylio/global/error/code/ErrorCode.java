@@ -26,7 +26,8 @@ public enum ErrorCode {
     // Menu
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 메뉴입니다"),
     MENU_STORE_NOT_MATCH(HttpStatus.BAD_REQUEST,"M002","매장에 없는 메뉴입니다"),
-
+    // Order
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "O001", "존재하지 않는 주문입니다"),
     //Kiosk
     KIOSK_SESSION_NOT_FOUND(HttpStatus.NOT_FOUND,"K001","존재하지 않는 키오스크 입니다."),
     KIOSK_IN_USE(HttpStatus.CONFLICT,"K002","이미 사용중인 키오스크입니다."),
