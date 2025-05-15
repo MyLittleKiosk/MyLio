@@ -1,5 +1,5 @@
 import { DUMMY_DAILY_SALES } from '../../../service/mock/dummies/statistics';
-import formatMoney from '../../../utils/formatMoney';
+import { formatMoney } from '../../../utils/formatMoney';
 
 describe('통계 대시보드 페이지', () => {
   it('오늘의 매출과 주문 건수를 확인할 수 있다.', () => {

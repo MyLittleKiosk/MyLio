@@ -2,6 +2,7 @@ import mic from '@/assets/icons/mic.svg';
 import { useAudioRecord } from '@/hooks/useAudioRecord';
 import { sendAudioToClova } from '@/service/apis/voice';
 import { useState } from 'react';
+import clsx from 'clsx';
 
 interface Props {
   onRecognitionResult: (text: string) => void;
@@ -92,12 +93,15 @@ const RecordButton = ({ onRecognitionResult }: Props) => {
       onMouseUp={handlePressEnd}
       onTouchStart={handlePressStart}
       onTouchEnd={handlePressEnd}
-      className={`absolute bottom-10 right-10 bg-white rounded-full p-2 flex justify-center items-center transition-all ${
-        isRecording ? 'scale-110 bg-red-100' : 'hover:bg-gray-100'
-      }`}
+      className={clsx(
+        'p-2 w-16 h-16 bg-white shadow-lg rounded-full flex justify-center items-center transition-all',
+        isRecording
+          ? 'scale-90 shadow-inner shadow-green-500'
+          : 'hover:bg-gray-100'
+      )}
       disabled={isProcessing}
     >
-      <img src={mic} alt='microphone' className='w-10 h-10' />
+      <img src={mic} alt='microphone' className='w-full h-full' />
       {error && (
         <div className='absolute bottom-full right-0 mb-2 p-2 bg-red-100 text-red-700 rounded-md text-sm whitespace-nowrap'>
           {error}

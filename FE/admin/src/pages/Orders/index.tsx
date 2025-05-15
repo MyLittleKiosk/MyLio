@@ -2,25 +2,84 @@ import React, { useState } from 'react';
 
 import Input from '@/components/common/Input';
 import Modal from '@/components/common/Modal';
-import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
 import ViewDetailOrderModal from '@/components/orders/ViewDetailOrderModal';
+import { useGetOrders } from '@/service/queries/orders';
 
-import { ORDER_COLUMNS, ORDER_LIST } from '@/datas/orderList';
+import Button from '@/components/common/Button';
+import CompleteModal from '@/components/common/CompleteModal';
+import PageNavigation from '@/components/common/PageNavigation';
+import { ORDER_COLUMNS } from '@/datas/orderList';
 import useModalStore from '@/stores/useModalStore';
+import { Pagination } from '@/types/apiResponse';
+import { OrderType } from '@/types/orders';
 
 const Orders = () => {
   const { openModal } = useModalStore();
 
-  const [searchValue, setSearchValue] = useState('');
-  const [selected, setSelected] = useState('');
+  const [startSearchValue, setStartSearchValue] = useState('');
+  const [endSearchValue, setEndSearchValue] = useState('');
+  const [searchParams, setSearchParams] = useState<{
+    startDate?: string;
+    endDate?: string;
+    page?: number;
+  }>({
+    page: 1,
+  });
+
+  const {
+    data: ordersData,
+    isLoading,
+    pageInfo,
+  } = useGetOrders(
+    searchParams.startDate,
+    searchParams.endDate,
+    searchParams.page
+  );
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setSearchValue(e.target.value);
+    setStartSearchValue(e.target.value);
   }
 
-  function handleSelectChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    setSelected(e.target.value);
+  function handleEndSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setEndSearchValue(e.target.value);
+  }
+
+  function handlePageChange(page: number) {
+    setSearchParams({
+      ...searchParams,
+      page,
+    });
+  }
+
+  function handleSearch() {
+    if (endSearchValue && startSearchValue > endSearchValue) {
+      openModal(
+        <CompleteModal
+          title='주문 검색 오류'
+          description='시작일이 종료일보다 클 수 없습니다.'
+          buttonText='닫기'
+        />
+      );
+      return;
+    }
+    setSearchParams({
+      startDate: startSearchValue || undefined,
+      endDate: endSearchValue || undefined,
+      page: 1,
+    });
+  }
+
+  function handleReset() {
+    setStartSearchValue('');
+    setEndSearchValue('');
+    setSearchParams({
+      page: 1,
+    });
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -30,32 +89,48 @@ const Orders = () => {
         <div className='flex gap-2 max-h-[10%] w-full justify-between'>
           <div className='flex gap-2 w-full'>
             <Input
-              inputId='searchOrder'
-              placeholder='주문번호로 검색'
-              inputType='text'
-              inputValue={searchValue}
+              id='startSearchOrder'
+              placeholder=''
+              type='date'
+              value={startSearchValue}
+              maxDate={endSearchValue}
               onChange={handleSearchChange}
-              className='w-[65%]'
             />
-            <Select
-              options={['MyLio 강남점', 'MyLio 홍대점', 'MyLio 명동점']}
-              selected={selected}
-              onChange={handleSelectChange}
-              placeholder='모든 점포'
-              className='w-[11%] h-full'
-              getOptionLabel={(option) => option}
-              getOptionValue={(option) => option}
+            <Input
+              id='endSearchOrder'
+              placeholder=''
+              type='date'
+              value={endSearchValue}
+              minDate={startSearchValue}
+              onChange={handleEndSearchChange}
+            />
+            <Button
+              id='searchBtnId'
+              type='button'
+              text='검색'
+              onClick={handleSearch}
+            />
+            <Button
+              id='resetBtnId'
+              type='button'
+              text='전체'
+              onClick={handleReset}
+              className='bg-gray-500 hover:bg-gray-600'
             />
           </div>
         </div>
         <Table
           title='주문 목록'
-          description='총 5개의 주문이 있습니다.'
+          description={`총 ${ordersData?.length || 0}개의 주문이 있습니다.`}
           columns={ORDER_COLUMNS}
-          data={ORDER_LIST.content}
+          data={ordersData as OrderType[]}
           onView={(row) => {
             openModal(<ViewDetailOrderModal initialData={row} />);
           }}
+        />
+        <PageNavigation
+          pageInfo={pageInfo as Pagination}
+          onChangePage={(page: number) => handlePageChange(page)}
         />
         <Modal />
       </section>

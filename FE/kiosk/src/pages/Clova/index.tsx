@@ -4,7 +4,7 @@ import { sendAudioToClova } from '@/service/apis/voice';
 import { ClovaResponse } from '@/types/clova';
 import { AxiosError } from 'axios';
 import { useState } from 'react';
-import { useAudioRecord } from '../../hooks/useAudioRecord';
+import { useAudioRecord } from '@/hooks/useAudioRecord';
 
 /**
  * Clova 테스트 페이지

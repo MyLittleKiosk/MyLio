@@ -7,13 +7,18 @@ import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
 import Modal from '@/components/common/Modal';
 import AddKioskModal from '@/components/kiosks/AddKioskModal';
+import EditKioskModal from '@/components/kiosks/EditKioskModal';
 
-import { KIOSK_COLUMNS, KIOSK_LIST } from '@/datas/kioskList';
+import { KIOSK_COLUMNS } from '@/datas/kioskList';
 
 import useModalStore from '@/stores/useModalStore';
+import { useGetKioskList } from '@/service/queries/kiosk';
+import DeleteKioskModal from '@/components/kiosks/DeleteKioskModal';
 
 const Kiosk = () => {
-  const { openModal, closeModal } = useModalStore();
+  const { openModal } = useModalStore();
+  const { data: kioskList, isLoading } = useGetKioskList();
+
   const [searchValue, setSearchValue] = useState('');
   const [selected, setSelected] = useState('');
 
@@ -25,16 +30,20 @@ const Kiosk = () => {
     setSelected(e.target.value);
   }
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <section className='w-full h-full p-4 flex flex-col gap-2 '>
       <h1 className='text-2xl font-preBold h-[5%]'>키오스크 목록</h1>
       <div className='flex gap-2 max-h-[10%] w-full justify-between'>
         <div className='flex gap-2 w-full'>
           <Input
-            inputId='searchKiosk'
+            id='searchKiosk'
             placeholder='키오스크명 또는 위치로 검색'
-            inputType='text'
-            inputValue={searchValue}
+            type='text'
+            value={searchValue}
             onChange={handleSearchChange}
             className='w-[65%]'
           />
@@ -49,27 +58,25 @@ const Kiosk = () => {
           />
         </div>
         <Button
-          buttonType='button'
-          text='키오스크 추가'
+          type='button'
+          text='키오스크 등록'
           icon={<IconAdd fillColor='white' />}
           onClick={() => {
-            openModal(<AddKioskModal onSave={() => closeModal()} />);
+            openModal(<AddKioskModal />);
           }}
           className='w-[11%] items-center justify-center'
         />
       </div>
       <Table
         title='키오스크 목록'
-        description='총 6개의 키오스크가 있습니다.'
+        description={`총 ${kioskList.length}개의 키오스크가 있습니다.`}
         columns={KIOSK_COLUMNS}
-        data={KIOSK_LIST.content}
+        data={kioskList}
         onEdit={(row) => {
-          openModal(
-            <AddKioskModal initialData={row} onSave={() => closeModal()} />
-          );
+          openModal(<EditKioskModal row={row} />);
         }}
         onDelete={(row) => {
-          alert(row.id);
+          openModal(<DeleteKioskModal row={row} />);
         }}
       />
       <Modal />

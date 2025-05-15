@@ -25,8 +25,8 @@ const fillMissingData = (
     const daysInMonth = getDaysInMonth(year, month);
     const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
     return days.map((day) => {
-      const existingData = data.find((item) => item.type === day);
-      return existingData || { type: day, sales: 0 };
+      const existingData = data.find((item) => item.element === day);
+      return existingData || { element: day, sales: 0 };
     });
   }
 
@@ -34,8 +34,8 @@ const fillMissingData = (
   if (chartType === 'year' && year) {
     const months = Array.from({ length: 12 }, (_, i) => i + 1);
     return months.map((month) => {
-      const existingData = data.find((item) => item.type === month);
-      return existingData || { type: month, sales: 0 };
+      const existingData = data.find((item) => item.element === month);
+      return existingData || { element: month, sales: 0 };
     });
   }
 
@@ -51,16 +51,16 @@ const fillMissingData = (
  *
  * @returns 그래프에 사용할 데이터 셋 옵션들
  */
-const formatSalesData = (
+export function formatSalesData(
   data: SalesTrendType[],
   chartType: 'month' | 'year',
   year?: number,
   month?: number
-): ChartData<'line'> => {
+): ChartData<'line'> {
   const processedData = fillMissingData(data, chartType, year, month);
 
   return {
-    labels: processedData.map((item) => item.type),
+    labels: processedData.map((item) => item.element),
     datasets: [
       {
         label: chartType === 'month' ? '일별 매출액' : '월별 매출액',
@@ -77,6 +77,4 @@ const formatSalesData = (
       },
     ],
   };
-};
-
-export default formatSalesData;
+}

@@ -5,7 +5,7 @@
  * @param password 검사할 비밀번호 문자열
  * @returns 유효하면 true, 그렇지 않으면 false
  */
-export const verificationPassword = (password: string): boolean => {
+export function verificationPassword(password: string): boolean {
   // 1. 길이 검사 (8자 이상 16자 이하)
   if (password.length < 8 || password.length > 16) {
     return false;
@@ -21,4 +21,4 @@ export const verificationPassword = (password: string): boolean => {
   const hasSpecialChar = /[!@#$%^&*()_+\-=[{\]};':"\\|,.<>/?~]/.test(password);
 
   return hasLetter && hasNumber && hasSpecialChar;
-};
+}
