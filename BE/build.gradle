@@ -53,8 +53,11 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	// aws
-	implementation 'io.awspring.cloud:spring-cloud-aws-starter:3.1.1'
-	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.767'
+	implementation platform('software.amazon.awssdk:bom:2.20.63')  // BOM으로 버전 관리
+	implementation 'software.amazon.awssdk:s3'
+	implementation 'software.amazon.awssdk:auth'                // 인증 모듈
+	implementation 'software.amazon.awssdk:regions'
+
 }
 
 dependencyManagement {
