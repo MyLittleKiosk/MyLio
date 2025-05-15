@@ -6,11 +6,13 @@ import Menus from '@/pages/Menus';
 import Order from '@/pages/Order';
 import OrderLayout from '@/pages/OrderLayout';
 import Pay from '@/pages/Pay';
+import Success from '@/pages/Pay/Success';
 import SelectPay from '@/pages/SelectPay';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
 import MSWInit from './components/common/MSWInit';
+import PayLoading from './pages/Pay/PayLoading';
 
 const queryClient = new QueryClient();
 
@@ -26,6 +28,8 @@ function App() {
             <Route path='search' element={<Menus />} />
             <Route path='order' element={<Order />} />
             <Route path='pay' element={<Pay />} />
+            <Route path='pay/success' element={<Success />} />
+            <Route path='pay/loading' element={<PayLoading />} />
             <Route path='select-pay' element={<SelectPay />} />
             <Route path='confirm' element={<Confirm />} />
             <Route path='detail' element={<Detail />} />
