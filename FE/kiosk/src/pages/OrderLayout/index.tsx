@@ -1,12 +1,13 @@
+import clsx from 'clsx';
+import { motion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
 import { DEFAULT_COMMENT } from '@/datas/COMMENT';
 import Main from '@/pages/Main';
 import Footer from '@/pages/OrderLayout/Footer';
-import { useLogout, useOrderRequest, useRefresh } from '@/service/queries/user';
+import { useLogout, useRefresh } from '@/service/queries/user';
 import useOrderStore from '@/stores/useOrderStore';
-import clsx from 'clsx';
-import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useOrderRequest } from '@/service/queries/order';
 
 const OrderLayout = () => {
   const { pathname } = useLocation();
@@ -16,6 +17,7 @@ const OrderLayout = () => {
   const { mutate: logout } = useLogout();
   const { mutate: refresh } = useRefresh();
   const navigate = useNavigate();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const kioskId = localStorage.getItem('kioskId');
@@ -55,12 +57,20 @@ const OrderLayout = () => {
       storeId: order.storeId,
     });
   }
+  function testHandleRecognitionResult() {
+    handleRecognitionResult(inputRef.current?.value || '');
+  }
+  function pressEnter(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') {
+      testHandleRecognitionResult();
+    }
+  }
 
   return (
     // 배경 색은 추후 변경 예정
     <div className='flex flex-col h-dvh bg-gradient-to-b from-primary to-white justify-between'>
       {/* 임시 네비게이터 */}
-      <div className='flex justify-center items-center z-10 fixed top-0 left-0 w-full h-[100px]'>
+      <div className='flex justify-center items-center z-10 fixed top-0 left-0 w-full h-[100px] flex-wrap'>
         <ul className='flex justify-center items-center gap-4 rounded-xl p-4'>
           <li>
             <Link to='/kiosk'>홈</Link>
@@ -87,6 +97,10 @@ const OrderLayout = () => {
         <div className='flex gap-4'>
           <button onClick={handleLogout}>로그아웃</button>
           <button onClick={handleSessionReset}>세션 초기화</button>
+          <div className='flex gap-2 h-full'>
+            <input type='text' ref={inputRef} onKeyDown={pressEnter} />
+            <button onClick={testHandleRecognitionResult}>전송</button>
+          </div>
         </div>
       </div>
       <header
