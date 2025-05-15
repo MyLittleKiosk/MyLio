@@ -335,6 +335,10 @@ class RedisSessionManager:
             if key in session_data:
                 sanitized[key] = session_data[key]
         
+        # 대기열 복사 (추가)
+        if "order_queue" in session_data:
+            sanitized["order_queue"] = session_data["order_queue"]
+            
         # 장바구니 항목 안전하게 복사
         if "cart" in session_data:
             sanitized["cart"] = []
@@ -715,3 +719,40 @@ class RedisSessionManager:
         except Exception as e:
             print(f"[세션 타임아웃 설정 오류] 세션 ID: {session_id}, 오류: {e}")
             return False
+
+    def add_to_order_queue(self, session_id: str, menus: List[Dict[str, Any]]) -> bool:
+        """주문 대기열에 메뉴 추가"""
+        session = self.get_session(session_id)
+        if not session:
+            return False
+        
+        # 대기열 초기화
+        if "order_queue" not in session:
+            session["order_queue"] = []
+        
+        # 대기열에 메뉴 추가
+        session["order_queue"].extend(menus)
+        
+        # 세션 저장
+        return self._save_session(session_id, session)
+
+    def get_next_queued_menu(self, session_id: str) -> Optional[Dict[str, Any]]:
+        """대기열에서 다음 메뉴 가져오기"""
+        session = self.get_session(session_id)
+        if not session or "order_queue" not in session or not session["order_queue"]:
+            return None
+        
+        # 첫 번째 메뉴 가져오기 (pop하지 않고 peek만)
+        return session["order_queue"][0]
+
+    def remove_from_order_queue(self, session_id: str) -> bool:
+        """대기열에서 처리 완료된 메뉴 제거"""
+        session = self.get_session(session_id)
+        if not session or "order_queue" not in session or not session["order_queue"]:
+            return False
+        
+        # 첫 번째 메뉴 제거
+        session["order_queue"].pop(0)
+        
+        # 세션 저장
+        return self._save_session(session_id, session)

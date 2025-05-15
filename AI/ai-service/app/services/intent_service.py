@@ -129,6 +129,13 @@ class IntentService:
                 
                 self.session_manager.add_to_history(session_id, text, response)
                 return response
+            # 3. 대기열 처리 추가
+            # 현재 진행 중인 주문이 없지만 대기열에 주문이 있는 경우
+            elif "order_queue" in session and session["order_queue"]:
+                next_menu = session["order_queue"][0]
+                
+                # 대기열에서 첫 번째 메뉴를 꺼내서 옵션 처리 시작
+                return self._start_queued_menu_processing(next_menu, text, language, screen_state, store_id, session)
             
             # 3. 의도 인식 - 통합 의도 인식기 사용
             print("[요청 처리] 신규 의도 인식 시작")
