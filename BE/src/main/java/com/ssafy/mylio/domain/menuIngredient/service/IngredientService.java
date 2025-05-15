@@ -49,6 +49,19 @@ public class IngredientService {
         ingredientTemplateRepository.save(ingredientTemplate);
     }
 
+    @Transactional
+    public void ingredientTemplateUpdate(String userType, Integer ingredientId, IngredientTemplateRequestDto requestDto){
+        // userType 검증 (관리자인지)
+        validateUserType(userType);
+
+        // 원재료 템플릿 조회
+        IngredientTemplate ingredientTemplate = ingredientTemplateRepository.findById(ingredientId)
+                .orElseThrow(()-> new CustomException(ErrorCode.INGREDIENT_TEMPLATE_NOT_FOUND, "ingredientId", ingredientId));
+
+        // 업데이트
+        ingredientTemplate.update(requestDto.getIngredientTemplateName(), requestDto.getIngredientTemplateNameEn());
+    }
+
     private void validateUserType(String userType){
         if(!userType.equals("SUPER")){
             throw new CustomException(ErrorCode.FORBIDDEN_ACCESS, "userType", userType);
