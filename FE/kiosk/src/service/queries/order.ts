@@ -43,6 +43,7 @@ export function useRequestPay() {
 
 export function usePostSuccess() {
   const { order } = useOrderStore();
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: ({
       orderId,
@@ -53,11 +54,13 @@ export function usePostSuccess() {
     }) => {
       return postSuccess({ orderId, pgToken, cart: order.cart });
     },
-    onSuccess: (data) => {
-      console.log(data);
+    onSuccess: () => {
+      alert('결제 성공');
+      navigate('/kiosk/pay/success');
     },
     onError: (error) => {
       console.error('결제 성공 중 오류 발생:', error);
+      navigate('/kiosk/select-pay');
     },
   });
 }

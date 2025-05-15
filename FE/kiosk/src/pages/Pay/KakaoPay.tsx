@@ -1,33 +1,24 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useRequestPay, usePostSuccess } from '@/service/queries/order';
+import { useRequestPay } from '@/service/queries/order';
 import useOrderStore from '@/stores/useOrderStore';
 
 const KakaoPay = () => {
   const [searchParams] = useSearchParams();
   const { order } = useOrderStore();
   const { mutate: requestPay } = useRequestPay();
-  const { mutate: postSuccess } = usePostSuccess();
 
   useEffect(() => {
-    const pgToken = searchParams.get('pg_token');
-    const orderId = searchParams.get('orderId');
-
-    if (pgToken && orderId) {
-      // 결제 성공 처리
-      postSuccess({ orderId, pgToken });
-    } else {
-      // 결제 요청
-      if (!order.sessionId) {
-        throw new Error('세션 ID가 없습니다.');
-      }
-      const payRequest = {
-        itemName: order.cart.map((item) => item.name).join(', '),
-        totalAmount: order.cart.reduce((acc, item) => acc + item.quantity, 0),
-        sessionId: order.sessionId,
-      };
-      requestPay(payRequest);
+    // 결제 요청
+    if (!order.sessionId) {
+      throw new Error('세션 ID가 없습니다.');
     }
+    const payRequest = {
+      itemName: order.cart.map((item) => item.name).join(', '),
+      totalAmount: order.cart.reduce((acc, item) => acc + item.quantity, 0),
+      sessionId: order.sessionId,
+    };
+    requestPay(payRequest);
   }, [searchParams]);
 
   return (
