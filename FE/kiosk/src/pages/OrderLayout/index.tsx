@@ -119,7 +119,7 @@ const OrderLayout = () => {
         />
       </header>
       <motion.main
-        className='rounded-t-xl bg-white  shadow-t-2xl flex flex-col justify-center items-center pb-36'
+        className='rounded-t-xl bg-white  shadow-t-2xl flex flex-col justify-center items-center'
         initial={{ y: '100%', height: 0 }}
         animate={{
           y: pathname === '/kiosk' ? '100%' : 0,
