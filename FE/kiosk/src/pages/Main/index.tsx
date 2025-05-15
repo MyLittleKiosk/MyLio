@@ -1,6 +1,5 @@
 import ChatContainer from '@/components/Chat/ChatContainer';
 import Loading from '@/components/common/Loading';
-import { useAudioRecord } from '@/hooks/useAudioRecord';
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useTTS } from '@/service/queries/voice';
@@ -30,8 +29,6 @@ const Main = ({ userChat, gptChat, isPending }: Props) => {
         <ChatContainer
           userChat={userChat}
           gptChat={gptChat}
-          isRecording={isRecording}
-          volume={volume}
           isExpand={location.pathname === '/kiosk'}
         />
       )}
