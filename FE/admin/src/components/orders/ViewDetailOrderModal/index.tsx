@@ -56,8 +56,8 @@ const ViewDetailOrderModal = ({ initialData }: ViewDetailOrderModalProps) => {
           <thead className='border-b border-subContent'>
             <tr className='text-sm text-left text-content2 font-preLight'>
               <th className='px-4 py-3'>상품명</th>
-              <th>수량</th>
-              <th>가격</th>
+              <th className='text-center'>수량</th>
+              <th className='px-2'>가격</th>
               <th>옵션</th>
             </tr>
           </thead>
@@ -65,8 +65,8 @@ const ViewDetailOrderModal = ({ initialData }: ViewDetailOrderModalProps) => {
             {orderDetail?.orderItems.map((order, index) => (
               <tr key={index} className='text-sm font-preRegular'>
                 <td className='px-4 py-3'>{order.itemName}</td>
-                <td>{order.quantity}</td>
-                <td>{formatMoney(order.price)}</td>
+                <td className='text-center'>{order.quantity}</td>
+                <td className='px-2'>{formatMoney(order.price)}</td>
                 <td>
                   {order.options.length > 0 ? (
                     <span>{order.options.join(', ')}</span>
