@@ -11,7 +11,7 @@ import { useOrderRequest } from '@/service/queries/order';
 
 const OrderLayout = () => {
   const { pathname } = useLocation();
-  const [userChat] = useState<string>('');
+  const [userChat, setUserChat] = useState<string>('');
   const { order, resetOrder } = useOrderStore();
   const { mutate: orderRequest, isPending } = useOrderRequest();
   const { mutate: logout } = useLogout();
@@ -33,6 +33,7 @@ const OrderLayout = () => {
   }
 
   function handleRecognitionResult(text: string) {
+    setUserChat(text);
     orderRequest({
       text: text,
       screenState: order.screenState,
