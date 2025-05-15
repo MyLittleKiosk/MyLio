@@ -24,7 +24,7 @@ const Login = () => {
   useEffect(() => {
     const kioskId = localStorage.getItem('kioskId');
     if (kioskId) {
-      navigate('/kiosk');
+      navigate('/landing');
     }
   }, []);
 
