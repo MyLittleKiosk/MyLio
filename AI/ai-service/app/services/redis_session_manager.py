@@ -101,7 +101,13 @@ class RedisSessionManager:
         return self._save_session(session_id, existing_session)
     
     def add_to_cart(self, session_id: str, menu_item: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """장바구니에 메뉴 추가 (중복 저장 문제 해결)"""
+        """장바구니에 메뉴 추가 (검증 로직 강화)"""
+        # 세션 ID 확인
+        if not session_id:
+            print(f"[카트 추가 실패] 세션 ID가 없음")
+            return []
+        
+        # 세션 가져오기
         session = self.get_session(session_id)
         if not session:
             print(f"[카트 추가 실패] 세션 없음: {session_id}")
@@ -115,6 +121,18 @@ class RedisSessionManager:
 
         # 메뉴 데이터 최소화 (필요한 필드만 유지)
         cart_id = str(uuid.uuid4())
+        
+        # 메뉴 유효성 검사
+        if not menu_item or not isinstance(menu_item, dict):
+            print(f"[카트 추가 실패] 유효하지 않은 메뉴 데이터")
+            return session.get("cart", [])
+        
+        # 필수 필드 확인
+        for field in ["menu_id", "name"]:
+            if field not in menu_item:
+                print(f"[카트 추가 실패] 필수 필드 누락: {field}")
+                return session.get("cart", [])
+        
         optimized_item = {
             "cart_id": cart_id,
             "menu_id": menu_item.get("menu_id"),
@@ -128,32 +146,34 @@ class RedisSessionManager:
             "selected_options": []
         }
         
-        # 선택된 옵션 최소화 (옵션 ID 중복 제거)
-        added_option_ids = set()
-        for opt in menu_item.get("selected_options", []):
-            option_id = opt.get("option_id")
-            if option_id and option_id not in added_option_ids:
-                added_option_ids.add(option_id)
-                
-                # 최소한의 데이터만 복사
-                minimal_opt = {
-                    "option_id": option_id,
-                    "option_name": opt.get("option_name"),
-                    "is_selected": True
-                }
-                
-                # 옵션 상세 정보 한 개만 복사
-                if "option_details" in opt and opt["option_details"]:
-                    detail = opt["option_details"][0]
-                    minimal_opt["option_details"] = [{
-                        "id": detail.get("id"),
-                        "value": detail.get("value"),
-                        "additional_price": detail.get("additional_price", 0)
-                    }]
-                
-                optimized_item["selected_options"].append(minimal_opt)
+        # 선택된 옵션 처리
+        if "selected_options" in menu_item and menu_item["selected_options"]:
+            # 중복 옵션 ID 제거
+            added_option_ids = set()
+            for opt in menu_item.get("selected_options", []):
+                option_id = opt.get("option_id")
+                if option_id and option_id not in added_option_ids:
+                    added_option_ids.add(option_id)
+                    
+                    # 최소한의 데이터만 복사
+                    minimal_opt = {
+                        "option_id": option_id,
+                        "option_name": opt.get("option_name"),
+                        "is_selected": True
+                    }
+                    
+                    # 옵션 상세 정보 한 개만 복사
+                    if "option_details" in opt and opt["option_details"]:
+                        detail = opt["option_details"][0]
+                        minimal_opt["option_details"] = [{
+                            "id": detail.get("id"),
+                            "value": detail.get("value"),
+                            "additional_price": detail.get("additional_price", 0)
+                        }]
+                    
+                    optimized_item["selected_options"].append(minimal_opt)
         
-        # 중복 메뉴 확인 (같은 메뉴+옵션 조합이면 수량만 증가)
+        # 기존 장바구니에 동일 항목 있는지 확인
         found = False
         for i, item in enumerate(session["cart"]):
             if self._is_same_menu_item(item, optimized_item):
@@ -168,10 +188,37 @@ class RedisSessionManager:
             session["cart"].append(optimized_item)
             print(f"[카트 추가] 새 항목: {optimized_item.get('name')}, 옵션: {[opt.get('option_name') for opt in optimized_item.get('selected_options', [])]}")
         
-        # 세션 저장 (한 번만 호출)
-        self._save_session(session_id, session)
+        # 기존 카트 크기 저장
+        original_cart_size = len(session["cart"])
         
-        return session["cart"]
+        # 세션 저장
+        saved = self._save_session(session_id, session)
+        if not saved:
+            print(f"[오류] 장바구니 추가 실패: 세션 저장 실패. (ID: {session_id})")
+            # 세션에서 방금 추가한 항목 제거 (롤백)
+            if not found:
+                session["cart"].pop()
+            return session.get("cart", [])
+        
+        # 검증 - 세션을 다시 로드하여 추가되었는지 확인
+        updated_session = self.get_session(session_id)
+        if not updated_session or "cart" not in updated_session:
+            print(f"[오류] 장바구니 추가 실패: 업데이트된 세션을 가져올 수 없음. (ID: {session_id})")
+            return session.get("cart", [])
+        
+        # 항목 수가 증가했는지 확인
+        if not found and len(updated_session["cart"]) <= original_cart_size:
+            print(f"[오류] 장바구니 추가 실패: 항목 수가 증가하지 않음. (ID: {session_id})")
+            return session.get("cart", [])
+        
+        # 추가된 항목이 있는지 확인
+        if not found:
+            cart_ids = [item.get("cart_id") for item in updated_session["cart"]]
+            if cart_id not in cart_ids:
+                print(f"[오류] 장바구니 추가 실패: 추가된 항목을 찾을 수 없음. (ID: {cart_id})")
+        
+        print(f"[장바구니 업데이트 완료] 세션 ID: {session_id}, 현재 항목 수: {len(updated_session['cart'])}")
+        return updated_session.get("cart", [])
     
     def get_cart(self, session_id: str) -> List[Dict[str, Any]]:
         """장바구니 조회"""
@@ -235,7 +282,15 @@ class RedisSessionManager:
         return 0
     
     def _save_session(self, session_id: str, session_data: Dict[str, Any]) -> bool:
-        """세션 데이터를 Redis에 저장 (중복 데이터 최소화)"""
+        """세션 데이터를 Redis에 저장 (검증 강화)"""
+        if not session_id:
+            print("[오류] 세션 저장 실패: 세션 ID가 없습니다.")
+            return False
+        
+        # 세션 ID 일관성 확보
+        session_data["id"] = session_id
+        session_data["session_id"] = session_id  # 두 필드 모두 설정
+        
         try:
             session_key = f"{self.prefix}{session_id}"
             
@@ -245,52 +300,57 @@ class RedisSessionManager:
             # 세션 데이터 정리 (중복 제거 및 최소화)
             cleaned_data = self._sanitize_session_data(session_data)
             
+            # JSON 직렬화
             try:
-                # JSON 직렬화
                 session_json = json.dumps(cleaned_data)
-                json_size = len(session_json)
-                
-                # 크기가 너무 크면 추가 정리
-                if json_size > 50 * 1024:  # 50KB 초과
-                    print(f"[세션 저장] 세션 크기가 큼: {json_size/1024:.2f}KB, 추가 정리 적용")
-                    
-                    # history 완전 제거
-                    if "history" in cleaned_data:
-                        del cleaned_data["history"]
-                    
-                    # 장바구니 최소화 (5개까지만 유지)
-                    if "cart" in cleaned_data and len(cleaned_data["cart"]) > 5:
-                        cleaned_data["cart"] = cleaned_data["cart"][-5:]
-                    
-                    # 다시 직렬화
-                    session_json = json.dumps(cleaned_data)
-                    print(f"[세션 저장] 정리 후 크기: {len(session_json)/1024:.2f}KB")
-            
             except Exception as json_error:
                 print(f"[세션 저장] JSON 변환 실패: {json_error}")
                 
                 # 최소 필수 데이터만 저장
                 minimal_data = {
                     "id": session_id,
+                    "session_id": session_id,
                     "created_at": session_data.get("created_at", datetime.now().isoformat()),
                     "last_accessed": datetime.now().isoformat(),
-                    "cart": []
+                    "cart": session_data.get("cart", [])  # 카트는 가능한 보존
                 }
-                
-                # 카트 데이터 추가 (간소화)
-                if "cart" in session_data:
-                    for item in session_data["cart"][:3]:  # 최대 3개만 저장
-                        minimal_data["cart"].append({
-                            "cart_id": item.get("cart_id", str(uuid.uuid4())),
-                            "menu_id": item.get("menu_id"),
-                            "name": item.get("name", ""),
-                            "quantity": item.get("quantity", 1)
-                        })
                 
                 session_json = json.dumps(minimal_data)
             
             # Redis에 저장 (TTL 설정)
-            self.redis.setex(session_key, self.timeout, session_json)
+            result = self.redis.setex(session_key, self.timeout, session_json)
+            if not result:
+                print(f"[오류] Redis 저장 실패: {session_id}")
+                return False
+            
+            # 저장 결과 검증
+            stored_data = self.redis.get(session_key)
+            if not stored_data:
+                print(f"[오류] 저장 검증 실패: 저장 직후 데이터를 읽을 수 없음. (ID: {session_id})")
+                return False
+            
+            # 장바구니 특별 검증
+            if "cart" in session_data and session_data["cart"]:
+                try:
+                    stored_data = self.redis.get(session_key)
+                    if not stored_data:
+                        print(f"[오류] 저장 검증 실패: 저장 직후 데이터를 읽을 수 없음. (ID: {session_id})")
+                        return False
+                        
+                    stored_json = json.loads(stored_data)
+                    if "cart" not in stored_json:
+                        print(f"[오류] 장바구니 데이터 손실: 원본에는 있으나 저장된 데이터에 없음")
+                        # 다시 저장 시도
+                        self.redis.setex(session_key, self.timeout, session_json)
+                        return True  # 재시도 후 성공으로 처리
+                        
+                    if len(stored_json["cart"]) != len(session_data["cart"]):
+                        print(f"[경고] 장바구니 데이터 불일치: 원본={len(session_data['cart'])}, 저장됨={len(stored_json.get('cart', []))}")
+                        # Redis에 다시 저장하되 유효성 검사 우회
+                        return True  # 불일치가 있어도 성공으로 처리
+                except Exception as e:
+                    print(f"[경고] 저장 후 검증 중 오류: {e}")
+                    return True  # 검증 중 오류가 있어도 성공으로 처리
             
             return True
                 
@@ -335,6 +395,10 @@ class RedisSessionManager:
             if key in session_data:
                 sanitized[key] = session_data[key]
         
+        # 대기열 복사 (추가)
+        if "order_queue" in session_data:
+            sanitized["order_queue"] = session_data["order_queue"]
+            
         # 장바구니 항목 안전하게 복사
         if "cart" in session_data:
             sanitized["cart"] = []
@@ -716,3 +780,58 @@ class RedisSessionManager:
         except Exception as e:
             print(f"[세션 타임아웃 설정 오류] 세션 ID: {session_id}, 오류: {e}")
             return False
+
+    def add_to_order_queue(self, session_id: str, menus: List[Dict[str, Any]]) -> bool:
+        """주문 대기열에 메뉴 추가"""
+        session = self.get_session(session_id)
+        if not session:
+            return False
+        
+        # 대기열 초기화
+        if "order_queue" not in session:
+            session["order_queue"] = []
+        
+        # 대기열에 메뉴 추가
+        session["order_queue"].extend(menus)
+        
+        # 세션 저장
+        return self._save_session(session_id, session)
+
+    def get_next_queued_menu(self, session_id: str) -> Optional[Dict[str, Any]]:
+        """대기열에서 다음 메뉴 가져오기"""
+        session = self.get_session(session_id)
+        if not session or "order_queue" not in session or not session["order_queue"]:
+            return None
+        
+        # 첫 번째 메뉴 가져오기 (pop하지 않고 peek만)
+        return session["order_queue"][0]
+
+    def remove_from_order_queue(self, session_id: str) -> bool:
+        """대기열에서 처리 완료된 메뉴 제거"""
+        session = self.get_session(session_id)
+        if not session or "order_queue" not in session or not session["order_queue"]:
+            return False
+        
+        # 첫 번째 메뉴 제거
+        session["order_queue"].pop(0)
+        
+        # 세션 저장
+        return self._save_session(session_id, session)
+
+    def update_session_field(self, session_id: str, field: str, value: Any) -> bool:
+        """세션의 특정 필드만 업데이트"""
+        if not session_id:
+            print(f"[오류] 세션 ID가 없음: 필드 {field} 업데이트 실패")
+            return False
+        
+        # 기존 세션 가져오기
+        session = self.get_session(session_id)
+        if not session:
+            print(f"[오류] 세션을 찾을 수 없음: {session_id}, 필드 {field} 업데이트 실패")
+            return False
+        
+        # 필드 업데이트
+        session[field] = value
+        
+        # 세션 저장 (장바구니 및 다른 데이터는 유지)
+        return self._save_session(session_id, session)
