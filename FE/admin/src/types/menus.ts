@@ -6,6 +6,18 @@ import { TagType } from '@/types/tags';
 
 export type MenuType = {
   menuId: number;
+  nameKr: string;
+  nameEn: string;
+  category: string;
+  storeName: string;
+  description: string;
+  price: number;
+  status: string;
+  tags: string[];
+};
+
+export type MenuResponseType = {
+  menuId: number;
   imageUrl: string;
   nameKr: string;
   nameEn: string;
@@ -18,7 +30,6 @@ export type MenuType = {
 };
 
 export interface MenuAdd {
-  imageUrl: string;
   nameKr: string;
   nameEn: string;
   categoryId: number;

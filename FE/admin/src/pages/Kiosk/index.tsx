@@ -40,10 +40,10 @@ const Kiosk = () => {
       <div className='flex gap-2 max-h-[10%] w-full justify-between'>
         <div className='flex gap-2 w-full'>
           <Input
-            inputId='searchKiosk'
+            id='searchKiosk'
             placeholder='키오스크명 또는 위치로 검색'
-            inputType='text'
-            inputValue={searchValue}
+            type='text'
+            value={searchValue}
             onChange={handleSearchChange}
             className='w-[65%]'
           />
@@ -58,7 +58,7 @@ const Kiosk = () => {
           />
         </div>
         <Button
-          buttonType='button'
+          type='button'
           text='키오스크 등록'
           icon={<IconAdd fillColor='white' />}
           onClick={() => {

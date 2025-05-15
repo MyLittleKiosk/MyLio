@@ -1,19 +1,19 @@
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import Main from '@/pages/Main';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
-import { useOrderRequest } from '@/service/queries/order';
-import useOrderStore from '@/stores/useOrderStore';
 import { DEFAULT_COMMENT } from '@/datas/COMMENT';
-import { useLogout, useRefresh } from '@/service/queries/user';
+import Main from '@/pages/Main';
 import Footer from '@/pages/OrderLayout/Footer';
+import { useLogout, useRefresh } from '@/service/queries/user';
+import useOrderStore from '@/stores/useOrderStore';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useOrderRequest } from '@/service/queries/order';
 
 const OrderLayout = () => {
   const { pathname } = useLocation();
   const [userChat] = useState<string>('');
   const { order, resetOrder } = useOrderStore();
-  const { mutate: orderRequest } = useOrderRequest();
+  const { mutate: orderRequest, isPending } = useOrderRequest();
   const { mutate: logout } = useLogout();
   const { mutate: refresh } = useRefresh();
   const navigate = useNavigate();
@@ -112,6 +112,7 @@ const OrderLayout = () => {
         <Main
           userChat={userChat}
           gptChat={order.reply ? order.reply : DEFAULT_COMMENT}
+          isPending={isPending}
         />
       </header>
       <motion.main

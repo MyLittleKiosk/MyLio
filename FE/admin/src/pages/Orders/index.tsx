@@ -8,8 +8,10 @@ import { useGetOrders } from '@/service/queries/orders';
 
 import Button from '@/components/common/Button';
 import CompleteModal from '@/components/common/CompleteModal';
+import PageNavigation from '@/components/common/PageNavigation';
 import { ORDER_COLUMNS } from '@/datas/orderList';
 import useModalStore from '@/stores/useModalStore';
+import { Pagination } from '@/types/apiResponse';
 import { OrderType } from '@/types/orders';
 
 const Orders = () => {
@@ -20,11 +22,19 @@ const Orders = () => {
   const [searchParams, setSearchParams] = useState<{
     startDate?: string;
     endDate?: string;
-  }>({});
+    page?: number;
+  }>({
+    page: 1,
+  });
 
-  const { data: ordersData, isLoading } = useGetOrders(
+  const {
+    data: ordersData,
+    isLoading,
+    pageInfo,
+  } = useGetOrders(
     searchParams.startDate,
-    searchParams.endDate
+    searchParams.endDate,
+    searchParams.page
   );
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -33,6 +43,13 @@ const Orders = () => {
 
   function handleEndSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
     setEndSearchValue(e.target.value);
+  }
+
+  function handlePageChange(page: number) {
+    setSearchParams({
+      ...searchParams,
+      page,
+    });
   }
 
   function handleSearch() {
@@ -49,13 +66,16 @@ const Orders = () => {
     setSearchParams({
       startDate: startSearchValue || undefined,
       endDate: endSearchValue || undefined,
+      page: 1,
     });
   }
 
   function handleReset() {
     setStartSearchValue('');
     setEndSearchValue('');
-    setSearchParams({});
+    setSearchParams({
+      page: 1,
+    });
   }
 
   if (isLoading) {
@@ -69,30 +89,30 @@ const Orders = () => {
         <div className='flex gap-2 max-h-[10%] w-full justify-between'>
           <div className='flex gap-2 w-full'>
             <Input
-              inputId='startSearchOrder'
+              id='startSearchOrder'
               placeholder=''
-              inputType='date'
-              inputValue={startSearchValue}
+              type='date'
+              value={startSearchValue}
               maxDate={endSearchValue}
               onChange={handleSearchChange}
             />
             <Input
-              inputId='endSearchOrder'
+              id='endSearchOrder'
               placeholder=''
-              inputType='date'
-              inputValue={endSearchValue}
+              type='date'
+              value={endSearchValue}
               minDate={startSearchValue}
               onChange={handleEndSearchChange}
             />
             <Button
-              buttonId='searchBtnId'
-              buttonType='button'
+              id='searchBtnId'
+              type='button'
               text='검색'
               onClick={handleSearch}
             />
             <Button
-              buttonId='resetBtnId'
-              buttonType='button'
+              id='resetBtnId'
+              type='button'
               text='전체'
               onClick={handleReset}
               className='bg-gray-500 hover:bg-gray-600'
@@ -107,6 +127,10 @@ const Orders = () => {
           onView={(row) => {
             openModal(<ViewDetailOrderModal initialData={row} />);
           }}
+        />
+        <PageNavigation
+          pageInfo={pageInfo as Pagination}
+          onChangePage={(page: number) => handlePageChange(page)}
         />
         <Modal />
       </section>

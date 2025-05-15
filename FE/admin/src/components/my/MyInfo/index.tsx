@@ -56,40 +56,40 @@ const MyInfo = ({ userInfo }: Props) => {
     <form className='w-full flex flex-col items-center gap-5'>
       <div className='w-full flex flex-col gap-5'>
         <Input
-          inputId='username'
+          id='username'
           label='사용자 이름'
           placeholder='이름'
-          inputValue={username}
-          inputType='text'
+          value={username}
+          type='text'
           onChange={(e) => setUsername(e.target.value)}
         />
         <Input
-          inputId='email'
+          id='email'
           label='이메일'
           placeholder='이메일'
-          inputValue={email}
-          inputType='text'
+          value={email}
+          type='text'
           onChange={(e) => setEmail(e.target.value)}
           disabled
         />
         <Input
-          inputId='storeName'
+          id='storeName'
           label='가게 이름'
           placeholder='가게 이름'
-          inputValue={storeName}
-          inputType='text'
+          value={storeName}
+          type='text'
           onChange={(e) => setStoreName(e.target.value)}
         />
         <Input
-          inputId='storeAddress'
+          id='storeAddress'
           label='가게 주소'
           placeholder='가게 주소'
-          inputValue={storeAddress}
-          inputType='text'
+          value={storeAddress}
+          type='text'
           onChange={(e) => setStoreAddress(e.target.value)}
         />
       </div>
-      <Button buttonType='button' text='수정' onClick={handlePatchAccount} />
+      <Button type='button' text='수정' onClick={handlePatchAccount} />
     </form>
   );
 };

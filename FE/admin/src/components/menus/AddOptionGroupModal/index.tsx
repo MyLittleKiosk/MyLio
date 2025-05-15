@@ -41,16 +41,16 @@ const AddOptionGroupModal = () => {
         <div className='w-full flex flex-col gap-2 '>
           <div className='w-full flex items-center gap-2'>
             <Input
-              inputId='optionGroupAdd'
+              id='optionGroupAdd'
               label='옵션 그룹명'
-              inputType='text'
+              type='text'
               onChange={(e) => setOptionGroupValueKor(e.target.value)}
-              inputValue={optionGroupValueKor}
+              value={optionGroupValueKor}
               placeholder='옵션 그룹명을 입력하세요.'
             />
 
             <Button
-              buttonType='button'
+              type='button'
               text='번역하기'
               onClick={() => {
                 translateCategoryValue();
@@ -58,23 +58,23 @@ const AddOptionGroupModal = () => {
             />
           </div>
           <Input
-            inputId='engOptionGroup'
+            id='engOptionGroup'
             label='옵션 그룹 영문명'
-            inputType='text'
+            type='text'
             onChange={(e) => setOptionGroupValueEng(e.target.value)}
-            inputValue={optionGroupValueEng}
+            value={optionGroupValueEng}
             placeholder='옵션 그룹 영문명을 입력하세요.'
           />
           <div className='flex justify-end gap-2'>
             <Button
-              buttonType='button'
+              type='button'
               text='취소'
               onClick={() => {
                 closeModal();
               }}
               cancel
             />
-            <Button buttonType='submit' text='추가' buttonId='addOptionGroup' />
+            <Button type='submit' text='추가' id='addOptionGroup' />
           </div>
         </div>
       </form>
