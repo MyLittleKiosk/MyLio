@@ -71,9 +71,8 @@ const ChatContainer = ({ userChat, gptChat, isExpand }: Props) => {
         transition={layoutTransition}
       >
         <motion.div
-          className='p-2 flex justify-center items-center bg-white rounded-full'
+          className='p-2 pe-1 flex justify-center items-center rounded-full'
           style={{
-            boxShadow: 'inset 0px 0px 10px rgba(0, 0, 0, 0.25)',
             aspectRatio: '1/1', // 정사각형 비율 유지
             overflow: 'hidden',
           }}
@@ -84,7 +83,7 @@ const ChatContainer = ({ userChat, gptChat, isExpand }: Props) => {
           <img
             src={lio}
             alt='img'
-            className='object-contain w-full h-full'
+            className='object-contain w-full h-full mb-2'
             draggable={false}
           />
         </motion.div>
