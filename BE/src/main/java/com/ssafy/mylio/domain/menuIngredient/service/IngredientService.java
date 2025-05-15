@@ -24,7 +24,7 @@ public class IngredientService {
     public CustomPage<IngredientTemplateResponseDto> getIngredientList(String userType, String keyword, Pageable pageable){
 
         // userType 검증 (관리자인지)
-        if(!userType.equals("SUPER")){
+        if(!(userType.equals("SUPER") || userType.equals("STORE"))){
             throw new CustomException(ErrorCode.FORBIDDEN_ACCESS, "userType", userType);
         }
 
