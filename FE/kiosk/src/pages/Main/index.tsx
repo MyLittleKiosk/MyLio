@@ -1,6 +1,5 @@
 import ChatContainer from '@/components/Chat/ChatContainer';
 import Loading from '@/components/common/Loading';
-import { useAudioRecord } from '@/hooks/useAudioRecord';
 import { useLocation } from 'react-router-dom';
 
 interface Props {
@@ -13,7 +12,6 @@ interface Props {
  */
 const Main = ({ userChat, gptChat, isPending }: Props) => {
   const location = useLocation();
-  const { isRecording, volume } = useAudioRecord();
 
   return (
     <div className='flex flex-col items-center justify-center p-4 '>
@@ -23,8 +21,6 @@ const Main = ({ userChat, gptChat, isPending }: Props) => {
         <ChatContainer
           userChat={userChat}
           gptChat={gptChat}
-          isRecording={isRecording}
-          volume={volume}
           isExpand={location.pathname === '/kiosk'}
         />
       )}
