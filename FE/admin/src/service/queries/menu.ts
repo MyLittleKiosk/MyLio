@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   addMenu,
+  deleteMenu,
   getMenuById,
   getMenus,
   updateMenu,
@@ -79,4 +80,21 @@ const useUpdateMenu = () => {
   });
 };
 
-export { useGetMenus, useAddMenu, useUpdateMenu };
+const useDeleteMenu = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (menuId: number) => deleteMenu(menuId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['menus'] });
+      queryClient.invalidateQueries({ queryKey: ['menuDetail'] });
+    },
+    onError: (error) => {
+      if (error instanceof Error) {
+        alert(error.message);
+      }
+    },
+  });
+};
+
+export { useGetMenus, useAddMenu, useUpdateMenu, useDeleteMenu };

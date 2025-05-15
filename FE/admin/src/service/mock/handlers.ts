@@ -80,6 +80,14 @@ export const handlers = [
     });
   }),
 
+  http.delete(`${baseUrl}/menus/:menuId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
   http.get(`${baseUrl}/option`, () => {
     return HttpResponse.json(OPTION_LIST);
   }),

@@ -12,7 +12,9 @@ import { MenuType, NavItemType } from '@/types/menus';
 import { Column } from '@/types/tableProps';
 
 import { useGetCategory } from '@/service/queries/category';
-import { useGetMenus } from '@/service/queries/menu';
+import { useDeleteMenu, useGetMenus } from '@/service/queries/menu';
+import CompleteModal from '@/components/common/CompleteModal';
+import useModalStore from '@/stores/useModalStore';
 
 interface Props {
   selectedNav: NavItemType;
@@ -30,6 +32,10 @@ const Menu = ({
     null
   );
   const [selectedStore, setSelectedStore] = useState<StoreType | null>(null);
+
+  const { mutate: deleteMenu } = useDeleteMenu();
+
+  const { openModal } = useModalStore();
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
     setSearchValue(e.target.value);
@@ -52,6 +58,24 @@ const Menu = ({
   function handleEdit(menuId: number) {
     setIsEditMenuClicked(true);
     setClickedMenuId(menuId);
+  }
+
+  function handleDelete(menuId: number) {
+    if (!confirm('삭제하시겠습니까?')) {
+      return;
+    }
+
+    deleteMenu(menuId, {
+      onSuccess: () => {
+        openModal(
+          <CompleteModal
+            title='삭제 성공'
+            description='메뉴가 삭제되었습니다.'
+            buttonText='확인'
+          />
+        );
+      },
+    });
   }
 
   const { data: menus, isLoading: getMenusLoading } = useGetMenus();
@@ -92,10 +116,11 @@ const Menu = ({
       </div>
       <Table<MenuType>
         title='메뉴 목록'
-        description='총 6개의 메뉴가 있습니다.'
+        description={`총 ${menus.length}개의 메뉴가 있습니다.`}
         columns={selectedNav.columns as Column<MenuType>[]}
         data={menus as MenuType[]}
         onEdit={(row) => handleEdit(row.menuId)}
+        onDelete={(row) => handleDelete(row.menuId)}
       />
     </div>
   );
