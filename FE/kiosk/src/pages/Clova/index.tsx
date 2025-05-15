@@ -10,8 +10,7 @@ import { useAudioRecord } from '@/hooks/useAudioRecord';
  * Clova 테스트 페이지
  */
 const ClovaPage = () => {
-  const { isRecording, startRecording, stopRecording, volume } =
-    useAudioRecord();
+  const { isRecording, startRecording, stopRecording } = useAudioRecord();
   const [recognitionResult, setRecognitionResult] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -140,8 +139,6 @@ const ClovaPage = () => {
           '아아 한 잔 줘'
         }
         gptChat={`무엇을 도와드릴까요?\n다양한 커피 메뉴를 소개해드릴게요.\n커피 메뉴를 선택해주세요.\n오늘의 메뉴로 청포도 아이스 티를 추천해드려요!`}
-        isRecording={isRecording}
-        volume={volume}
         isExpand={true}
       />
       <div className='w-full max-w-md p-6 bg-white rounded-lg shadow-md'>
@@ -173,7 +170,7 @@ const ClovaPage = () => {
             </button>
           </div>
           <div className='flex justify-center'>
-            <VoiceAnimation isRecording={isRecording} volume={volume} />
+            <VoiceAnimation />
           </div>
 
           <div className='mb-4'>
