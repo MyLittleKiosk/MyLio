@@ -1,17 +1,24 @@
+import React, { useState } from 'react';
+
 import IconAdd from '@/assets/icons/IconAdd';
+
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Modal from '@/components/common/Modal';
 import PageNavigation from '@/components/common/PageNavigation';
 import Table from '@/components/common/Table';
+import AddNutrientModal from '@/components/nutrients/AddNutrientModal';
+import EditNutrientModal from '@/components/nutrients/EditNutrientModal';
+
 import { NUTRIENT_COLUMNS } from '@/datas/NutrientList';
+
 import { useDebounce } from '@/hooks/useDebounce';
+
 import useModalStore from '@/stores/useModalStore';
+
 import { Pagination } from '@/types/apiResponse';
 import { NutrientType } from '@/types/nutrient';
-import React, { useState } from 'react';
-import AddNutrientModal from '../AddNutrientModal';
-import EditNutrientModal from '../EditNutrientModal';
+
 import { useGetNutritionList } from '@/service/queries/nutrient';
 
 const NutrientsContent = () => {

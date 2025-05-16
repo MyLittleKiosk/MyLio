@@ -7,7 +7,7 @@ import {
   getNutritionList,
   addNutritionTemplate,
   patchNutritionTemplate,
-} from '../apis/nutrient';
+} from '@/service/apis/nutrient';
 import { NutritionTemplateAddType } from '@/types/nutrient';
 
 export const useGetNutritionList = (keyword?: string, page?: number) => {

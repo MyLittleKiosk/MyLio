@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+
 import Button from '@/components/common/Button';
 import CompleteModal from '@/components/common/CompleteModal';
 import Input from '@/components/common/Input';
@@ -7,7 +9,6 @@ import { usePatchNutritionTemplate } from '@/service/queries/nutrient';
 import useModalStore from '@/stores/useModalStore';
 import { NutrientType } from '@/types/nutrient';
 import translator from '@/utils/translator';
-import React, { useState } from 'react';
 
 interface Props {
   row: NutrientType;
