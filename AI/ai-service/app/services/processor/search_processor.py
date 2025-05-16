@@ -5,7 +5,7 @@ import re
 
 from app.models.schemas import IntentType, ScreenState, Language, ResponseStatus
 from app.services.processor.base_processor import BaseProcessor
-# from app.services.vector_db_service import VectorDBService
+from app.services.vector_db_service import VectorDBService
 from app.services.response.response_generator import ResponseGenerator
 from app.models.schemas import ResponseStatus
 
@@ -18,7 +18,7 @@ class SearchProcessor(BaseProcessor):
         self.menu_service = menu_service
         self.session_manager = session_manager
         # 벡터 DB 서비스 인스턴스 가져오기
-        # self.vector_db_service = VectorDBService.get_instance()
+        self.vector_db_service = VectorDBService.get_instance()
     
     def process(self, intent_data: Dict[str, Any], text: str, language: str, screen_state: str, store_id: int, session: Dict[str, Any]) -> Dict[str, Any]:
         """검색 의도 처리"""
