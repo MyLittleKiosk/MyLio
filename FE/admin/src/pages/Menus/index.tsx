@@ -11,6 +11,7 @@ import EditMenuForm from '@/components/menus/EditMenuForm';
 import { MENU_NAV_LIST } from '@/datas/menuList';
 import { NavItemType } from '@/types/menus';
 import IconAdd from '@/assets/icons/IconAdd';
+import ErrorHandler from '@/components/common/ErrorHandler';
 
 const Menus = () => {
   const [selectedNav, setSelectedNav] = useState<NavItemType>(MENU_NAV_LIST[0]);
@@ -37,10 +38,12 @@ const Menus = () => {
         {isAddMenuClicked ? (
           <AddMenuForm setIsAddMenuClicked={setIsAddMenuClicked} />
         ) : isEditMenuClicked ? (
-          <EditMenuForm
-            setIsEditMenuClicked={setIsEditMenuClicked}
-            clickedMenuId={clickedMenuId as number}
-          />
+          <ErrorHandler>
+            <EditMenuForm
+              setIsEditMenuClicked={setIsEditMenuClicked}
+              clickedMenuId={clickedMenuId as number}
+            />
+          </ErrorHandler>
         ) : (
           <>
             <nav className='bg-subContent/50 rounded-md p-2 w-fit'>
@@ -61,20 +64,22 @@ const Menus = () => {
                 })}
               </ul>
             </nav>
-            <div>
-              {selectedNav.title === '메뉴' && (
-                <Menu
-                  selectedNav={selectedNav}
-                  setIsEditMenuClicked={setIsEditMenuClicked}
-                  setClickedMenuId={setClickedMenuId}
-                />
-              )}
-              {selectedNav.title === '카테고리' && (
-                <Category selectedNav={selectedNav} />
-              )}
-              {selectedNav.title === '옵션' && (
-                <Option selectedNav={selectedNav} />
-              )}
+            <div className='w-full h-full'>
+              <ErrorHandler>
+                {selectedNav.title === '메뉴' && (
+                  <Menu
+                    selectedNav={selectedNav}
+                    setIsEditMenuClicked={setIsEditMenuClicked}
+                    setClickedMenuId={setClickedMenuId}
+                  />
+                )}
+                {selectedNav.title === '카테고리' && (
+                  <Category selectedNav={selectedNav} />
+                )}
+                {selectedNav.title === '옵션' && (
+                  <Option selectedNav={selectedNav} />
+                )}
+              </ErrorHandler>
             </div>
           </>
         )}

@@ -16,11 +16,7 @@ import { useGetOptions } from '@/service/queries/option';
 const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
   const { openModal } = useModalStore();
 
-  const { data: options, isLoading } = useGetOptions();
-
-  if (!options || isLoading) {
-    return <div>Loading...</div>;
-  }
+  const { data: options } = useGetOptions();
 
   return (
     <div className='flex flex-col gap-2'>
