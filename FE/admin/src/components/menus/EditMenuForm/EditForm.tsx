@@ -13,7 +13,7 @@ import IconAdd from '@/assets/icons/IconAdd';
 import IconTrashCan from '@/assets/icons/IconTrashCan';
 import IconImage from '@/assets/icons/IconImage';
 
-import NUTRIENT_LIST from '@/datas/NutrientList';
+import { NUTRIENT_LIST } from '@/datas/NutrientList';
 import { INGREDIENT_LIST } from '@/datas/IngredientList';
 import translator from '@/utils/translator';
 
@@ -296,8 +296,8 @@ const EditForm = () => {
             label='영양성분'
             selected={selectedNutrient}
             placeholder='영양성분을 선택하세요.'
-            getOptionLabel={(option) => option.nameKr}
-            getOptionValue={(option) => option.nutrientTemplateId.toString()}
+            getOptionLabel={(option) => option.nutritionTemplateName}
+            getOptionValue={(option) => option.nutritionTemplateId.toString()}
             onChange={handleNutrientChange}
             className='w-[55%]'
           />
@@ -320,7 +320,7 @@ const EditForm = () => {
             type='button'
             onClick={() =>
               handleNutrientAdd(
-                selectedNutrient?.nutrientTemplateId.toString() || '',
+                selectedNutrient?.nutritionTemplateId.toString() || '',
                 nutritionValue
               )
             }
@@ -331,13 +331,13 @@ const EditForm = () => {
           {selectedNutrientList.map((nutrient) => {
             return (
               <p
-                key={nutrient.nutrientTemplateId}
+                key={nutrient.nutritionTemplateId}
                 className='px-2 py-1 text-sm border border-subContent rounded-full font-preLight cursor-pointer flex gap-1 items-center hover:bg-subContent/50'
                 onClick={() =>
-                  handleNutrientRemove(nutrient.nutrientTemplateId)
+                  handleNutrientRemove(nutrient.nutritionTemplateId)
                 }
               >
-                {nutrient.nutrientName + ' ' + nutrient.nutrientValue}
+                {nutrient.nutritionName + ' ' + nutrient.nutritionValue}
                 <IconTrashCan width={12} height={12} />
               </p>
             );

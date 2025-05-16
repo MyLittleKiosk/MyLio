@@ -42,7 +42,6 @@ const AddIngredientModal = () => {
               buttonText='확인'
             />
           );
-          closeModal();
         },
         onError: (error: unknown) => {
           if (error instanceof Error) {
