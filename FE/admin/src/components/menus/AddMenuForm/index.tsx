@@ -42,9 +42,6 @@ const AddMenuFormContent = ({
       return;
     }
 
-    console.log('menuAddData', menuAddData);
-    console.log('imageFile', imageFile);
-
     // API 호출
     addMenu(
       { menu: menuAddData, file: imageFile || undefined },

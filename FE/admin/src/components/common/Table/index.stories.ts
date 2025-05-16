@@ -1,7 +1,7 @@
 import Table from '.';
 import { Meta, StoryObj } from '@storybook/react';
 import { MENU_COLUMNS } from '@/datas/menuList';
-import MENU_LIST from '@/service/mock/dummies/menu';
+import { MENU_LIST } from '@/service/mock/dummies/menu';
 
 const meta: Meta<typeof Table> = {
   title: 'Components/Common/Table',

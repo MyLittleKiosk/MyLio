@@ -17,6 +17,16 @@ export interface OptionGroup {
   optionDetail: OptionDetailType[];
 }
 
+export type OptionDetailGetType = {
+  menuOptionId: number;
+  optionId: number;
+  optionNameKr: string;
+  optionNameEn: string;
+  optionValue: string;
+  additionalPrice: number;
+  required: boolean;
+};
+
 export interface OptionList {
   success: boolean;
   data: {

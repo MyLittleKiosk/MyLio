@@ -368,40 +368,49 @@ export const useMenuAdd = () => {
     setImagePreview(null);
   }
 
-  function checkValidation() {
+  function checkValidation(requireImage = true) {
     if (menuAddData.nameKr === '' || menuAddData.nameEn === '') {
+      alert('메뉴명을 정확하게 입력해주세요.');
       return false;
     }
 
     if (menuAddData.description === '') {
+      alert('메뉴 설명을 정확하게 입력해주세요.');
       return false;
     }
 
     if (menuAddData.price === 0) {
+      alert('가격을 정확하게 입력해주세요.');
       return false;
     }
 
     if (menuAddData.tags.length === 0) {
+      alert('태그를 정확하게 입력해주세요.');
       return false;
     }
 
     if (selectedCategory === null) {
+      alert('카테고리를 정확하게 선택해주세요.');
       return false;
     }
 
     if (selectedIngredientList.length === 0) {
+      alert('원재료를 정확하게 선택해주세요.');
       return false;
     }
 
     if (selectedNutrientList.length === 0) {
+      alert('영양성분을 정확하게 선택해주세요.');
       return false;
     }
 
     if (selectedOptions.length === 0) {
+      alert('옵션을 정확하게 선택해주세요.');
       return false;
     }
 
-    if (imageFile === null) {
+    if (requireImage && imageFile === null) {
+      alert('이미지를 정확하게 선택해주세요.');
       return false;
     }
 
@@ -424,6 +433,11 @@ export const useMenuAdd = () => {
     setMenuAddData,
     setTagValueEN,
     setNutritionValue,
+    setSelectedCategory,
+    setImagePreview,
+    setSelectedIngredientList,
+    setSelectedNutrientList,
+    setSelectedOptions,
     handleCategoryChange,
     handleTagInputChange,
     handleTagAdd,
