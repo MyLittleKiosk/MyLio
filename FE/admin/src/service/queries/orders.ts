@@ -1,4 +1,4 @@
-import { getOrders } from '@/service/apis/orders';
+import { getOrderDetail, getOrders } from '@/service/apis/orders';
 import { useQuery } from '@tanstack/react-query';
 
 export function useGetOrders(
@@ -27,5 +27,20 @@ export function useGetOrders(
     isLoading: query.isLoading,
     isError: query.isError,
     pageInfo,
+  };
+}
+
+export function useGetOrderDetail(orderId: string) {
+  const query = useQuery({
+    queryKey: ['orderDetail', orderId],
+    queryFn: () => getOrderDetail(orderId),
+    refetchOnWindowFocus: false,
+    enabled: !!orderId,
+  });
+
+  return {
+    data: query.data?.data,
+    isLoading: query.isLoading,
+    isError: query.isError,
   };
 }
