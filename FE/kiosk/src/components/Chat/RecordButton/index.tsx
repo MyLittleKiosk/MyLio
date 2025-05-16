@@ -1,4 +1,4 @@
-import mic from '@/assets/icons/mic.svg';
+import mic from '@/assets/images/mic.png';
 import { sendAudioToClova } from '@/service/apis/voice';
 import audioStore from '@/stores/audioStore';
 import clsx from 'clsx';
@@ -97,10 +97,11 @@ const RecordButton = ({ onRecognitionResult }: Props) => {
       onTouchStart={handlePressStart}
       onTouchEnd={handlePressEnd}
       className={clsx(
-        'p-2 w-16 h-16 bg-white shadow-lg rounded-full flex justify-center items-center transition-all',
+        'p-2 w-16 h-16 shadow-lg rounded-full flex justify-center items-center transition-all',
+        'animate-[pulse_1s_ease-in-out_infinite]',
         isRecording
-          ? 'scale-90 shadow-inner shadow-green-500'
-          : 'hover:bg-gray-100'
+          ? 'scale-90 shadow-inner shadow-green-500 bg-green-100'
+          : 'bg-white hover:bg-gray-100'
       )}
       disabled={isProcessing}
     >
