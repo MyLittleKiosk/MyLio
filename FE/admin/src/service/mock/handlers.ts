@@ -324,4 +324,12 @@ export const handlers = [
       timestamp: new Date().toISOString(),
     });
   }),
+
+  http.patch(`${baseUrl}/nutrition/:nutritionId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
 ];

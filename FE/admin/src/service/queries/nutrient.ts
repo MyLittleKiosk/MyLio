@@ -3,7 +3,11 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query';
-import { getNutritionList, addNutritionTemplate } from '../apis/nutrient';
+import {
+  getNutritionList,
+  addNutritionTemplate,
+  patchNutritionTemplate,
+} from '../apis/nutrient';
 import { NutritionTemplateAddType } from '@/types/nutrient';
 
 export const useGetNutritionList = (keyword?: string, page?: number) => {
@@ -35,6 +39,28 @@ export const useAddNutritionTemplate = () => {
   return useMutation({
     mutationFn: (nutrition: NutritionTemplateAddType) =>
       addNutritionTemplate(nutrition),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['nutritionList'] });
+    },
+    onError: (error: unknown) => {
+      if (error instanceof Error) {
+        alert(error.message);
+      }
+    },
+  });
+};
+
+export const usePatchNutritionTemplate = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      nutritionId,
+      nutrition,
+    }: {
+      nutritionId: number;
+      nutrition: NutritionTemplateAddType;
+    }) => patchNutritionTemplate(nutritionId, nutrition),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['nutritionList'] });
     },
