@@ -47,10 +47,10 @@ const NutrientsContent = () => {
 
   return (
     <section className='w-full h-full p-4 flex flex-col gap-2 '>
-      <h1 className='text-2xl font-preBold h-[5%]'>재료 관리</h1>
+      <h1 className='text-2xl font-preBold h-[5%]'>영양성분분 관리</h1>
       <div className='flex gap-2 max-h-[10%] w-full justify-between'>
         <Input
-          id='searchIngredient'
+          id='searchNutrition'
           value={searchParams.keyword || ''}
           placeholder='이름, 영문 이름으로 검색'
           onChange={handleSearchChange}
