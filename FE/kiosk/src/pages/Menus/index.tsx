@@ -6,7 +6,7 @@ const Menus = () => {
   const [page, setPage] = useState(0);
   const menus = useMemo(() => {
     if (order.contents.length === 0) return [];
-    const itemsPerPage = 16;
+    const itemsPerPage = 9;
     const totalPages = Math.ceil(order.contents.length / itemsPerPage);
     const result = [];
     console.log('order.contents:', order.contents);
@@ -19,34 +19,34 @@ const Menus = () => {
     return result;
   }, [order.contents]);
   return (
-    <section className='flex flex-col w-full h-full pt-10'>
+    <section className='flex flex-col w-full h-full pt-5'>
       <h1 className='text-2xl font-preBold inline-block ps-10'>메뉴</h1>
       <div className='w-full items-start mb-4 ps-10'>
         <span className='font-preBold text-gray-500 text-sm'>
           총 {order.contents.length}개의 메뉴
         </span>
       </div>
-      <div className='flex justify-between items-center w-[95%] mx-auto h-full'>
+      <div className='flex justify-between w-[95%] mx-auto  h-[65%]'>
         <div className='flex h-full items-center justify-center gap-2'>
           <button onClick={() => setPage(page - 1)} disabled={page === 0}>
             {'<'}
           </button>
         </div>
-        <div className='grid grid-cols-4 h-full justify-items-center gap-y-3 gap-x-1 overflow-y-auto w-11/12 overflow-x-hidden'>
+        <div className='grid grid-cols-3 justify-items-center items-start gap-1 overflow-y-auto w-11/12 overflow-x-hidden'>
           {menus[page]?.map((item) => {
             return (
               <div
                 key={item.menuId}
-                className='flex flex-col items-center justify-center h-[180px] text-center whitespace-nowrap tracking-[-0.1em] rounded-3xl'
+                className='flex flex-col items-start justify-center text-center whitespace-nowrap tracking-[-0.1em] rounded-3xl'
               >
                 <img
                   src={item.imageUrl}
                   alt={item.name}
-                  className='w-full h-[90px] max-w-[90px] mx-auto'
+                  className='w-[130px] h-[130px] object-cover mx-auto rounded-lg'
                 />
                 <div className='flex flex-col items-center h-[100px] justify-center mx-auto'>
                   <h1 className='text-sm font-preBold'>{item.name}</h1>
-                  <h1 className='text-sm font-preBold'>
+                  <h1 className='text-xs font-preBold text-gray-400'>
                     {item.basePrice.toLocaleString()}원
                   </h1>
                 </div>
