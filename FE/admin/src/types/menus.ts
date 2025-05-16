@@ -1,8 +1,13 @@
 import { CategoryType } from '@/types/categories';
-import { OptionInfoType, OptionGroup } from '@/types/options';
+import {
+  OptionInfoType,
+  OptionGroup,
+  OptionDetailGetType,
+} from '@/types/options';
 import { Column } from '@/types/tableProps';
-import { NutritionInfoType } from '@/types/nutrient';
-import { TagType } from '@/types/tags';
+import { NutrientDetailGetType, NutritionInfoType } from '@/types/nutrient';
+import { TagDetailGetType, TagType } from '@/types/tags';
+import { IngredientDetailGetType } from './ingredient';
 
 export type MenuType = {
   menuId: number;
@@ -27,6 +32,24 @@ export type MenuResponseType = {
   price: number;
   status: string;
   tags: string[];
+};
+
+export type MenuDetailGetType = {
+  menuInfo: {
+    menuId: number;
+    imageUrl: string;
+    nameKr: string;
+    nameEn: string;
+    categoryId: number;
+    storeName: string;
+    description: string;
+    price: number;
+    status: string;
+  };
+  tags: TagDetailGetType[];
+  nutritionInfo: NutrientDetailGetType[];
+  ingredientInfo: IngredientDetailGetType[];
+  optionInfo: OptionDetailGetType[];
 };
 
 export interface MenuAdd {

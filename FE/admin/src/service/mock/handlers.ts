@@ -11,7 +11,7 @@ import {
   PaymentSalesRatioType,
 } from '@/types/statistics';
 import { CATEGORY_LIST } from './dummies/category';
-import MENU_LIST from './dummies/menu';
+import { MENU_LIST, MENU_BY_ID } from './dummies/menu';
 import DUMMY_MY_INFO from './dummies/my';
 import { OPTION_LIST } from './dummies/option';
 import {
@@ -60,7 +60,27 @@ export const handlers = [
     return HttpResponse.json(MENU_LIST);
   }),
 
+  http.get(`${baseUrl}/menus/:menuId`, () => {
+    return HttpResponse.json(MENU_BY_ID);
+  }),
+
   http.post(`${baseUrl}/menus`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.put(`${baseUrl}/menus/:menuId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.delete(`${baseUrl}/menus/:menuId`, () => {
     return HttpResponse.json({
       success: true,
       data: {},
