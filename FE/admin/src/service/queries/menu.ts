@@ -1,6 +1,5 @@
 import {
   useMutation,
-  useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query';
@@ -28,15 +27,13 @@ const useGetMenus = (page?: number, categoryId?: number) => {
 };
 
 export const useGetMenuById = (menuId: number) => {
-  const query = useQuery<Response<MenuDetailGetType>>({
+  const query = useSuspenseQuery<Response<MenuDetailGetType>>({
     queryKey: ['menuDetail', menuId],
     queryFn: () => getMenuById(menuId),
   });
 
   return {
     data: query.data?.data,
-    isLoading: query.isLoading,
-    isError: query.isError,
   };
 };
 

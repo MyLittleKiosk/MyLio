@@ -1,5 +1,4 @@
-import { Suspense, useState } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import { useState } from 'react';
 
 import Modal from '@/components/common/Modal';
 import Menu from '@/components/menus/Menu';
@@ -12,8 +11,7 @@ import EditMenuForm from '@/components/menus/EditMenuForm';
 import { MENU_NAV_LIST } from '@/datas/menuList';
 import { NavItemType } from '@/types/menus';
 import IconAdd from '@/assets/icons/IconAdd';
-import Error from '@/components/common/Error';
-import Loading from '@/components/common/Loading';
+import ErrorHandler from '@/components/common/ErrorHandler';
 
 const Menus = () => {
   const [selectedNav, setSelectedNav] = useState<NavItemType>(MENU_NAV_LIST[0]);
@@ -40,10 +38,12 @@ const Menus = () => {
         {isAddMenuClicked ? (
           <AddMenuForm setIsAddMenuClicked={setIsAddMenuClicked} />
         ) : isEditMenuClicked ? (
-          <EditMenuForm
-            setIsEditMenuClicked={setIsEditMenuClicked}
-            clickedMenuId={clickedMenuId as number}
-          />
+          <ErrorHandler>
+            <EditMenuForm
+              setIsEditMenuClicked={setIsEditMenuClicked}
+              clickedMenuId={clickedMenuId as number}
+            />
+          </ErrorHandler>
         ) : (
           <>
             <nav className='bg-subContent/50 rounded-md p-2 w-fit'>
@@ -65,23 +65,21 @@ const Menus = () => {
               </ul>
             </nav>
             <div className='w-full h-full'>
-              <ErrorBoundary fallback={<Error />}>
-                <Suspense fallback={<Loading />}>
-                  {selectedNav.title === '메뉴' && (
-                    <Menu
-                      selectedNav={selectedNav}
-                      setIsEditMenuClicked={setIsEditMenuClicked}
-                      setClickedMenuId={setClickedMenuId}
-                    />
-                  )}
-                  {selectedNav.title === '카테고리' && (
-                    <Category selectedNav={selectedNav} />
-                  )}
-                  {selectedNav.title === '옵션' && (
-                    <Option selectedNav={selectedNav} />
-                  )}
-                </Suspense>
-              </ErrorBoundary>
+              <ErrorHandler>
+                {selectedNav.title === '메뉴' && (
+                  <Menu
+                    selectedNav={selectedNav}
+                    setIsEditMenuClicked={setIsEditMenuClicked}
+                    setClickedMenuId={setClickedMenuId}
+                  />
+                )}
+                {selectedNav.title === '카테고리' && (
+                  <Category selectedNav={selectedNav} />
+                )}
+                {selectedNav.title === '옵션' && (
+                  <Option selectedNav={selectedNav} />
+                )}
+              </ErrorHandler>
             </div>
           </>
         )}
