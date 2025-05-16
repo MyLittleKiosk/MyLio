@@ -1,4 +1,9 @@
-import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
 import { OptionList } from '@/types/options';
 import {
   addOptionDetail,
@@ -13,7 +18,7 @@ import {
 import useModalStore from '@/stores/useModalStore';
 
 const useGetOptions = () => {
-  const query = useQuery<OptionList>({
+  const query = useSuspenseQuery<OptionList>({
     queryKey: ['options'],
     queryFn: getOptions,
   });

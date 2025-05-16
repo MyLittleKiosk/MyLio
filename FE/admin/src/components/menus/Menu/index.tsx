@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
+import CompleteModal from '@/components/common/CompleteModal';
 
 import STORE_LIST from '@/datas/storeList';
 
@@ -13,7 +14,6 @@ import { Column } from '@/types/tableProps';
 
 import { useGetCategory } from '@/service/queries/category';
 import { useDeleteMenu, useGetMenus } from '@/service/queries/menu';
-import CompleteModal from '@/components/common/CompleteModal';
 import useModalStore from '@/stores/useModalStore';
 
 interface Props {
@@ -32,8 +32,6 @@ const Menu = ({
     null
   );
   const [selectedStore, setSelectedStore] = useState<StoreType | null>(null);
-
-  const { mutate: deleteMenu } = useDeleteMenu();
 
   const { openModal } = useModalStore();
 
@@ -78,12 +76,9 @@ const Menu = ({
     });
   }
 
-  const { data: menus, isLoading: getMenusLoading } = useGetMenus();
-  const { data: category, isLoading: getCategoryLoading } = useGetCategory();
-
-  if (!menus || !category || getMenusLoading || getCategoryLoading) {
-    return <div>Loading...</div>;
-  }
+  const { data: menus } = useGetMenus();
+  const { mutate: deleteMenu } = useDeleteMenu();
+  const { data: category } = useGetCategory();
 
   return (
     <div className='flex flex-col gap-2'>

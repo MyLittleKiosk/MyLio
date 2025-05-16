@@ -5,10 +5,10 @@ import {
   getStatisticsByOrder,
   getStatisticsByPayment,
 } from '@/service/apis/statistics';
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 function useGetSalesTrend(year: number, month?: number) {
-  const query = useQuery({
+  const query = useSuspenseQuery({
     queryKey: ['salesTrend', year, month],
     queryFn: () => getSalesTrend(year, month),
   });
@@ -21,7 +21,7 @@ function useGetSalesTrend(year: number, month?: number) {
 }
 
 function useGetStatisticsByCategory(year: number, month?: number) {
-  const query = useQuery({
+  const query = useSuspenseQuery({
     queryKey: ['statisticsByCategory', year, month],
     queryFn: () => getStatisticsByCategory(year, month),
   });
@@ -34,7 +34,7 @@ function useGetStatisticsByCategory(year: number, month?: number) {
 }
 
 function useGetStatisticsByOrder(year: number, month?: number) {
-  const query = useQuery({
+  const query = useSuspenseQuery({
     queryKey: ['statisticsByOrder', year, month],
     queryFn: () => getStatisticsByOrder(year, month),
   });
@@ -47,7 +47,7 @@ function useGetStatisticsByOrder(year: number, month?: number) {
 }
 
 function useGetStatisticsByPayment(year: number, month?: number) {
-  const query = useQuery({
+  const query = useSuspenseQuery({
     queryKey: ['statisticsByPayment', year, month],
     queryFn: () => getStatisticsByPayment(year, month),
   });
@@ -60,7 +60,7 @@ function useGetStatisticsByPayment(year: number, month?: number) {
 }
 
 function useGetStatisticsByDaily() {
-  const query = useQuery({
+  const query = useSuspenseQuery({
     queryKey: ['statisticsByDaily'],
     queryFn: () => getStatisticsByDaily(),
   });

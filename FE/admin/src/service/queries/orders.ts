@@ -1,16 +1,16 @@
 import { getOrders } from '@/service/apis/orders';
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 export function useGetOrders(
   startDate?: string,
   endDate?: string,
   page?: number
 ) {
-  const query = useQuery({
+  const query = useSuspenseQuery({
     queryKey: ['orders', startDate, endDate, page],
     queryFn: () => getOrders(startDate, endDate, page),
     refetchOnWindowFocus: false,
-    placeholderData: (previousData) => previousData,
+    // placeholderData: (previousData) => previousData,
   });
 
   const pageInfo = {

@@ -1,4 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
 
 import { PaginationResponse, Response } from '@/types/apiResponse';
 import { CategoryType } from '@/types/categories';
@@ -12,15 +16,13 @@ import {
 import useModalStore from '@/stores/useModalStore';
 
 export const useGetCategory = (page?: number) => {
-  const query = useQuery<Response<PaginationResponse<CategoryType>>>({
+  const query = useSuspenseQuery<Response<PaginationResponse<CategoryType>>>({
     queryKey: ['category', page],
     queryFn: () => getCategory(page),
   });
 
   return {
     data: query.data?.data.content,
-    isLoading: query.isLoading,
-    isError: query.isError,
   };
 };
 

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
 import Modal from '@/components/common/Modal';
 import Menu from '@/components/menus/Menu';
@@ -11,6 +12,8 @@ import EditMenuForm from '@/components/menus/EditMenuForm';
 import { MENU_NAV_LIST } from '@/datas/menuList';
 import { NavItemType } from '@/types/menus';
 import IconAdd from '@/assets/icons/IconAdd';
+import Error from '@/components/common/Error';
+import Loading from '@/components/common/Loading';
 
 const Menus = () => {
   const [selectedNav, setSelectedNav] = useState<NavItemType>(MENU_NAV_LIST[0]);
@@ -61,20 +64,24 @@ const Menus = () => {
                 })}
               </ul>
             </nav>
-            <div>
-              {selectedNav.title === '메뉴' && (
-                <Menu
-                  selectedNav={selectedNav}
-                  setIsEditMenuClicked={setIsEditMenuClicked}
-                  setClickedMenuId={setClickedMenuId}
-                />
-              )}
-              {selectedNav.title === '카테고리' && (
-                <Category selectedNav={selectedNav} />
-              )}
-              {selectedNav.title === '옵션' && (
-                <Option selectedNav={selectedNav} />
-              )}
+            <div className='w-full h-full'>
+              <ErrorBoundary fallback={<Error />}>
+                <Suspense fallback={<Loading />}>
+                  {selectedNav.title === '메뉴' && (
+                    <Menu
+                      selectedNav={selectedNav}
+                      setIsEditMenuClicked={setIsEditMenuClicked}
+                      setClickedMenuId={setClickedMenuId}
+                    />
+                  )}
+                  {selectedNav.title === '카테고리' && (
+                    <Category selectedNav={selectedNav} />
+                  )}
+                  {selectedNav.title === '옵션' && (
+                    <Option selectedNav={selectedNav} />
+                  )}
+                </Suspense>
+              </ErrorBoundary>
             </div>
           </>
         )}
