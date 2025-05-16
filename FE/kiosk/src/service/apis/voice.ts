@@ -2,7 +2,7 @@ import { ClovaResponse } from '@/types/clova';
 import axios from 'axios';
 
 // Clova API 클라이언트 설정
-const baseUrl = 'https://k12b102.p.ssafy.io/voice';
+const baseUrl = import.meta.env.VITE_PUBLIC_VOICE_API_URL;
 console.log('baseUrl:', baseUrl);
 // const baseUrl = 'https://localhost:8000';
 const voiceClient = axios.create({
