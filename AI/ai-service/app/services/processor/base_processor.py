@@ -35,5 +35,15 @@ class BaseProcessor:
         
         if intent_data.get("intent_type") == "PAYMENT" and "payment_method" in intent_data:
             response["payment_method"] = intent_data["payment_method"]
+            
+        if intent_data.get("intent_type") == "CART_MODIFY":
+            if "action_type" in intent_data:
+                response["action_type"] = intent_data["action_type"]
+            if "menu_name" in intent_data:
+                response["menu_name"] = intent_data["menu_name"]
+            if "quantity_change" in intent_data:
+                response["quantity_change"] = intent_data["quantity_change"]
+            if "new_options" in intent_data:
+                response["new_options"] = intent_data["new_options"]
         
         return response
