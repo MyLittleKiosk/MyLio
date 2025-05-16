@@ -49,6 +49,7 @@ class ResponseStatus(str, Enum):
     RECOMMENDATION = "RECOMMENDATION"         # 추천 메뉴
     SEARCH_RESULTS = "SEARCH_RESULTS"        # 검색 결과
     PAYMENT_CONFIRM = "PAYMENT_CONFIRM"       # 결제 확인
+    SELECT_PAYMENT = "SELECT_PAYMENT"         # 결제 수단 선택
     PAYMENT_SUCCESS = "PAYMENT_SUCCESS"       # 결제 완료
     PAYMENT_FAILED = "PAYMENT_FAILED"         # 결제 실패
     DETAIL = "DETAIL"          # 메뉴 영양 성분 조회
@@ -77,7 +78,7 @@ class VoiceInputResponse(BaseModel):
         }
     )
 
-    # app/models/schemas.py에 추가
+# app/models/schemas.py에 추가
 
 class RecognizedMenu(BaseModel):
     """인식된 메뉴 정보 모델"""

@@ -320,12 +320,23 @@ class PaymentProcessor(BaseProcessor):
         
         # 결제 수단 선택 화면으로 이동
         context = {
-            "status": ResponseStatus.PAYMENT_CONFIRM,
+            "status": ResponseStatus.SELECT_PAYMENT,  # 상태를 SELECT_PAYMENT로 변경
             "screen_state": ScreenState.SELECT_PAY
         }
-        reply = intent_data.get("reply") or self.response_generator.generate_response(
-            intent_data, language, context
-        )
+        
+        # 응답 생성 (intent_data의 reply가 있으면 사용, 없으면 생성)
+        reply = intent_data.get("reply")
+        if not reply:
+            if language == Language.KR:
+                reply = "결제 방법을 선택해주세요."
+            elif language == Language.EN:
+                reply = "Please select your payment method."
+            elif language == Language.JP:
+                reply = "お支払い方法を選択してください。"
+            elif language == Language.CN:
+                reply = "请选择支付方式。"
+            else:
+                reply = self.response_generator.generate_response(intent_data, language, context)
         
         return {
             "intent_type": IntentType.PAYMENT,
@@ -336,7 +347,7 @@ class PaymentProcessor(BaseProcessor):
                 "pre_text": text,
                 "post_text": intent_data.get("post_text", text),
                 "reply": reply,
-                "status": ResponseStatus.PAYMENT_CONFIRM,
+                "status": ResponseStatus.SELECT_PAYMENT,  # 상태도 일관되게 변경
                 "language": language,
                 "session_id": session.get("id", ""),
                 "cart": session.get("cart", []),
@@ -571,14 +582,14 @@ class PaymentProcessor(BaseProcessor):
                 "id": "GIFT",
                 "name": "기프트 카드",
                 "name_en": "Gift Card",
-                "keywords_kr": ["기프트", "기프트 카드", "선물", "선물 카드"],
+                "keywords_kr": ["기프트", "기프트 카드", "선물", "선물 카드","기프트 카드"],
                 "keywords_en": ["gift", "gift card", "present"]
             },
             "PAY": {
                 "id": "PAY",
                 "name": "카카오페이",
                 "name_en": "Kakao Pay",
-                "keywords_kr": ["카카오", "카카오페이", "카톡", "카톡페이", "페이", "간편결제", "카페이"],
+                "keywords_kr": ["카카오", "카카오페이", "카톡", "카톡페이", "페이", "간편결제", "카페이","카카오 페이"],
                 "keywords_en": ["kakao", "kakaopay", "kakao pay", "pay"]
             }
         }
