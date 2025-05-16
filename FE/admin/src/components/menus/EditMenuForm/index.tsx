@@ -51,7 +51,6 @@ const EditMenuFormContent = ({
     e.preventDefault();
 
     if (!checkValidation(false)) {
-      alert('모든 항목을 입력해주세요.');
       return;
     }
 
