@@ -1,6 +1,7 @@
 package com.ssafy.mylio.domain.order.service;
 
 import com.ssafy.mylio.domain.menu.repository.MenuRepository;
+import com.ssafy.mylio.domain.order.dto.response.CartResponseDto;
 import com.ssafy.mylio.domain.order.dto.response.ContentsResponseDto;
 import com.ssafy.mylio.domain.order.dto.response.OrderResponseDto;
 import com.ssafy.mylio.domain.order.util.OrderJsonMapper;
@@ -48,6 +49,29 @@ public class SearchValidatorService {
             }
         }
 
-        return order;
+        // cart imageUrl이 null이면 menu에서 보정
+        List<CartResponseDto> fixedCarts = null;
+        if (order.getCart() != null) {
+            fixedCarts = order.getCart().stream()
+                    .map(cart -> {
+                        if (cart.getImageUrl() == null || cart.getImageUrl().isEmpty()) {
+                            return menuRepository.findById(cart.getMenuId())
+                                    .map(menu -> cart.toBuilder()
+                                            .imageUrl(menu.getImageUrl())
+                                            .build())
+                                    .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", cart.getMenuId()));
+                        }
+                        return cart;
+                    })
+                    .toList();
+        }
+
+        // 변경된 cart가 있다면 반영
+        OrderResponseDto.OrderResponseDtoBuilder builder = order.toBuilder();
+        if (fixedCarts != null) {
+            builder.cart(fixedCarts);
+        }
+
+        return builder.build();
     }
 }
