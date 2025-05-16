@@ -389,3 +389,17 @@ class MenuService:
                     }
                     
                     menus[menu_id]["nutrition"].append(nutrition_item)
+
+    def find_menu_by_id(self, menu_id: int, store_id: int) -> Optional[Dict[str, Any]]:
+        """메뉴 ID로 메뉴 검색"""
+        if not menu_id:
+            return None
+        
+        # 1. 스토어 메뉴 데이터 가져오기
+        menus = self.get_store_menus(store_id)
+        
+        # 2. ID로 메뉴 찾기
+        if menu_id in menus:
+            return copy.deepcopy(menus[menu_id])
+        
+        return None

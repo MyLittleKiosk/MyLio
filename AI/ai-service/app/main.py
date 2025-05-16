@@ -12,7 +12,7 @@ from app.services.menu_service import MenuService
 from app.services.response_service import ResponseService
 from app.services.redis_session_manager import RedisSessionManager
 from app.services.intent_service import IntentService
-# from app.services.vector_db_service import VectorDBService
+from app.services.vector_db_service import VectorDBService
 from app.models.schemas import ResponseStatus
 
 # 환경 변수 로드
@@ -99,13 +99,13 @@ async def startup_event():
         menu_service = MenuService(db)
         
         # 벡터 DB 서비스 초기화
-        # vector_db_service = VectorDBService.get_instance()
+        vector_db_service = VectorDBService.get_instance()
         
         # 매장 ID 목록 
         store_ids = menu_service.get_all_store_ids()
         
         # 메뉴 데이터로 벡터 DB 초기화
-        # document_count = vector_db_service.initialize_from_menus(menu_service, store_ids)
+        document_count = vector_db_service.initialize_from_menus(menu_service, store_ids)
         print(f"[앱 시작] 벡터 DB 초기화 완료: {document_count}개 메뉴 데이터")
         
     except Exception as e:
@@ -509,13 +509,13 @@ async def startup_event():
         menu_service = MenuService(db)
         
         # 벡터 DB 서비스 초기화
-        # vector_db_service = VectorDBService.get_instance()
+        vector_db_service = VectorDBService.get_instance()
         
         # 매장 ID 목록 
         store_ids = menu_service.get_all_store_ids()
         
         # 메뉴 데이터로 벡터 DB 초기화
-        # document_count = vector_db_service.initialize_from_menus(menu_service, store_ids)
+        document_count = vector_db_service.initialize_from_menus(menu_service, store_ids)
         # print(f"[앱 시작] 벡터 DB 초기화 완료: {document_count}개 메뉴 데이터")
         
     except Exception as e:
