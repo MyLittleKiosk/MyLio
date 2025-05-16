@@ -10,12 +10,13 @@ const SelectPay = () => {
   return (
     <section className='flex flex-col w-full h-full px-10 pt-10'>
       <h1 className='text-2xl font-preBold'>결제 수단</h1>
-      <div className='grid grid-cols-2 gap-3 mt-10 w-full overflow-y-auto p-1'>
+      <div className='grid grid-cols-2 gap-3 mt-10 w-full p-1 h-full'>
         {PAY_METHODS.map((pay) => (
           <div
             key={pay.id}
-            className='flex items-center gap-2 border border-gray-300 rounded-md p-10 justify-center shadow-md'
+            className='flex flex-col items-center gap-2 border border-gray-300 rounded-md p-5 justify-center shadow-md bg-[#F4F4F5]'
           >
+            <img src={pay.image} alt={pay.name} className='w-10 h-10' />
             <span className='text-lg font-preBold'>{pay.name}</span>
           </div>
         ))}
