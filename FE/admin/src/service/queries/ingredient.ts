@@ -1,15 +1,16 @@
-import { IngredientType } from '@/types/ingredient';
-import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   getIngredientList,
   patchIngredient,
   postIngredient,
-} from '../apis/ingredient';
+} from '@/service/apis/ingredient';
+import { IngredientForm, IngredientType } from '@/types/ingredient';
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
 
 export const useGetIngredientList = (keyword?: string, page?: number) => {
   const query = useQuery({
     queryKey: ['ingredientList', keyword, page],
     queryFn: () => getIngredientList(keyword, page),
+    placeholderData: keepPreviousData,
   });
 
   const pageInfo = {
@@ -31,7 +32,7 @@ export const useGetIngredientList = (keyword?: string, page?: number) => {
 
 export const usePostIngredient = () => {
   const query = useMutation({
-    mutationFn: (ingredient: IngredientType) => postIngredient(ingredient),
+    mutationFn: (ingredient: IngredientForm) => postIngredient(ingredient),
   });
   return {
     mutate: query.mutate,

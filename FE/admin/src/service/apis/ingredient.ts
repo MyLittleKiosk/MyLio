@@ -1,6 +1,6 @@
 import authClient from '@/service/authClient';
 import { CustomError, PaginationResponse, Response } from '@/types/apiResponse';
-import { IngredientType } from '@/types/ingredient';
+import { IngredientForm, IngredientType } from '@/types/ingredient';
 
 export const getIngredientList = async (
   keyword?: string,
@@ -21,7 +21,7 @@ export const getIngredientList = async (
   }
 };
 
-export const postIngredient = async (ingredient: IngredientType) => {
+export const postIngredient = async (ingredient: IngredientForm) => {
   try {
     const response = await authClient.post('/ingredient', ingredient);
     return response.data;
