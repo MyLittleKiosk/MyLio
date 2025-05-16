@@ -20,11 +20,7 @@ interface Props {
 }
 
 const EditMenuForm = ({ setIsEditMenuClicked, clickedMenuId }: Props) => {
-  const { data: menuDetail, isLoading } = useGetMenuById(clickedMenuId);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const { data: menuDetail } = useGetMenuById(clickedMenuId);
 
   return (
     <MenuEditProvider menuDetail={menuDetail as MenuDetailGetType}>
