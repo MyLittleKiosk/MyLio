@@ -11,7 +11,6 @@ import SelectPay from '@/pages/SelectPay';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
-import MSWInit from './components/common/MSWInit';
 import PayLoading from './pages/Pay/PayLoading';
 import Landing from './pages/Lading';
 const queryClient = new QueryClient();

@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DEFAULT_COMMENT } from '@/datas/COMMENT';
 import Main from '@/pages/Main';
 import Footer from '@/pages/OrderLayout/Footer';
