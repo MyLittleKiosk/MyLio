@@ -118,7 +118,9 @@ const ChatContainer = ({ userChat, gptChat, isExpand }: Props) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        {userChat !== '' && <span>&quot;{userChat}&quot;</span>}
+        {userChat !== '' && (
+          <span className='font-preBold'>&quot;{userChat}&quot;</span>
+        )}
       </motion.div>
     </motion.div>
   );
