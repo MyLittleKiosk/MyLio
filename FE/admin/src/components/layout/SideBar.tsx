@@ -7,14 +7,16 @@ import IconBack from '@/assets/icons/IconBack';
 import LOGO from '@/assets/images/Character_HAo.png';
 
 import { ADMIN_NAVLIST, SUPERADMIN_NAVLIST } from '@/datas/sideBarList';
+import { useUserStore } from '@/stores/useUserStore';
 
 const SideBar = () => {
   //임시 데이터
   //추후 로그인 구현 시 수정 필요
-  const ISSUPERADMIN: boolean = false;
+  const { user } = useUserStore();
+  const IS_SUPER_ADMIN: boolean = user?.role === 'SUPER';
   const LOGIN = '관리자';
   const VERSION = '1.0.0';
-  const AUTHORITY = '일반관리자';
+  const AUTHORITY = IS_SUPER_ADMIN ? '슈퍼관리자' : '일반관리자';
 
   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
   const [currentPath, setCurrentPath] = useState(useLocation().pathname);
@@ -70,7 +72,7 @@ const SideBar = () => {
       </header>
       <hr className='w-full' />
       <section className='flex flex-col h-[80%] min-h-[120px]'>
-        {!ISSUPERADMIN && (
+        {!IS_SUPER_ADMIN && (
           <ul className='h-full pt-2 flex flex-col gap-1 text-base font-preMedium'>
             {ADMIN_NAVLIST.map((item) => (
               <Link
@@ -105,7 +107,7 @@ const SideBar = () => {
             ))}
           </ul>
         )}
-        {ISSUPERADMIN && (
+        {IS_SUPER_ADMIN && (
           <ul className='h-full pt-2 flex flex-col gap-1 text-base font-preMedium'>
             {SUPERADMIN_NAVLIST.map((item) => (
               <Link

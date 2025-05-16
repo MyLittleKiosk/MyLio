@@ -1,33 +1,49 @@
-//아직 API 구현되지 않아서 ERD 기반 임시데이터 생성
+import { IngredientType } from '@/types/ingredient';
+import { Column } from '@/types/tableProps';
+
+const INGREDIENT_COLUMNS: Column<IngredientType>[] = [
+  {
+    header: '이름',
+    accessor: 'ingredientTemplateName' as keyof IngredientType,
+  },
+  {
+    header: '영문 이름',
+    accessor: 'ingredientTemplateNameEn' as keyof IngredientType,
+  },
+  {
+    header: '편집',
+    accessor: 'edit' as keyof IngredientType,
+  },
+];
 
 const INGREDIENT_LIST = {
   content: [
     {
-      ingredientId: 1,
-      nameKr: '에스프레스',
-      nameEn: 'Espresso',
+      ingredientTemplateId: 1,
+      ingredientTemplateName: '에스프레스',
+      ingredientTemplateNameEn: 'Espresso',
     },
     {
-      ingredientId: 2,
-      nameKr: '우유',
-      nameEn: 'Milk',
+      ingredientTemplateId: 2,
+      ingredientTemplateName: '우유',
+      ingredientTemplateNameEn: 'Milk',
     },
     {
-      ingredientId: 3,
-      nameKr: '바닐라시럽',
-      nameEn: 'Vanilla Syrup',
+      ingredientTemplateId: 3,
+      ingredientTemplateName: '바닐라시럽',
+      ingredientTemplateNameEn: 'Vanilla Syrup',
     },
     {
-      ingredientId: 4,
-      nameKr: '초콜릿 소스',
-      nameEn: 'Chocolate Syrup',
+      ingredientTemplateId: 4,
+      ingredientTemplateName: '초콜릿 소스',
+      ingredientTemplateNameEn: 'Chocolate Syrup',
     },
     {
-      ingredientId: 5,
-      nameKr: '카라멜 시럽',
-      nameEn: 'Caramel Syrup',
+      ingredientTemplateId: 5,
+      ingredientTemplateName: '카라멜 시럽',
+      ingredientTemplateNameEn: 'Caramel Syrup',
     },
   ],
 };
 
-export default INGREDIENT_LIST;
+export { INGREDIENT_COLUMNS, INGREDIENT_LIST };
