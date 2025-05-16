@@ -310,6 +310,10 @@ export const handlers = [
   }),
 
   http.get(`${baseUrl}/nutrition`, () => {
-    return HttpResponse.json(NUTRIENT_LIST);
+    return HttpResponse.json({
+      success: true,
+      data: NUTRIENT_LIST,
+      timestamp: new Date().toISOString(),
+    });
   }),
 ];

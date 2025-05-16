@@ -50,7 +50,7 @@ const NutrientsContent = () => {
         />
         <Button
           type='button'
-          text='재료 추가'
+          text='영양성분 추가'
           icon={<IconAdd fillColor='white' />}
           onClick={() => {
             openModal(<AddNutrientModal />);
@@ -58,8 +58,8 @@ const NutrientsContent = () => {
         />
       </div>
       <Table<NutrientType>
-        title='재료 목록'
-        description={`총 ${pageInfo.totalElements}개의 재료가 있습니다.`}
+        title='영양성분 목록'
+        description={`총 ${pageInfo.totalElements}개의 영양성분이 있습니다.`}
         columns={NUTRIENT_COLUMNS}
         data={nutrientList}
         onEdit={(row) => {

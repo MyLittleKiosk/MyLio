@@ -43,6 +43,12 @@ const NUTRIENT_LIST = {
       nutrientTemplateType: 'g',
     },
   ],
+  pageNumber: 1,
+  totalPages: 1,
+  totalElements: 4,
+  pageSize: 10,
+  first: true,
+  last: false,
 };
 
 export { NUTRIENT_COLUMNS, NUTRIENT_LIST };
