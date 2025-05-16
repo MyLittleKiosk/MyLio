@@ -5,6 +5,12 @@ export type NutrientType = {
   nutrientTemplateType: string;
 };
 
+export type NutritionTemplateAddType = {
+  nutrientTemplateName: string;
+  nutrientTemplateNameEn: string;
+  nutrientTemplateType: string;
+};
+
 export type NutrientDetailGetType = {
   nutritionId: number;
   nutritionValue: number;
