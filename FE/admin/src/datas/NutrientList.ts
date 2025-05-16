@@ -4,11 +4,11 @@ import { Column } from '@/types/tableProps';
 const NUTRIENT_COLUMNS: Column<NutrientType>[] = [
   {
     header: '영양소명',
-    accessor: 'nutrientTemplateName' as keyof NutrientType,
+    accessor: 'nutritionTemplateName' as keyof NutrientType,
   },
   {
     header: '단위',
-    accessor: 'nutrientTemplateType' as keyof NutrientType,
+    accessor: 'nutritionTemplateType' as keyof NutrientType,
   },
   {
     header: '편집',
