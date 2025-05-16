@@ -1,19 +1,19 @@
 import { useEffect } from 'react';
 
+import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
-import Button from '@/components/common/Button';
 import OptionTable from '@/components/menus/AddMenuForm/OptionTable';
 
 import { CATEGORY_LIST } from '@/service/mock/dummies/category';
 import { useGetOptions } from '@/service/queries/option';
 
 import IconAdd from '@/assets/icons/IconAdd';
-import IconTrashCan from '@/assets/icons/IconTrashCan';
 import IconImage from '@/assets/icons/IconImage';
+import IconTrashCan from '@/assets/icons/IconTrashCan';
 
+import { INGREDIENT_LIST } from '@/datas/IngredientList';
 import NUTRIENT_LIST from '@/datas/NutrientList';
-import INGREDIENT_LIST from '@/datas/IngredientList';
 import translator from '@/utils/translator';
 import { useMenuFormContext } from './MenuFormContext';
 
@@ -267,19 +267,19 @@ const MenuForm = () => {
           label='원재료'
           selected={selectedIngredient}
           placeholder='원재료를 선택하세요.'
-          getOptionLabel={(option) => option.nameKr}
-          getOptionValue={(option) => option.ingredientId.toString()}
+          getOptionLabel={(option) => option.ingredientTemplateName}
+          getOptionValue={(option) => option.ingredientTemplateId.toString()}
           onChange={handleIngredientChange}
           className='w-full'
         />
         <div className='flex gap-2 w-full'>
           {selectedIngredientList.map((ingredient) => (
             <p
-              key={ingredient.ingredientId}
+              key={ingredient.ingredientTemplateId}
               className='px-2 py-1 text-sm border border-subContent rounded-full font-preLight cursor-pointer flex gap-1 items-center hover:bg-subContent/50'
               onClick={() => handleIngredientRemove(ingredient)}
             >
-              {ingredient.nameKr}
+              {ingredient.ingredientTemplateName}
               <IconTrashCan width={12} height={12} />
             </p>
           ))}

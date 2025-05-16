@@ -1,6 +1,5 @@
 import { getOrderDetail, getOrders } from '@/service/apis/orders';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery, useQuery } from '@tanstack/react-query';
 
 export function useGetOrders(
   startDate?: string,

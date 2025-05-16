@@ -7,7 +7,7 @@ import { IngredientType } from '@/types/ingredient';
 
 import { CATEGORY_LIST } from '@/service/mock/dummies/category';
 
-import INGREDIENT_LIST from '@/datas/IngredientList';
+import { INGREDIENT_LIST } from '@/datas/IngredientList';
 import NUTRIENT_LIST from '@/datas/NutrientList';
 
 // 기존 useMenuAdd의 반환 타입과 동일한 타입을 사용
@@ -76,7 +76,7 @@ export const MenuEditProvider: React.FC<MenuEditProviderProps> = ({
       const ingredientList = menuDetail.ingredientInfo
         .map((ingredient) => {
           const foundIngredient = INGREDIENT_LIST.content.find(
-            (i) => i.ingredientId === ingredient.ingredientId
+            (i) => i.ingredientTemplateId === ingredient.ingredientId
           );
           return foundIngredient as IngredientType;
         })

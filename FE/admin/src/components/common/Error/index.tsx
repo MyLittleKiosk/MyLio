@@ -1,9 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import Button from '@/components/common/Button';
 import Character_ROOo from '@/assets/images/Character_ROOo.png';
+import { useUserStore } from '@/stores/useUserStore';
 
 const Error = () => {
   const navigate = useNavigate();
+
+  const { user } = useUserStore();
+  const NAVIGATE_PATH = user?.role === 'SUPER' ? '/accounts' : '/';
 
   return (
     <div className='w-full h-full flex flex-col items-center justify-center gap-10 border border-subContent rounded-lg'>
@@ -15,7 +19,7 @@ const Error = () => {
         </p>
       </div>
 
-      <Button onClick={() => navigate('/')} text='홈으로' />
+      <Button onClick={() => navigate(NAVIGATE_PATH)} text='홈으로' />
     </div>
   );
 };
