@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
+import CompleteModal from '@/components/common/CompleteModal';
 
 import STORE_LIST from '@/datas/storeList';
 
@@ -12,14 +13,27 @@ import { MenuType, NavItemType } from '@/types/menus';
 import { Column } from '@/types/tableProps';
 
 import { useGetCategory } from '@/service/queries/category';
-import { useGetMenus } from '@/service/queries/menu';
+import { useDeleteMenu, useGetMenus } from '@/service/queries/menu';
+import useModalStore from '@/stores/useModalStore';
 
-const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
+interface Props {
+  selectedNav: NavItemType;
+  setIsEditMenuClicked: (value: boolean) => void;
+  setClickedMenuId: (value: number) => void;
+}
+
+const Menu = ({
+  selectedNav,
+  setIsEditMenuClicked,
+  setClickedMenuId,
+}: Props) => {
   const [searchValue, setSearchValue] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(
     null
   );
   const [selectedStore, setSelectedStore] = useState<StoreType | null>(null);
+
+  const { openModal } = useModalStore();
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
     setSearchValue(e.target.value);
@@ -39,12 +53,32 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
     setSelectedStore(selected || null);
   }
 
-  const { data: menus, isLoading: getMenusLoading } = useGetMenus();
-  const { data: category, isLoading: getCategoryLoading } = useGetCategory();
-
-  if (!menus || !category || getMenusLoading || getCategoryLoading) {
-    return <div>Loading...</div>;
+  function handleEdit(menuId: number) {
+    setIsEditMenuClicked(true);
+    setClickedMenuId(menuId);
   }
+
+  function handleDelete(menuId: number) {
+    if (!confirm('삭제하시겠습니까?')) {
+      return;
+    }
+
+    deleteMenu(menuId, {
+      onSuccess: () => {
+        openModal(
+          <CompleteModal
+            title='삭제 성공'
+            description='메뉴가 삭제되었습니다.'
+            buttonText='확인'
+          />
+        );
+      },
+    });
+  }
+
+  const { data: menus } = useGetMenus();
+  const { mutate: deleteMenu } = useDeleteMenu();
+  const { data: category } = useGetCategory();
 
   return (
     <div className='flex flex-col gap-2'>
@@ -77,9 +111,11 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
       </div>
       <Table<MenuType>
         title='메뉴 목록'
-        description='총 6개의 메뉴가 있습니다.'
+        description={`총 ${menus.length}개의 메뉴가 있습니다.`}
         columns={selectedNav.columns as Column<MenuType>[]}
         data={menus as MenuType[]}
+        onEdit={(row) => handleEdit(row.menuId)}
+        onDelete={(row) => handleDelete(row.menuId)}
       />
     </div>
   );
