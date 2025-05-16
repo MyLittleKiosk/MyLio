@@ -115,7 +115,7 @@ const OrderContent = () => {
               type='button'
               text='전체'
               onClick={handleReset}
-              className='bg-gray-500 hover:bg-gray-600'
+              className='bg-content hover:bg-content2'
             />
           </div>
         </div>
