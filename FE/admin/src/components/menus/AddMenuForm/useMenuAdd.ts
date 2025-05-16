@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 
-import { MenuAdd } from '@/types/menus';
 import { CategoryType } from '@/types/categories';
 import { IngredientType } from '@/types/ingredient';
+import { MenuAdd } from '@/types/menus';
 import { NutrientType } from '@/types/nutrient';
 import { OptionInfoType } from '@/types/options';
 
 import { CATEGORY_LIST } from '@/service/mock/dummies/category';
 
-import INGREDIENT_LIST from '@/datas/IngredientList';
+import { INGREDIENT_LIST } from '@/datas/IngredientList';
 import NUTRIENT_LIST from '@/datas/NutrientList';
 
 const initialMenuData: MenuAdd = {
@@ -137,7 +137,7 @@ export const useMenuAdd = () => {
 
   function handleIngredientChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const selected = INGREDIENT_LIST.content.find((ingredient) => {
-      return ingredient.ingredientId === Number(e.target.value);
+      return ingredient.ingredientTemplateId === Number(e.target.value);
     });
 
     if (!selected) {
@@ -147,7 +147,7 @@ export const useMenuAdd = () => {
 
     // 이미 선택된 원재료인지 확인
     const isDuplicate =
-      menuAddData.ingredientInfo.includes(selected.ingredientId) ||
+      menuAddData.ingredientInfo.includes(selected.ingredientTemplateId) ||
       selectedIngredientList.includes(selected);
 
     if (isDuplicate) {
@@ -160,7 +160,7 @@ export const useMenuAdd = () => {
     // 원재료 ID 추가
     setMenuAddData((prev) => ({
       ...prev,
-      ingredientInfo: [...prev.ingredientInfo, Number(selected.ingredientId)],
+      ingredientInfo: [...prev.ingredientInfo, selected.ingredientTemplateId],
     }));
 
     // 원재료 이름 추가
@@ -171,12 +171,14 @@ export const useMenuAdd = () => {
     setMenuAddData((prev) => ({
       ...prev,
       ingredientInfo: prev.ingredientInfo.filter(
-        (item) => item !== ingredient.ingredientId
+        (item) => item !== ingredient.ingredientTemplateId
       ),
     }));
 
     setSelectedIngredientList((prev) =>
-      prev.filter((item) => item.ingredientId !== ingredient.ingredientId)
+      prev.filter(
+        (item) => item.ingredientTemplateId !== ingredient.ingredientTemplateId
+      )
     );
   }
 
