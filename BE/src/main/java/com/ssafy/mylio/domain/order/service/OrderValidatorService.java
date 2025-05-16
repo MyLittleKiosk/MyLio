@@ -7,6 +7,7 @@ import com.ssafy.mylio.domain.options.entity.OptionDetail;
 import com.ssafy.mylio.domain.options.repository.MenuOptionRepository;
 import com.ssafy.mylio.domain.order.dto.common.OptionDetailsDto;
 import com.ssafy.mylio.domain.order.dto.common.OptionsDto;
+import com.ssafy.mylio.domain.order.dto.response.CartResponseDto;
 import com.ssafy.mylio.domain.order.dto.response.ContentsResponseDto;
 import com.ssafy.mylio.domain.order.dto.response.OrderResponseDto;
 import com.ssafy.mylio.domain.order.util.OrderJsonMapper;
@@ -48,17 +49,38 @@ public class OrderValidatorService {
                 .map(c -> validateAndCorrect(c, missingOpts))
                 .toList();
 
+        // cart에서 imgUrl null 보정
+        List<CartResponseDto> fixedCarts = null;
+        if (order.getCart() != null) {
+            fixedCarts = order.getCart().stream()
+                    .map(cart -> {
+                        if (cart.getImageUrl() == null || cart.getImageUrl().isEmpty()) {
+                            Menu menu = menuRepository.findById(cart.getMenuId())
+                                    .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", cart.getMenuId()));
+                            return cart.toBuilder()
+                                    .imageUrl(menu.getImageUrl())
+                                    .build();
+                        }
+                        return cart;
+                    })
+                    .toList();
+        }
+
+        OrderResponseDto.OrderResponseDtoBuilder builder = order.toBuilder()
+                .contents(fixedContents);
+
+        if (fixedCarts != null) {
+            builder.cart(fixedCarts); // carts 필드명이 정확한지 확인
+        }
+
         if (!missingOpts.isEmpty() && order.getReply() == null) {
             // reply가 없을때 GPT 호출
             String reply = gptPromptService.buildAskRequiredOptionPrompt(missingOpts, order.getLanguage());
-            return order.toBuilder()
-                    .contents(fixedContents)
-                    .reply(reply)
-                    .screenState(order.getScreenState())
-                    .build();
+            builder.reply(reply)
+                    .screenState(order.getScreenState());
         }
 
-        return order.toBuilder().contents(fixedContents).build();
+        return builder.build();
     }
 
     // ---------------- 검증 & 교정 ----------------
