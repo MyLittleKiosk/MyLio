@@ -2,7 +2,9 @@ import lio from '@/assets/images/ListenLio.png';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import VoiceAnimation from '../VoiceAnimation';
-
+import { useLocation } from 'react-router-dom';
+import { IMAGE_ROUTE } from '@/datas/IMAGE_ROUTE';
+import { useMemo } from 'react';
 interface Props {
   userChat: string;
   gptChat: string;
@@ -43,6 +45,14 @@ const layoutTransition = {
 };
 
 const ChatContainer = ({ userChat, gptChat, isExpand }: Props) => {
+  const { pathname } = useLocation();
+  const image = useMemo(() => {
+    if (pathname === '/kiosk') return lio;
+    const imagePath = pathname.split('/').pop();
+    console.log('imagePath:', imagePath);
+    return IMAGE_ROUTE[imagePath as keyof typeof IMAGE_ROUTE];
+  }, [pathname]);
+  console.log('image:', image);
   function handleUserChatFontSize() {
     if (!userChat) return isExpand ? 'text-xl' : 'text-lg';
 
@@ -82,7 +92,7 @@ const ChatContainer = ({ userChat, gptChat, isExpand }: Props) => {
           layout
         >
           <img
-            src={lio}
+            src={image}
             alt='img'
             className='object-contain w-full h-full mb-2'
             draggable={false}
