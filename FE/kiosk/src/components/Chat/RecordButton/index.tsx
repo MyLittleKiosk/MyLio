@@ -1,15 +1,18 @@
 import mic from '@/assets/icons/mic.svg';
-import { useAudioRecord } from '@/hooks/useAudioRecord';
 import { sendAudioToClova } from '@/service/apis/voice';
-import { useState } from 'react';
+import audioStore from '@/stores/audioStore';
 import clsx from 'clsx';
+import { useState } from 'react';
 
 interface Props {
   onRecognitionResult: (text: string) => void;
 }
 
 const RecordButton = ({ onRecognitionResult }: Props) => {
-  const { isRecording, startRecording, stopRecording } = useAudioRecord();
+  const isRecording = audioStore((s) => s.isRecording);
+  const startRecording = audioStore((s) => s.startRecording);
+  const stopRecording = audioStore((s) => s.stopRecording);
+
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
