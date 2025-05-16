@@ -2,10 +2,10 @@ import authClient from '@/service/authClient';
 import { CustomError, PaginationResponse, Response } from '@/types/apiResponse';
 import { IngredientForm, IngredientType } from '@/types/ingredient';
 
-export const getIngredientList = async (
+export async function getIngredientList(
   keyword?: string,
   page: number = 1
-): Promise<Response<PaginationResponse<IngredientType>>> => {
+): Promise<Response<PaginationResponse<IngredientType>>> {
   try {
     const params = keyword ? { keyword, page } : { page };
     const response = await authClient.get('/ingredient', { params });
@@ -19,9 +19,9 @@ export const getIngredientList = async (
     }
     throw new Error('unknown error');
   }
-};
+}
 
-export const postIngredient = async (ingredient: IngredientForm) => {
+export async function postIngredient(ingredient: IngredientForm) {
   try {
     const response = await authClient.post('/ingredient', ingredient);
     return response.data;
@@ -34,9 +34,9 @@ export const postIngredient = async (ingredient: IngredientForm) => {
     }
     throw new Error('unknown error');
   }
-};
+}
 
-export const patchIngredient = async (ingredient: IngredientType) => {
+export async function patchIngredient(ingredient: IngredientType) {
   try {
     const response = await authClient.patch(
       `/ingredient/${ingredient.ingredientTemplateId}`,
@@ -52,4 +52,4 @@ export const patchIngredient = async (ingredient: IngredientType) => {
     }
     throw new Error('unknown error');
   }
-};
+}
