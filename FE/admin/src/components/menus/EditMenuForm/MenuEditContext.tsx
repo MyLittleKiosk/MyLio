@@ -61,9 +61,9 @@ export const MenuEditProvider: React.FC<MenuEditProviderProps> = ({
       // 영양성분 설정
       const nutrientList = menuDetail.nutritionInfo.map((nutrition) => {
         return {
-          nutrientTemplateId: nutrition.nutritionId,
-          nutrientName: nutrition.nutritionName || '',
-          nutrientValue: nutrition.nutritionValue,
+          nutritionTemplateId: nutrition.nutritionId,
+          nutritionName: nutrition.nutritionName || '',
+          nutritionValue: nutrition.nutritionValue,
         };
       });
       menuFormValues.setSelectedNutrientList(nutrientList);

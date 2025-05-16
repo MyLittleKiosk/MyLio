@@ -36,9 +36,9 @@ const AddNutrientModal = () => {
 
     addNutritionTemplate(
       {
-        nutrientTemplateName: nutrientValueKr,
-        nutrientTemplateNameEn: nutrientValueEn,
-        nutrientTemplateType: nutrientType,
+        nutritionTemplateName: nutrientValueKr,
+        nutritionTemplateNameEn: nutrientValueEn,
+        nutritionTemplateType: nutrientType,
       },
       {
         onSuccess: () => {
@@ -49,11 +49,6 @@ const AddNutrientModal = () => {
               buttonText='확인'
             />
           );
-        },
-        onError: (error: unknown) => {
-          if (error instanceof Error) {
-            alert(error.message);
-          }
         },
       }
     );
