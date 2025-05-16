@@ -10,6 +10,7 @@ from app.services.processor.search_processor import SearchProcessor
 from app.services.processor.payment_processor import PaymentProcessor
 from app.services.processor.detail_processor import DetailProcessor
 from app.services.processor.unknown_processor import UnknownProcessor
+from app.services.processor.cart_modify_processor import CartModifyProcessor
 from app.services.response.response_generator import ResponseGenerator
 from app.services.menu_service import MenuService
 from app.services.redis_session_manager import RedisSessionManager
@@ -41,6 +42,7 @@ class IntentService:
         self.payment_processor = PaymentProcessor(self.response_generator, menu_service, session_manager)
         self.detail_processor = DetailProcessor(self.response_generator, menu_service, session_manager)
         self.unknown_processor = UnknownProcessor(self.response_generator, menu_service, session_manager)
+        self.cart_modify_processor = CartModifyProcessor(self.response_generator, menu_service, session_manager)
         
         # 프로세서 팩토리 초기화
         self.processor_factory = ProcessorFactory(
@@ -48,7 +50,8 @@ class IntentService:
             self.search_processor,
             self.payment_processor,
             self.detail_processor,
-            self.unknown_processor
+            self.unknown_processor,
+            self.cart_modify_processor
         )
 
     def process_request(self, text: str, language: str, screen_state: str, store_id: int, session_id: Optional[str] = None) -> Dict[str, Any]:
