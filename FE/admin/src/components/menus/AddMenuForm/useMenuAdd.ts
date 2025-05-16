@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 
-import { MenuAdd } from '@/types/menus';
 import { CategoryType } from '@/types/categories';
 import { IngredientType } from '@/types/ingredient';
+import { MenuAdd } from '@/types/menus';
 import { NutrientType } from '@/types/nutrient';
 import { OptionInfoType } from '@/types/options';
 
 import { CATEGORY_LIST } from '@/service/mock/dummies/category';
 
-import INGREDIENT_LIST from '@/datas/IngredientList';
-import NUTRIENT_LIST from '@/datas/NutrientList';
+import { INGREDIENT_LIST } from '@/datas/IngredientList';
+import { NUTRIENT_LIST } from '@/datas/NutrientList';
 
 const initialMenuData: MenuAdd = {
   nameKr: '',
@@ -47,9 +47,9 @@ export const useMenuAdd = () => {
   );
   const [selectedNutrientList, setSelectedNutrientList] = useState<
     {
-      nutrientTemplateId: number;
-      nutrientName: string;
-      nutrientValue: number;
+      nutritionTemplateId: number;
+      nutritionName: string;
+      nutritionValue: number;
     }[]
   >([]);
 
@@ -137,7 +137,7 @@ export const useMenuAdd = () => {
 
   function handleIngredientChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const selected = INGREDIENT_LIST.content.find((ingredient) => {
-      return ingredient.ingredientId === Number(e.target.value);
+      return ingredient.ingredientTemplateId === Number(e.target.value);
     });
 
     if (!selected) {
@@ -147,7 +147,7 @@ export const useMenuAdd = () => {
 
     // 이미 선택된 원재료인지 확인
     const isDuplicate =
-      menuAddData.ingredientInfo.includes(selected.ingredientId) ||
+      menuAddData.ingredientInfo.includes(selected.ingredientTemplateId) ||
       selectedIngredientList.includes(selected);
 
     if (isDuplicate) {
@@ -160,7 +160,7 @@ export const useMenuAdd = () => {
     // 원재료 ID 추가
     setMenuAddData((prev) => ({
       ...prev,
-      ingredientInfo: [...prev.ingredientInfo, Number(selected.ingredientId)],
+      ingredientInfo: [...prev.ingredientInfo, selected.ingredientTemplateId],
     }));
 
     // 원재료 이름 추가
@@ -171,18 +171,20 @@ export const useMenuAdd = () => {
     setMenuAddData((prev) => ({
       ...prev,
       ingredientInfo: prev.ingredientInfo.filter(
-        (item) => item !== ingredient.ingredientId
+        (item) => item !== ingredient.ingredientTemplateId
       ),
     }));
 
     setSelectedIngredientList((prev) =>
-      prev.filter((item) => item.ingredientId !== ingredient.ingredientId)
+      prev.filter(
+        (item) => item.ingredientTemplateId !== ingredient.ingredientTemplateId
+      )
     );
   }
 
   function handleNutrientChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const selected = NUTRIENT_LIST.content.find(
-      (nutrient) => nutrient.nutrientTemplateId.toString() === e.target.value
+      (nutrition) => nutrition.nutritionTemplateId.toString() === e.target.value
     );
 
     if (!selected) {
@@ -199,15 +201,15 @@ export const useMenuAdd = () => {
       return;
     }
 
-    const nutrientTemplateId = Number(nutrientId);
+    const nutritionTemplateId = Number(nutrientId);
 
     // 동일한 templateId를 가진 영양성분이 이미 존재하는지 확인
     const isDuplicate =
       menuAddData.nutritionInfo.some(
-        (nutrient) => nutrient.nutritionTemplateId === nutrientTemplateId
+        (nutrient) => nutrient.nutritionTemplateId === nutritionTemplateId
       ) ||
       selectedNutrientList.some(
-        (nutrient) => nutrient.nutrientTemplateId === nutrientTemplateId
+        (nutrient) => nutrient.nutritionTemplateId === nutritionTemplateId
       );
 
     if (isDuplicate) {
@@ -216,7 +218,7 @@ export const useMenuAdd = () => {
     }
 
     const newNutrient = {
-      nutritionTemplateId: nutrientTemplateId,
+      nutritionTemplateId: nutritionTemplateId,
       nutritionValue: value,
     };
 
@@ -228,23 +230,23 @@ export const useMenuAdd = () => {
     setSelectedNutrientList((prev) => [
       ...prev,
       {
-        nutrientTemplateId: nutrientTemplateId,
-        nutrientName: selectedNutrient?.nameKr || '',
-        nutrientValue: value,
+        nutritionTemplateId: nutritionTemplateId,
+        nutritionName: selectedNutrient?.nutritionTemplateName || '',
+        nutritionValue: value,
       },
     ]);
   }
 
-  function handleNutrientRemove(nutrientId: number) {
+  function handleNutrientRemove(nutritionId: number) {
     setMenuAddData((prev) => ({
       ...prev,
       nutritionInfo: prev.nutritionInfo.filter(
-        (item) => item.nutritionTemplateId !== nutrientId
+        (item) => item.nutritionTemplateId !== nutritionId
       ),
     }));
 
     setSelectedNutrientList((prev) =>
-      prev.filter((item) => item.nutrientTemplateId !== nutrientId)
+      prev.filter((item) => item.nutritionTemplateId !== nutritionId)
     );
   }
 
@@ -368,40 +370,49 @@ export const useMenuAdd = () => {
     setImagePreview(null);
   }
 
-  function checkValidation() {
+  function checkValidation(requireImage = true) {
     if (menuAddData.nameKr === '' || menuAddData.nameEn === '') {
+      alert('메뉴명을 정확하게 입력해주세요.');
       return false;
     }
 
     if (menuAddData.description === '') {
+      alert('메뉴 설명을 정확하게 입력해주세요.');
       return false;
     }
 
     if (menuAddData.price === 0) {
+      alert('가격을 정확하게 입력해주세요.');
       return false;
     }
 
     if (menuAddData.tags.length === 0) {
+      alert('태그를 정확하게 입력해주세요.');
       return false;
     }
 
     if (selectedCategory === null) {
+      alert('카테고리를 정확하게 선택해주세요.');
       return false;
     }
 
     if (selectedIngredientList.length === 0) {
+      alert('원재료를 정확하게 선택해주세요.');
       return false;
     }
 
     if (selectedNutrientList.length === 0) {
+      alert('영양성분을 정확하게 선택해주세요.');
       return false;
     }
 
     if (selectedOptions.length === 0) {
+      alert('옵션을 정확하게 선택해주세요.');
       return false;
     }
 
-    if (imageFile === null) {
+    if (requireImage && imageFile === null) {
+      alert('이미지를 정확하게 선택해주세요.');
       return false;
     }
 
@@ -424,6 +435,11 @@ export const useMenuAdd = () => {
     setMenuAddData,
     setTagValueEN,
     setNutritionValue,
+    setSelectedCategory,
+    setImagePreview,
+    setSelectedIngredientList,
+    setSelectedNutrientList,
+    setSelectedOptions,
     handleCategoryChange,
     handleTagInputChange,
     handleTagAdd,

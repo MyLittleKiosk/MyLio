@@ -20,11 +20,7 @@ const Category = ({ selectedNav }: { selectedNav: NavItemType }) => {
   //임의 페이지네이션 숫자
   const pageable = 1;
 
-  const { data: categoryList, isLoading } = useGetCategory(pageable);
-
-  if (!categoryList || isLoading) {
-    return <div>Loading...</div>;
-  }
+  const { data: categoryList } = useGetCategory(pageable);
 
   return (
     <div className='flex flex-col gap-2'>

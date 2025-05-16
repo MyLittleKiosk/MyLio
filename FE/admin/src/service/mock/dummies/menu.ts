@@ -1,5 +1,5 @@
 import { PaginationResponse, Response } from '@/types/apiResponse';
-import { MenuResponseType } from '@/types/menus';
+import { MenuDetailGetType, MenuResponseType } from '@/types/menus';
 
 const MENU_LIST: Response<PaginationResponse<MenuResponseType>> = {
   success: true,
@@ -94,4 +94,56 @@ const MENU_LIST: Response<PaginationResponse<MenuResponseType>> = {
   timestamp: '2025-05-07T07:19:44.096473427',
 };
 
-export default MENU_LIST;
+const MENU_BY_ID: Response<MenuDetailGetType> = {
+  success: true,
+  data: {
+    menuInfo: {
+      menuId: 1,
+      imageUrl: 'https://mylio',
+      nameKr: '아이스 아메리카노',
+      nameEn: 'ice americano',
+      categoryId: 1,
+      storeName: 'MaLio 강남점',
+      description: 'MaLio 강남점',
+      price: 2000,
+      status: '판매',
+    },
+    tags: [
+      {
+        tagId: 1,
+        tagKr: '달달해요',
+        tagEn: 'sweet',
+      },
+    ],
+    nutritionInfo: [
+      {
+        nutritionId: 1,
+        nutritionName: '단백질',
+        nutritionValue: 12,
+        nutritionType: 'g',
+      },
+    ],
+    ingredientInfo: [
+      {
+        menuIngredientId: 1,
+        ingredientId: 2,
+        ingredientNameKr: '우유',
+        ingredientNameEn: 'milk',
+      },
+    ],
+    optionInfo: [
+      {
+        menuOptionId: 1,
+        optionId: 2,
+        optionNameKr: '사이즈',
+        optionNameEn: 'size',
+        optionValue: 'S',
+        additionalPrice: 500,
+        required: true,
+      },
+    ],
+  },
+  timestamp: '2025-05-15T07:12:06.555Z',
+};
+
+export { MENU_LIST, MENU_BY_ID };

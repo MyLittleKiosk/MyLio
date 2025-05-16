@@ -1,82 +1,17 @@
-import { useState } from 'react';
+import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
-import Select from '@/components/common/Select';
-import CategoryPieChart from '@/components/statistics/CategoryPieChart';
-import DailyStatistics from '@/components/statistics/DailyStatistics';
-import OrderTypePieChart from '@/components/statistics/OrderTypePieChart';
-import PaymentsPieChart from '@/components/statistics/PaymentsPieChart';
-import SalesTrendChart from '@/components/statistics/SalesTrendChart';
+import Error from '@/components/common/Error';
+import Loading from '@/components/common/Loading';
+import StatisticsContent from '@/components/statistics/StatisticsContent';
 
 const Statistics = () => {
-  const [year, setYear] = useState<number>(new Date().getFullYear());
-  const [month, setMonth] = useState<number>(new Date().getMonth() + 1);
-  function getFullYear() {
-    return Array.from(
-      { length: 10 },
-      (_, i) => new Date().getFullYear() - 1 - i
-    );
-  }
-
-  function getFullMonth() {
-    return Array.from({ length: 12 }, (_, i) => i + 1);
-  }
-
   return (
-    <>
-      <div className='w-full h-full p-4 flex flex-col gap-2'>
-        <h1 className='text-2xl font-preBold'>통계 대시보드</h1>
-        <DailyStatistics />
-        <div className='w-full h-full max-h-[600px] min-h-[400px] flex gap-4'>
-          <div className='w-full h-full flex flex-col border border-subContent rounded-md p-2 gap-2'>
-            <h1 className='text-lg font-bold'>매출 추이</h1>
-            <div className='w-full flex-1 flex flex-col gap-2'>
-              <div className='flex gap-2'>
-                <Select
-                  options={getFullYear()}
-                  selected={year}
-                  placeholder={new Date().getFullYear().toString()}
-                  onChange={(e) => setYear(Number(e.target.value))}
-                  getOptionLabel={(option) => option.toString()}
-                  getOptionValue={(option) => option.toString()}
-                />
-                <Select
-                  options={getFullMonth()}
-                  selected={month}
-                  placeholder='전체'
-                  onChange={(e) => setMonth(Number(e.target.value))}
-                  getOptionLabel={(option) => option.toString()}
-                  getOptionValue={(option) => option.toString()}
-                />
-              </div>
-              <div className='flex-1 relative'>
-                <SalesTrendChart year={year} month={month} />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className='w-full h-full flex gap-4'>
-          <div className='w-full max-h-[300px] min-h-[200px] flex flex-col border border-subContent rounded-md p-2 gap-2'>
-            <h1 className='text-lg font-bold'>결제 수단 별 매출</h1>
-            <div className='relative w-full flex-1 flex flex-col gap-2'>
-              <PaymentsPieChart year={year} month={month} />
-            </div>
-          </div>
-          <div className='w-full max-h-[300px] min-h-[200px] flex flex-col border border-subContent rounded-md p-2 gap-2'>
-            <h1 className='text-lg font-bold'>주문 형태 별 매출</h1>
-            <div className='relative w-full flex-1 flex flex-col gap-2'>
-              <OrderTypePieChart year={year} month={month} />
-            </div>
-          </div>
-          <div className='w-full max-h-[300px] min-h-[200px] flex flex-col border border-subContent rounded-md p-2 gap-2'>
-            <h1 className='text-lg font-bold'>카테고리 별 매출</h1>
-            <div className='relative w-full flex-1 flex flex-col gap-2'>
-              <CategoryPieChart year={year} month={month} />
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
+    <ErrorBoundary fallbackRender={() => <Error />}>
+      <Suspense fallback={<Loading />}>
+        <StatisticsContent />
+      </Suspense>
+    </ErrorBoundary>
   );
 };
 

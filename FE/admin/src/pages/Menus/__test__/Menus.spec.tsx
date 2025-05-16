@@ -1,5 +1,5 @@
 //절대 경로 사용이 불가합니다 !
-import MENU_LIST from '../../../service/mock/dummies/menu';
+import { MENU_LIST } from '../../../service/mock/dummies/menu';
 import { CATEGORY_LIST } from '../../../service/mock/dummies/category';
 import { OPTION_LIST } from '../../../service/mock/dummies/option';
 

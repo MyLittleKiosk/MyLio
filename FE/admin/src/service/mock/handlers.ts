@@ -11,7 +11,7 @@ import {
   PaymentSalesRatioType,
 } from '@/types/statistics';
 import { CATEGORY_LIST } from './dummies/category';
-import MENU_LIST from './dummies/menu';
+import { MENU_LIST, MENU_BY_ID } from './dummies/menu';
 import DUMMY_MY_INFO from './dummies/my';
 import { OPTION_LIST } from './dummies/option';
 import {
@@ -25,6 +25,7 @@ import {
   DUMMY_SALES_BY_YEAR_2025,
 } from './dummies/statistics';
 import { KIOSK_LIST } from '@/datas/kioskList';
+import { NUTRIENT_LIST } from '@/datas/NutrientList';
 
 const baseUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
@@ -60,7 +61,27 @@ export const handlers = [
     return HttpResponse.json(MENU_LIST);
   }),
 
+  http.get(`${baseUrl}/menus/:menuId`, () => {
+    return HttpResponse.json(MENU_BY_ID);
+  }),
+
   http.post(`${baseUrl}/menus`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.put(`${baseUrl}/menus/:menuId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.delete(`${baseUrl}/menus/:menuId`, () => {
     return HttpResponse.json({
       success: true,
       data: {},
@@ -284,6 +305,30 @@ export const handlers = [
         name: '키오스크 01',
         isActivate: false,
       },
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.get(`${baseUrl}/nutrition`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: NUTRIENT_LIST,
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.post(`${baseUrl}/nutrition`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.patch(`${baseUrl}/nutrition/:nutritionId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
       timestamp: new Date().toISOString(),
     });
   }),

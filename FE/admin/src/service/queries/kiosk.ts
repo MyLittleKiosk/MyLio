@@ -1,4 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
 import {
   addKiosk,
   deleteKiosk,
@@ -8,15 +12,13 @@ import {
 } from '@/service/apis/kiosk';
 
 export const useGetKioskList = (keyword?: string, page?: number) => {
-  const query = useQuery({
+  const query = useSuspenseQuery({
     queryKey: ['kioskList', keyword, page],
     queryFn: () => getKioskList(keyword, page),
   });
 
   return {
     data: query.data?.data.content,
-    isLoading: query.isLoading,
-    isError: query.isError,
   };
 };
 
@@ -38,15 +40,13 @@ export const useAddKiosk = () => {
 };
 
 export const useGetKioskDetail = (kioskId: number) => {
-  const query = useQuery({
+  const query = useSuspenseQuery({
     queryKey: ['kioskDetail', kioskId],
     queryFn: () => getKioskDetail(kioskId),
   });
 
   return {
     data: query.data?.data,
-    isLoading: query.isLoading,
-    isError: query.isError,
   };
 };
 
