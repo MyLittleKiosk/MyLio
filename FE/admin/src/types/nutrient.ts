@@ -1,17 +1,19 @@
 export type NutrientType = {
   nutrientTemplateId: number;
-  nameKr: string;
-  nameEn: string;
+  nutrientTemplateName: string;
+  nutrientTemplateNameEn: string;
+  nutrientTemplateType: string;
 };
 
 export type NutrientDetailGetType = {
   nutritionId: number;
-  nutritionName: string;
   nutritionValue: number;
-  nutritionType: string;
+  nutritionTemplateId: number;
+  nutritionTemplateName: string;
+  nutritionTemplateType: string;
 };
 
-export type NutritionInfoType = {
+export type NutritionDetailAddType = {
   nutritionTemplateId: number;
   nutritionValue: number;
 };

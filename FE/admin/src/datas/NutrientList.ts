@@ -1,27 +1,48 @@
-//아직 API 구현되지 않아서 ERD 기반 임시데이터 생성
+import { NutrientType } from '@/types/nutrient';
+import { Column } from '@/types/tableProps';
+
+const NUTRIENT_COLUMNS: Column<NutrientType>[] = [
+  {
+    header: '영양소명',
+    accessor: 'nutrientTemplateName' as keyof NutrientType,
+  },
+  {
+    header: '단위',
+    accessor: 'nutrientTemplateType' as keyof NutrientType,
+  },
+  {
+    header: '편집',
+    accessor: 'edit' as keyof NutrientType,
+  },
+];
+
 const NUTRIENT_LIST = {
   content: [
     {
       nutrientTemplateId: 1,
-      nameKr: '칼로리',
-      nameEn: 'Calories',
+      nutrientTemplateName: '칼로리',
+      nutrientTemplateNameEn: 'Calories',
+      nutrientTemplateType: 'kcal',
     },
     {
       nutrientTemplateId: 2,
-      nameKr: '단백질',
-      nameEn: 'Protein',
+      nutrientTemplateName: '단백질',
+      nutrientTemplateNameEn: 'Protein',
+      nutrientTemplateType: 'g',
     },
     {
       nutrientTemplateId: 3,
-      nameKr: '지방',
-      nameEn: 'Fat',
+      nutrientTemplateName: '지방',
+      nutrientTemplateNameEn: 'Fat',
+      nutrientTemplateType: 'g',
     },
     {
       nutrientTemplateId: 4,
-      nameKr: '탄수화물',
-      nameEn: 'Carbohydrate',
+      nutrientTemplateName: '탄수화물',
+      nutrientTemplateNameEn: 'Carbohydrate',
+      nutrientTemplateType: 'g',
     },
   ],
 };
 
-export default NUTRIENT_LIST;
+export { NUTRIENT_COLUMNS, NUTRIENT_LIST };
