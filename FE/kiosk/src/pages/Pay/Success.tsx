@@ -6,7 +6,7 @@ const Success = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate('/kiosk');
+      navigate('/landing');
     }, 3000);
 
     return () => clearTimeout(timer);

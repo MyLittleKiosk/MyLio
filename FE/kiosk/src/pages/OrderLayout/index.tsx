@@ -11,7 +11,7 @@ import { useOrderRequest } from '@/service/queries/order';
 
 const OrderLayout = () => {
   const { pathname } = useLocation();
-  const [userChat] = useState<string>('');
+  const [userChat, setUserChat] = useState<string>('');
   const { order, resetOrder } = useOrderStore();
   const { mutate: orderRequest, isPending } = useOrderRequest();
   const { mutate: logout } = useLogout();
@@ -33,6 +33,7 @@ const OrderLayout = () => {
   }
 
   function handleRecognitionResult(text: string) {
+    setUserChat(text);
     orderRequest({
       text: text,
       screenState: order.screenState,
@@ -59,11 +60,6 @@ const OrderLayout = () => {
   }
   function testHandleRecognitionResult() {
     handleRecognitionResult(inputRef.current?.value || '');
-  }
-  function pressEnter(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Enter') {
-      testHandleRecognitionResult();
-    }
   }
 
   return (
@@ -98,8 +94,16 @@ const OrderLayout = () => {
           <button onClick={handleLogout}>로그아웃</button>
           <button onClick={handleSessionReset}>세션 초기화</button>
           <div className='flex gap-2 h-full'>
-            <input type='text' ref={inputRef} onKeyDown={pressEnter} />
-            <button onClick={testHandleRecognitionResult}>전송</button>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                testHandleRecognitionResult();
+              }}
+              className='flex gap-2 h-full'
+            >
+              <input type='text' ref={inputRef} />
+              <button type='submit'>전송</button>
+            </form>
           </div>
         </div>
       </div>
@@ -116,7 +120,7 @@ const OrderLayout = () => {
         />
       </header>
       <motion.main
-        className='rounded-t-xl bg-white shadow-t-2xl flex flex-col justify-center items-center'
+        className='rounded-t-xl bg-white  shadow-t-2xl flex flex-col justify-center items-center'
         initial={{ y: '100%', height: 0 }}
         animate={{
           y: pathname === '/kiosk' ? '100%' : 0,
