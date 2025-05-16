@@ -3,18 +3,25 @@ import { formatNumber } from '@/utils/formatNumber';
 const Detail = () => {
   const { order } = useOrderStore();
   return (
-    <section className='flex flex-col gap-4 w-3/4'>
-      <h1 className='text-2xl font-bold'>성분 정보</h1>
+    <section className='flex flex-col w-full h-full pt-5'>
+      <h1 className='text-2xl font-preBold inline-block ps-10 mb-4'>
+        성분 정보
+      </h1>
       {order.contents[0] && (
-        <>
-          <div className='flex items-center gap-4 pb-4 justify-between'>
+        <div className='flex flex-col gap-4 w-3/4 mx-auto h-'>
+          <div className='flex items-center gap-4 pb-4'>
             <img
-              className='w-[200px] rounded-xl'
+              className='w-[200px] h-[200px] object-cover rounded-xl'
               src={order.contents[0].imageUrl}
               alt='drink'
             />
-            <div className='font-preBold text-xl flex flex-col gap-4'>
-              <h1 className='text-2xl font-bold'>{order.contents[0].name}</h1>
+            <div className='font-preBold text-xl flex flex-col justify-between h-full w-[calc(100%-200px)]'>
+              <div className='flex flex-col'>
+                <h1 className='text-2xl font-bold'>{order.contents[0].name}</h1>
+                <span className='text-xs text-gray-500 break-keep'>
+                  {order.contents[0].description}
+                </span>
+              </div>
               <span className='text-xl font-bold'>
                 {formatNumber(order.contents[0].basePrice)}원
               </span>
@@ -36,7 +43,7 @@ const Detail = () => {
               ))}
             </div>
           </div>
-        </>
+        </div>
       )}
     </section>
   );
