@@ -3,26 +3,39 @@ import useOrderStore from '@/stores/useOrderStore';
 const Confirm = () => {
   const { order } = useOrderStore();
   return (
-    <section className='flex flex-col w-full h-full ps-10 pt-10'>
-      <h1 className='text-2xl font-preBold'>주문확인</h1>
-      <div className='flex flex-col gap-2 mt-10 w-full overflow-y-auto'>
+    <section className='flex flex-col w-full h-full pt-5'>
+      <h1 className='text-2xl font-preBold inline-block ps-10 mb-4'>
+        주문 확인
+      </h1>
+      <div className='flex flex-col gap-2 ps-10 pe-10 overflow-y-auto'>
         {order.contents.map((item) => (
-          <div key={item.menuId} className='flex items-center gap-2'>
+          <div
+            key={item.menuId}
+            className='flex items-center gap-7 border-b-2 pb-4'
+          >
             <img
               src={item.imageUrl}
               alt={item.name}
               className='w-20 h-20 object-cover rounded-lg'
             />
-            <div className='flex flex-col w-1/2'>
+            <div className='flex flex-col w-1/2 justify-between'>
               <h2 className='text-lg font-preBold'>{item.name}</h2>
-              <p>{formatNumber(item.totalPrice)}</p>
-              {item.options.map((option) => (
+              {item.selectedOption.map((option) => (
                 <p key={option.optionName} className='text-xs text-gray-500'>
                   <div className='flex items-center justify-between'>
-                    <div>{option.optionName}</div>{' '}
+                    <div>
+                      {option.optionDetails.map((detail) => (
+                        <>
+                          {detail.optionDetailValue}
+                          {detail.additionalPrice > 0 &&
+                            ` (+${formatNumber(detail.additionalPrice)}원)`}
+                        </>
+                      ))}
+                    </div>
                   </div>
                 </p>
               ))}
+              <p className='font-bold'>{formatNumber(item.totalPrice)}원</p>
             </div>
           </div>
         ))}
