@@ -25,6 +25,7 @@ import {
   DUMMY_SALES_BY_YEAR_2025,
 } from './dummies/statistics';
 import { KIOSK_LIST } from '@/datas/kioskList';
+import { NUTRIENT_LIST } from '@/datas/NutrientList';
 
 const baseUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
@@ -306,5 +307,9 @@ export const handlers = [
       },
       timestamp: new Date().toISOString(),
     });
+  }),
+
+  http.get(`${baseUrl}/nutrition`, () => {
+    return HttpResponse.json(NUTRIENT_LIST);
   }),
 ];

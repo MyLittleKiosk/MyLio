@@ -8,7 +8,6 @@ import { IngredientType } from '@/types/ingredient';
 import { CATEGORY_LIST } from '@/service/mock/dummies/category';
 
 import { INGREDIENT_LIST } from '@/datas/IngredientList';
-import NUTRIENT_LIST from '@/datas/NutrientList';
 
 // 기존 useMenuAdd의 반환 타입과 동일한 타입을 사용
 const MenuEditContext = createContext<ReturnType<typeof useMenuAdd> | null>(
@@ -61,12 +60,9 @@ export const MenuEditProvider: React.FC<MenuEditProviderProps> = ({
 
       // 영양성분 설정
       const nutrientList = menuDetail.nutritionInfo.map((nutrition) => {
-        const nutrient = NUTRIENT_LIST.content.find(
-          (n) => n.nutrientTemplateId === nutrition.nutritionId
-        );
         return {
           nutrientTemplateId: nutrition.nutritionId,
-          nutrientName: nutrient?.nameKr || '',
+          nutrientName: nutrition.nutritionName || '',
           nutrientValue: nutrition.nutritionValue,
         };
       });

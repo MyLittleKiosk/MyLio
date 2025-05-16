@@ -13,7 +13,7 @@ import IconAdd from '@/assets/icons/IconAdd';
 import IconTrashCan from '@/assets/icons/IconTrashCan';
 import IconImage from '@/assets/icons/IconImage';
 
-import NUTRIENT_LIST from '@/datas/NutrientList';
+import { NUTRIENT_LIST } from '@/datas/NutrientList';
 import { INGREDIENT_LIST } from '@/datas/IngredientList';
 import translator from '@/utils/translator';
 
@@ -296,7 +296,7 @@ const EditForm = () => {
             label='영양성분'
             selected={selectedNutrient}
             placeholder='영양성분을 선택하세요.'
-            getOptionLabel={(option) => option.nameKr}
+            getOptionLabel={(option) => option.nutrientTemplateName}
             getOptionValue={(option) => option.nutrientTemplateId.toString()}
             onChange={handleNutrientChange}
             className='w-[55%]'

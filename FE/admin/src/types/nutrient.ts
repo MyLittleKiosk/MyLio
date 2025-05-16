@@ -13,6 +13,13 @@ export type NutrientDetailGetType = {
   nutritionTemplateType: string;
 };
 
+export type NutritionMenuGetType = {
+  nutritionId: number;
+  nutritionName: string;
+  nutritionValue: number;
+  nutritionType: string;
+};
+
 export type NutritionDetailAddType = {
   nutritionTemplateId: number;
   nutritionValue: number;

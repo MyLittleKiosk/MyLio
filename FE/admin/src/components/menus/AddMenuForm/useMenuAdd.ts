@@ -9,7 +9,7 @@ import { OptionInfoType } from '@/types/options';
 import { CATEGORY_LIST } from '@/service/mock/dummies/category';
 
 import { INGREDIENT_LIST } from '@/datas/IngredientList';
-import NUTRIENT_LIST from '@/datas/NutrientList';
+import { NUTRIENT_LIST } from '@/datas/NutrientList';
 
 const initialMenuData: MenuAdd = {
   nameKr: '',
@@ -231,7 +231,7 @@ export const useMenuAdd = () => {
       ...prev,
       {
         nutrientTemplateId: nutrientTemplateId,
-        nutrientName: selectedNutrient?.nameKr || '',
+        nutrientName: selectedNutrient?.nutrientTemplateName || '',
         nutrientValue: value,
       },
     ]);

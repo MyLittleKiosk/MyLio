@@ -5,7 +5,7 @@ import {
   OptionDetailGetType,
 } from '@/types/options';
 import { Column } from '@/types/tableProps';
-import { NutrientDetailGetType, NutritionInfoType } from '@/types/nutrient';
+import { NutritionDetailAddType, NutritionMenuGetType } from '@/types/nutrient';
 import { TagDetailGetType, TagType } from '@/types/tags';
 import { IngredientDetailGetType } from './ingredient';
 
@@ -47,7 +47,7 @@ export type MenuDetailGetType = {
     status: string;
   };
   tags: TagDetailGetType[];
-  nutritionInfo: NutrientDetailGetType[];
+  nutritionInfo: NutritionMenuGetType[];
   ingredientInfo: IngredientDetailGetType[];
   optionInfo: OptionDetailGetType[];
 };
@@ -59,7 +59,7 @@ export interface MenuAdd {
   description: string;
   price: number;
   tags: TagType[];
-  nutritionInfo: NutritionInfoType[];
+  nutritionInfo: NutritionDetailAddType[];
   ingredientInfo: number[];
   optionInfo: OptionInfoType[];
 }
