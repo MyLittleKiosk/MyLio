@@ -25,8 +25,6 @@ const useGetOptions = () => {
 
   return {
     data: query.data?.data.options,
-    isLoading: query.isLoading,
-    isError: query.isError,
   };
 };
 

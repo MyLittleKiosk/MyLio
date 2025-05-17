@@ -47,7 +47,7 @@ const MenuForm = () => {
     updateOptionInfo,
   } = useMenuFormContext();
 
-  const { data: options, isLoading } = useGetOptions();
+  const { data: options } = useGetOptions();
 
   // 옵션 정보가 변경될 때마다 menuAddData 업데이트
   useEffect(() => {
@@ -62,10 +62,6 @@ const MenuForm = () => {
   async function translateTag() {
     const translatedValue = await translator(tagValueKR);
     setTagValueEN(translatedValue);
-  }
-
-  if (!options || isLoading) {
-    return <div>Loading...</div>;
   }
 
   return (
