@@ -13,14 +13,27 @@ import { Column } from '@/types/tableProps';
 import useModalStore from '@/stores/useModalStore';
 
 import { useGetCategory } from '@/service/queries/category';
+import PageNavigation from '@/components/common/PageNavigation';
+import { Pagination } from '@/types/apiResponse';
+import { useState } from 'react';
 
 const Category = ({ selectedNav }: { selectedNav: NavItemType }) => {
   const { openModal } = useModalStore();
 
-  //임의 페이지네이션 숫자
-  const pageable = 1;
+  const [searchParams, setSearchParams] = useState<{
+    page?: number;
+  }>({
+    page: 1,
+  });
 
-  const { data: categoryList } = useGetCategory(pageable);
+  const { data: categoryList, pageInfo } = useGetCategory(searchParams.page);
+
+  function handlePageChange(page: number) {
+    setSearchParams({
+      ...searchParams,
+      page,
+    });
+  }
 
   return (
     <div className='flex flex-col gap-2'>
@@ -47,6 +60,10 @@ const Category = ({ selectedNav }: { selectedNav: NavItemType }) => {
         onDelete={(row) => {
           openModal(<DeleteCategoryModal row={row} />);
         }}
+      />
+      <PageNavigation
+        pageInfo={pageInfo as Pagination}
+        onChangePage={(page: number) => handlePageChange(page)}
       />
     </div>
   );
