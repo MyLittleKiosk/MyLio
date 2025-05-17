@@ -8,7 +8,7 @@ export const OPTION_LIST: OptionList = {
         optionId: 1,
         optionNameKr: '사이즈',
         optionNameEn: 'Size',
-        optionDetail: [
+        optionDetails: [
           {
             optionDetailId: 1,
             optionDetailValue: 'Small',

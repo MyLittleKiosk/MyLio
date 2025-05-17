@@ -486,14 +486,14 @@ describe('옵션관리 페이지', () => {
 
     // 첫 번째 옵션 상세의 이름 수정
     cy.get(
-      `#optionDetailValueEdit-${OPTION_LIST.data.options[0].optionDetail[0].optionDetailId}`
+      `#optionDetailValueEdit-${OPTION_LIST.data.options[0].optionDetails[0].optionDetailId}`
     )
       .clear()
       .type(updatedDetailName);
 
     // 첫 번째 옵션 상세의 가격 수정
     cy.get(
-      `#optionDetailPriceEdit-${OPTION_LIST.data.options[0].optionDetail[0].optionDetailId}`
+      `#optionDetailPriceEdit-${OPTION_LIST.data.options[0].optionDetails[0].optionDetailId}`
     )
       .clear()
       .type(updatedPrice.toString());
@@ -501,7 +501,7 @@ describe('옵션관리 페이지', () => {
     // API 요청 인터셉트 설정
     cy.intercept(
       'PATCH',
-      `/api/option_detail/${OPTION_LIST.data.options[0].optionDetail[0].optionDetailId}`,
+      `/api/option_detail/${OPTION_LIST.data.options[0].optionDetails[0].optionDetailId}`,
       {
         statusCode: 200,
         body: {
@@ -546,7 +546,7 @@ describe('옵션관리 페이지', () => {
     // API 요청 인터셉트 설정
     cy.intercept(
       'DELETE',
-      `/api/option_detail/${OPTION_LIST.data.options[0].optionDetail[0].optionDetailId}`,
+      `/api/option_detail/${OPTION_LIST.data.options[0].optionDetails[0].optionDetailId}`,
       {
         statusCode: 200,
         body: {
