@@ -5,16 +5,15 @@ import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
 import CompleteModal from '@/components/common/CompleteModal';
 
-import STORE_LIST from '@/datas/storeList';
-
 import { CategoryType } from '@/types/categories';
-import { StoreType } from '@/types/stores';
 import { MenuType, NavItemType } from '@/types/menus';
 import { Column } from '@/types/tableProps';
 
 import { useGetCategory } from '@/service/queries/category';
 import { useDeleteMenu, useGetMenus } from '@/service/queries/menu';
 import useModalStore from '@/stores/useModalStore';
+import PageNavigation from '@/components/common/PageNavigation';
+import { Pagination } from '@/types/apiResponse';
 
 interface Props {
   selectedNav: NavItemType;
@@ -31,9 +30,20 @@ const Menu = ({
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(
     null
   );
-  const [selectedStore, setSelectedStore] = useState<StoreType | null>(null);
+  const [searchParams, setSearchParams] = useState<{
+    page?: number;
+  }>({
+    page: 1,
+  });
 
   const { openModal } = useModalStore();
+
+  const { data: menus, pageInfo } = useGetMenus(
+    searchParams.page,
+    selectedCategory?.categoryId
+  );
+  const { mutate: deleteMenu } = useDeleteMenu();
+  const { data: category } = useGetCategory();
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
     setSearchValue(e.target.value);
@@ -44,13 +54,6 @@ const Menu = ({
       (category) => category.nameKr === e.target.value
     );
     setSelectedCategory(selected || null);
-  }
-
-  function handleStoreChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const selected = STORE_LIST.find(
-      (store) => store.storeName === e.target.value
-    );
-    setSelectedStore(selected || null);
   }
 
   function handleEdit(menuId: number) {
@@ -76,9 +79,12 @@ const Menu = ({
     });
   }
 
-  const { data: menus } = useGetMenus();
-  const { mutate: deleteMenu } = useDeleteMenu();
-  const { data: category } = useGetCategory();
+  function handlePageChange(page: number) {
+    setSearchParams({
+      ...searchParams,
+      page,
+    });
+  }
 
   return (
     <div className='flex flex-col gap-2'>
@@ -99,15 +105,6 @@ const Menu = ({
           getOptionLabel={(option) => option.nameKr}
           getOptionValue={(option) => option.nameKr}
         />
-        <Select<StoreType>
-          options={STORE_LIST}
-          selected={selectedStore}
-          onChange={handleStoreChange}
-          placeholder='모든 점포'
-          className='w-[11%]'
-          getOptionLabel={(option) => option.storeName}
-          getOptionValue={(option) => option.storeName}
-        />
       </div>
       <Table<MenuType>
         title='메뉴 목록'
@@ -116,6 +113,10 @@ const Menu = ({
         data={menus as MenuType[]}
         onEdit={(row) => handleEdit(row.menuId)}
         onDelete={(row) => handleDelete(row.menuId)}
+      />
+      <PageNavigation
+        pageInfo={pageInfo as Pagination}
+        onChangePage={(page: number) => handlePageChange(page)}
       />
     </div>
   );

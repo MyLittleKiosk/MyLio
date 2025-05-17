@@ -5,7 +5,7 @@ import { MenuAdd } from '@/types/menus';
 export async function getMenus(page?: number, categoryId?: number) {
   const params = {
     page: page || 1,
-    categoryId: categoryId || 0,
+    categoryId: categoryId || null,
   };
   try {
     const res = await authClient.get('/menu', {
