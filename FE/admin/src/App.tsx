@@ -1,19 +1,20 @@
 import { Route, Routes } from 'react-router-dom';
 
+import Error from '@/components/common/Error';
 import Layout from '@/components/layout';
 
-import MSWInit from '@/components/common/MSWInit';
 import Accounts from '@/pages/Accounts';
 import Ingredient from '@/pages/Ingredient';
 import Kiosk from '@/pages/Kiosk';
 import Login from '@/pages/Login';
 import Menus from '@/pages/Menus';
 import My from '@/pages/My';
+import Nutrients from '@/pages/Nutrients';
 import Orders from '@/pages/Orders';
 import Statistics from '@/pages/Statistics';
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
-import Nutrients from './pages/Nutrients';
 
 function App() {
   const [queryClient] = useState(() => new QueryClient());
@@ -32,8 +33,9 @@ function App() {
           <Route path='/nutrients' element={<Nutrients />} />
         </Route>
         <Route path='/login' element={<Login />} />
+        <Route path='*' element={<Error />} />
       </Routes>
-      <MSWInit />
+      {/* <MSWInit /> */}
     </QueryClientProvider>
   );
 }
