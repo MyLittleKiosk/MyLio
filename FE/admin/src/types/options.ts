@@ -14,7 +14,7 @@ export interface OptionGroup {
   optionId: number;
   optionNameKr: string;
   optionNameEn: string;
-  optionDetail: OptionDetailType[];
+  optionDetails: OptionDetailType[];
 }
 
 export type OptionDetailGetType = {
