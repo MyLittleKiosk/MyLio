@@ -148,16 +148,19 @@ const SideBar = () => {
       {isWidthAnimationComplete && <hr className='w-full' />}
 
       {isWidthAnimationComplete && (
-        <footer
-          className={`h-[10%] min-h-[80px] font-preMedium text-xs text-content p-2 flex flex-col justify-center gap-1`}
-        >
-          <button className='absolute left-2 bottom-2' onClick={() => logout()}>
-            <IconLogout />
+        <div className='flex flex-col gap-2'>
+          <footer
+            className={`h-[10%] min-h-[80px] font-preMedium text-xs text-content p-2 flex flex-col justify-center gap-1`}
+          >
+            <p>로그인 : {LOGIN}</p>
+            <p>버전 : {VERSION}</p>
+            <p>권한 : {AUTHORITY}</p>
+          </footer>
+          <button onClick={() => logout()} className='flex items-center gap-2'>
+            <span className='text-error text-sm font-preRegular'>로그아웃</span>
+            <IconLogout width={16} height={16} />
           </button>
-          <p>로그인 : {LOGIN}</p>
-          <p>버전 : {VERSION}</p>
-          <p>권한 : {AUTHORITY}</p>
-        </footer>
+        </div>
       )}
     </motion.nav>
   );
