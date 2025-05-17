@@ -92,7 +92,7 @@ async def google_tts(text: str = Form(...)):
         client = texttospeech.TextToSpeechClient()
 
         # 사용할 음성 선택
-        voice_name = "ko-KR-Chirp3-HD-Gacrux"
+        voice_name = "ko-KR-Chirp3-HD-Zephyr"
 
         # 텍스트 입력 생성
         synthesis_input = texttospeech.SynthesisInput(text=text)
