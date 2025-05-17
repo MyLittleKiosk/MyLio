@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import IconAdd from '@/assets/icons/IconAdd';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
-import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
 import Modal from '@/components/common/Modal';
 import AddKioskModal from '@/components/kiosks/AddKioskModal';
@@ -14,45 +13,47 @@ import { KIOSK_COLUMNS } from '@/datas/kioskList';
 import useModalStore from '@/stores/useModalStore';
 import { useGetKioskList } from '@/service/queries/kiosk';
 import DeleteKioskModal from '@/components/kiosks/DeleteKioskModal';
+import PageNavigation from '@/components/common/PageNavigation';
+import { Pagination } from '@/types/apiResponse';
+import { useDebounce } from '@/hooks/useDebounce';
 
 const KioskContent = () => {
   const { openModal } = useModalStore();
-  const { data: kioskList } = useGetKioskList();
 
-  const [searchValue, setSearchValue] = useState('');
-  const [selected, setSelected] = useState('');
+  const [searchParams, setSearchParams] = useState<{
+    keyword?: string;
+    page?: number;
+  }>({
+    page: 1,
+  });
 
-  function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setSearchValue(e.target.value);
-  }
+  const debouncedKeyword = useDebounce(searchParams.keyword, 500);
 
-  function handleSelectChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    setSelected(e.target.value);
-  }
+  const { data: kioskList, pageInfo } = useGetKioskList(
+    debouncedKeyword,
+    searchParams.page
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchParams({ ...searchParams, keyword: e.target.value });
+  };
+
+  const handlePageChange = (page: number) => {
+    setSearchParams({ ...searchParams, page });
+  };
 
   return (
     <section className='w-full h-full p-4 flex flex-col gap-2 '>
       <h1 className='text-2xl font-preBold h-[5%]'>키오스크 목록</h1>
       <div className='flex gap-2 max-h-[10%] w-full justify-between'>
-        <div className='flex gap-2 w-full'>
-          <Input
-            id='searchKiosk'
-            placeholder='키오스크명 또는 위치로 검색'
-            type='text'
-            value={searchValue}
-            onChange={handleSearchChange}
-            className='w-[65%]'
-          />
-          <Select
-            options={['a', 'b', 'c']}
-            selected={selected}
-            onChange={handleSelectChange}
-            placeholder='전체'
-            className='w-[11%] h-full'
-            getOptionLabel={(option) => option}
-            getOptionValue={(option) => option}
-          />
-        </div>
+        <Input
+          id='searchKiosk'
+          placeholder='키오스크명 또는 위치로 검색'
+          type='text'
+          value={searchParams.keyword}
+          onChange={handleSearchChange}
+          className='w-[80%]'
+        />
         <Button
           type='button'
           text='키오스크 등록'
@@ -60,7 +61,7 @@ const KioskContent = () => {
           onClick={() => {
             openModal(<AddKioskModal />);
           }}
-          className='w-[11%] items-center justify-center'
+          className='max-w-[15%]'
         />
       </div>
       <Table
@@ -74,6 +75,10 @@ const KioskContent = () => {
         onDelete={(row) => {
           openModal(<DeleteKioskModal row={row} />);
         }}
+      />
+      <PageNavigation
+        pageInfo={pageInfo as Pagination}
+        onChangePage={(page: number) => handlePageChange(page)}
       />
       <Modal />
     </section>
