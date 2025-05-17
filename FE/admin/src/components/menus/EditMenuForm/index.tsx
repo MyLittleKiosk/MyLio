@@ -13,6 +13,8 @@ import CompleteModal from '@/components/common/CompleteModal';
 import EditForm from '@/components/menus/EditMenuForm/EditForm';
 
 import { MenuDetailGetType } from '@/types/menus';
+import { useGetCategory } from '@/service/queries/category';
+import { useGetIngredientList } from '@/service/queries/ingredient';
 
 interface Props {
   setIsEditMenuClicked: (value: boolean) => void;
@@ -21,9 +23,15 @@ interface Props {
 
 const EditMenuForm = ({ setIsEditMenuClicked, clickedMenuId }: Props) => {
   const { data: menuDetail } = useGetMenuById(clickedMenuId);
+  const { data: category } = useGetCategory();
+  const { data: ingredient } = useGetIngredientList();
 
   return (
-    <MenuEditProvider menuDetail={menuDetail as MenuDetailGetType}>
+    <MenuEditProvider
+      menuDetail={menuDetail as MenuDetailGetType}
+      category={category || []}
+      ingredient={ingredient || []}
+    >
       <EditMenuFormContent
         setIsEditMenuClicked={setIsEditMenuClicked}
         clickedMenuId={clickedMenuId}

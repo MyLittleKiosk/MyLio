@@ -6,11 +6,6 @@ import { MenuAdd } from '@/types/menus';
 import { NutrientType } from '@/types/nutrient';
 import { OptionInfoType } from '@/types/options';
 
-import { CATEGORY_LIST } from '@/service/mock/dummies/category';
-
-import { INGREDIENT_LIST } from '@/datas/IngredientList';
-import { NUTRIENT_LIST } from '@/datas/NutrientList';
-
 const initialMenuData: MenuAdd = {
   nameKr: '',
   nameEn: '',
@@ -84,8 +79,11 @@ export const useMenuAdd = () => {
     }
   }
 
-  function handleCategoryChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const selected = CATEGORY_LIST.data.content.find(
+  function handleCategoryChange(
+    e: React.ChangeEvent<HTMLSelectElement>,
+    category: CategoryType[]
+  ) {
+    const selected = category.find(
       (category) => category.categoryId.toString() === e.target.value
     );
     setSelectedCategory(selected || null);
@@ -135,8 +133,11 @@ export const useMenuAdd = () => {
     }));
   }
 
-  function handleIngredientChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const selected = INGREDIENT_LIST.content.find((ingredient) => {
+  function handleIngredientChange(
+    e: React.ChangeEvent<HTMLSelectElement>,
+    ingredient: IngredientType[]
+  ) {
+    const selected = ingredient.find((ingredient) => {
       return ingredient.ingredientTemplateId === Number(e.target.value);
     });
 
@@ -182,8 +183,11 @@ export const useMenuAdd = () => {
     );
   }
 
-  function handleNutrientChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const selected = NUTRIENT_LIST.content.find(
+  function handleNutrientChange(
+    e: React.ChangeEvent<HTMLSelectElement>,
+    nutrient: NutrientType[]
+  ) {
+    const selected = nutrient.find(
       (nutrition) => nutrition.nutritionTemplateId.toString() === e.target.value
     );
 

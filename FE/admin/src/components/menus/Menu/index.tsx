@@ -4,16 +4,16 @@ import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
 import CompleteModal from '@/components/common/CompleteModal';
+import PageNavigation from '@/components/common/PageNavigation';
 
 import { CategoryType } from '@/types/categories';
 import { MenuType, NavItemType } from '@/types/menus';
 import { Column } from '@/types/tableProps';
+import { Pagination } from '@/types/apiResponse';
 
 import { useGetCategory } from '@/service/queries/category';
 import { useDeleteMenu, useGetMenus } from '@/service/queries/menu';
 import useModalStore from '@/stores/useModalStore';
-import PageNavigation from '@/components/common/PageNavigation';
-import { Pagination } from '@/types/apiResponse';
 
 interface Props {
   selectedNav: NavItemType;
@@ -94,14 +94,14 @@ const Menu = ({
           placeholder='메뉴명 또는 설명으로 검색'
           value={searchValue}
           onChange={handleSearchChange}
-          className='w-[65%]'
+          className='w-[85%]'
         />
         <Select<CategoryType>
           options={category}
           selected={selectedCategory}
           onChange={handleCategoryChange}
           placeholder='모든 카테고리'
-          className='w-[11%]'
+          className='w-[15%]'
           getOptionLabel={(option) => option.nameKr}
           getOptionValue={(option) => option.nameKr}
         />
