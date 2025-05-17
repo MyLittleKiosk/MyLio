@@ -14,14 +14,24 @@ import {
   useSuspenseQuery,
 } from '@tanstack/react-query';
 
-export const useGetAccountList = () => {
+export const useGetAccountList = (keyword?: string, page?: number) => {
   const query = useSuspenseQuery({
-    queryKey: ['accountList'],
-    queryFn: () => getAccountList(),
+    queryKey: ['accountList', keyword, page],
+    queryFn: () => getAccountList(keyword, page),
   });
+
+  const pageInfo = {
+    first: query.data?.data.first,
+    last: query.data?.data.last,
+    pageNumber: query.data?.data.pageNumber,
+    pageSize: query.data?.data.pageSize,
+    totalElements: query.data?.data.totalElements,
+    totalPages: query.data?.data.totalPages,
+  };
 
   return {
     data: query.data?.data.content,
+    pageInfo,
   };
 };
 

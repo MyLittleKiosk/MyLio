@@ -13,16 +13,34 @@ import useModalStore from '@/stores/useModalStore';
 import { ACCOUNT_COLUMNS } from '@/datas/Account';
 import { useDeleteAccount, useGetAccountList } from '@/service/queries/account';
 import { AccountType } from '@/types/account';
+import PageNavigation from '@/components/common/PageNavigation';
+import { Pagination } from '@/types/apiResponse';
+import { useDebounce } from '@/hooks/useDebounce';
 
 const AccountContent = () => {
-  const { mutate: deleteAccount } = useDeleteAccount();
-  const { data: accountList } = useGetAccountList();
   const { openModal } = useModalStore();
-  const [searchValue, setSearchValue] = useState('');
+  const [searchParams, setSearchParams] = useState<{
+    keyword?: string;
+    page?: number;
+  }>({
+    page: 1,
+  });
 
-  function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setSearchValue(e.target.value);
-  }
+  const debouncedKeyword = useDebounce(searchParams.keyword, 500);
+
+  const { mutate: deleteAccount } = useDeleteAccount();
+  const { data: accountList, pageInfo } = useGetAccountList(
+    debouncedKeyword,
+    searchParams.page
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchParams({ ...searchParams, keyword: e.target.value });
+  };
+
+  const handlePageChange = (page: number) => {
+    setSearchParams({ ...searchParams, page });
+  };
 
   function handleDelete(row: AccountType) {
     deleteAccount({ accountId: row.accountId });
@@ -44,9 +62,9 @@ const AccountContent = () => {
             id='searchMenu'
             placeholder='이름, 이메일, 매장 이름으로 검색'
             type='text'
-            value={searchValue}
+            value={searchParams.keyword}
             onChange={handleSearchChange}
-            className='w-[100%]'
+            className='w-[88%]'
           />
           <Button
             type='button'
@@ -55,7 +73,7 @@ const AccountContent = () => {
             onClick={() => {
               openModal(<AddAccountModal />);
             }}
-            className='w-[11%] items-center justify-center'
+            className='w-[12%] items-center justify-center'
           />
         </div>
         <Table<AccountType>
@@ -64,6 +82,10 @@ const AccountContent = () => {
           columns={ACCOUNT_COLUMNS}
           data={accountList || []}
           onDelete={(row) => handleDelete(row)}
+        />
+        <PageNavigation
+          pageInfo={pageInfo as Pagination}
+          onChangePage={(page: number) => handlePageChange(page)}
         />
       </section>
       <Modal />
