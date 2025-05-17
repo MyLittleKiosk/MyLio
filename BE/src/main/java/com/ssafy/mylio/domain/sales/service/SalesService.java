@@ -75,16 +75,16 @@ public class SalesService {
         if(month == null){
             return monthlySalesRepo.findByStoreIdAndYear(storeId, year).stream()
                     .map(e -> SalesResponse.builder()
-                            .type(e.getMonth())       // 1~12
-                            .total(e.getTotalSales())
+                            .element(e.getMonth())       // 1~12
+                            .sales(e.getTotalSales())
                             .build())
                     .toList();
         }
         //월별 조회
         return dailySalesRepo.findByStoreIdAndYearAndMonth(storeId, year, month).stream()
                 .map(e -> SalesResponse.builder()
-                        .type(e.getStatDate().getDayOfMonth()) // 1~31
-                        .total(e.getTotalSales())
+                        .element(e.getStatDate().getDayOfMonth()) // 1~31
+                        .sales(e.getTotalSales())
                         .build())
                 .toList();
     }
