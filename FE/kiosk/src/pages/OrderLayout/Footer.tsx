@@ -38,14 +38,21 @@ const Footer = ({ order, handleRecognitionResult, pathname }: FooterProps) => {
   return (
     <div
       className={clsx(
-        'flex px-4 pt-4 items-center fixed bottom-4 left-0 w-full h-[250px] bg-white',
+        'flex px-4 pt-4 items-center fixed bottom-4 left-0 w-full h-[250px] ',
         FOOTER_PATHS.includes(pathname) ? 'justify-between' : 'justify-end'
       )}
     >
       {FOOTER_PATHS.includes(pathname) && (
-        <div className='px-2 flex justify-between items-center gap-4 bg-gray-200 w-[80%] h-full rounded-xl overflow-y-auto'>
-          <div className='flex items-center gap-2 '>
-            <button onClick={() => setPage(page - 1)} disabled={page === 0}>
+        <div className='px-2 flex justify-between items-center gap-4 bg-[#F5F5F5] w-[80%] h-full rounded-xl overflow-y-auto'>
+          <div className='flex items-center gap-2 h-full'>
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={page === 0}
+              className={clsx(
+                'bg-primary text-white h-full rounded-tl-xl rounded-bl-xl px-1',
+                page === 0 && 'bg-gray-200'
+              )}
+            >
               {'<'}
             </button>
           </div>
@@ -53,20 +60,23 @@ const Footer = ({ order, handleRecognitionResult, pathname }: FooterProps) => {
             {cartList[page]?.map((item) => (
               <div
                 key={item.cartId}
-                className='w-1/4 h-[80%] flex flex-col bg-white rounded-xl justify-center items-center gap-2'
+                className='w-20 h-20 flex flex-col bg-white rounded-xl justify-center items-center gap-2'
               >
                 <img
                   src={item.imageUrl}
                   alt={item.name}
-                  className='w-24 h-24 object-cover'
+                  className='w-20 h-20 object-cover rounded-xl'
                 />
-                <p className='text-sm'>{item.quantity}</p>
               </div>
             ))}
           </div>
           <button
             onClick={() => setPage(page + 1)}
             disabled={page === cartList.length - 1}
+            className={clsx(
+              'bg-primary text-white h-full rounded-tr-xl rounded-br-xl px-1',
+              page === cartList.length - 1 && 'bg-gray-200'
+            )}
           >
             {'>'}
           </button>

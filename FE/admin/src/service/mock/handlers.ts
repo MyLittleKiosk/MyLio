@@ -25,6 +25,7 @@ import {
   DUMMY_SALES_BY_YEAR_2025,
 } from './dummies/statistics';
 import { KIOSK_LIST } from '@/datas/kioskList';
+import { NUTRIENT_LIST } from '@/datas/NutrientList';
 
 const baseUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
@@ -304,6 +305,30 @@ export const handlers = [
         name: '키오스크 01',
         isActivate: false,
       },
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.get(`${baseUrl}/nutrition`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: NUTRIENT_LIST,
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.post(`${baseUrl}/nutrition`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.patch(`${baseUrl}/nutrition/:nutritionId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
       timestamp: new Date().toISOString(),
     });
   }),

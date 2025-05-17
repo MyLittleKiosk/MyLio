@@ -6,7 +6,6 @@ const MIN_HEIGHT = 0.2; // 최소 높이 비율
 
 const VoiceAnimation = () => {
   const isRecording = audioStore((s) => s.isRecording);
-  const volume = audioStore((s) => s.volume);
 
   const containerRef = useRef<HTMLDivElement>(null); // 애니메이션 박스의 DOM 요소 참조
   const barRefs = useRef<Array<HTMLDivElement | null>>(
@@ -18,9 +17,11 @@ const VoiceAnimation = () => {
     let rafId: number;
 
     const update = () => {
+      const currentVolume = audioStore.getState().volume; // 직접 volume 값을 가져옵니다.
       if (isRecording) {
-        maxVolRef.current = Math.max(maxVolRef.current, volume);
-        const normVol = maxVolRef.current > 0 ? volume / maxVolRef.current : 0;
+        maxVolRef.current = Math.max(maxVolRef.current, currentVolume);
+        const normVol =
+          maxVolRef.current > 0 ? currentVolume / maxVolRef.current : 0;
 
         barRefs.current.forEach((bar) => {
           if (!bar) return;
@@ -40,7 +41,7 @@ const VoiceAnimation = () => {
     // requestAnimationFrame 함수: 브라우저의 리페인트 주기에 맞춰 애니메이션을 실행하는 함수
     rafId = requestAnimationFrame(update);
     return () => cancelAnimationFrame(rafId);
-  }, [isRecording, volume]);
+  }, [isRecording]); // volume을 의존성 배열에서 제거합니다.
 
   return (
     <div

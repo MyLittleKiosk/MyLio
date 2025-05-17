@@ -121,7 +121,7 @@ const OrderContent = () => {
         </div>
         <Table
           title='주문 목록'
-          description={`총 ${ordersData?.length || 0}개의 주문이 있습니다.`}
+          description={`총 ${pageInfo.totalElements}개의 주문이 있습니다.`}
           columns={ORDER_COLUMNS}
           data={ordersData as OrderType[]}
           onView={(row) => {
