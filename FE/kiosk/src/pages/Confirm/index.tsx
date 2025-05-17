@@ -1,46 +1,49 @@
 import { formatNumber } from '@/utils/formatNumber';
 import useOrderStore from '@/stores/useOrderStore';
+import Item from './Item';
+import { useOrderRequest } from '@/service/queries/order';
+
 const Confirm = () => {
   const { order } = useOrderStore();
+  const { mutate } = useOrderRequest();
+  const increaseCount = (menuId: number) => {
+    const cartItem = order.cart.find((item) => item.menuId === menuId);
+    const quantity = cartItem ? cartItem.quantity + 1 : 1;
+    mutate({
+      text: `${cartItem?.name}를 ${quantity}로 바꿔주세요`,
+      ...order,
+    });
+  };
+  const decreaseCount = (menuId: number) => {
+    const cartItem = order.cart.find((item) => item.menuId === menuId);
+    const quantity = cartItem ? cartItem.quantity - 1 : 0;
+    mutate({
+      text: `${cartItem?.name}를 ${quantity}로 바꿔주세요`,
+      ...order,
+    });
+  };
+
   return (
     <section className='flex flex-col w-full h-full pt-5'>
       <h1 className='text-2xl font-preBold inline-block ps-10 mb-4'>
         주문 확인
       </h1>
       <div className='flex flex-col gap-2 ps-10 pe-10 overflow-y-auto'>
-        {order.contents.map((item) => (
-          <div
+        {order.contents.map((item, idx) => (
+          <Item
             key={item.menuId}
-            className='flex items-center gap-7 border-b-2 pb-4'
-          >
-            <img
-              src={item.imageUrl}
-              alt={item.name}
-              className='w-20 h-20 object-cover rounded-lg'
-            />
-            <div className='flex flex-col w-1/2 justify-between'>
-              <h2 className='text-lg font-preBold'>{item.name}</h2>
-              {item.selectedOption.map((option) => (
-                <p key={option.optionName} className='text-xs text-gray-500'>
-                  <div className='flex items-center justify-between'>
-                    <div>
-                      {option.optionDetails.map((detail) => (
-                        <>
-                          {detail.optionDetailValue}
-                          {detail.additionalPrice > 0 &&
-                            ` (+${formatNumber(detail.additionalPrice)}원)`}
-                        </>
-                      ))}
-                    </div>
-                  </div>
-                </p>
-              ))}
-              <p className='font-bold'>{formatNumber(item.totalPrice)}원</p>
-            </div>
-          </div>
+            imageUrl={item.imageUrl}
+            name={item.name}
+            selectedOption={item.selectedOption}
+            totalPrice={item.totalPrice}
+            count={item.quantity}
+            isLast={idx === order.contents.length - 1}
+            onIncrease={() => increaseCount(item.menuId)}
+            onDecrease={() => decreaseCount(item.menuId)}
+          />
         ))}
-        <div className='flex flex-col gap-2 w-full pe-4'>
-          <div className='flex items-center justify-between border-t pt-4'>
+        <div className='flex flex-col gap-2 w-full border-t-2 '>
+          <div className='flex items-center justify-between border-t-2 pt-4 border-gray-200 me-4'>
             <div>총 주문금액</div>
             <div>
               {formatNumber(
