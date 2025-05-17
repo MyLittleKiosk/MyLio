@@ -40,10 +40,11 @@ public class MenuController {
     public ResponseEntity<CommonResponse<CustomPage<MenuListResponseDto>>> getMenuList(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam(name="category_id", required = false) @PositiveOrZero(message = "카테고리 ID는 0 이상 숫자여야 합니다.")  Integer categoryId ,
+            @RequestParam(name="keyword", required = false) String keyword,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
 
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
-        return CommonResponse.ok(menuService.getMenuList(storeId, categoryId, pageable));
+        return CommonResponse.ok(menuService.getMenuList(storeId, categoryId, keyword, pageable));
     }
 
     @GetMapping("/{menu_id}")
