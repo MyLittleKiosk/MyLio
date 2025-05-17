@@ -6,7 +6,9 @@ import { Link, useLocation } from 'react-router-dom';
 import IconBack from '@/assets/icons/IconBack';
 import LOGO from '@/assets/images/Character_HAo.png';
 
+import IconLogout from '@/assets/icons/IconLogout';
 import { ADMIN_NAVLIST, SUPERADMIN_NAVLIST } from '@/datas/sideBarList';
+import { useLogout } from '@/service/queries/user';
 import { useUserStore } from '@/stores/useUserStore';
 
 const SideBar = () => {
@@ -24,6 +26,7 @@ const SideBar = () => {
   // 사이드바 너비 조정 애니메이션 완료 여부
   const [isWidthAnimationComplete, setIsWidthAnimationComplete] =
     useState(true);
+  const { mutate: logout } = useLogout();
 
   useEffect(() => {
     if (!isSideBarOpen) {
@@ -145,13 +148,19 @@ const SideBar = () => {
       {isWidthAnimationComplete && <hr className='w-full' />}
 
       {isWidthAnimationComplete && (
-        <footer
-          className={`h-[10%] min-h-[80px] font-preMedium text-xs text-content p-2 flex flex-col justify-center gap-1`}
-        >
-          <p>로그인 : {LOGIN}</p>
-          <p>버전 : {VERSION}</p>
-          <p>권한 : {AUTHORITY}</p>
-        </footer>
+        <div className='flex flex-col gap-2'>
+          <footer
+            className={`h-[10%] min-h-[80px] font-preMedium text-xs text-content p-2 flex flex-col justify-center gap-1`}
+          >
+            <p>로그인 : {LOGIN}</p>
+            <p>버전 : {VERSION}</p>
+            <p>권한 : {AUTHORITY}</p>
+          </footer>
+          <button onClick={() => logout()} className='flex items-center gap-2'>
+            <span className='text-error text-sm font-preRegular'>로그아웃</span>
+            <IconLogout width={16} height={16} />
+          </button>
+        </div>
       )}
     </motion.nav>
   );

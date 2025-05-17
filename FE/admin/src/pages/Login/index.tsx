@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import { useLogin } from '@/service/queries/user';
+import { useUserStore } from '@/stores/useUserStore';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [autoLogin, setAutoLogin] = useState(false);
   const [error, setError] = useState({ email: false, password: false });
+
+  const { user } = useUserStore();
   const { mutate } = useLogin();
+  const navigate = useNavigate();
+
   function handleLogin() {
     const newError = {
       email: email === '',
@@ -27,6 +34,16 @@ const Login = () => {
     setPassword(e.target.value);
     if (error.password) setError((prev) => ({ ...prev, password: false }));
   }
+
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'SUPER') {
+        navigate('/accounts', { replace: true });
+      } else if (user.role === 'STORE') {
+        navigate('/', { replace: true });
+      }
+    }
+  }, [user, navigate]);
 
   return (
     <div className='w-full h-screen flex flex-col justify-center items-center bg-[#5B8CFF]'>
