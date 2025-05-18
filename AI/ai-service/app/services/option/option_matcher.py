@@ -229,3 +229,28 @@ class OptionMatcher:
         total_price *= quantity
         
         return total_price
+
+    def match_option_value(self, option, option_value, option_detail_id=None):
+        """옵션 값 매칭 함수 - option_detail_id가 제공되면 우선적으로 사용"""
+        # LLM이 제공한 detail_id가 있으면 그것을 우선 사용
+        if option_detail_id:
+            for detail in option.get('option_details', []):
+                if detail.get('id') == option_detail_id:
+                    option['is_selected'] = True
+                    option['selected_id'] = detail.get('id')
+                    return option
+        
+        # 기존 텍스트 기반 매칭 로직
+        for detail in option.get('option_details', []):
+            normalized_value = option_value.lower().replace(" ", "")
+            normalized_detail_value = detail.get('value', '').lower().replace(" ", "")
+            
+            if (normalized_value == normalized_detail_value or 
+                normalized_value in normalized_detail_value or 
+                normalized_detail_value in normalized_value):
+                
+                option['is_selected'] = True
+                option['selected_id'] = detail.get('id')
+                return option
+        
+        return None

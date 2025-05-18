@@ -416,9 +416,9 @@ class IntentRecognizer:
                 }},
                 {{
                 "option_id": 105,
-                "option_name": "샷추가",
+                "option_name": "샷옵션"
                 "option_detail_id": 1017,
-                "option_value": "샷1개 추가"
+                "option_value": "샷 개 추가"
                 }}
             ]
             }}
@@ -512,9 +512,9 @@ class IntentRecognizer:
                                     },
                                     {
                                         "option_id": 105,
-                                        "option_name": "샷추가",
+                                        "option_name": "샷옵션",
                                         "option_detail_id": 1017,
-                                        "option_value": "샷1개 추가"
+                                        "option_value": "샷 1개 추가"
                                     }
                                 ]
                             }
@@ -987,7 +987,7 @@ class IntentRecognizer:
             print(f"LLM 응답 생성 오류: {e}")
         
         # 실패 시 기본 응답 사용
-        return f"{menu_name}를 선택하셨네요. {option_name}을(를) 선택해주세요. ({options_str})"
+        return f"{menu_name}를 선택하셨네요. 필수 옵션을 선택해주세요."
 
     def _is_cart_modify_intent(self, text: str, language: str) -> bool:
         """장바구니 수정 의도인지 확인"""
