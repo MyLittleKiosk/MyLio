@@ -2,6 +2,7 @@
 from typing import Dict, Any, List,Optional
 import json
 import re
+import traceback
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.chat_models import ChatOpenAI
@@ -9,6 +10,7 @@ from langchain.chat_models import ChatOpenAI
 from app.models.schemas import IntentType, ScreenState, Language
 from app.services.menu_service import MenuService
 from app.models.schemas import ResponseStatus
+from app.utils.sanitize import sanitize_menus
 
 class IntentRecognizer:
     """사용자 의도 인식 서비스"""
@@ -20,8 +22,8 @@ class IntentRecognizer:
         # LLM 초기화
         self.llm = ChatOpenAI(
             model_kwargs={"api_key": api_key},
-            model_name="gpt-4.1", 
-            temperature=0.3
+            model_name="gpt-4o", 
+            temperature=0.05
         )
         
         # Few-shot 학습 예제
@@ -53,7 +55,7 @@ class IntentRecognizer:
         )
         
         # LLM 응답 파싱
-        result = self._parse_llm_response(response, store_id)
+        result = self._parse_llm_response(response, store_id, session)
         
         # 디버깅 정보
         print(f"[의도 인식] 입력: '{text}', 인식 결과: {result}")
@@ -124,76 +126,175 @@ class IntentRecognizer:
         
         return None
     
-    def _build_context(self, screen_state: str, store_id: int, store_menus: Dict[int, Dict[str, Any]], session: Dict[str, Any]) -> str:
-        """상황에 맞는 컨텍스트 구성"""
-        context_parts = []
+    # def _build_context(self, screen_state: str, store_id: int, store_menus: Dict[int, Dict[str, Any]], session: Dict[str, Any]) -> str:
+    #     """상황에 맞는 컨텍스트 구성"""
+    #     context_parts = []
         
-        # 1. 메뉴 정보 요약 (모든 메뉴 포함)
-        menu_list = list(store_menus.values())  # 모든 메뉴 포함
+    #     # 1. 메뉴 정보 요약 (모든 메뉴 포함)
+    #     menu_list = list(store_menus.values())  # 모든 메뉴 포함
         
-        # 카테고리별로 메뉴 그룹화
-        categorized_menus = {}
-        for menu in menu_list:
-            category_id = menu.get("category_id")
-            if category_id not in categorized_menus:
-                categorized_menus[category_id] = []
-            categorized_menus[category_id].append(menu)
+    #     # 카테고리별로 메뉴 그룹화
+    #     categorized_menus = {}
+    #     for menu in menu_list:
+    #         category_id = menu.get("category_id")
+    #         if category_id not in categorized_menus:
+    #             categorized_menus[category_id] = []
+    #         categorized_menus[category_id].append(menu)
         
-        # 카테고리별로 메뉴 정보 구성
-        for category_id, menus in categorized_menus.items():
-            category_name = self._get_category_name(category_id, store_id) or f"카테고리 {category_id}"
-            category_items = []
+    #     # 카테고리별로 메뉴 정보 구성
+    #     for category_id, menus in categorized_menus.items():
+    #         category_name = self._get_category_name(category_id, store_id) or f"카테고리 {category_id}"
+    #         category_items = []
             
-            for menu in menus:
-                # 기본 메뉴 정보 (ID만 포함)
-                menu_info = [f"{menu['name_kr']} [ID:{menu['id']}]"]
+    #         for menu in menus:
+    #             # 기본 메뉴 정보 (ID만 포함)
+    #             menu_info = [f"{menu['name_kr']} [ID:{menu['id']}]"]
                 
-                # 옵션 정보 추가 (옵션 선택 시 필요)
-                if menu.get('options') and screen_state == ScreenState.ORDER:
-                    options_info = ["옵션:"]
-                    for opt in menu['options']:
-                        opt_name = opt.get('option_name', '')
-                        required = "필수" if opt.get('required', False) else "선택"
-                        options_info.append(f"- {opt_name} ({required})")
+    #             # 옵션 정보 추가 (옵션 선택 시 필요)
+    #             if menu.get('options') and screen_state == ScreenState.ORDER:
+    #                 options_info = ["옵션:"]
+    #                 for opt in menu['options']:
+    #                     opt_id = opt.get('option_id', '')
+    #                     opt_name = opt.get('option_name', '')
+    #                     required = "필수" if opt.get('required', False) else "선택"
+    #                     options_info.append(f"- {opt_name} [ID:{opt_id}] ({required})")
                         
-                        # 옵션 상세 정보
-                        if opt.get('option_details'):
-                            detail_items = []
-                            for detail in opt['option_details']:
-                                value = detail.get('value', '')
-                                detail_items.append(f"  * {value}")
-                            options_info.extend(detail_items)
+    #                     # 옵션 상세 정보
+    #                     if opt.get('option_details'):
+    #                         detail_items = []
+    #                         for detail in opt['option_details']:
+    #                             detail_id = detail.get('id', '')
+    #                             value = detail.get('value', '')
+    #                             detail_items.append(f"  * {value} [ID:{detail_id}]")
+    #                         options_info.extend(detail_items)
                     
-                    menu_info.append("\n".join(options_info))
+    #                 menu_info.append("\n".join(options_info))
                 
-                category_items.append("\n".join(menu_info))
+    #             category_items.append("\n".join(menu_info))
             
-            context_parts.append(f"## {category_name}\n" + "\n\n".join(category_items))
+    #         context_parts.append(f"## {category_name}\n" + "\n\n".join(category_items))
         
-        # 2. 장바구니 정보 (있는 경우)
+    #     # 2. 장바구니 정보 (있는 경우)
+    #     cart = session.get("cart", [])
+    #     if cart:
+    #         cart_summary = ["## 현재 장바구니"]
+    #         for item in cart:
+    #             option_text = ""
+    #             if item.get("selected_options"):
+    #                 option_strs = []
+    #                 for opt in item["selected_options"]:
+    #                     if opt.get("option_details"):
+    #                         opt_value = opt["option_details"][0].get("value", "")
+    #                         option_strs.append(f"{opt['option_name']}: {opt_value}")
+    #                 if option_strs:
+    #                     option_text = f" ({', '.join(option_strs)})"
+    #             cart_summary.append(f"- {item['name']}{option_text} x {item['quantity']}개")
+    #         context_parts.append("\n".join(cart_summary))
+        
+    #     # 3. 화면 상태별 추가 컨텍스트
+    #     if screen_state == ScreenState.ORDER and session.get("last_state", {}).get("menu"):
+    #         menu = session["last_state"]["menu"]
+    #         context_parts.append(f"## 현재 선택된 메뉴\n{menu['name_kr']}")
+        
+    #     return "\n\n".join(context_parts)
+    
+    def _build_context(
+            self,
+            screen_state: str,
+            store_id: int,
+            store_menus: Dict[int, Dict[str, Any]],
+            session: Dict[str, Any]
+    ) -> str:
+        """LLM 프롬프트에 넣을 컨텍스트 텍스트 생성"""
+
+        context_parts: list[str] = []
+
+        # ------------------------------------------------------------------ #
+        # 1) 매장 전체 메뉴 + 옵션 요약
+        # ------------------------------------------------------------------ #
+        menu_list = list(store_menus.values())              # 모든 메뉴
+        categorized: dict[int, list[dict]] = {}
+        for menu in menu_list:
+            categorized.setdefault(menu.get("category_id"), []).append(menu)
+
+        for category_id, menus in categorized.items():
+            cat_name = self._get_category_name(category_id, store_id) or f"카테고리 {category_id}"
+            cat_lines: list[str] = []
+
+            for menu in menus:
+                menu_name = (
+                    menu.get("name_kr")
+                    or menu.get("name")
+                    or menu.get("menu_name")
+                    or f"메뉴ID {menu.get('id')}"
+                )
+                menu_lines = [f"{menu_name} [ID:{menu.get('id')}]"]
+
+                # 옵션 정보 – ORDER 화면일 때만 상세 전송
+                if screen_state == ScreenState.ORDER and menu.get("options"):
+                    opt_lines = ["옵션:"]
+                    for opt in menu["options"]:
+                        opt_name = opt.get("option_name", "")
+                        opt_id   = opt.get("option_id", "")
+                        required = "필수" if opt.get("required") else "선택"
+                        opt_lines.append(f"- {opt_name} [ID:{opt_id}] ({required})")
+
+                        # 옵션 상세
+                        for d in opt.get("option_details", []):
+                            v = d.get("value", "")
+                            did = d.get("id", "")
+                            opt_lines.append(f"  * {v} [ID:{did}]")
+                    menu_lines.append("\n".join(opt_lines))
+
+                cat_lines.append("\n".join(menu_lines))
+
+            context_parts.append(f"## {cat_name}\n" + "\n\n".join(cat_lines))
+
+        # ------------------------------------------------------------------ #
+        # 2) 장바구니 요약
+        # ------------------------------------------------------------------ #
         cart = session.get("cart", [])
         if cart:
-            cart_summary = ["## 현재 장바구니"]
+            cart_lines = ["## 현재 장바구니"]
             for item in cart:
-                option_text = ""
+                item_name = (
+                    item.get("name")
+                    or item.get("name_kr")
+                    or item.get("menu_name")
+                    or f"메뉴ID {item.get('menu_id')}"
+                )
+                # 옵션 요약
+                opt_text = ""
                 if item.get("selected_options"):
-                    option_strs = []
+                    vals = []
                     for opt in item["selected_options"]:
                         if opt.get("option_details"):
-                            opt_value = opt["option_details"][0].get("value", "")
-                            option_strs.append(f"{opt['option_name']}: {opt_value}")
-                    if option_strs:
-                        option_text = f" ({', '.join(option_strs)})"
-                cart_summary.append(f"- {item['name']}{option_text} x {item['quantity']}개")
-            context_parts.append("\n".join(cart_summary))
-        
-        # 3. 화면 상태별 추가 컨텍스트
-        if screen_state == ScreenState.ORDER and session.get("last_state", {}).get("menu"):
+                            val = opt["option_details"][0].get("value", "")
+                            vals.append(f"{opt.get('option_name')}: {val}")
+                    if vals:
+                        opt_text = f" ({', '.join(vals)})"
+                cart_lines.append(f"- {item_name}{opt_text} x {item.get('quantity', 1)}개")
+            context_parts.append("\n".join(cart_lines))
+
+        # ------------------------------------------------------------------ #
+        # 3) 주문 화면이라면, 현재 옵션을 고르는 메뉴 정보 추가
+        # ------------------------------------------------------------------ #
+        if (
+            screen_state == ScreenState.ORDER
+            and session.get("last_state", {}).get("menu")
+        ):
             menu = session["last_state"]["menu"]
-            context_parts.append(f"## 현재 선택된 메뉴\n{menu['name_kr']}")
-        
+            current_name = (
+                menu.get("name_kr")
+                or menu.get("name")
+                or menu.get("menu_name")
+                or f"메뉴ID {menu.get('menu_id')}"
+            )
+            context_parts.append(f"## 현재 선택된 메뉴\n{current_name}")
+
+        # ------------------------------------------------------------------ #
         return "\n\n".join(context_parts)
-    
+
     def _format_history(self, session: Dict[str, Any]) -> str:
         """대화 기록 포맷팅"""
         history = session.get("history", [])
@@ -213,7 +314,8 @@ class IntentRecognizer:
         
         return "\n".join(formatted_history)
     
-    def _parse_llm_response(self, response: str, store_id: int = 1) -> Dict[str, Any]:
+    def _parse_llm_response(self, response: str, store_id: int = 1,
+        session: Dict[str, Any] | None = None) -> Dict[str, Any]:
         """LLM 응답 파싱"""
         try:
             print(f"파싱할 LLM 응답: {response}")  # 디버깅용
@@ -250,7 +352,31 @@ class IntentRecognizer:
             if result.get("intent_type") == IntentType.PAYMENT and result.get("payment_method"):
                 if result["payment_method"].upper() == "KAKAOPAY":
                     result["payment_method"] = "PAY"
-            
+
+            # OPTION_SELECT 일 때 menu_id / menu_name 이 없어도 버리지 않는다
+            if result.get("intent_type") == "OPTION_SELECT":
+                # 메뉴 배열이 아예 없으면 빈 dict 하나라도 넣어 옵션을 살림
+                if not result.get("menus"):
+                    result["menus"] = [{}]
+
+                # ▼ session 이 있을 때만 last_state 보강
+                if session and result["menus"] and not result["menus"][0].get("menu_name"):
+                    last_menu = session.get("last_state", {}).get("menu", {})
+                    result["menus"][0]["menu_name"] = (
+                        last_menu.get("name") or last_menu.get("name_kr") or ""
+                    )
+
+            # ② menu_name 이 없으면 세션 last_state 에서 보충
+            if (
+                result.get("intent_type") == "OPTION_SELECT"
+                and result["menus"]
+                and not result["menus"][0].get("menu_name")
+            ):
+                last_menu = session.get("last_state", {}).get("menu", {})
+                result["menus"][0]["menu_name"] = (
+                    last_menu.get("name") or last_menu.get("name_kr") or ""
+                )
+
             # SEARCH 의도일 때 메뉴 처리
             if result.get("intent_type") == "SEARCH":
                 # 메뉴 정보 로드
@@ -283,8 +409,15 @@ class IntentRecognizer:
                     result["menus"] = processed_menus
                 else:
                     result["menus"] = []
-            
+
+            # text
+            if result.get("menus"):
+                store_menus = self.menu_service.get_store_menus(store_id)
+                result["menus"] = sanitize_menus(result["menus"], store_menus)
+
             return result
+
+            
             
         except Exception as e:
             print(f"LLM 응답 파싱 오류: {e}")
@@ -355,14 +488,17 @@ class IntentRecognizer:
         - "따아/핫아메리카노" → "아메리카노" + 옵션:"HOT"
         - "카페라떼/카페라테/라떼" → "카페 라떼"
         - "바닐라라떼/바닐라라테" → "바닐라 라떼"
+        - "아샷추" -> "복숭아 아이스티"
 
         6. 옵션 매핑 규칙:
-        - "아이스/차가운/아아" → 온도 옵션:"ICE"
+        - "아이스/차가운/아아/아바라/아샷추" → 온도 옵션:"ICE"
         - "따뜻한/뜨거운/따아/하스로" → 온도 옵션:"Hot"
         - "작은/스몰/S" → 사이즈 옵션:"S"
         - "중간/미디엄/M" → 사이즈 옵션:"M"
         - "큰/라지/L" → 사이즈 옵션:"L"
-
+        - json으로 값을 넘길때 반드시 menu context의 내용과 동일한 내용을 전달하세요. "얼음 많이" -> 얼음량 옵션 : "얼음 많이"
+        - 새로 만들어낸 숫자(임의의 ID)는 절대로 사용하지 마세요.
+        
         7. 취소 규칙:
         - 현재 화면 상태가 "ORDER"이고 아직 선택하지 못한 옵션이 남아있는데 다른 메뉴를 선택하려는 경우 -> "아직 메뉴가 선택되지 않았어요. 옵션을 선택해주세요."
         - screen_state가 OPTION 일 때 "취소","메뉴 추가","그만","삭제"와 같이 로직을 벗어나려고 한다면 "주문하고 있던 메뉴가 사라져요."라고 응답을 내보내고 screen_state는 MAIN으로 해주세요.
@@ -381,6 +517,13 @@ class IntentRecognizer:
 
         주의: 응답을 생성할 때 템플릿 문자열이 아닌 실제 사용자에게 보여질 자연스러운 응답을 직접 생성해주세요.
         "감자탕 있어?", "화장실이 어디야?" 와 같이 제공된 메뉴 이외의 질문을 한다면 "죄송하지만 대답할 수 없는 질문이네요. 카페와 관련된 질문을 해주시면 대답해드릴 수 있어요."라고 답변하고 screen_state는 MAIN으로 해주세요.
+        - 메뉴ID, 옵션ID, 옵션상세ID, 옵션value는 반드시 컨텍스트에서 제공된 값으로 해주세요.
+        - 새로 만들어낸 숫자(임의의 ID)는 절대로 사용하지 마세요.
+
+        모든 옵션을 누락 없이 JSON으로 추출해 주세요.
+        예시:
+        "샷 추가 해서 얼음 많이 큰걸로 두개 줘 우유는 오트 우유로 바꿔줘 뜨거운거"
+        → options 필드에 '샷옵션', '얼음량', '사이즈', '우유변경', '온도'가 모두 포함되어야 합니다. 이때 반드시 menu context에서 받은 실제 값으로 전달하세요.
         
         # 복합 주문 예제
         사용자: "아아 두개 주는데 하나는 샷추가해줘"
@@ -391,26 +534,34 @@ class IntentRecognizer:
         "confidence": 0.9,
         "menus": [
             {{
+            "menu_id": 101,
             "menu_name": "아메리카노",
             "quantity": 1,
             "options": [
                 {{
+                "option_id": 102,
                 "option_name": "온도",
-                "option_value": "Icd"
+                "option_detail_id": 1005,
+                "option_value": "Ice"
                 }}
             ]
             }},
             {{
+            "menu_id": 101,
             "menu_name": "아메리카노",
             "quantity": 1,
             "options": [
                 {{
+                "option_id": 102,
                 "option_name": "온도",
-                "option_value": "Icd"
+                "option_detail_id": 1005,
+                "option_value": "Ice"
                 }},
                 {{
-                "option_name": "샷추가",
-                "option_value": "샷1개 추가"
+                "option_id": 105,
+                "option_name": "샷옵션"
+                "option_detail_id": 1017,
+                "option_value": "샷 개 추가"
                 }}
             ]
             }}
@@ -428,12 +579,15 @@ class IntentRecognizer:
           "confidence": 0.0~1.0 사이의 신뢰도 점수,
           "menus": [ // ORDER 의도에만 사용
             {{
+              "menu_id": 메뉴 ID, (반드시 메뉴 컨텍스트에 넘긴 메뉴의 id랑 일치해야 함)
               "menu_name": "메뉴 이름",
               "quantity": 수량,
               "options": [
                 {{
+                  "option_id": 옵션 ID, (반드시 메뉴 컨텍스트에 넘김 옴션의 id랑 일치해야 함)
                   "option_name": "옵션 이름 (예: 온도, 사이즈)",
-                  "option_value": "옵션 값 (예: ICE, HOT, S, M, L)"
+                  "option_detail_id": 옵션 상세 ID, (반드시 메뉴 컨텍스트에 넘긴 옵션 상세의 id랑 일치해야 함)
+                  "option_value": "옵션 값 (예: Ice, Hot, S, M, L)"
                 }}
               ]
             }}
@@ -464,18 +618,21 @@ class IntentRecognizer:
                         "intent_type": "ORDER",
                         "menus": [
                             {
+                                "menu_id": 103,
                                 "menu_name": "바닐라라떼",
                                 "quantity": 1,
                                 "options": [
                                     {
+                                        "option_id": 102,
                                         "option_name": "온도",
+                                        "option_detail_id": 1005,
                                         "option_value": "Ice"
                                     }
                                 ]
                             }
                         ],
                         "post_text": "아바라 하나 주세요",
-                        "reply": "바닐라 라떼 (ICE) 사이즈는 어떻게 해드릴까요?(S, M, L)"
+                        "reply": "바닐라 라떼의 옵션을 선택해주세요."
                     
                     }
                 },
@@ -486,22 +643,27 @@ class IntentRecognizer:
                         "confidence": 0.9,
                         "menus": [
                             {
+                                "menu_id": 113,
                                 "menu_name": "아이스티",
                                 "quantity": 1,
                                 "options": [
                                     {
+                                        "option_id": 102,
                                         "option_name": "온도",
+                                        "option_detail_id": 1005,
                                         "option_value": "Ice"
                                     },
                                     {
-                                        "option_name": "샷추가",
-                                        "option_value": "샷1개 추가"
+                                        "option_id": 105,
+                                        "option_name": "샷옵션",
+                                        "option_detail_id": 1017,
+                                        "option_value": "샷 1개 추가"
                                     }
                                 ]
                             }
                         ],
                         "post_text": "아샷추 하나 주세요",
-                        "reply": "아이스티 (샷 1개 추가) 사이즈는 어떻게 해드릴까요?"
+                        "reply": "아이스티의 옵션을 선택해주세요."
                     }
                 },
                 {
@@ -511,18 +673,21 @@ class IntentRecognizer:
                         "confidence": 0.9,
                         "menus": [
                             {
+                                "menu_id": 101,
                                 "menu_name": "아메리카노",
                                 "quantity": 1,
                                 "options": [
                                     {
+                                        "option_id": 102,
                                         "option_name": "온도",
+                                        "option_detail_id": 1005,
                                         "option_value": "Ice"
                                     }
                                 ]
                             }
                         ],
                         "post_text": "아아 하나 주세요",
-                        "reply": "아메리카노(Ice) 사이즈는 어떻게 해드릴까요?(S, M, L)"
+                        "reply": "아메리카노의 옵션을 선택해주세요."
                     }
                 },
                 {
@@ -532,18 +697,21 @@ class IntentRecognizer:
                         "confidence": 0.9,
                         "menus": [
                             {
+                                "menu_id": 101,
                                 "menu_name": "아메리카노",
                                 "quantity": 1,
                                 "options": [
                                     {
+                                        "option_id": 102,
                                         "option_name": "온도",
+                                        "option_detail_id": 1006,
                                         "option_value": "Hot"
                                     }
                                 ]
                             }
                         ],
                         "post_text": "따뜻한 아메리카노 한 잔이요.",
-                        "reply": "따뜻한 아메리카노 사이즈는 어떻게 해드릴까요?"
+                        "reply": "아메리카노의 옵션을 선택해주세요."
                     }
                 },
                 {
@@ -553,28 +721,60 @@ class IntentRecognizer:
                         "confidence": 0.9,
                         "menus": [
                             {
+                                "menu_id": 101,
                                 "menu_name": "아메리카노",
                                 "quantity": 1,
                                 "options": [
                                     {
+                                        "option_id": 102,
                                         "option_name": "온도",
+                                        "option_detail_id": 1005,
                                         "option_value": "Ice"
                                     },
                                     {
+                                        "option_id": 101,
                                         "option_name": "사이즈",
+                                        "option_detail_id": 1003,
                                         "option_value": "L"
                                     }
                                 ]
                             }
                         ],
                         "post_text": "큰 사이즈 아아 한잔이요",
-                        "reply": "라지 사이즈 아이스 아메리카노 한잔 장바구니에 담았어요."
+                        "reply": "주문하신 메뉴를 장바구니에 담았어요."
                     }
                 }
             ],
             
             # 옵션 선택 예제
             "option": [
+                {
+                    "input": "샷 하나 추가해주고 아이스로 해줘",
+                    "output": {
+                        "intent_type": "OPTION_SELECT",
+                        "confidence": 0.9,
+                        "menus": [
+                            {
+                                "options": [
+                                    {
+                                        "option_id": 102,
+                                        "option_name": "온도",
+                                        "option_detail_id": 1005,
+                                        "option_value": "Ice"
+                                    },
+                                    {
+                                        "option_id": 105,
+                                        "option_name": "샷옵션",
+                                        "option_detail_id": 1017,
+                                        "option_value": "샷 1개 추가"
+                                    }
+                                ]
+                            }
+                        ],
+                        "post_text": "샷 하나 추가해주고 아이스로 해줘",
+                        "reply": "주문하신 메뉴를 장바구니에 담았습니다."
+                    }
+                },
                 {
                     "input": "아이스로 해주세요",
                     "output": {
@@ -584,7 +784,9 @@ class IntentRecognizer:
                             {
                                 "options": [
                                     {
+                                        "option_id": 102,
                                         "option_name": "온도",
+                                        "option_detail_id": 1005,
                                         "option_value": "Ice"
                                     }
                                 ]
@@ -603,18 +805,20 @@ class IntentRecognizer:
                             {
                                 "options": [
                                     {
+                                        "option_id": 101,
                                         "option_name": "사이즈",
+                                        "option_detail_id": 1003,
                                         "option_value": "L"
                                     }
                                 ]
                             }
                         ],
                         "post_text": "라지 사이즈로 주세요.",
-                        "reply": "주문하신 메뉴 장바구니에 담았습니다."
+                        "reply": "주문하신 메뉴를 장바구니에 담았어요."
                     }
                 },
                 {
-                    "input": "하스로 줘줘",
+                    "input": "하스로 줘",
                     "output": {
                         "intent_type": "OPTION_SELECT",
                         "confidence": 0.9,
@@ -622,14 +826,55 @@ class IntentRecognizer:
                             {
                                 "options": [
                                     {
+                                        "option_id": 102,
                                         "option_name": "온도",
-                                        "option_value": "Hot"
+                                        "option_detail_id": 1004,
+                                        "option_value": "HOT"
                                     }
                                 ]
                             }
                         ],
                         "post_text": "핫으로 줘",
                         "reply": "핫으로 준비할게요.사이즈는 어떻게 해드릴까요?"
+                    }
+                },
+                {
+                    "input": "샷 추가하고 아이스로 얼음 많이 넣어줘, 라지 사이즈로 할게",
+                    "output": {
+                        "intent_type": "OPTION_SELECT",
+                        "confidence": 0.9,
+                        "menus": [
+                            {
+                                "options": [
+                                    {
+                                        "option_id": 102,
+                                        "option_name": "온도",
+                                        "option_detail_id": 1005,
+                                        "option_value": "Ice"
+                                    },
+                                    {
+                                        "option_id": 105,
+                                        "option_name": "샷옵션",
+                                        "option_detail_id": 1017,
+                                        "option_value": "샷 1개 추가"
+                                    },
+                                    {
+                                        "option_id": 103,
+                                        "option_name": "얼음량",
+                                        "option_detail_id": 1009,
+                                        "option_value": "얼음 많이"
+                                    },
+                                    {
+                                        "option_id": 101,
+                                        "option_name": "사이즈",
+                                        "option_detail_id": 1003,
+                                        "option_value": "L"
+                                    }
+                                ]
+                            }
+                        ],
+                        "post_text": "샷 추가하고 아이스로 얼음 많이 넣어줘, 엠 사이즈로 할게",
+                        "reply": "주문하신 메뉴를 장바구니에 넣었어요."
                     }
                 }
             ],
@@ -951,7 +1196,7 @@ class IntentRecognizer:
             print(f"LLM 응답 생성 오류: {e}")
         
         # 실패 시 기본 응답 사용
-        return f"{menu_name}를 선택하셨네요. {option_name}을(를) 선택해주세요. ({options_str})"
+        return f"{menu_name}를 선택하셨네요. 필수 옵션을 선택해주세요."
 
     def _is_cart_modify_intent(self, text: str, language: str) -> bool:
         """장바구니 수정 의도인지 확인"""

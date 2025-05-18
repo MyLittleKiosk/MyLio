@@ -1,6 +1,7 @@
 # app/services/session_manager.py
 import json
 import uuid
+import copy 
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List, Union
 
@@ -100,125 +101,67 @@ class RedisSessionManager:
         # Redis에 저장
         return self._save_session(session_id, existing_session)
     
-    def add_to_cart(self, session_id: str, menu_item: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """장바구니에 메뉴 추가 (검증 로직 강화)"""
-        # 세션 ID 확인
-        if not session_id:
-            print(f"[카트 추가 실패] 세션 ID가 없음")
-            return []
-        
-        # 세션 가져오기
-        session = self.get_session(session_id)
-        if not session:
-            print(f"[카트 추가 실패] 세션 없음: {session_id}")
-            return []
-        
-        # 장바구니 가져오기 및 초기화
-        if "cart" not in session:
-            session["cart"] = []
-        
-        print(f"[카트 추가 전] 세션 ID: {session_id}, 장바구니 항목 수: {len(session['cart'])}")
-
-        # 메뉴 데이터 최소화 (필요한 필드만 유지)
-        cart_id = str(uuid.uuid4())
-        
-        # 메뉴 유효성 검사
-        if not menu_item or not isinstance(menu_item, dict):
-            print(f"[카트 추가 실패] 유효하지 않은 메뉴 데이터")
-            return session.get("cart", [])
-        
-        # 필수 필드 확인
-        for field in ["menu_id", "name"]:
-            if field not in menu_item:
-                print(f"[카트 추가 실패] 필수 필드 누락: {field}")
-                return session.get("cart", [])
-        
-        optimized_item = {
-            "cart_id": cart_id,
-            "menu_id": menu_item.get("menu_id"),
-            "quantity": menu_item.get("quantity", 1),
-            "name": menu_item.get("name"),
-            "name_en": menu_item.get("name_en"),
-            "description": menu_item.get("description", ""),
-            "base_price": menu_item.get("base_price", 0),
-            "total_price": menu_item.get("total_price", 0),
-            "image_url": menu_item.get("image_url"),
-            "selected_options": []
-        }
-        
-        # 선택된 옵션 처리
-        if "selected_options" in menu_item and menu_item["selected_options"]:
-            # 중복 옵션 ID 제거
-            added_option_ids = set()
-            for opt in menu_item.get("selected_options", []):
-                option_id = opt.get("option_id")
-                if option_id and option_id not in added_option_ids:
-                    added_option_ids.add(option_id)
+    def add_to_cart(self, session_id: str, menu: Dict[str, Any]) -> bool:
+        """장바구니에 메뉴 추가"""
+        try:
+            # 세션 가져오기
+            session = self.get_session(session_id)
+            if not session:
+                print(f"[카트 추가 실패] 세션 없음: {session_id}")
+                return False
+            
+            # 장바구니 초기화
+            if "cart" not in session:
+                session["cart"] = []
+            
+            # 이전 장바구니 항목 수 기록
+            previous_count = len(session["cart"])
+            
+            # 카트 아이템 생성
+            cart_item = {
+                "cart_id": str(uuid.uuid4()),
+                "menu_id": menu.get("id") or menu.get("menu_id"),
+                "quantity": menu.get("quantity", 1),
+                "name": menu.get("name_kr") or menu.get("name"),
+                "name_en": menu.get("name_en"),
+                "description": menu.get("description", ""),
+                "base_price": menu.get("price") or menu.get("base_price", 0),
+                "total_price": menu.get("total_price", 0),
+                "image_url": menu.get("image_url"),
+                "selected_options": []
+            }
+            
+            # 선택된 옵션 추가
+            if "selected_options" in menu and menu["selected_options"]:
+                cart_item["selected_options"] = menu["selected_options"]
+            else:
+                # 옵션 구성
+                for option in menu.get("options", []):
+                    if option.get("is_selected") or option.get("selected_id") or option.get("option_value"):
+                        cart_item["selected_options"].append(_build_selected_option(option))
                     
-                    # 최소한의 데이터만 복사
-                    minimal_opt = {
-                        "option_id": option_id,
-                        "option_name": opt.get("option_name"),
-                        "is_selected": True
-                    }
-                    
-                    # 옵션 상세 정보 한 개만 복사
-                    if "option_details" in opt and opt["option_details"]:
-                        detail = opt["option_details"][0]
-                        minimal_opt["option_details"] = [{
-                            "id": detail.get("id"),
-                            "value": detail.get("value"),
-                            "additional_price": detail.get("additional_price", 0)
-                        }]
-                    
-                    optimized_item["selected_options"].append(minimal_opt)
-        
-        # 기존 장바구니에 동일 항목 있는지 확인
-        found = False
-        for i, item in enumerate(session["cart"]):
-            if self._is_same_menu_item(item, optimized_item):
-                # 동일 메뉴 발견 시 수량 증가
-                session["cart"][i]["quantity"] += optimized_item.get("quantity", 1)
-                found = True
-                print(f"[카트 업데이트] 기존 항목 수량 증가: {item.get('name')}, 새 수량: {session['cart'][i]['quantity']}")
-                break
-        
-        # 동일 메뉴 없으면 새로 추가
-        if not found:
-            session["cart"].append(optimized_item)
-            print(f"[카트 추가] 새 항목: {optimized_item.get('name')}, 옵션: {[opt.get('option_name') for opt in optimized_item.get('selected_options', [])]}")
-        
-        # 기존 카트 크기 저장
-        original_cart_size = len(session["cart"])
-        
-        # 세션 저장
-        saved = self._save_session(session_id, session)
-        if not saved:
-            print(f"[오류] 장바구니 추가 실패: 세션 저장 실패. (ID: {session_id})")
-            # 세션에서 방금 추가한 항목 제거 (롤백)
-            if not found:
-                session["cart"].pop()
-            return session.get("cart", [])
-        
-        # 검증 - 세션을 다시 로드하여 추가되었는지 확인
-        updated_session = self.get_session(session_id)
-        if not updated_session or "cart" not in updated_session:
-            print(f"[오류] 장바구니 추가 실패: 업데이트된 세션을 가져올 수 없음. (ID: {session_id})")
-            return session.get("cart", [])
-        
-        # 항목 수가 증가했는지 확인
-        if not found and len(updated_session["cart"]) <= original_cart_size:
-            print(f"[오류] 장바구니 추가 실패: 항목 수가 증가하지 않음. (ID: {session_id})")
-            return session.get("cart", [])
-        
-        # 추가된 항목이 있는지 확인
-        if not found:
-            cart_ids = [item.get("cart_id") for item in updated_session["cart"]]
-            if cart_id not in cart_ids:
-                print(f"[오류] 장바구니 추가 실패: 추가된 항목을 찾을 수 없음. (ID: {cart_id})")
-        
-        print(f"[장바구니 업데이트 완료] 세션 ID: {session_id}, 현재 항목 수: {len(updated_session['cart'])}")
-        return updated_session.get("cart", [])
+            # 장바구니에 추가
+            print(f"[카트 추가] 카트 아이템: {cart_item}")
+            session["cart"].append(cart_item)
+            
+            # 세션 저장
+            success = self._save_session(session_id, session)
+            
+            # 저장 후 검증
+            updated_session = self.get_session(session_id)
+            if updated_session and "cart" in updated_session:
+                current_count = len(updated_session["cart"])
+                if current_count > previous_count:
+                    print(f"[카트 추가 성공] 이전: {previous_count}, 현재: {current_count}")
+                    return True
+                else:
+                    print(f"[카트 추가 실패] 항목 수가 증가하지 않음. 이전: {previous_count}, 현재: {current_count}")
+                    return False
+            
+            return success
+        except Exception as e:
+            print(f"[카트 추가 실패] 예외 발생: {str(e)}")
+            return False
     
     def get_cart(self, session_id: str) -> List[Dict[str, Any]]:
         """장바구니 조회"""
@@ -297,12 +240,28 @@ class RedisSessionManager:
             # 마지막 접근 시간 업데이트
             session_data["last_accessed"] = datetime.now().isoformat()
             
+            # Decimal 타입 변환 (JSON 직렬화 오류 방지)
+            def convert_decimal(obj):
+                if isinstance(obj, dict):
+                    return {k: convert_decimal(v) for k, v in obj.items()}
+                elif isinstance(obj, list):
+                    return [convert_decimal(item) for item in obj]
+                elif hasattr(obj, 'isoformat'):  # datetime 객체
+                    return obj.isoformat()
+                elif str(type(obj)) == "<class 'decimal.Decimal'>":  # Decimal 타입 체크
+                    return float(obj)
+                else:
+                    return obj
+            
+            # Decimal 타입 변환 적용
+            cleaned_data = convert_decimal(session_data)
+            
             # 세션 데이터 정리 (중복 제거 및 최소화)
-            cleaned_data = self._sanitize_session_data(session_data)
+            sanitized = self._sanitize_session_data(cleaned_data)
             
             # JSON 직렬화
             try:
-                session_json = json.dumps(cleaned_data)
+                session_json = json.dumps(sanitized)
             except Exception as json_error:
                 print(f"[세션 저장] JSON 변환 실패: {json_error}")
                 
@@ -312,7 +271,8 @@ class RedisSessionManager:
                     "session_id": session_id,
                     "created_at": session_data.get("created_at", datetime.now().isoformat()),
                     "last_accessed": datetime.now().isoformat(),
-                    "cart": session_data.get("cart", [])  # 카트는 가능한 보존
+                    "cart": convert_decimal(session_data.get("cart", [])),  # 카트는 Decimal 변환 후 보존
+                    "order_queue": convert_decimal(session_data.get("order_queue", []))  # 대기열도 Decimal 변환 후 보존
                 }
                 
                 session_json = json.dumps(minimal_data)
@@ -329,8 +289,8 @@ class RedisSessionManager:
                 print(f"[오류] 저장 검증 실패: 저장 직후 데이터를 읽을 수 없음. (ID: {session_id})")
                 return False
             
-            # 장바구니 특별 검증
-            if "cart" in session_data and session_data["cart"]:
+            # 장바구니 및 대기열 특별 검증
+            if ("cart" in session_data and session_data["cart"]) or ("order_queue" in session_data and session_data["order_queue"]):
                 try:
                     stored_data = self.redis.get(session_key)
                     if not stored_data:
@@ -338,16 +298,28 @@ class RedisSessionManager:
                         return False
                         
                     stored_json = json.loads(stored_data)
-                    if "cart" not in stored_json:
-                        print(f"[오류] 장바구니 데이터 손실: 원본에는 있으나 저장된 데이터에 없음")
-                        # 다시 저장 시도
-                        self.redis.setex(session_key, self.timeout, session_json)
-                        return True  # 재시도 후 성공으로 처리
-                        
-                    if len(stored_json["cart"]) != len(session_data["cart"]):
-                        print(f"[경고] 장바구니 데이터 불일치: 원본={len(session_data['cart'])}, 저장됨={len(stored_json.get('cart', []))}")
-                        # Redis에 다시 저장하되 유효성 검사 우회
-                        return True  # 불일치가 있어도 성공으로 처리
+                    
+                    # 장바구니 검증
+                    if "cart" in session_data and session_data["cart"]:
+                        if "cart" not in stored_json:
+                            print(f"[오류] 장바구니 데이터 손실: 원본에는 있으나 저장된 데이터에 없음")
+                            # 다시 저장 시도
+                            self.redis.setex(session_key, self.timeout, session_json)
+                            return True  # 재시도 후 성공으로 처리
+                            
+                        if len(stored_json["cart"]) != len(convert_decimal(session_data["cart"])):
+                            print(f"[경고] 장바구니 데이터 불일치: 원본={len(session_data['cart'])}, 저장됨={len(stored_json.get('cart', []))}")
+                    
+                    # 대기열 검증
+                    if "order_queue" in session_data and session_data["order_queue"]:
+                        if "order_queue" not in stored_json:
+                            print(f"[오류] 대기열 데이터 손실: 원본에는 있으나 저장된 데이터에 없음")
+                            # 대기열 정보만 다시 저장 (중요)
+                            queue_only = {"order_queue": session_data["order_queue"]}
+                            queue_json = json.dumps(convert_decimal(queue_only))
+                            self.redis.hset(session_key, "order_queue", queue_json)
+                            return True  # 재시도 후 성공으로 처리
+                
                 except Exception as e:
                     print(f"[경고] 저장 후 검증 중 오류: {e}")
                     return True  # 검증 중 오류가 있어도 성공으로 처리
@@ -395,10 +367,48 @@ class RedisSessionManager:
             if key in session_data:
                 sanitized[key] = session_data[key]
         
-        # 대기열 복사 (추가)
-        if "order_queue" in session_data:
-            sanitized["order_queue"] = session_data["order_queue"]
-            
+        # 대기열 복사 (더 많은 정보 보존)
+        if "order_queue" in session_data and session_data["order_queue"]:
+            sanitized["order_queue"] = []
+            for queue_item in session_data["order_queue"]:
+                # 중요 필드들 더 많이 보존
+                sanitized_item = {
+                    "id": queue_item.get("id"),
+                    "menu_id": queue_item.get("menu_id", queue_item.get("id")),
+                    "name_kr": queue_item.get("name_kr", ""),
+                    "name": queue_item.get("name", queue_item.get("name_kr", "")),  # name 필드 추가
+                    "menu_name": queue_item.get("menu_name", queue_item.get("name_kr", "")),
+                    "price": queue_item.get("price", 0),
+                    "quantity": queue_item.get("quantity", 1),
+                    "image_url": queue_item.get("image_url", "")  # 이미지 URL 추가
+                }
+                
+                # 옵션 정보 완전히 보존 (복사본 생성)
+                if "options" in queue_item:
+                    sanitized_item["options"] = []
+                    for option in queue_item.get("options", []):
+                        # 필수 옵션 정보만 복사
+                        option_copy = {
+                            "option_id": option.get("option_id"),
+                            "option_name": option.get("option_name"),
+                            "required": option.get("required", False),
+                            "is_selected": option.get("is_selected", False)
+                        }
+                        
+                        # 옵션 상세 정보 복사
+                        if "option_details" in option:
+                            option_copy["option_details"] = []
+                            for detail in option.get("option_details", []):
+                                option_copy["option_details"].append({
+                                    "id": detail.get("id"),
+                                    "value": detail.get("value"),
+                                    "additional_price": detail.get("additional_price", 0)
+                                })
+                        
+                        sanitized_item["options"].append(option_copy)
+                
+                sanitized["order_queue"].append(sanitized_item)
+        
         # 장바구니 항목 안전하게 복사
         if "cart" in session_data:
             sanitized["cart"] = []
@@ -480,33 +490,34 @@ class RedisSessionManager:
                     sanitized["last_state"]["menu"]["options"] = []
                     required_only = []
                     
-                    for option in menu.get("options", []):
-                        # 필수 옵션 또는 이미 선택된 옵션만 저장
-                        if option.get("required", False) or option.get("is_selected", False):
-                            # 중복 필드 제거 및 최소 정보만 포함
-                            min_option = {
-                                "option_id": option.get("option_id"),
-                                "option_name": option.get("option_name"),
-                                "required": option.get("required", False),
-                                "is_selected": option.get("is_selected", False)
-                            }
+                    # for option in menu.get("options", []):
+                    #     # 필수 옵션 또는 이미 선택된 옵션만 저장
+                    #     if option.get("required", False) or option.get("is_selected", False):
+                    #         # 중복 필드 제거 및 최소 정보만 포함
+                    #         min_option = {
+                    #             "option_id": option.get("option_id"),
+                    #             "option_name": option.get("option_name"),
+                    #             "required": option.get("required", False),
+                    #             "is_selected": option.get("is_selected", False)
+                    #         }
                             
-                            # 선택된 옵션이면 ID 추가
-                            if option.get("is_selected", False):
-                                min_option["selected_id"] = option.get("selected_id")
+                    #         # 선택된 옵션이면 ID 추가
+                    #         if option.get("is_selected", False):
+                    #             min_option["selected_id"] = option.get("selected_id")
                             
-                            # 옵션 상세 정보는 최소화
-                            if "option_details" in option:
-                                min_option["option_details"] = []
-                                for detail in option.get("option_details", []):
-                                    min_option["option_details"].append({
-                                        "id": detail.get("id"),
-                                        "value": detail.get("value")
-                                    })
+                    #         # 옵션 상세 정보는 최소화
+                    #         if "option_details" in option:
+                    #             min_option["option_details"] = []
+                    #             for detail in option.get("option_details", []):
+                    #                 min_option["option_details"].append({
+                    #                     "id": detail.get("id"),
+                    #                     "value": detail.get("value")
+                    #                 })
                             
-                            required_only.append(min_option)
+                    #         required_only.append(min_option)
                     
-                    sanitized["last_state"]["menu"]["options"] = required_only
+                    # sanitized["last_state"]["menu"]["options"] = required_only
+                    sanitized["last_state"]["menu"]["options"] = copy.deepcopy(menu.get("options", []))
                 
                 # 선택된 옵션 정보 복사 (중복 제거)
                 if "selected_options" in menu:
@@ -800,23 +811,49 @@ class RedisSessionManager:
     def get_next_queued_menu(self, session_id: str) -> Optional[Dict[str, Any]]:
         """대기열에서 다음 메뉴 가져오기"""
         session = self.get_session(session_id)
-        if not session or "order_queue" not in session or not session["order_queue"]:
+        queue_exists = session and "order_queue" in session and session["order_queue"]
+        
+        if not queue_exists:
+            print(f"[대기열 조회] 세션 ID: {session_id}, 대기열 비어있음")
             return None
         
         # 첫 번째 메뉴 가져오기 (pop하지 않고 peek만)
-        return session["order_queue"][0]
+        first_menu = session["order_queue"][0]
+        print(f"[대기열 조회] 세션 ID: {session_id}, 다음 메뉴: {first_menu.get('name_kr', '') or first_menu.get('menu_name', '') or first_menu.get('name', '')}")
+        return first_menu
 
     def remove_from_order_queue(self, session_id: str) -> bool:
         """대기열에서 처리 완료된 메뉴 제거"""
         session = self.get_session(session_id)
-        if not session or "order_queue" not in session or not session["order_queue"]:
+        queue_exists = session and "order_queue" in session and session["order_queue"]
+        
+        if not queue_exists:
+            print(f"[대기열 제거] 세션 ID: {session_id}, 대기열 비어있음")
             return False
+        
+        # 제거 전 메뉴 확인
+        first_menu = session["order_queue"][0]
+        menu_name = first_menu.get('name_kr', '') or first_menu.get('menu_name', '') or first_menu.get('name', '')
+        print(f"[대기열 제거] 세션 ID: {session_id}, 제거할 메뉴: {menu_name}")
         
         # 첫 번째 메뉴 제거
         session["order_queue"].pop(0)
+        print(f"[대기열 제거] 세션 ID: {session_id}, 제거 후 크기: {len(session['order_queue'])}")
         
-        # 세션 저장
-        return self._save_session(session_id, session)
+        # 세션 저장 및 결과 확인
+        result = self._save_session(session_id, session)
+        # 저장 후 세션 다시 확인하여 변경 사항이 반영되었는지 검증
+        updated_session = self.get_session(session_id)
+        updated_queue_size = len(updated_session.get("order_queue", [])) if updated_session and "order_queue" in updated_session else 0
+        print(f"[대기열 제거 검증] 세션 ID: {session_id}, 저장 후 대기열 크기: {updated_queue_size}")
+        
+        return result
+    
+    def update_order_queue_first(self, session_id: str, updated_menu: Dict[str, Any]) -> None:
+        session = self.get_session(session_id)
+        if session and "order_queue" in session and session["order_queue"]:
+            session["order_queue"][0] = updated_menu
+            self._save_session(session_id, session)
 
     def update_session_field(self, session_id: str, field: str, value: Any) -> bool:
         """세션의 특정 필드만 업데이트"""
@@ -835,3 +872,48 @@ class RedisSessionManager:
         
         # 세션 저장 (장바구니 및 다른 데이터는 유지)
         return self._save_session(session_id, session)
+
+    def _build_selected_option(option, force=False):
+        # ① is_selected 이거나 ② force=True 인 경우에만 detail을 고른다
+        if not option.get("is_selected") and not force:
+            return None        # 선택 안 했으면 None 반환
+
+        detail = _extract_selected_detail(option, force_fallback=force)
+        if not detail:
+            return None
+
+        return {
+            "option_id": option["option_id"],
+            "option_name": option["option_name"],
+            "is_selected": True,
+            "option_details": [detail],
+        }
+
+    
+    def _extract_selected_detail(option) -> Optional[Dict[str, Any]]:
+        """
+        이름(value) ➜ id ➜ (필수·force_fallback 인 경우만) 첫 detail
+        """
+        value = (option.get("option_value") or "").strip().lower()
+        sel_id = option.get("selected_id")
+
+        # ① value 매칭
+        if value:
+            for d in option.get("option_details", []):
+                if value in d["value"].lower():
+                    return {k: d[k] for k in ("id", "value", "additional_price")}
+
+        # ② id 매칭
+        if sel_id is not None:
+            for d in option.get("option_details", []):
+                if d["id"] == sel_id:
+                    return {k: d[k] for k in ("id", "value", "additional_price")}
+
+        # ③ fallback (필수 or 강제일 때만)
+        if force_fallback and option.get("option_details"):
+            d = option["option_details"][0]
+            return {k: d[k] for k in ("id", "value", "additional_price")}
+
+        # 선택 안 함
+        return None
+
