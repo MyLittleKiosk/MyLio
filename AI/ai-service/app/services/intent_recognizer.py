@@ -152,16 +152,18 @@ class IntentRecognizer:
                 if menu.get('options') and screen_state == ScreenState.ORDER:
                     options_info = ["옵션:"]
                     for opt in menu['options']:
+                        opt_id = opt.get('option_id', '')
                         opt_name = opt.get('option_name', '')
                         required = "필수" if opt.get('required', False) else "선택"
-                        options_info.append(f"- {opt_name} ({required})")
+                        options_info.append(f"- {opt_name} [ID:{opt_id}] ({required})")
                         
                         # 옵션 상세 정보
                         if opt.get('option_details'):
                             detail_items = []
                             for detail in opt['option_details']:
+                                detail_id = detail.get('id', '')
                                 value = detail.get('value', '')
-                                detail_items.append(f"  * {value}")
+                                detail_items.append(f"  * {value} [ID:{detail_id}]")
                             options_info.extend(detail_items)
                     
                     menu_info.append("\n".join(options_info))
@@ -381,7 +383,8 @@ class IntentRecognizer:
 
         주의: 응답을 생성할 때 템플릿 문자열이 아닌 실제 사용자에게 보여질 자연스러운 응답을 직접 생성해주세요.
         "감자탕 있어?", "화장실이 어디야?" 와 같이 제공된 메뉴 이외의 질문을 한다면 "죄송하지만 대답할 수 없는 질문이네요. 카페와 관련된 질문을 해주시면 대답해드릴 수 있어요."라고 답변하고 screen_state는 MAIN으로 해주세요.
-        
+        - 메뉴ID, 옵션ID, 옵션상세ID, 옵션value는 반드시 컨텍스트에서 제공된 값으로 해주세요.
+
         # 복합 주문 예제
         사용자: "아아 두개 주는데 하나는 샷추가해줘"
         분석 결과:

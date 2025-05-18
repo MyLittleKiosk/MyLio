@@ -128,7 +128,19 @@ class OrderProcessor(BaseProcessor):
             # 추가 메뉴가 있는 경우 대기열에 추가 (첫 번째 메뉴 제외)
             if len(pending_option_menus) > 1:
                 print(f"[주문 처리] 추가 메뉴 {len(pending_option_menus)-1}개 대기열에 추가")
+                print(f"[주문 처리] 대기열에 추가하는 메뉴: {pending_option_menus[1:]}")
+
                 self.session_manager.add_to_order_queue(session_id, pending_option_menus[1:])
+
+                # 🔻 **딱 한 번** 최신 세션을 가져와 session 에 할당
+                session = self.session_manager.get_session(session_id)   
+
+                # 디버깅
+                if "order_queue" in session:
+                    print(f"[주문 처리] 대기열 추가 후 크기: {len(session['order_queue'])}")
+                    for idx, menu in enumerate(session['order_queue']):
+                        print(f"[주문 처리] 대기열 아이템 {idx}: "
+                            f"{menu.get('name_kr', '') or menu.get('menu_name', '')}")
             
             # 다음 필수 옵션 가져오기
             next_option = self.option_handler.get_next_required_option(first_pending_menu)
@@ -150,7 +162,8 @@ class OrderProcessor(BaseProcessor):
                         "options": first_pending_menu.get("options", []),
                         "quantity": first_pending_menu.get("quantity", 1)
                     },
-                    "pending_option": next_option
+                    "pending_option": next_option,
+                    "pending_option_menus": pending_option_menus
                 }
                 
                 # 기존 장바구니 정보 복원
@@ -187,7 +200,7 @@ class OrderProcessor(BaseProcessor):
                     else:
                         cart_message = f"{menu_names} has been added to your cart. "
                         
-                    reply = cart_message + reply
+                    #reply = cart_message + reply
                 
                 # 의도 타입 변경 - OPTION_SELECT로 설정
                 intent_data["intent_type"] = IntentType.OPTION_SELECT
@@ -231,8 +244,8 @@ class OrderProcessor(BaseProcessor):
                 reply = f"{menu_names} has been added to your cart."
             
             # LLM이 생성한 응답이 있으면 그것을 사용
-            if intent_data.get("reply"):
-                reply = intent_data.get("reply")
+            # if intent_data.get("reply"):
+            #     reply = intent_data.get("reply")
             
             # 응답 반환
             return self._build_response(
@@ -294,14 +307,9 @@ class OrderProcessor(BaseProcessor):
                 ResponseStatus.UNKNOWN, reply="선택 중인 메뉴가 없습니다."
             )
         
-        # 복수 옵션 처리를 위한 코드
-        # LLM으로 사용자 입력에서 모든 가능한 옵션을 추출
-        menu_options = menu.get("options", [])
-        
-        # 텍스트에서 옵션 값 추출 시도
+        # 텍스트에서 LLM을 통해 옵션 값 추출 시도
+        # 1. 현재 필수 옵션 처리
         all_selected_options = []
-        
-        # 첫 번째 pending_option 처리
         selected_option = self.option_handler.process_option_selection(text, pending_option, menu)
         
         if selected_option:
@@ -309,28 +317,42 @@ class OrderProcessor(BaseProcessor):
             self.option_handler.option_matcher.apply_option_to_menu(menu, selected_option)
             all_selected_options.append(selected_option)
         
-        # 남은 텍스트에서 다른 옵션 처리 시도
-        # 필수 옵션들에 대해 처리 시도
-        for option in menu_options:
-            # 이미 선택된 옵션은 건너뛰기
-            if option.get("is_selected"):
-                continue
-            
-            # 현재 옵션 데이터 구성
-            current_option = {
-                "option_id": option.get("option_id"),
-                "option_name": option.get("option_name"),
-                "required": option.get("required"),
-                "option_details": option.get("option_details", [])
-            }
-            
-            # 텍스트에서 해당 옵션 매칭 시도
-            option_match = self.option_handler.process_option_selection(text, current_option, menu)
-            
-            if option_match:
-                print(f"[옵션 선택 처리] 추가 옵션 선택 성공: {current_option.get('option_name')}={option_match.get('option_details', [{}])[0].get('value', '')}")
-                self.option_handler.option_matcher.apply_option_to_menu(menu, option_match)
-                all_selected_options.append(option_match)
+        # 2. 추가 옵션 처리 (샷 옵션 등 모든 옵션 처리)
+        menu_options = menu.get("options", [])
+        
+        # 추가 옵션 키워드 맵핑
+        keyword_option_map = {
+            "샷": ["샷", "shot"],
+            "얼음": ["얼음", "ice"],
+            "시럽": ["시럽", "syrup"],
+            "우유": ["우유", "milk"]
+        }
+        
+        # LLM을 통해 텍스트 분석 - 다양한 옵션 추출 시도
+        # 텍스트에서 키워드 기반 검색
+        for keyword_type, keywords in keyword_option_map.items():
+            if any(kw in text.lower() for kw in keywords):
+                for option in menu_options:
+                    option_name = option.get("option_name", "").lower()
+                    # 키워드 유형에 맞는 옵션 찾기
+                    if any(kw in option_name for kw in keywords):
+                        # 이미 선택된 옵션은 건너뛰기
+                        if option.get("is_selected"):
+                            continue
+                        
+                        current_option = {
+                            "option_id": option.get("option_id"),
+                            "option_name": option.get("option_name"),
+                            "required": option.get("required"),
+                            "option_details": option.get("option_details", [])
+                        }
+                        
+                        # 옵션 매칭 시도
+                        option_match = self.option_handler.process_option_selection(text, current_option, menu)
+                        if option_match:
+                            print(f"[옵션 선택 처리] 추가 옵션 선택 성공: {current_option.get('option_name')}={option_match.get('option_details', [{}])[0].get('value', '')}")
+                            self.option_handler.option_matcher.apply_option_to_menu(menu, option_match)
+                            all_selected_options.append(option_match)
         
         # 메뉴 상태 확인
         menu_status = self.option_handler.determine_menu_status(menu)
@@ -350,7 +372,7 @@ class OrderProcessor(BaseProcessor):
                 # 세션 저장
                 self.session_manager._save_session(session_id, session)
                 
-                # 응답 생성 - _generate_llm_response 사용하지 않도록 수정
+                # 응답 생성
                 if 'reply' in locals() and reply:
                     pass  # 이미 reply가 있으면 그대로 사용
                 else:
@@ -414,8 +436,12 @@ class OrderProcessor(BaseProcessor):
         updated_cart = self.session_manager.get_cart(session_id)
         print(f"[카트 추가 성공] 이전: {len(session.get('cart', []))}, 현재: {len(updated_cart)}")
 
-        # 세션에서 처리 중인 메뉴 정보 제거
+        # 세션에서 처리 중인 메뉴 정보만 제거, order_queue 유지
         session["last_state"] = {}
+
+        # 대기열 정보 보존
+        if "order_queue" in session:
+            print(f"[옵션 선택 처리] 기존 대기열 유지: {len(session['order_queue'])}개 항목")
 
         # 카트 정보 유지를 위해 최신 카트 정보를 세션에 업데이트
         if updated_cart and len(updated_cart) > 0:
@@ -431,45 +457,66 @@ class OrderProcessor(BaseProcessor):
 
         # 대기열에서 다음 메뉴 가져오기 시도
         print("[옵션 선택 처리] 대기열에서 다음 메뉴 확인 중")
-        next_menu = self.session_manager.get_next_queued_menu(session_id)
 
-        if next_menu:
-            print(f"[옵션 선택 처리] 대기열에서 다음 메뉴 발견: {next_menu.get('name_kr', '') or next_menu.get('menu_name', '')}")
-            
-            # 대기열에서 현재 메뉴 제거
-            self.session_manager.remove_from_order_queue(session_id)
-            
-            # 수정: 세션 상태 초기화 전에 세션 다시 가져오기
-            session = self.session_manager.get_session(session_id)
-            
-            # 수정: 세션 상태 명시적 초기화
-            session["last_state"] = {}
-            self.session_manager._save_session(session_id, session)
-            
-            # 수정: 다음 메뉴 처리를 위한 응답 구성
-            # IntentType을 ORDER로 설정해 다음 메뉴 처리를 바로 시작하도록 함
-            intent_data = {
-                "intent_type": IntentType.ORDER,
-                "confidence": 0.95,
-                "menus": [next_menu]
-            }
-            
-            # 다음 메뉴 처리를 위한 응답 구성
-            if language == Language.KR:
-                reply = f"이어서 {next_menu.get('name_kr', '') or next_menu.get('menu_name', '')}의 옵션을 선택해주세요."
-            else:
-                reply = f"Now let's select options for {next_menu.get('name_en', '') or next_menu.get('menu_name', '')}."
-            
-            # 다음 메뉴 처리를 위한 응답 반환
-            return self._build_response(
-                intent_data, text, language, ScreenState.ORDER, store_id, session,
-                ResponseStatus.MISSING_REQUIRED_OPTIONS, reply=reply
-            )
+        # 매우 중요한 부분: 최신 세션 데이터 가져오기
+        fresh_session = self.session_manager.get_session(session_id)
+
+        # 만약 원래 session에 order_queue가 있지만 fresh_session에 없는 경우 복원
+        if "order_queue" in session and session["order_queue"] and (
+            "order_queue" not in fresh_session or not fresh_session["order_queue"]
+        ):
+            print(f"[옵션 선택 처리] 대기열 복원 중: {len(session['order_queue'])}개 항목")
+            fresh_session["order_queue"] = session["order_queue"]
+            # 복원된 대기열 저장
+            self.session_manager._save_session(session_id, fresh_session)
+
+        # 대기열 디버깅 정보 추가
+        if "order_queue" in fresh_session:
+            queue_size = len(fresh_session["order_queue"]) if fresh_session["order_queue"] else 0
+            print(f"[옵션 선택 처리] 대기열 크기: {queue_size}")
+            if queue_size > 0:
+                print(f"[옵션 선택 처리] 대기열 첫 번째 메뉴: {fresh_session['order_queue'][0].get('name_kr', '') or fresh_session['order_queue'][0].get('menu_name', '')}")
         else:
-            print("[옵션 선택 처리] 더 이상 처리할 메뉴가 없습니다.")
+            print("[옵션 선택 처리] 대기열이 존재하지 않음")
+
+        # 대기열 있는지 확인 (조건 변경)
+        if "order_queue" in fresh_session and fresh_session["order_queue"] and len(fresh_session["order_queue"]) > 0:
+            try:
+                next_menu = fresh_session["order_queue"][0]
+                print(f"[옵션 선택 처리] 대기열에서 다음 메뉴 발견: {next_menu.get('name_kr', '') or next_menu.get('menu_name', '') or next_menu.get('name', '')}")
+                
+                # 대기열에서 처리완료된 메뉴 제거
+                self.session_manager.remove_from_order_queue(session_id)
+                
+                # 새로운 메뉴 처리 응답 생성
+                reply = f"{menu.get('name')}가 장바구니에 담겼습니다. 이제 {next_menu.get('name_kr', '') or next_menu.get('menu_name', '') or next_menu.get('name', '')}의 옵션을 선택해주세요."
+                
+                # 메뉴 정보 가져오기
+                next_full_menu = self.menu_service.find_menu_by_name(next_menu.get('menu_name', ''), store_id)
+                if next_full_menu:
+                    # 옵션 처리를 위한 세션 상태 설정
+                    next_option = self.option_handler.get_next_required_option(next_full_menu)
+                    if next_option:
+                        fresh_session["last_state"] = {
+                            "menu": next_full_menu,
+                            "pending_option": next_option
+                        }
+                        
+                        # 세션 저장
+                        self.session_manager._save_session(session_id, fresh_session)
+                        
+                        # 응답 반환 - 다음 메뉴 처리로 전환
+                        return self._build_response(
+                            intent_data, text, language, ScreenState.ORDER, store_id, fresh_session,
+                            ResponseStatus.MISSING_REQUIRED_OPTIONS, reply=reply
+                        )
+            except Exception as e:
+                print(f"[대기열 처리 오류] {e}")
+                # 오류 발생해도 계속 진행
+
+        print("[옵션 선택 처리] 더 이상 처리할 메뉴가 없습니다.")
 
         # 대기열에서 다음 메뉴가 없는 경우 - 장바구니 추가 완료 응답 생성
-        # 응답 생성 - _generate_llm_response 사용하지 않도록 수정
         if 'reply' in locals() and reply:
             pass  # 이미 reply가 있으면 그대로 사용
         else:
@@ -562,16 +609,24 @@ class OrderProcessor(BaseProcessor):
                 self.session_manager._save_session(session_id, session)
                 
                 # 응답 생성 - _generate_llm_response 사용하지 않도록 수정
-                if 'reply' in locals() and reply:
-                    pass  # 이미 reply가 있으면 그대로 사용
+                # if 'reply' in locals() and reply:
+                #     pass  # 이미 reply가 있으면 그대로 사용
+                # else:
+                #     # 기본 메시지 생성
+                #     if language == Language.KR:
+                #         reply = f"{full_menu.get('name')}의 필수 옵션을 선택해주세요."
+                #     elif language == Language.EN:
+                #         reply = f"Selecting options for {full_menu.get('name')} is required. Please select options."
+                #     else:
+                #         reply = f"{full_menu.get('name')}의 필수 옵션을 선택해주세요."
+
+                # 기본 메시지 생성
+                if language == Language.KR:
+                    reply = f"{full_menu.get('name')}의 필수 옵션을 선택해주세요."
+                elif language == Language.EN:
+                    reply = f"Selecting options for {full_menu.get('name')} is required. Please select options."
                 else:
-                    # 기본 메시지 생성
-                    if language == Language.KR:
-                        reply = f"{full_menu.get('name')}의 필수 옵션을 선택해주세요."
-                    elif language == Language.EN:
-                        reply = f"Selecting options for {full_menu.get('name')} is required. Please select options."
-                    else:
-                        reply = f"{full_menu.get('name')}의 필수 옵션을 선택해주세요."
+                    reply = f"{full_menu.get('name')}의 필수 옵션을 선택해주세요."
                 
                 # 응답 반환
                 return self._build_response(
@@ -589,7 +644,7 @@ class OrderProcessor(BaseProcessor):
             next_menu = self.session_manager.get_next_queued_menu(session_id)
             
             if next_menu:
-                print(f"[메뉴 처리 시작] 대기열에 다음 메뉴 존재: {next_menu.get('menu_name', '')}")
+                print(f"[메뉴 처리 시작] 대기열에 다음 메뉴 존재: {next_menu.get('name_kr', '') or next_menu.get('menu_name', '') or next_menu.get('name', '')}")
                 # 현재 메뉴는 처리 완료했으니 대기열에서 제거
                 self.session_manager.remove_from_order_queue(session_id)
                 
@@ -600,20 +655,32 @@ class OrderProcessor(BaseProcessor):
             print("[메뉴 처리 시작] 모든 메뉴 처리 완료")
             
             # 응답 생성 - _generate_llm_response 사용하지 않도록 수정
-            if 'reply' in locals() and reply:
-                pass  # 이미 reply가 있으면 그대로 사용
+            # if 'reply' in locals() and reply:
+            #     pass  # 이미 reply가 있으면 그대로 사용
+            # else:
+            #     # 기본 메시지 생성
+            #     if language == Language.KR:
+            #         reply = f"주문하신 메뉴가 장바구니에 담겼어요."
+            #     elif language == Language.EN:
+            #         reply = f"{full_menu.get('name')} has been added to your cart."
+            #     elif language == Language.CN:
+            #         reply = f"{full_menu.get('name')}已添加到您的购物车。"
+            #     elif language == Language.JP:
+            #         reply = f"{full_menu.get('name')}はカートに追加されました。"
+            #     else:
+            #         reply = f"{full_menu.get('name')} has been added to your cart."
+
+            # 기본 메시지 생성
+            if language == Language.KR:
+                reply = f"주문하신 메뉴가 장바구니에 담겼어요."
+            elif language == Language.EN:
+                reply = f"{full_menu.get('name')} has been added to your cart."
+            elif language == Language.CN:
+                reply = f"{full_menu.get('name')}已添加到您的购物车。"
+            elif language == Language.JP:
+                reply = f"{full_menu.get('name')}はカートに追加されました。"
             else:
-                # 기본 메시지 생성
-                if language == Language.KR:
-                    reply = f"주문하신 메뉴가 장바구니에 담겼어요."
-                elif language == Language.EN:
-                    reply = f"{full_menu.get('name')} has been added to your cart."
-                elif language == Language.CN:
-                    reply = f"{full_menu.get('name')}已添加到您的购物车。"
-                elif language == Language.JP:
-                    reply = f"{full_menu.get('name')}はカートに追加されました。"
-                else:
-                    reply = f"{full_menu.get('name')} has been added to your cart."
+                reply = f"{full_menu.get('name')} has been added to your cart."
             
             # 응답 반환
             return self._build_response(
