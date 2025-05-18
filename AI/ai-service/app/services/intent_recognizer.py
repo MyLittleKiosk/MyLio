@@ -2,6 +2,7 @@
 from typing import Dict, Any, List,Optional
 import json
 import re
+import traceback
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.chat_models import ChatOpenAI
@@ -53,7 +54,7 @@ class IntentRecognizer:
         )
         
         # LLM 응답 파싱
-        result = self._parse_llm_response(response, store_id)
+        result = self._parse_llm_response(response, store_id, session)
         
         # 디버깅 정보
         print(f"[의도 인식] 입력: '{text}', 인식 결과: {result}")
@@ -124,78 +125,175 @@ class IntentRecognizer:
         
         return None
     
-    def _build_context(self, screen_state: str, store_id: int, store_menus: Dict[int, Dict[str, Any]], session: Dict[str, Any]) -> str:
-        """상황에 맞는 컨텍스트 구성"""
-        context_parts = []
+    # def _build_context(self, screen_state: str, store_id: int, store_menus: Dict[int, Dict[str, Any]], session: Dict[str, Any]) -> str:
+    #     """상황에 맞는 컨텍스트 구성"""
+    #     context_parts = []
         
-        # 1. 메뉴 정보 요약 (모든 메뉴 포함)
-        menu_list = list(store_menus.values())  # 모든 메뉴 포함
+    #     # 1. 메뉴 정보 요약 (모든 메뉴 포함)
+    #     menu_list = list(store_menus.values())  # 모든 메뉴 포함
         
-        # 카테고리별로 메뉴 그룹화
-        categorized_menus = {}
-        for menu in menu_list:
-            category_id = menu.get("category_id")
-            if category_id not in categorized_menus:
-                categorized_menus[category_id] = []
-            categorized_menus[category_id].append(menu)
+    #     # 카테고리별로 메뉴 그룹화
+    #     categorized_menus = {}
+    #     for menu in menu_list:
+    #         category_id = menu.get("category_id")
+    #         if category_id not in categorized_menus:
+    #             categorized_menus[category_id] = []
+    #         categorized_menus[category_id].append(menu)
         
-        # 카테고리별로 메뉴 정보 구성
-        for category_id, menus in categorized_menus.items():
-            category_name = self._get_category_name(category_id, store_id) or f"카테고리 {category_id}"
-            category_items = []
+    #     # 카테고리별로 메뉴 정보 구성
+    #     for category_id, menus in categorized_menus.items():
+    #         category_name = self._get_category_name(category_id, store_id) or f"카테고리 {category_id}"
+    #         category_items = []
             
-            for menu in menus:
-                # 기본 메뉴 정보 (ID만 포함)
-                menu_info = [f"{menu['name_kr']} [ID:{menu['id']}]"]
+    #         for menu in menus:
+    #             # 기본 메뉴 정보 (ID만 포함)
+    #             menu_info = [f"{menu['name_kr']} [ID:{menu['id']}]"]
                 
-                # 옵션 정보 추가 (옵션 선택 시 필요)
-                if menu.get('options') and screen_state == ScreenState.ORDER:
-                    options_info = ["옵션:"]
-                    for opt in menu['options']:
-                        opt_id = opt.get('option_id', '')
-                        opt_name = opt.get('option_name', '')
-                        required = "필수" if opt.get('required', False) else "선택"
-                        options_info.append(f"- {opt_name} [ID:{opt_id}] ({required})")
+    #             # 옵션 정보 추가 (옵션 선택 시 필요)
+    #             if menu.get('options') and screen_state == ScreenState.ORDER:
+    #                 options_info = ["옵션:"]
+    #                 for opt in menu['options']:
+    #                     opt_id = opt.get('option_id', '')
+    #                     opt_name = opt.get('option_name', '')
+    #                     required = "필수" if opt.get('required', False) else "선택"
+    #                     options_info.append(f"- {opt_name} [ID:{opt_id}] ({required})")
                         
-                        # 옵션 상세 정보
-                        if opt.get('option_details'):
-                            detail_items = []
-                            for detail in opt['option_details']:
-                                detail_id = detail.get('id', '')
-                                value = detail.get('value', '')
-                                detail_items.append(f"  * {value} [ID:{detail_id}]")
-                            options_info.extend(detail_items)
+    #                     # 옵션 상세 정보
+    #                     if opt.get('option_details'):
+    #                         detail_items = []
+    #                         for detail in opt['option_details']:
+    #                             detail_id = detail.get('id', '')
+    #                             value = detail.get('value', '')
+    #                             detail_items.append(f"  * {value} [ID:{detail_id}]")
+    #                         options_info.extend(detail_items)
                     
-                    menu_info.append("\n".join(options_info))
+    #                 menu_info.append("\n".join(options_info))
                 
-                category_items.append("\n".join(menu_info))
+    #             category_items.append("\n".join(menu_info))
             
-            context_parts.append(f"## {category_name}\n" + "\n\n".join(category_items))
+    #         context_parts.append(f"## {category_name}\n" + "\n\n".join(category_items))
         
-        # 2. 장바구니 정보 (있는 경우)
+    #     # 2. 장바구니 정보 (있는 경우)
+    #     cart = session.get("cart", [])
+    #     if cart:
+    #         cart_summary = ["## 현재 장바구니"]
+    #         for item in cart:
+    #             option_text = ""
+    #             if item.get("selected_options"):
+    #                 option_strs = []
+    #                 for opt in item["selected_options"]:
+    #                     if opt.get("option_details"):
+    #                         opt_value = opt["option_details"][0].get("value", "")
+    #                         option_strs.append(f"{opt['option_name']}: {opt_value}")
+    #                 if option_strs:
+    #                     option_text = f" ({', '.join(option_strs)})"
+    #             cart_summary.append(f"- {item['name']}{option_text} x {item['quantity']}개")
+    #         context_parts.append("\n".join(cart_summary))
+        
+    #     # 3. 화면 상태별 추가 컨텍스트
+    #     if screen_state == ScreenState.ORDER and session.get("last_state", {}).get("menu"):
+    #         menu = session["last_state"]["menu"]
+    #         context_parts.append(f"## 현재 선택된 메뉴\n{menu['name_kr']}")
+        
+    #     return "\n\n".join(context_parts)
+    
+    def _build_context(
+            self,
+            screen_state: str,
+            store_id: int,
+            store_menus: Dict[int, Dict[str, Any]],
+            session: Dict[str, Any]
+    ) -> str:
+        """LLM 프롬프트에 넣을 컨텍스트 텍스트 생성"""
+
+        context_parts: list[str] = []
+
+        # ------------------------------------------------------------------ #
+        # 1) 매장 전체 메뉴 + 옵션 요약
+        # ------------------------------------------------------------------ #
+        menu_list = list(store_menus.values())              # 모든 메뉴
+        categorized: dict[int, list[dict]] = {}
+        for menu in menu_list:
+            categorized.setdefault(menu.get("category_id"), []).append(menu)
+
+        for category_id, menus in categorized.items():
+            cat_name = self._get_category_name(category_id, store_id) or f"카테고리 {category_id}"
+            cat_lines: list[str] = []
+
+            for menu in menus:
+                menu_name = (
+                    menu.get("name_kr")
+                    or menu.get("name")
+                    or menu.get("menu_name")
+                    or f"메뉴ID {menu.get('id')}"
+                )
+                menu_lines = [f"{menu_name} [ID:{menu.get('id')}]"]
+
+                # 옵션 정보 – ORDER 화면일 때만 상세 전송
+                if screen_state == ScreenState.ORDER and menu.get("options"):
+                    opt_lines = ["옵션:"]
+                    for opt in menu["options"]:
+                        opt_name = opt.get("option_name", "")
+                        opt_id   = opt.get("option_id", "")
+                        required = "필수" if opt.get("required") else "선택"
+                        opt_lines.append(f"- {opt_name} [ID:{opt_id}] ({required})")
+
+                        # 옵션 상세
+                        for d in opt.get("option_details", []):
+                            v = d.get("value", "")
+                            did = d.get("id", "")
+                            opt_lines.append(f"  * {v} [ID:{did}]")
+                    menu_lines.append("\n".join(opt_lines))
+
+                cat_lines.append("\n".join(menu_lines))
+
+            context_parts.append(f"## {cat_name}\n" + "\n\n".join(cat_lines))
+
+        # ------------------------------------------------------------------ #
+        # 2) 장바구니 요약
+        # ------------------------------------------------------------------ #
         cart = session.get("cart", [])
         if cart:
-            cart_summary = ["## 현재 장바구니"]
+            cart_lines = ["## 현재 장바구니"]
             for item in cart:
-                option_text = ""
+                item_name = (
+                    item.get("name")
+                    or item.get("name_kr")
+                    or item.get("menu_name")
+                    or f"메뉴ID {item.get('menu_id')}"
+                )
+                # 옵션 요약
+                opt_text = ""
                 if item.get("selected_options"):
-                    option_strs = []
+                    vals = []
                     for opt in item["selected_options"]:
                         if opt.get("option_details"):
-                            opt_value = opt["option_details"][0].get("value", "")
-                            option_strs.append(f"{opt['option_name']}: {opt_value}")
-                    if option_strs:
-                        option_text = f" ({', '.join(option_strs)})"
-                cart_summary.append(f"- {item['name']}{option_text} x {item['quantity']}개")
-            context_parts.append("\n".join(cart_summary))
-        
-        # 3. 화면 상태별 추가 컨텍스트
-        if screen_state == ScreenState.ORDER and session.get("last_state", {}).get("menu"):
+                            val = opt["option_details"][0].get("value", "")
+                            vals.append(f"{opt.get('option_name')}: {val}")
+                    if vals:
+                        opt_text = f" ({', '.join(vals)})"
+                cart_lines.append(f"- {item_name}{opt_text} x {item.get('quantity', 1)}개")
+            context_parts.append("\n".join(cart_lines))
+
+        # ------------------------------------------------------------------ #
+        # 3) 주문 화면이라면, 현재 옵션을 고르는 메뉴 정보 추가
+        # ------------------------------------------------------------------ #
+        if (
+            screen_state == ScreenState.ORDER
+            and session.get("last_state", {}).get("menu")
+        ):
             menu = session["last_state"]["menu"]
-            context_parts.append(f"## 현재 선택된 메뉴\n{menu['name_kr']}")
-        
+            current_name = (
+                menu.get("name_kr")
+                or menu.get("name")
+                or menu.get("menu_name")
+                or f"메뉴ID {menu.get('menu_id')}"
+            )
+            context_parts.append(f"## 현재 선택된 메뉴\n{current_name}")
+
+        # ------------------------------------------------------------------ #
         return "\n\n".join(context_parts)
-    
+
     def _format_history(self, session: Dict[str, Any]) -> str:
         """대화 기록 포맷팅"""
         history = session.get("history", [])
@@ -215,7 +313,8 @@ class IntentRecognizer:
         
         return "\n".join(formatted_history)
     
-    def _parse_llm_response(self, response: str, store_id: int = 1) -> Dict[str, Any]:
+    def _parse_llm_response(self, response: str, store_id: int = 1,
+        session: Dict[str, Any] | None = None) -> Dict[str, Any]:
         """LLM 응답 파싱"""
         try:
             print(f"파싱할 LLM 응답: {response}")  # 디버깅용
@@ -252,7 +351,31 @@ class IntentRecognizer:
             if result.get("intent_type") == IntentType.PAYMENT and result.get("payment_method"):
                 if result["payment_method"].upper() == "KAKAOPAY":
                     result["payment_method"] = "PAY"
-            
+
+            # OPTION_SELECT 일 때 menu_id / menu_name 이 없어도 버리지 않는다
+            if result.get("intent_type") == "OPTION_SELECT":
+                # 메뉴 배열이 아예 없으면 빈 dict 하나라도 넣어 옵션을 살림
+                if not result.get("menus"):
+                    result["menus"] = [{}]
+
+                # ▼ session 이 있을 때만 last_state 보강
+                if session and result["menus"] and not result["menus"][0].get("menu_name"):
+                    last_menu = session.get("last_state", {}).get("menu", {})
+                    result["menus"][0]["menu_name"] = (
+                        last_menu.get("name") or last_menu.get("name_kr") or ""
+                    )
+
+            # ② menu_name 이 없으면 세션 last_state 에서 보충
+            if (
+                result.get("intent_type") == "OPTION_SELECT"
+                and result["menus"]
+                and not result["menus"][0].get("menu_name")
+            ):
+                last_menu = session.get("last_state", {}).get("menu", {})
+                result["menus"][0]["menu_name"] = (
+                    last_menu.get("name") or last_menu.get("name_kr") or ""
+                )
+
             # SEARCH 의도일 때 메뉴 처리
             if result.get("intent_type") == "SEARCH":
                 # 메뉴 정보 로드

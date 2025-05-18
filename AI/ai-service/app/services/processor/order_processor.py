@@ -1,5 +1,7 @@
 from typing import Dict, Any, Optional, List
+import json  
 import copy
+import traceback 
 
 from app.models.schemas import IntentType, ScreenState, Language, ResponseStatus
 from app.services.processor.base_processor import BaseProcessor
@@ -90,39 +92,12 @@ class OrderProcessor(BaseProcessor):
             
             # 인식된 메뉴 정보를 전체 메뉴 정보로 보강
             full_menu["quantity"] = menu_data.get("quantity", 1)
+            full_menu["base_price"]  = full_menu.get("price", 0)
+            full_menu["total_price"] = full_menu["base_price"]
             
             # 인식된 옵션 정보 추가
-            if "options" in menu_data and menu_data["options"]:
-                print(f"[주문 처리] LLM이 인식한 옵션 정보: {menu_data['options']}")
-                for menu_option in menu_data["options"]:
-                    option_name = menu_option.get("option_name", "")
-                    option_value = menu_option.get("option_value", "")
-                    option_detail_id = menu_option.get("option_detail_id")
-                    
-                    print(f"[주문 처리] 옵션 매칭 시도: 이름={option_name}, 값={option_value}, ID={option_detail_id}")
-                    
-                    # 옵션 매칭 시도
-                    matched_option = self._match_menu_option(full_menu, option_name, option_value, option_detail_id)
-                    if matched_option:
-                        print(f"[주문 처리] 옵션 매칭 성공: {matched_option.get('option_name')}={matched_option['option_details'][0]['value']} (ID: {matched_option['option_details'][0]['id']})")
-                        # 메뉴에 옵션 적용
-                        self.option_handler.option_matcher.apply_option_to_menu(full_menu, matched_option)
-                    else:
-                        print(f"[주문 처리] 옵션 매칭 실패: {option_name}={option_value} (요청 ID: {option_detail_id})")
-                        
-                        # id가 제공된 경우 직접 매칭 시도
-                        if option_detail_id:
-                            print(f"[주문 처리] ID 기반 직접 매칭 시도: option_detail_id={option_detail_id}")
-                            for option in full_menu.get("options", []):
-                                if option_name.lower() in option.get("option_name", "").lower() or option.get("option_name", "").lower() in option_name.lower():
-                                    for detail in option.get("option_details", []):
-                                        if detail.get("id") == option_detail_id:
-                                            print(f"[주문 처리] ID로 옵션 직접 매칭 성공: {option.get('option_name')}={detail.get('value')}")
-                                            option["is_selected"] = True
-                                            option["selected_id"] = option_detail_id
-                                            # 총 가격 업데이트
-                                            self.option_handler.calculate_total_price(full_menu)
-                                            break
+            if menu_data.get("options"):
+                self._apply_llm_options(full_menu, menu_data["options"])
             
             # 주문 메뉴 상태 확인
             menu_status = self.option_handler.determine_menu_status(full_menu)
@@ -173,13 +148,13 @@ class OrderProcessor(BaseProcessor):
                 session["last_state"] = {
                     "menu": {
                         "menu_id": first_pending_menu.get("id"),
-                        "name": first_pending_menu.get("name_kr"),
+                        "name": first_pending_menu.get("name_kr") or first_pending_menu.get("name"),
                         "name_en": first_pending_menu.get("name_en"),
                         "description": first_pending_menu.get("description"),
                         "base_price": first_pending_menu.get("price", 0),
                         "total_price": first_pending_menu.get("price", 0),
                         "image_url": first_pending_menu.get("image_url"),
-                        "options": first_pending_menu.get("options", []),
+                        "options": copy.deepcopy(first_pending_menu.get("options", [])),
                         "quantity": first_pending_menu.get("quantity", 1)
                     },
                     "pending_option": next_option,
@@ -197,12 +172,6 @@ class OrderProcessor(BaseProcessor):
                 menu_name = first_pending_menu.get("name_kr", "메뉴")
                 option_name = next_option.get("option_name", "옵션")
                 
-                # LLM이 생성한 응답이 있으면 그것을 사용, 없으면 직접 구성
-                # if intent_data.get("reply") and "선택해주세요" in intent_data.get("reply"):
-                #     reply = intent_data.get("reply")
-                # else:
-                #     # 다국어 메시지 생성
-                #     reply = self._generate_option_selection_message(menu_name, option_name, "", language)
                 reply = self._generate_option_selection_message(menu_name, option_name, "", language)
                 
                 # 이미 추가된 메뉴가 있는 경우 안내 포함
@@ -282,7 +251,32 @@ class OrderProcessor(BaseProcessor):
     def process_option_selection(self, text: str, language: str, screen_state: str, store_id: int, session: Dict[str, Any]) -> Dict[str, Any]:
         """옵션 선택 처리"""
         print(f"[옵션 선택 처리] 시작: 텍스트='{text}', 화면 상태={screen_state}")
+                
+        # 세션에서 현재 처리 중인 메뉴와 옵션 가져오기
+        menu = session.get("last_state", {}).get("menu", {})
+        pending_option = session.get("last_state", {}).get("pending_option", {})
         
+        # LLM 한 번 태워서 옵션 구조화 --------------------
+        try:
+            llm_result = self.intent_recognizer.recognize_intent(
+                text=text,
+                language=language,
+                screen_state=ScreenState.ORDER,   # OPTION_SELECT 흐름이므로
+                store_id=store_id,
+                session=session                  # 현재 세션 그대로
+            )
+            print("[LLM RESULT]\n", json.dumps(llm_result, ensure_ascii=False, indent=2))
+        except Exception as e:
+            print("[LLM ERROR]", e)                 # ← 어떤 예외인지 찍기
+            traceback.print_exc()                   # ← 스택 트레이스
+            llm_result = {}                         # 안전하게 무시
+
+        if llm_result.get("intent_type") == IntentType.OPTION_SELECT:
+            menus = llm_result.get("menus") or []
+            if menus:
+                llm_opts = menus[0].get("options", [])
+                self._apply_llm_options(menu, llm_opts)
+
         # 기본 intent_data 정의
         intent_data = {
             "intent_type": IntentType.OPTION_SELECT,
@@ -306,11 +300,7 @@ class OrderProcessor(BaseProcessor):
             
             # 취소 응답 생성
             return self._generate_cancellation_response(text, language, screen_state, store_id, session)
-        
-        # 세션에서 현재 처리 중인 메뉴와 옵션 가져오기
-        menu = session.get("last_state", {}).get("menu", {})
-        pending_option = session.get("last_state", {}).get("pending_option", {})
-        
+
         if not menu or not pending_option:
             print("[옵션 선택 처리] 진행 중인 메뉴 또는 옵션 정보 없음")
             
@@ -467,7 +457,7 @@ class OrderProcessor(BaseProcessor):
                 print(f"[옵션 선택 처리] 다음 필수 옵션: {next_option.get('option_name')}")
                 
                 # 세션에 메뉴 및 다음 옵션 정보 저장
-                session["last_state"]["menu"] = menu
+                session["last_state"]["menu"] = copy.deepcopy(menu)  # 안전하게 복사
                 session["last_state"]["pending_option"] = next_option
                 
                 # 세션 저장
@@ -654,66 +644,7 @@ class OrderProcessor(BaseProcessor):
             ResponseStatus.READY_TO_ADD_CART, reply=reply
         )
 
-        # # self.session_manager.remove_from_order_queue(session_id)
-
-        # session = self.session_manager.get_session(session_id)
-
-        # # 장바구니 업데이트 확인
-        # updated_cart = self.session_manager.get_cart(session_id)
-        # print(f"[카트 추가 성공] 이전: {len(session.get('cart', []))}, 현재: {len(updated_cart)}")
-
-        # # 세션에서 처리 중인 메뉴 정보만 제거, order_queue 유지
-        # session["last_state"] = {}
-
-        # # 대기열 정보 보존
-        # if "order_queue" in session:
-        #     print(f"[옵션 선택 처리] 기존 대기열 유지: {len(session['order_queue'])}개 항목")
-
-        # # 카트 정보 유지를 위해 최신 카트 정보를 세션에 업데이트
-        # if updated_cart and len(updated_cart) > 0:
-        #     session["cart"] = updated_cart
-
-        # self.session_manager._save_session(session_id, session)
-
-        # # 장바구니 저장 확인
-        # final_cart = self.session_manager.get_cart(session_id)
-        # if not final_cart or len(final_cart) == 0:
-        #     print(f"[경고] 장바구니 정보 유실, 다시 시도합니다.")
-        #     self.session_manager.add_to_cart(session_id, cart_menu)
-
-        # # 대기열에서 다음 메뉴 가져오기 시도
-        # print("[옵션 선택 처리] 대기열에서 다음 메뉴 확인 중")
-
-        # # 매우 중요한 부분: 최신 세션 데이터 가져오기
-        # fresh_session = self.session_manager.get_session(session_id)
-
-        # # 다음 메뉴 확인 - 항상 최신 세션에서 가져옴
-        # print("[옵션 선택 처리] 대기열에서 다음 메뉴 확인 중")
-        # next_menu = self.session_manager.get_next_queued_menu(session_id)
-        # print(f"[대기열 디버그] get_next_queued_menu 결과: {next_menu is not None}")
         
-        # if next_menu:
-        #     # 수량 기본값 보정
-        #     next_menu.setdefault("quantity", 1)
-
-        #     # 다음 메뉴 옵션 단계로 진입
-        #     return self._start_menu_processing(
-        #         next_menu, text, language, store_id, session
-        #     )
-
-        # # 대기열이 비어있는 경우 (next_menu가 None)
-        # print("[대기열 디버그] 다음 메뉴 없음, 대기열 처리 완료")
-        
-        # # 대기열 정보 디버깅 (항상 최신 세션 데이터 사용)
-        # session = self.session_manager.get_session(session_id)
-        # if "order_queue" in session:
-        #     queue_size = len(session["order_queue"])
-        #     print(f"[옵션 선택 처리] 대기열 크기: {queue_size}")
-        #     if queue_size > 0:
-        #         print(f"[옵션 선택 처리] 대기열 첫 번째 메뉴: {session['order_queue'][0].get('name_kr', '') or session['order_queue'][0].get('menu_name', '')}")
-        # else:
-        #     print("[옵션 선택 처리] 대기열이 존재하지 않음")
-
         # 대기열에서 다음 메뉴가 없는 경우 - 장바구니 추가 완료 응답 생성
         if 'reply' in locals() and reply:
             pass  # 이미 reply가 있으면 그대로 사용
@@ -1180,3 +1111,101 @@ class OrderProcessor(BaseProcessor):
                     }]
                 })
         return selected
+
+    def _apply_llm_options(self, menu: dict, llm_options: list[dict]):
+        """
+        LLM이 돌려준 option_id / option_detail_id 그대로 적용.
+        ID가 없는 항목만 기존 matcher 로직으로 후처리한다.
+        """
+        menu.setdefault("base_price", menu.get("price", 0))  
+        menu.setdefault("total_price", menu["base_price"])   
+        # 이미 한 번에 여러 옵션을 받아오므로 반복
+        for opt in llm_options:
+            oid   = opt.get("option_id")
+            did   = opt.get("option_detail_id")
+            value = opt.get("option_value", "")
+
+            # 1) 같은 option_id 를 가진 옵션 객체 찾기
+            target_opt = next(
+                (o for o in menu["options"] if o["option_id"] == oid), None
+            )
+            if not target_opt:
+                # option_id 가 없을 때는 이름으로 대체 탐색
+                target_opt = next(
+                    (o for o in menu["options"] if o["option_name"] == opt.get("option_name")),
+                    None
+                )
+            # if not target_opt:
+            #     # 둘 다 없으면 matcher 에게 맡기고 continue
+            #     self._match_option_by_name(menu, opt)  # 기존 matcher 함수
+            #     continue
+            if not target_opt:
+                matched = self._match_option_by_name(menu, opt)
+                if not matched:
+                    # ⭐ 매칭 실패해도 메뉴의 옵션 리스트는 건드리지 않는다
+                    #    → 아무 것도 하지 않고 다음 루프로
+                    pass
+                continue
+            # 2) option_detail_id 가 있을 땐 바로 선택
+            if did:
+                target_opt["is_selected"] = True
+                target_opt["selected_id"] = did
+            else:
+                # 세부 ID 가 없으면 matcher 에게 위임
+                self._match_option_by_name(menu, opt)
+
+            # 3) 가격 업데이트
+            detail = next(
+                (d for d in target_opt["option_details"] if d["id"] == did), None
+            )
+            if detail:
+                menu["total_price"] += detail.get("additional_price", 0)
+
+            # 4) selected_options 에 반영
+            menu.setdefault("selected_options", [])
+            menu["selected_options"].append({
+                "option_id": target_opt["option_id"],
+                "option_name": target_opt["option_name"],
+                "option_details": [detail] if detail else []
+            })
+
+    def _match_option_by_name(self,
+                              menu: dict,
+                              opt: dict | None = None,
+                              option_name: str = "",
+                              option_value: str = "",
+                              option_detail_id: int | None = None):
+        """
+        OrderProcessor 내부에서 옛날 이름으로 호출해도
+        OptionMatcher 로 넘겨 주도록 하는 얇은 래퍼.
+        두 가지 호출 형태 모두 지원한다.
+        """
+        if opt:   # opt 딕트를 통째로 넘겨받은 경우
+            option_name     = opt.get("option_name", "")
+            option_value    = opt.get("option_value", "")
+            option_detail_id = opt.get("option_detail_id")
+
+        # (2) 1차 matcher – 이름/값만으로 찾기
+        matched = self.option_handler.option_matcher.match_option(
+            menu.get("options", []),
+            option_name.lower(),
+            option_value.lower(),
+        )
+        if matched:
+            return matched            # 이미 찾았으면 여기서 끝
+
+        # (3) 2차 matcher – option_detail_id 또는 값으로 세부 매칭
+        opt_obj = next(
+            (o for o in menu.get("options", []) if o["option_name"] == option_name),
+            None
+        )
+
+        if opt_obj:  # ★★★ 없으면 그냥 None 반환해 AttributeError 방지
+            return self.option_handler.option_matcher.match_option_value(
+                opt_obj,
+                option_value,
+                option_detail_id,
+            )
+
+        # (4) 끝까지 못 찾으면 None
+        return None

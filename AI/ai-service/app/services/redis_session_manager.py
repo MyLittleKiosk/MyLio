@@ -1,6 +1,7 @@
 # app/services/session_manager.py
 import json
 import uuid
+import copy 
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List, Union
 
@@ -505,33 +506,34 @@ class RedisSessionManager:
                     sanitized["last_state"]["menu"]["options"] = []
                     required_only = []
                     
-                    for option in menu.get("options", []):
-                        # 필수 옵션 또는 이미 선택된 옵션만 저장
-                        if option.get("required", False) or option.get("is_selected", False):
-                            # 중복 필드 제거 및 최소 정보만 포함
-                            min_option = {
-                                "option_id": option.get("option_id"),
-                                "option_name": option.get("option_name"),
-                                "required": option.get("required", False),
-                                "is_selected": option.get("is_selected", False)
-                            }
+                    # for option in menu.get("options", []):
+                    #     # 필수 옵션 또는 이미 선택된 옵션만 저장
+                    #     if option.get("required", False) or option.get("is_selected", False):
+                    #         # 중복 필드 제거 및 최소 정보만 포함
+                    #         min_option = {
+                    #             "option_id": option.get("option_id"),
+                    #             "option_name": option.get("option_name"),
+                    #             "required": option.get("required", False),
+                    #             "is_selected": option.get("is_selected", False)
+                    #         }
                             
-                            # 선택된 옵션이면 ID 추가
-                            if option.get("is_selected", False):
-                                min_option["selected_id"] = option.get("selected_id")
+                    #         # 선택된 옵션이면 ID 추가
+                    #         if option.get("is_selected", False):
+                    #             min_option["selected_id"] = option.get("selected_id")
                             
-                            # 옵션 상세 정보는 최소화
-                            if "option_details" in option:
-                                min_option["option_details"] = []
-                                for detail in option.get("option_details", []):
-                                    min_option["option_details"].append({
-                                        "id": detail.get("id"),
-                                        "value": detail.get("value")
-                                    })
+                    #         # 옵션 상세 정보는 최소화
+                    #         if "option_details" in option:
+                    #             min_option["option_details"] = []
+                    #             for detail in option.get("option_details", []):
+                    #                 min_option["option_details"].append({
+                    #                     "id": detail.get("id"),
+                    #                     "value": detail.get("value")
+                    #                 })
                             
-                            required_only.append(min_option)
+                    #         required_only.append(min_option)
                     
-                    sanitized["last_state"]["menu"]["options"] = required_only
+                    # sanitized["last_state"]["menu"]["options"] = required_only
+                    sanitized["last_state"]["menu"]["options"] = copy.deepcopy(menu.get("options", []))
                 
                 # 선택된 옵션 정보 복사 (중복 제거)
                 if "selected_options" in menu:
