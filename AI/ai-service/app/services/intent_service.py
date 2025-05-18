@@ -251,3 +251,164 @@ class IntentService:
         
         # 기타 언어는 기본값으로 처리
         return False
+
+    def _start_queued_menu_processing(self, menu_data: Dict[str, Any], text: str, language: str, screen_state: str, store_id: int, session: Dict[str, Any]) -> Dict[str, Any]:
+        """대기열에서 첫 번째 메뉴를 처리 시작"""
+        print(f"[대기열 처리] 시작: 메뉴={menu_data.get('menu_name', '')}")
+        session_id = session.get("id", "")
+        
+        # 메뉴 정보 가져오기
+        menu_name = menu_data.get("menu_name", "")
+        
+        # 메뉴 검색
+        full_menu = self.menu_service.find_menu_by_name(menu_name, store_id)
+        if not full_menu:
+            print(f"[대기열 처리] 메뉴 찾기 실패: {menu_name}")
+            
+            # 대기열에서 현재 메뉴 제거
+            self.session_manager.remove_from_order_queue(session_id)
+            
+            # 다음 메뉴가 있는지 확인
+            next_menu = self.session_manager.get_next_queued_menu(session_id)
+            if next_menu:
+                # 다음 메뉴 처리
+                return self._start_queued_menu_processing(next_menu, text, language, screen_state, store_id, session)
+            
+            # 없으면 메인 화면으로
+            return {
+                "intent_type": IntentType.UNKNOWN,
+                "confidence": 0.3,
+                "raw_text": text,
+                "screen_state": ScreenState.MAIN,
+                "data": {
+                    "pre_text": text,
+                    "post_text": text,
+                    "reply": "메뉴를 찾을 수 없습니다.",
+                    "status": ResponseStatus.UNKNOWN,
+                    "language": language,
+                    "session_id": session_id,
+                    "cart": session.get("cart", []),
+                    "contents": [],
+                    "store_id": store_id
+                }
+            }
+        
+        # 수량 정보 추가
+        full_menu["quantity"] = menu_data.get("quantity", 1)
+        
+        # 인식된 옵션 정보 추가
+        if "options" in menu_data and menu_data["options"]:
+            for menu_option in menu_data["options"]:
+                option_name = menu_option.get("option_name", "")
+                option_value = menu_option.get("option_value", "")
+                
+                # OrderProcessor에 구현된 옵션 매칭 메서드 호출
+                matched_option = self.order_processor._match_menu_option(full_menu, option_name, option_value)
+                if matched_option:
+                    # 메뉴에 옵션 적용
+                    option_handler = OptionHandler()
+                    option_handler.apply_option_to_menu(full_menu, matched_option)
+        
+        # 메뉴 상태 확인
+        option_handler = OptionHandler()
+        menu_status = option_handler.determine_menu_status(full_menu)
+        
+        # 필수 옵션이 누락된 경우
+        if menu_status == ResponseStatus.MISSING_REQUIRED_OPTIONS:
+            print("[대기열 처리] 필수 옵션 누락")
+            # 다음 필수 옵션 가져오기
+            next_option = option_handler.get_next_required_option(full_menu)
+            
+            if next_option:
+                # 세션에 메뉴 및 다음 옵션 정보 저장
+                session["last_state"] = {
+                    "menu": full_menu,
+                    "pending_option": next_option
+                }
+                
+                # 세션 저장
+                self.session_manager._save_session(session_id, session)
+                
+                # 의도 데이터 구성
+                intent_data = {
+                    "intent_type": IntentType.OPTION_SELECT,
+                    "confidence": 0.9,
+                    "post_text": text
+                }
+                
+                # 옵션 선택 안내 메시지 생성
+                reply = self.intent_recognizer.generate_option_selection_response(
+                    full_menu, next_option, language
+                )
+                
+                # 응답 생성
+                return {
+                    "intent_type": IntentType.OPTION_SELECT,
+                    "confidence": 0.9,
+                    "raw_text": text,
+                    "screen_state": ScreenState.ORDER,
+                    "data": {
+                        "pre_text": text,
+                        "post_text": text,
+                        "reply": reply,
+                        "status": ResponseStatus.MISSING_REQUIRED_OPTIONS,
+                        "language": language,
+                        "session_id": session_id,
+                        "cart": session.get("cart", []),
+                        "contents": [full_menu],
+                        "store_id": store_id
+                    }
+                }
+        
+        # 장바구니에 추가 가능한 경우
+        elif menu_status == ResponseStatus.READY_TO_ADD_CART:
+            print("[대기열 처리] 장바구니 추가 가능")
+            # 장바구니에 추가
+            self.session_manager.add_to_cart(session_id, full_menu)
+            
+            # 대기열에서 현재 메뉴 제거
+            self.session_manager.remove_from_order_queue(session_id)
+            
+            # 다음 메뉴가 있는지 확인
+            next_menu = self.session_manager.get_next_queued_menu(session_id)
+            if next_menu:
+                # 다음 메뉴 처리
+                return self._start_queued_menu_processing(next_menu, text, language, screen_state, store_id, session)
+            
+            # 모든 메뉴 처리 완료
+            return {
+                "intent_type": IntentType.ORDER,
+                "confidence": 0.9,
+                "raw_text": text,
+                "screen_state": ScreenState.MAIN,
+                "data": {
+                    "pre_text": text,
+                    "post_text": text,
+                    "reply": "주문하신 메뉴가 장바구니에 담겼습니다.",
+                    "status": ResponseStatus.READY_TO_ADD_CART,
+                    "language": language,
+                    "session_id": session_id,
+                    "cart": session.get("cart", []),
+                    "contents": [],
+                    "store_id": store_id
+                }
+            }
+        
+        # 기본 응답
+        return {
+            "intent_type": IntentType.UNKNOWN,
+            "confidence": 0.5,
+            "raw_text": text,
+            "screen_state": ScreenState.MAIN,
+            "data": {
+                "pre_text": text,
+                "post_text": text,
+                "reply": "메뉴 처리 중 오류가 발생했습니다.",
+                "status": ResponseStatus.UNKNOWN,
+                "language": language,
+                "session_id": session_id,
+                "cart": session.get("cart", []),
+                "contents": [],
+                "store_id": store_id
+            }
+        }

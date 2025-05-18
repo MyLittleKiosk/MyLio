@@ -33,3 +33,7 @@ class OptionHandler:
     def calculate_total_price(self, menu: Dict[str, Any]) -> int:
         """총 가격 계산"""
         return self.option_matcher.calculate_total_price(menu)
+
+    def apply_option_to_menu(self, menu: Dict[str, Any], selected_option: Dict[str, Any]) -> None:
+        """메뉴에 옵션 적용"""
+        self.option_matcher.apply_option_to_menu(menu, selected_option)

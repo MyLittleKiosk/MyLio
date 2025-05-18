@@ -391,25 +391,33 @@ class IntentRecognizer:
         "confidence": 0.9,
         "menus": [
             {{
+            "menu_id": 101,
             "menu_name": "아메리카노",
             "quantity": 1,
             "options": [
                 {{
+                "option_id": 102,
                 "option_name": "온도",
-                "option_value": "Icd"
+                "option_detail_id": 1005,
+                "option_value": "Ice"
                 }}
             ]
             }},
             {{
+            "menu_id": 101,
             "menu_name": "아메리카노",
             "quantity": 1,
             "options": [
                 {{
+                "option_id": 102,
                 "option_name": "온도",
-                "option_value": "Icd"
+                "option_detail_id": 1005,
+                "option_value": "Ice"
                 }},
                 {{
+                "option_id": 105,
                 "option_name": "샷추가",
+                "option_detail_id": 1017,
                 "option_value": "샷1개 추가"
                 }}
             ]
@@ -428,12 +436,15 @@ class IntentRecognizer:
           "confidence": 0.0~1.0 사이의 신뢰도 점수,
           "menus": [ // ORDER 의도에만 사용
             {{
+              "menu_id": 메뉴 ID,
               "menu_name": "메뉴 이름",
               "quantity": 수량,
               "options": [
                 {{
+                  "option_id": 옵션 ID,
                   "option_name": "옵션 이름 (예: 온도, 사이즈)",
-                  "option_value": "옵션 값 (예: ICE, HOT, S, M, L)"
+                  "option_detail_id": 옵션 상세 ID,
+                  "option_value": "옵션 값 (예: Ice, Hot, S, M, L)"
                 }}
               ]
             }}
@@ -464,18 +475,21 @@ class IntentRecognizer:
                         "intent_type": "ORDER",
                         "menus": [
                             {
+                                "menu_id": 103,
                                 "menu_name": "바닐라라떼",
                                 "quantity": 1,
                                 "options": [
                                     {
+                                        "option_id": 102,
                                         "option_name": "온도",
+                                        "option_detail_id": 1005,
                                         "option_value": "Ice"
                                     }
                                 ]
                             }
                         ],
                         "post_text": "아바라 하나 주세요",
-                        "reply": "바닐라 라떼 (ICE) 사이즈는 어떻게 해드릴까요?(S, M, L)"
+                        "reply": "바닐라 라떼의 옵션을 선택해주세요."
                     
                     }
                 },
@@ -486,22 +500,27 @@ class IntentRecognizer:
                         "confidence": 0.9,
                         "menus": [
                             {
+                                "menu_id": 113,
                                 "menu_name": "아이스티",
                                 "quantity": 1,
                                 "options": [
                                     {
+                                        "option_id": 102,
                                         "option_name": "온도",
+                                        "option_detail_id": 1005,
                                         "option_value": "Ice"
                                     },
                                     {
+                                        "option_id": 105,
                                         "option_name": "샷추가",
+                                        "option_detail_id": 1017,
                                         "option_value": "샷1개 추가"
                                     }
                                 ]
                             }
                         ],
                         "post_text": "아샷추 하나 주세요",
-                        "reply": "아이스티 (샷 1개 추가) 사이즈는 어떻게 해드릴까요?"
+                        "reply": "아이스티의 옵션을 선택해주세요."
                     }
                 },
                 {
@@ -511,18 +530,21 @@ class IntentRecognizer:
                         "confidence": 0.9,
                         "menus": [
                             {
+                                "menu_id": 101,
                                 "menu_name": "아메리카노",
                                 "quantity": 1,
                                 "options": [
                                     {
+                                        "option_id": 102,
                                         "option_name": "온도",
+                                        "option_detail_id": 1005,
                                         "option_value": "Ice"
                                     }
                                 ]
                             }
                         ],
                         "post_text": "아아 하나 주세요",
-                        "reply": "아메리카노(Ice) 사이즈는 어떻게 해드릴까요?(S, M, L)"
+                        "reply": "아메리카노의 옵션을 선택해주세요."
                     }
                 },
                 {
@@ -532,18 +554,21 @@ class IntentRecognizer:
                         "confidence": 0.9,
                         "menus": [
                             {
+                                "menu_id": 101,
                                 "menu_name": "아메리카노",
                                 "quantity": 1,
                                 "options": [
                                     {
+                                        "option_id": 102,
                                         "option_name": "온도",
+                                        "option_detail_id": 1006,
                                         "option_value": "Hot"
                                     }
                                 ]
                             }
                         ],
                         "post_text": "따뜻한 아메리카노 한 잔이요.",
-                        "reply": "따뜻한 아메리카노 사이즈는 어떻게 해드릴까요?"
+                        "reply": "아메리카노의 옵션을 선택해주세요."
                     }
                 },
                 {
@@ -553,22 +578,27 @@ class IntentRecognizer:
                         "confidence": 0.9,
                         "menus": [
                             {
+                                "menu_id": 101,
                                 "menu_name": "아메리카노",
                                 "quantity": 1,
                                 "options": [
                                     {
+                                        "option_id": 102,
                                         "option_name": "온도",
+                                        "option_detail_id": 1005,
                                         "option_value": "Ice"
                                     },
                                     {
+                                        "option_id": 101,
                                         "option_name": "사이즈",
+                                        "option_detail_id": 1003,
                                         "option_value": "L"
                                     }
                                 ]
                             }
                         ],
                         "post_text": "큰 사이즈 아아 한잔이요",
-                        "reply": "라지 사이즈 아이스 아메리카노 한잔 장바구니에 담았어요."
+                        "reply": "주문하신 메뉴를 장바구니에 담았어요."
                     }
                 }
             ],
@@ -584,7 +614,9 @@ class IntentRecognizer:
                             {
                                 "options": [
                                     {
+                                        "option_id": 102,
                                         "option_name": "온도",
+                                        "option_detail_id": 1005,
                                         "option_value": "Ice"
                                     }
                                 ]
@@ -603,14 +635,16 @@ class IntentRecognizer:
                             {
                                 "options": [
                                     {
+                                        "option_id": 101,
                                         "option_name": "사이즈",
+                                        "option_detail_id": 1003,
                                         "option_value": "L"
                                     }
                                 ]
                             }
                         ],
                         "post_text": "라지 사이즈로 주세요.",
-                        "reply": "주문하신 메뉴 장바구니에 담았습니다."
+                        "reply": "주문하신 메뉴를 장바구니에 담았어요.."
                     }
                 },
                 {
@@ -622,8 +656,10 @@ class IntentRecognizer:
                             {
                                 "options": [
                                     {
+                                        "option_id": 102,
                                         "option_name": "온도",
-                                        "option_value": "Hot"
+                                        "option_detail_id": 1004,
+                                        "option_value": "HOT"
                                     }
                                 ]
                             }

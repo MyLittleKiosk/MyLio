@@ -100,125 +100,83 @@ class RedisSessionManager:
         # Redis에 저장
         return self._save_session(session_id, existing_session)
     
-    def add_to_cart(self, session_id: str, menu_item: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """장바구니에 메뉴 추가 (검증 로직 강화)"""
-        # 세션 ID 확인
-        if not session_id:
-            print(f"[카트 추가 실패] 세션 ID가 없음")
-            return []
-        
-        # 세션 가져오기
-        session = self.get_session(session_id)
-        if not session:
-            print(f"[카트 추가 실패] 세션 없음: {session_id}")
-            return []
-        
-        # 장바구니 가져오기 및 초기화
-        if "cart" not in session:
-            session["cart"] = []
-        
-        print(f"[카트 추가 전] 세션 ID: {session_id}, 장바구니 항목 수: {len(session['cart'])}")
-
-        # 메뉴 데이터 최소화 (필요한 필드만 유지)
-        cart_id = str(uuid.uuid4())
-        
-        # 메뉴 유효성 검사
-        if not menu_item or not isinstance(menu_item, dict):
-            print(f"[카트 추가 실패] 유효하지 않은 메뉴 데이터")
-            return session.get("cart", [])
-        
-        # 필수 필드 확인
-        for field in ["menu_id", "name"]:
-            if field not in menu_item:
-                print(f"[카트 추가 실패] 필수 필드 누락: {field}")
-                return session.get("cart", [])
-        
-        optimized_item = {
-            "cart_id": cart_id,
-            "menu_id": menu_item.get("menu_id"),
-            "quantity": menu_item.get("quantity", 1),
-            "name": menu_item.get("name"),
-            "name_en": menu_item.get("name_en"),
-            "description": menu_item.get("description", ""),
-            "base_price": menu_item.get("base_price", 0),
-            "total_price": menu_item.get("total_price", 0),
-            "image_url": menu_item.get("image_url"),
-            "selected_options": []
-        }
-        
-        # 선택된 옵션 처리
-        if "selected_options" in menu_item and menu_item["selected_options"]:
-            # 중복 옵션 ID 제거
-            added_option_ids = set()
-            for opt in menu_item.get("selected_options", []):
-                option_id = opt.get("option_id")
-                if option_id and option_id not in added_option_ids:
-                    added_option_ids.add(option_id)
-                    
-                    # 최소한의 데이터만 복사
-                    minimal_opt = {
-                        "option_id": option_id,
-                        "option_name": opt.get("option_name"),
-                        "is_selected": True
-                    }
-                    
-                    # 옵션 상세 정보 한 개만 복사
-                    if "option_details" in opt and opt["option_details"]:
-                        detail = opt["option_details"][0]
-                        minimal_opt["option_details"] = [{
-                            "id": detail.get("id"),
-                            "value": detail.get("value"),
-                            "additional_price": detail.get("additional_price", 0)
-                        }]
-                    
-                    optimized_item["selected_options"].append(minimal_opt)
-        
-        # 기존 장바구니에 동일 항목 있는지 확인
-        found = False
-        for i, item in enumerate(session["cart"]):
-            if self._is_same_menu_item(item, optimized_item):
-                # 동일 메뉴 발견 시 수량 증가
-                session["cart"][i]["quantity"] += optimized_item.get("quantity", 1)
-                found = True
-                print(f"[카트 업데이트] 기존 항목 수량 증가: {item.get('name')}, 새 수량: {session['cart'][i]['quantity']}")
-                break
-        
-        # 동일 메뉴 없으면 새로 추가
-        if not found:
-            session["cart"].append(optimized_item)
-            print(f"[카트 추가] 새 항목: {optimized_item.get('name')}, 옵션: {[opt.get('option_name') for opt in optimized_item.get('selected_options', [])]}")
-        
-        # 기존 카트 크기 저장
-        original_cart_size = len(session["cart"])
-        
-        # 세션 저장
-        saved = self._save_session(session_id, session)
-        if not saved:
-            print(f"[오류] 장바구니 추가 실패: 세션 저장 실패. (ID: {session_id})")
-            # 세션에서 방금 추가한 항목 제거 (롤백)
-            if not found:
-                session["cart"].pop()
-            return session.get("cart", [])
-        
-        # 검증 - 세션을 다시 로드하여 추가되었는지 확인
-        updated_session = self.get_session(session_id)
-        if not updated_session or "cart" not in updated_session:
-            print(f"[오류] 장바구니 추가 실패: 업데이트된 세션을 가져올 수 없음. (ID: {session_id})")
-            return session.get("cart", [])
-        
-        # 항목 수가 증가했는지 확인
-        if not found and len(updated_session["cart"]) <= original_cart_size:
-            print(f"[오류] 장바구니 추가 실패: 항목 수가 증가하지 않음. (ID: {session_id})")
-            return session.get("cart", [])
-        
-        # 추가된 항목이 있는지 확인
-        if not found:
-            cart_ids = [item.get("cart_id") for item in updated_session["cart"]]
-            if cart_id not in cart_ids:
-                print(f"[오류] 장바구니 추가 실패: 추가된 항목을 찾을 수 없음. (ID: {cart_id})")
-        
-        print(f"[장바구니 업데이트 완료] 세션 ID: {session_id}, 현재 항목 수: {len(updated_session['cart'])}")
-        return updated_session.get("cart", [])
+    def add_to_cart(self, session_id: str, menu: Dict[str, Any]) -> bool:
+        """장바구니에 메뉴 추가"""
+        try:
+            # 세션 가져오기
+            session = self.get_session(session_id)
+            if not session:
+                print(f"[카트 추가 실패] 세션 없음: {session_id}")
+                return False
+            
+            # 장바구니 초기화
+            if "cart" not in session:
+                session["cart"] = []
+            
+            # 이전 장바구니 항목 수 기록
+            previous_count = len(session["cart"])
+            
+            # 카트 아이템 생성
+            cart_item = {
+                "cart_id": str(uuid.uuid4()),
+                "menu_id": menu.get("id") or menu.get("menu_id"),
+                "quantity": menu.get("quantity", 1),
+                "name": menu.get("name_kr") or menu.get("name"),
+                "name_en": menu.get("name_en"),
+                "description": menu.get("description", ""),
+                "base_price": menu.get("price") or menu.get("base_price", 0),
+                "total_price": menu.get("total_price", 0),
+                "image_url": menu.get("image_url"),
+                "selected_options": []
+            }
+            
+            # 선택된 옵션 추가
+            if "selected_options" in menu and menu["selected_options"]:
+                cart_item["selected_options"] = menu["selected_options"]
+            else:
+                # 옵션 구성
+                for option in menu.get("options", []):
+                    if option.get("is_selected"):
+                        option_details = []
+                        
+                        for detail in option.get("option_details", []):
+                            if detail.get("id") == option.get("selected_id"):
+                                option_details.append({
+                                    "id": detail.get("id"),
+                                    "value": detail.get("value"),
+                                    "additional_price": detail.get("additional_price", 0)
+                                })
+                        
+                        if option_details:
+                            cart_item["selected_options"].append({
+                                "option_id": option.get("option_id"),
+                                "option_name": option.get("option_name"),
+                                "is_selected": True,
+                                "option_details": option_details
+                            })
+            
+            # 장바구니에 추가
+            print(f"[카트 추가] 카트 아이템: {cart_item}")
+            session["cart"].append(cart_item)
+            
+            # 세션 저장
+            success = self._save_session(session_id, session)
+            
+            # 저장 후 검증
+            updated_session = self.get_session(session_id)
+            if updated_session and "cart" in updated_session:
+                current_count = len(updated_session["cart"])
+                if current_count > previous_count:
+                    print(f"[카트 추가 성공] 이전: {previous_count}, 현재: {current_count}")
+                    return True
+                else:
+                    print(f"[카트 추가 실패] 항목 수가 증가하지 않음. 이전: {previous_count}, 현재: {current_count}")
+                    return False
+            
+            return success
+        except Exception as e:
+            print(f"[카트 추가 실패] 예외 발생: {str(e)}")
+            return False
     
     def get_cart(self, session_id: str) -> List[Dict[str, Any]]:
         """장바구니 조회"""
