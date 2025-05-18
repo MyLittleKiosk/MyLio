@@ -1,8 +1,9 @@
 import { CustomError } from '@/types/apiResponse';
 import authClient from '@/service/authClient';
 
-async function getCategory(page?: number) {
+async function getCategory(keyword?: string, page?: number) {
   const params = {
+    keyword: keyword || null,
     page: page || 1,
   };
   try {

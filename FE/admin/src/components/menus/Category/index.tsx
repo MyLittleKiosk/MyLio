@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+
 import IconAdd from '@/assets/icons/IconAdd';
 
 import Button from '@/components/common/Button';
@@ -5,28 +7,39 @@ import Table from '@/components/common/Table';
 import AddCategoryModal from '@/components/menus/AddCategoryModal';
 import EditCategoryModal from '@/components/menus/EditCategoryModal';
 import DeleteCategoryModal from '@/components/menus/DeleteCategoryModal';
+import PageNavigation from '@/components/common/PageNavigation';
 
 import { CategoryType } from '@/types/categories';
 import { NavItemType } from '@/types/menus';
 import { Column } from '@/types/tableProps';
+import { Pagination } from '@/types/apiResponse';
 
 import useModalStore from '@/stores/useModalStore';
 
 import { useGetCategory } from '@/service/queries/category';
-import PageNavigation from '@/components/common/PageNavigation';
-import { Pagination } from '@/types/apiResponse';
-import { useState } from 'react';
+import { useDebounce } from '@/hooks/useDebounce';
+import Input from '@/components/common/Input';
 
 const Category = ({ selectedNav }: { selectedNav: NavItemType }) => {
   const { openModal } = useModalStore();
 
   const [searchParams, setSearchParams] = useState<{
+    keyword?: string;
     page?: number;
   }>({
     page: 1,
   });
 
-  const { data: categoryList, pageInfo } = useGetCategory(searchParams.page);
+  const debouncedKeyword = useDebounce(searchParams.keyword, 500);
+
+  const { data: categoryList, pageInfo } = useGetCategory(
+    debouncedKeyword,
+    searchParams.page
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchParams({ ...searchParams, keyword: e.target.value });
+  };
 
   function handlePageChange(page: number) {
     setSearchParams({
@@ -38,7 +51,13 @@ const Category = ({ selectedNav }: { selectedNav: NavItemType }) => {
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex gap-2 max-h-[10%] w-full items-center justify-between'>
-        <h3 className='text-lg font-preMedium'>카테고리 관리</h3>
+        <Input
+          id='searchCategory'
+          placeholder='카테고리명으로 검색'
+          value={searchParams.keyword}
+          onChange={handleSearchChange}
+          className='w-[85%]'
+        />
         <Button
           type='button'
           text='카테고리 추가'
