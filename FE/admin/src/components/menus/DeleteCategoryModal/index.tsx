@@ -9,7 +9,7 @@ interface Props {
 }
 
 const DeleteCategoryModal = ({ row }: Props) => {
-  const { openModal } = useModalStore();
+  const { openModal, closeModal } = useModalStore();
   const { mutate: deleteCategory } = useDeleteCategory();
 
   function handleDeleteCategory(categoryId: number) {
@@ -34,12 +34,20 @@ const DeleteCategoryModal = ({ row }: Props) => {
         &quot;{row.nameKr}&quot; 카테고리를 삭제하시겠습니까?
       </p>
 
-      <div>
+      <div className='flex gap-4 items-center mt-4'>
+        <Button
+          type='button'
+          text='취소'
+          id='cancelDeleteKioskBtn'
+          onClick={closeModal}
+          className='w-full'
+          cancel
+        />
         <Button
           type='button'
           text='삭제'
           onClick={() => handleDeleteCategory(row.categoryId)}
-          className='w-full mt-4 flex justify-center'
+          className='w-full'
         />
       </div>
     </div>

@@ -9,7 +9,7 @@ interface Props {
 }
 
 const DeleteMenuModal = ({ row }: Props) => {
-  const { openModal } = useModalStore();
+  const { openModal, closeModal } = useModalStore();
   const { mutate: deleteMenu } = useDeleteMenu();
 
   function handleDeleteMenu(menuId: number) {
@@ -32,12 +32,20 @@ const DeleteMenuModal = ({ row }: Props) => {
       <p className='font-preMedium text-lg text-longContent'>
         &quot;{row.nameKr}&quot; 메뉴를 삭제하시겠습니까?
       </p>
-      <div>
+      <div className='flex gap-4 items-center mt-4'>
+        <Button
+          type='button'
+          text='취소'
+          id='cancelDeleteMenuBtn'
+          onClick={closeModal}
+          className='w-full'
+          cancel
+        />
         <Button
           type='button'
           text='삭제'
           onClick={() => handleDeleteMenu(row.menuId)}
-          className='w-full mt-4 flex justify-center'
+          className='w-full'
         />
       </div>
     </div>
