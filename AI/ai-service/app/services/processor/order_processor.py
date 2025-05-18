@@ -420,14 +420,27 @@ class OrderProcessor(BaseProcessor):
 
         # 장바구니에 추가할 메뉴 데이터 준비
         cart_menu = {
-            "menu_id": menu.get("menu_id"),
-            "name": menu.get("name"),
+            "menu_id": menu.get("menu_id") or menu.get("id"),
+            "name": menu.get("name") or menu.get("name_kr"),
             "name_en": menu.get("name_en"),
             "base_price": menu.get("base_price", 0),
             "total_price": menu.get("total_price", 0),
             "options": menu.get("options", []),
             "selected_options": selected_options_list
         }
+        
+        # 디버깅 - 필수 정보 확인
+        if not cart_menu.get("menu_id") or not cart_menu.get("name"):
+            print(f"[경고] 불완전한 메뉴 정보: menu_id={cart_menu.get('menu_id')}, name={cart_menu.get('name')}")
+            # 세션에서 메뉴 이름 확인 시도
+            if "pending_option_menus" in session.get("last_state", {}):
+                pending_menus = session["last_state"]["pending_option_menus"]
+                if pending_menus and len(pending_menus) > 0:
+                    first_menu = pending_menus[0]
+                    if not cart_menu.get("menu_id"):
+                        cart_menu["menu_id"] = first_menu.get("id") or first_menu.get("menu_id")
+                    if not cart_menu.get("name"):
+                        cart_menu["name"] = first_menu.get("name_kr") or first_menu.get("name")
 
         print(f"[옵션 선택 처리] 장바구니 추가 메뉴: {cart_menu}")
         self.session_manager.add_to_cart(session_id, cart_menu)
@@ -480,39 +493,83 @@ class OrderProcessor(BaseProcessor):
             print("[옵션 선택 처리] 대기열이 존재하지 않음")
 
         # 대기열 있는지 확인 (조건 변경)
-        if "order_queue" in fresh_session and fresh_session["order_queue"] and len(fresh_session["order_queue"]) > 0:
-            try:
-                next_menu = fresh_session["order_queue"][0]
-                print(f"[옵션 선택 처리] 대기열에서 다음 메뉴 발견: {next_menu.get('name_kr', '') or next_menu.get('menu_name', '') or next_menu.get('name', '')}")
+        # if "order_queue" in fresh_session and fresh_session["order_queue"] and len(fresh_session["order_queue"]) > 0:
+        #     try:
+        #         next_menu = fresh_session["order_queue"][0]
+        #         print(f"[옵션 선택 처리] 대기열에서 다음 메뉴 발견: {next_menu.get('name_kr', '') or next_menu.get('menu_name', '') or next_menu.get('name', '')}")
                 
-                # 대기열에서 처리완료된 메뉴 제거
-                self.session_manager.remove_from_order_queue(session_id)
+        #         # 대기열에서 처리완료된 메뉴 제거
+        #         removed = self.session_manager.remove_from_order_queue(session_id)
+        #         print(f"[옵션 선택 처리] 대기열에서 메뉴 제거 결과: {removed}")
                 
-                # 새로운 메뉴 처리 응답 생성
-                reply = f"{menu.get('name')}가 장바구니에 담겼습니다. 이제 {next_menu.get('name_kr', '') or next_menu.get('menu_name', '') or next_menu.get('name', '')}의 옵션을 선택해주세요."
+        #         # 새로운 메뉴 처리 응답 생성
+        #         reply = f"{menu.get('name')}가 장바구니에 담겼습니다. 이제 {next_menu.get('name_kr', '') or next_menu.get('menu_name', '') or next_menu.get('name', '')}의 옵션을 선택해주세요."
                 
-                # 메뉴 정보 가져오기
-                next_full_menu = self.menu_service.find_menu_by_name(next_menu.get('menu_name', ''), store_id)
-                if next_full_menu:
-                    # 옵션 처리를 위한 세션 상태 설정
-                    next_option = self.option_handler.get_next_required_option(next_full_menu)
-                    if next_option:
-                        fresh_session["last_state"] = {
-                            "menu": next_full_menu,
-                            "pending_option": next_option
-                        }
+        #         # 메뉴 정보 가져오기
+        #         next_full_menu = self.menu_service.find_menu_by_name(next_menu.get('menu_name', ''), store_id)
+        #         if next_full_menu:
+        #             # 옵션 처리를 위한 세션 상태 설정
+        #             next_option = self.option_handler.get_next_required_option(next_full_menu)
+        #             if next_option:
+        #                 # 메뉴 ID가 없는 경우 원본 대기열 메뉴의 ID 사용
+        #                 if not next_full_menu.get("menu_id"):
+        #                     next_full_menu["menu_id"] = next_menu.get("id") or next_menu.get("menu_id")
                         
-                        # 세션 저장
-                        self.session_manager._save_session(session_id, fresh_session)
+        #                 # 수량 정보 보존
+        #                 next_full_menu["quantity"] = next_menu.get("quantity", 1)
                         
-                        # 응답 반환 - 다음 메뉴 처리로 전환
-                        return self._build_response(
-                            intent_data, text, language, ScreenState.ORDER, store_id, fresh_session,
-                            ResponseStatus.MISSING_REQUIRED_OPTIONS, reply=reply
-                        )
-            except Exception as e:
-                print(f"[대기열 처리 오류] {e}")
-                # 오류 발생해도 계속 진행
+        #                 fresh_session["last_state"] = {
+        #                     "menu": next_full_menu,
+        #                     "pending_option": next_option
+        #                 }
+                        
+        #                 # 세션 저장
+        #                 self.session_manager._save_session(session_id, fresh_session)
+                        
+        #                 # 응답 반환 - 다음 메뉴 처리로 전환
+        #                 return self._build_response(
+        #                     intent_data, text, language, ScreenState.ORDER, store_id, fresh_session,
+        #                     ResponseStatus.MISSING_REQUIRED_OPTIONS, contents=[next_full_menu], reply=reply
+        #                 )
+        #     except Exception as e:
+        #         print(f"[대기열 처리 오류] {e}")
+        #         # 오류 발생해도 계속 진행
+        if "order_queue" in fresh_session and fresh_session["order_queue"]:
+            # ① pop(0) 으로 실제로 꺼내면서 큐에서 제거
+            next_menu = fresh_session["order_queue"].pop(0)
+            print(f"[옵션 선택 처리] 대기열에서 다음 메뉴 발견: {next_menu.get('name_kr') or next_menu.get('menu_name')}")
+
+            # ② next_menu 의 첫 번째 미선택 필수 옵션
+            next_option = self.option_handler.get_next_required_option(next_menu)
+
+            # ③ 세션 last_state 를 다음 메뉴로 초기화
+            fresh_session["last_state"] = {
+                "menu": next_menu,
+                "pending_option": next_option
+            }
+
+            # ④ 세션 저장 (큐 변화 포함)
+            self.session_manager._save_session(session_id, fresh_session)
+
+            # ⑤ 사용자에게 다음 옵션 선택 프롬프트
+            reply = (
+                f"{menu.get('name') or menu.get('menu_name')}가 장바구니에 담겼습니다. "
+                f"이제 {next_menu.get('name_kr') or next_menu.get('menu_name')}의 옵션을 선택해주세요."
+            )
+
+            return self._build_response(
+                intent_data,
+                text,
+                language,
+                ScreenState.ORDER,
+                store_id,
+                fresh_session,
+                ResponseStatus.MISSING_REQUIRED_OPTIONS,
+                contents=[next_menu],          # ← 프런트가 바로 렌더링할 데이터
+                reply=reply
+            )
+
+        print("[옵션 선택 처리] 더 이상 처리할 메뉴가 없습니다.")
 
         print("[옵션 선택 처리] 더 이상 처리할 메뉴가 없습니다.")
 
