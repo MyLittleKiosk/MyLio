@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
-import CompleteModal from '@/components/common/CompleteModal';
 import PageNavigation from '@/components/common/PageNavigation';
 
 import { CategoryType } from '@/types/categories';
@@ -12,9 +11,10 @@ import { Column } from '@/types/tableProps';
 import { Pagination } from '@/types/apiResponse';
 
 import { useGetCategory } from '@/service/queries/category';
-import { useDeleteMenu, useGetMenus } from '@/service/queries/menu';
+import { useGetMenus } from '@/service/queries/menu';
 import useModalStore from '@/stores/useModalStore';
 import { useDebounce } from '@/hooks/useDebounce';
+import DeleteMenuModal from '../DeleteMenuModal';
 
 interface Props {
   selectedNav: NavItemType;
@@ -46,7 +46,6 @@ const Menu = ({
     searchParams.page,
     selectedCategory?.categoryId
   );
-  const { mutate: deleteMenu } = useDeleteMenu();
   const { data: category } = useGetCategory();
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -63,24 +62,6 @@ const Menu = ({
   function handleEdit(menuId: number) {
     setIsEditMenuClicked(true);
     setClickedMenuId(menuId);
-  }
-
-  function handleDelete(menuId: number) {
-    if (!confirm('삭제하시겠습니까?')) {
-      return;
-    }
-
-    deleteMenu(menuId, {
-      onSuccess: () => {
-        openModal(
-          <CompleteModal
-            title='삭제 성공'
-            description='메뉴가 삭제되었습니다.'
-            buttonText='확인'
-          />
-        );
-      },
-    });
   }
 
   function handlePageChange(page: number) {
@@ -116,7 +97,7 @@ const Menu = ({
         columns={selectedNav.columns as Column<MenuType>[]}
         data={menus as MenuType[]}
         onEdit={(row) => handleEdit(row.menuId)}
-        onDelete={(row) => handleDelete(row.menuId)}
+        onDelete={(row) => openModal(<DeleteMenuModal row={row} />, 'lg')}
       />
       <PageNavigation
         pageInfo={pageInfo as Pagination}
