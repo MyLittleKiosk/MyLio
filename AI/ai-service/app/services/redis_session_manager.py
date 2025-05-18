@@ -137,25 +137,9 @@ class RedisSessionManager:
             else:
                 # 옵션 구성
                 for option in menu.get("options", []):
-                    if option.get("is_selected"):
-                        option_details = []
-                        
-                        for detail in option.get("option_details", []):
-                            if detail.get("id") == option.get("selected_id"):
-                                option_details.append({
-                                    "id": detail.get("id"),
-                                    "value": detail.get("value"),
-                                    "additional_price": detail.get("additional_price", 0)
-                                })
-                        
-                        if option_details:
-                            cart_item["selected_options"].append({
-                                "option_id": option.get("option_id"),
-                                "option_name": option.get("option_name"),
-                                "is_selected": True,
-                                "option_details": option_details
-                            })
-            
+                    if option.get("is_selected") or option.get("selected_id") or option.get("option_value"):
+                        cart_item["selected_options"].append(_build_selected_option(option))
+                    
             # 장바구니에 추가
             print(f"[카트 추가] 카트 아이템: {cart_item}")
             session["cart"].append(cart_item)
@@ -888,3 +872,52 @@ class RedisSessionManager:
         
         # 세션 저장 (장바구니 및 다른 데이터는 유지)
         return self._save_session(session_id, session)
+
+    def _build_selected_option(option, force=False):
+        details = []
+        if option.get("option_details"):
+            # selected_id가 있으면 정확히 매칭, 없으면 첫 detail
+            for d in option["option_details"]:
+                if d["id"] == option.get("selected_id") or option.get("selected_id") is None:
+                    details.append({...})
+                    break
+        return {
+            "option_id": option["option_id"],
+            "option_name": option["option_name"],
+            "is_selected": True if force else option.get("is_selected", True),
+            "option_details": details,
+        }
+    
+    def _extract_selected_detail(option) -> Optional[Dict[str, Any]]:
+        """
+        selected_id 가 있으면 정확히 매칭, 없으면
+        (1) option_value 로 찾기 → (2) 첫 detail Fallback
+        """
+        sel_id = option.get("selected_id")
+        sel_value = option.get("option_value", "").strip()
+
+        # ① ID 매칭
+        for d in option.get("option_details", []):
+            if d["id"] == sel_id:
+                return {k: d[k] for k in ("id", "value", "additional_price")}
+
+        # ② value 매칭 (중간 → M 등)
+        for d in option.get("option_details", []):
+            if sel_value and sel_value.lower() in d["value"].lower():
+                return {k: d[k] for k in ("id", "value", "additional_price")}
+
+        # ③ fallback : 첫 번째
+        if option.get("option_details"):
+            d = option["option_details"][0]
+            return {k: d[k] for k in ("id", "value", "additional_price")}
+
+        return None
+
+    def _build_selected_option(option) -> Dict[str, Any]:
+        detail = self._extract_selected_detail(option)
+        return {
+            "option_id": option["option_id"],
+            "option_name": option["option_name"],
+            "is_selected": True,
+            "option_details": [detail] if detail else [],
+        }

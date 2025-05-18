@@ -389,48 +389,48 @@ class OrderProcessor(BaseProcessor):
                 continue  # 이미 선택된 옵션은 건너뜀
             
             # 얼음량 옵션에 대한 특별 처리
-            if opt.get("option_name") == "얼음량" and ("얼음" in text.lower() or "ice" in text.lower()):
-                print(f"[얼음량 옵션 처리] 텍스트에서 얼음량 옵션 검색: '{text}'")
+            # if opt.get("option_name") == "얼음량" and ("얼음" in text.lower() or "ice" in text.lower()):
+            #     print(f"[얼음량 옵션 처리] 텍스트에서 얼음량 옵션 검색: '{text}'")
                 
-                # 얼음 많이/적게 등 직접 키워드 검색
-                ice_keywords = {
-                    "많이": ["많이", "많은", "많게", "풍부", "가득"],
-                    "적게": ["적게", "적은", "조금", "약간"],
-                    "없음": ["없이", "빼고", "제외", "없이"],
-                    "보통": ["보통", "기본", "스탠다드"]
-                }
+            #     # 얼음 많이/적게 등 직접 키워드 검색
+            #     ice_keywords = {
+            #         "많이": ["많이", "많은", "많게", "풍부", "가득"],
+            #         "적게": ["적게", "적은", "조금", "약간"],
+            #         "없음": ["없이", "빼고", "제외", "없이"],
+            #         "보통": ["보통", "기본", "스탠다드"]
+            #     }
                 
-                matched_ice_amount = None
-                for amount, keywords in ice_keywords.items():
-                    if any(kw in text.lower() for kw in keywords):
-                        matched_ice_amount = amount
-                        print(f"[얼음량 옵션 처리] 매칭된 얼음량: {matched_ice_amount}")
-                        break
+            #     matched_ice_amount = None
+            #     for amount, keywords in ice_keywords.items():
+            #         if any(kw in text.lower() for kw in keywords):
+            #             matched_ice_amount = amount
+            #             print(f"[얼음량 옵션 처리] 매칭된 얼음량: {matched_ice_amount}")
+            #             break
                 
-                if matched_ice_amount:
-                    # 매칭된 얼음량으로 옵션 찾기
-                    for detail in opt.get("option_details", []):
-                        detail_value = detail.get("value", "").lower()
-                        if matched_ice_amount in detail_value:
-                            # 옵션 적용
-                            ice_option = {
-                                "option_id": opt.get("option_id"),
-                                "option_name": opt.get("option_name"),
-                                "option_name_en": opt.get("option_name_en"),
-                                "required": opt.get("required", False),
-                                "is_selected": True,
-                                "option_details": [{
-                                    "id": detail.get("id"),
-                                    "value": detail.get("value"),
-                                    "additional_price": detail.get("additional_price", 0)
-                                }]
-                            }
+            #     if matched_ice_amount:
+            #         # 매칭된 얼음량으로 옵션 찾기
+            #         for detail in opt.get("option_details", []):
+            #             detail_value = detail.get("value", "").lower()
+            #             if matched_ice_amount in detail_value:
+            #                 # 옵션 적용
+            #                 ice_option = {
+            #                     "option_id": opt.get("option_id"),
+            #                     "option_name": opt.get("option_name"),
+            #                     "option_name_en": opt.get("option_name_en"),
+            #                     "required": opt.get("required", False),
+            #                     "is_selected": True,
+            #                     "option_details": [{
+            #                         "id": detail.get("id"),
+            #                         "value": detail.get("value"),
+            #                         "additional_price": detail.get("additional_price", 0)
+            #                     }]
+            #                 }
                             
-                            print(f"[LLM 옵션 선택 로그] 텍스트에서 직접 인식한 옵션: {opt.get('option_name')}={detail.get('value')}(ID:{detail.get('id')})")
-                            self.option_handler.option_matcher.apply_option_to_menu(menu, ice_option)
-                            all_selected_options.append(ice_option)
-                            all_options_identified.append(f"{opt.get('option_name')}={detail.get('value')}")
-                            break
+            #                 print(f"[LLM 옵션 선택 로그] 텍스트에서 직접 인식한 옵션: {opt.get('option_name')}={detail.get('value')}(ID:{detail.get('id')})")
+            #                 self.option_handler.option_matcher.apply_option_to_menu(menu, ice_option)
+            #                 all_selected_options.append(ice_option)
+            #                 all_options_identified.append(f"{opt.get('option_name')}={detail.get('value')}")
+            #                 break
             
             #opt_match = self.option_handler.option_matcher.parse_option_response(text, opt, menu)
             opt_match = self.option_handler.process_option_selection(text, opt, menu)
