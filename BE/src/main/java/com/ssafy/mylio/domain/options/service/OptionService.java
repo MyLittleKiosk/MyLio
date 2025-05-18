@@ -3,7 +3,6 @@ package com.ssafy.mylio.domain.options.service;
 import com.ssafy.mylio.domain.options.dto.request.OptionRequestDto;
 import com.ssafy.mylio.domain.options.dto.request.OptionUpdateRequestDto;
 import com.ssafy.mylio.domain.options.dto.response.OptionDetailDto;
-import com.ssafy.mylio.domain.options.dto.response.OptionListResponseDto;
 import com.ssafy.mylio.domain.options.dto.response.OptionResponseDto;
 import com.ssafy.mylio.domain.options.entity.OptionDetail;
 import com.ssafy.mylio.domain.options.entity.Options;
@@ -11,9 +10,12 @@ import com.ssafy.mylio.domain.options.repository.OptionDetailRepository;
 import com.ssafy.mylio.domain.options.repository.OptionsRepository;
 import com.ssafy.mylio.domain.store.entity.Store;
 import com.ssafy.mylio.domain.store.repository.StoreRepository;
+import com.ssafy.mylio.global.common.CustomPage;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.error.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,12 +32,12 @@ public class OptionService {
     private final OptionDetailRepository optionDetailRepository;
     private final StoreRepository storeRepository;
 
-    public OptionListResponseDto getOptionList(Integer storeId) {
+    public CustomPage<OptionResponseDto> getOptionList(Integer storeId, String keyword, Pageable pageable) {
 
-        Store store = getStoreId(storeId);
+        getStoreId(storeId);
 
         // 1. 매장 아이디로 옵션 모두 조회
-        List<Options> optionsList = optionsRepository.findAllByStoreId(store.getId());
+        Page<Options> optionsList = optionsRepository.findAllByStoreIdAndKeyword(storeId, keyword, pageable);
 
         // 2. Options ID 리스트 뽑기
         List<Integer> optionsId = optionsList.stream().map(Options::getId).toList();
@@ -51,11 +53,10 @@ public class OptionService {
                 ));
 
         // 5. OptionResponseDto에 담기
-        List<OptionResponseDto> optionResponseDtoList = optionsList.stream()
-                .map(option -> OptionResponseDto.of(option, detailMap.getOrDefault(option.getId(), List.of())))
-                .toList();
+        Page<OptionResponseDto> optionResponseDtoList = optionsList.map(
+                option -> OptionResponseDto.of(option, detailMap.getOrDefault(option.getId(), List.of())));
 
-        return OptionListResponseDto.of(optionResponseDtoList);
+        return new CustomPage<>(optionResponseDtoList);
     }
 
     private Store getStoreId(Integer storeId) {
