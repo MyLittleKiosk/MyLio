@@ -2,7 +2,7 @@ from typing import Dict, Any, Optional, List
 import json  
 import copy
 import traceback 
-
+from copy import deepcopy
 from app.models.schemas import IntentType, ScreenState, Language, ResponseStatus
 from app.services.processor.base_processor import BaseProcessor
 from app.services.response.response_generator import ResponseGenerator
@@ -1117,57 +1117,77 @@ class OrderProcessor(BaseProcessor):
         LLM이 돌려준 option_id / option_detail_id 그대로 적용.
         ID가 없는 항목만 기존 matcher 로직으로 후처리한다.
         """
-        menu.setdefault("base_price", menu.get("price", 0))  
-        menu.setdefault("total_price", menu["base_price"])   
-        # 이미 한 번에 여러 옵션을 받아오므로 반복
+        menu.setdefault("selected_options", [])
+
         for opt in llm_options:
-            oid   = opt.get("option_id")
-            did   = opt.get("option_detail_id")
-            value = opt.get("option_value", "")
+            master = next((o for o in menu["options"]
+                        if o["option_id"] == opt["option_id"]), None)
 
-            # 1) 같은 option_id 를 가진 옵션 객체 찾기
-            target_opt = next(
-                (o for o in menu["options"] if o["option_id"] == oid), None
-            )
-            if not target_opt:
-                # option_id 가 없을 때는 이름으로 대체 탐색
-                target_opt = next(
-                    (o for o in menu["options"] if o["option_name"] == opt.get("option_name")),
-                    None
-                )
-            # if not target_opt:
-            #     # 둘 다 없으면 matcher 에게 맡기고 continue
-            #     self._match_option_by_name(menu, opt)  # 기존 matcher 함수
-            #     continue
-            if not target_opt:
-                matched = self._match_option_by_name(menu, opt)
-                if not matched:
-                    # ⭐ 매칭 실패해도 메뉴의 옵션 리스트는 건드리지 않는다
-                    #    → 아무 것도 하지 않고 다음 루프로
-                    pass
-                continue
-            # 2) option_detail_id 가 있을 땐 바로 선택
-            if did:
-                target_opt["is_selected"] = True
-                target_opt["selected_id"] = did
-            else:
-                # 세부 ID 가 없으면 matcher 에게 위임
+            if not master:
+                master = next((o for o in menu["options"]
+                            if o["option_name"] == opt["option_name"]), None)
+
+            if not master:
+                # 이름 매칭까지 실패 → 기존 matcher에게 위임
                 self._match_option_by_name(menu, opt)
+                continue
 
-            # 3) 가격 업데이트
-            detail = next(
-                (d for d in target_opt["option_details"] if d["id"] == did), None
-            )
-            if detail:
-                menu["total_price"] += detail.get("additional_price", 0)
+            # detail 찾기
+            detail = next((d for d in master["option_details"]
+                        if d["id"] == opt.get("option_detail_id")), None) \
+                    or {"id": opt.get("option_detail_id"),
+                        "value": opt.get("option_value"), "additional_price": 0}
 
-            # 4) selected_options 에 반영
-            menu.setdefault("selected_options", [])
-            menu["selected_options"].append({
-                "option_id": target_opt["option_id"],
-                "option_name": target_opt["option_name"],
-                "option_details": [detail] if detail else []
+            self.option_handler.option_matcher.apply_option_to_menu(menu, {
+                "option_id":   master["option_id"],
+                "option_name": master["option_name"],
+                "selected_id": detail["id"],
+                "option_details": [detail]
             })
+
+        # 대기열에 넣을 때
+        # queue.append(deepcopy(menu))   
+        # quantity, selected_options 그대로 유지
+        # from app.services.option.option_handler import OptionHandler
+        # handler = OptionHandler()
+
+        # # 중복 방지
+        # menu.setdefault("selected_options", [])
+        # # menu["selected_options"].clear()    # ← 이전에 남아 있던 값 초기화
+
+        # for opt in llm_options:
+        #     # 메뉴 마스터에서 해당 option_id의 detail 찾아서 채움
+        #     master_option = next(
+        #         (o for o in menu["options"] if o["option_id"] == opt["option_id"]),
+        #         {}
+        #     )
+        #     if not master_option:
+        #         master_option = next(
+        #             (o for o in menu["options"] if o["option_name"] == opt["option_name"]),
+        #             None
+        #         )
+
+        #     if not master_option:
+        #         matched = self._match_option_by_name(menu, opt)  # 이름/값 기반 정규화
+        #         if not matched:
+        #             continue        # 매칭 실패 → 건드리지 말고 넘어감
+        #         master_option = matched
+                
+        #     matched_detail = next(
+        #         (d for d in master_option.get("option_details", [])
+        #         if d["id"] == opt.get("option_detail_id")),
+        #         {"id": opt.get("option_detail_id"),
+        #         "value": opt.get("option_value"),
+        #         "additional_price": 0}
+        #     )
+
+        #     handler.apply_option_to_menu(menu, {
+        #         "option_id":    opt["option_id"],
+        #         "option_name":  opt["option_name"],
+        #         "selected_id":  matched_detail["id"],
+        #         "option_value": matched_detail["value"],
+        #         "option_details": [matched_detail]      # 최소 1개 보장
+        #     })
 
     def _match_option_by_name(self,
                               menu: dict,

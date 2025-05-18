@@ -191,7 +191,7 @@ class OptionMatcher:
                     if "많이" in detail.get("value", "") or "extra" in detail.get("value", "").lower():
                         return create_option_response(detail)
             # 그 외에는 기본 (보통) 선택
-            else:
+            elif pending_option.get("required", False):
                 for detail in option_details:
                     if "보통" in detail.get("value", "") or "regular" in detail.get("value", "").lower():
                         return create_option_response(detail)
@@ -210,7 +210,7 @@ class OptionMatcher:
                 for detail in option_details:
                     if "오트" in detail.get("value", "") or "oat" in detail.get("value", "").lower():
                         return create_option_response(detail)
-            else:
+            elif pending_option.get("required", False):
                 for detail in option_details:
                     if "일반" in detail.get("value", "") or "regular" in detail.get("value", "").lower():
                         return create_option_response(detail)
@@ -219,14 +219,21 @@ class OptionMatcher:
     
     def apply_option_to_menu(self, menu: Dict[str, Any], selected_option: Dict[str, Any]) -> None:
         """선택된 옵션을 메뉴 딕셔너리에 반영하고 총액을 다시 계산한다."""
-        print(f"[옵션 적용] 시작: option_id={selected_option.get('option_id')}, option_name={selected_option.get('option_name')}")
-        sel_id = selected_option.get("selected_id") or \
-        selected_option.get("option_details", [{}])[0].get("id")
-
-        sel_detail = next(
-            (d for d in selected_option.get("option_details", []) if d.get("id") == sel_id),
-            selected_option.get("option_details", [{}])[0]      # fallback
-        )
+        if not selected_option.get("option_details"):
+            # detail 정보가 없다면 메뉴 마스터에서 찾아서 보강
+            for opt in menu.get("options", []):
+                if opt["option_id"] == selected_option.get("option_id"):
+                    # selected_id 기준 우선, 없으면 첫 detail
+                    sel_id = selected_option.get("selected_id") or opt["option_details"][0]["id"]
+                    sel_detail = next((d for d in opt["option_details"] if d["id"] == sel_id), opt["option_details"][0])
+                    selected_option["option_details"] = [sel_detail]
+                    break
+        
+        # ② detail이 최소 1개 있다는 전제 아래에서 sel_id‧sel_detail 계산
+        sel_id     = selected_option.get("selected_id") \
+                    or selected_option["option_details"][0]["id"]
+        sel_detail = next((d for d in selected_option["option_details"] if d["id"] == sel_id),
+                        selected_option["option_details"][0])
 
         sel_value  = sel_detail.get("value")
         print(f"[옵션 적용] 선택된 값: {sel_value} (ID: {sel_id})")

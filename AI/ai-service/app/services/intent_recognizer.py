@@ -10,6 +10,7 @@ from langchain.chat_models import ChatOpenAI
 from app.models.schemas import IntentType, ScreenState, Language
 from app.services.menu_service import MenuService
 from app.models.schemas import ResponseStatus
+from app.utils.sanitize import sanitize_menus
 
 class IntentRecognizer:
     """사용자 의도 인식 서비스"""
@@ -21,8 +22,8 @@ class IntentRecognizer:
         # LLM 초기화
         self.llm = ChatOpenAI(
             model_kwargs={"api_key": api_key},
-            model_name="gpt-4.1", 
-            temperature=0.3
+            model_name="gpt-4o", 
+            temperature=0.05
         )
         
         # Few-shot 학습 예제
@@ -408,8 +409,15 @@ class IntentRecognizer:
                     result["menus"] = processed_menus
                 else:
                     result["menus"] = []
-            
+
+            # text
+            if result.get("menus"):
+                store_menus = self.menu_service.get_store_menus(store_id)
+                result["menus"] = sanitize_menus(result["menus"], store_menus)
+
             return result
+
+            
             
         except Exception as e:
             print(f"LLM 응답 파싱 오류: {e}")
@@ -480,14 +488,17 @@ class IntentRecognizer:
         - "따아/핫아메리카노" → "아메리카노" + 옵션:"HOT"
         - "카페라떼/카페라테/라떼" → "카페 라떼"
         - "바닐라라떼/바닐라라테" → "바닐라 라떼"
+        - "아샷추" -> "복숭아 아이스티"
 
         6. 옵션 매핑 규칙:
-        - "아이스/차가운/아아" → 온도 옵션:"ICE"
+        - "아이스/차가운/아아/아바라/아샷추" → 온도 옵션:"ICE"
         - "따뜻한/뜨거운/따아/하스로" → 온도 옵션:"Hot"
         - "작은/스몰/S" → 사이즈 옵션:"S"
         - "중간/미디엄/M" → 사이즈 옵션:"M"
         - "큰/라지/L" → 사이즈 옵션:"L"
-
+        - json으로 값을 넘길때 반드시 menu context의 내용과 동일한 내용을 전달하세요. "얼음 많이" -> 얼음량 옵션 : "얼음 많이"
+        - 새로 만들어낸 숫자(임의의 ID)는 절대로 사용하지 마세요.
+        
         7. 취소 규칙:
         - 현재 화면 상태가 "ORDER"이고 아직 선택하지 못한 옵션이 남아있는데 다른 메뉴를 선택하려는 경우 -> "아직 메뉴가 선택되지 않았어요. 옵션을 선택해주세요."
         - screen_state가 OPTION 일 때 "취소","메뉴 추가","그만","삭제"와 같이 로직을 벗어나려고 한다면 "주문하고 있던 메뉴가 사라져요."라고 응답을 내보내고 screen_state는 MAIN으로 해주세요.
@@ -507,11 +518,12 @@ class IntentRecognizer:
         주의: 응답을 생성할 때 템플릿 문자열이 아닌 실제 사용자에게 보여질 자연스러운 응답을 직접 생성해주세요.
         "감자탕 있어?", "화장실이 어디야?" 와 같이 제공된 메뉴 이외의 질문을 한다면 "죄송하지만 대답할 수 없는 질문이네요. 카페와 관련된 질문을 해주시면 대답해드릴 수 있어요."라고 답변하고 screen_state는 MAIN으로 해주세요.
         - 메뉴ID, 옵션ID, 옵션상세ID, 옵션value는 반드시 컨텍스트에서 제공된 값으로 해주세요.
-        
+        - 새로 만들어낸 숫자(임의의 ID)는 절대로 사용하지 마세요.
+
         모든 옵션을 누락 없이 JSON으로 추출해 주세요.
         예시:
         "샷 추가 해서 얼음 많이 큰걸로 두개 줘 우유는 오트 우유로 바꿔줘 뜨거운거"
-        → options 필드에 '샷옵션', '얼음량', '사이즈', '우유변경', '온도'가 모두 포함되어야 합니다.
+        → options 필드에 '샷옵션', '얼음량', '사이즈', '우유변경', '온도'가 모두 포함되어야 합니다. 이때 반드시 menu context에서 받은 실제 값으로 전달하세요.
         
         # 복합 주문 예제
         사용자: "아아 두개 주는데 하나는 샷추가해줘"
