@@ -1,9 +1,10 @@
-import { OptionList } from '@/types/options';
+import { OptionGroup } from '@/types/options';
+import { PaginationResponse, Response } from '@/types/apiResponse';
 
-export const OPTION_LIST: OptionList = {
+export const OPTION_LIST: Response<PaginationResponse<OptionGroup>> = {
   success: true,
   data: {
-    options: [
+    content: [
       {
         optionId: 1,
         optionNameKr: '사이즈',
@@ -27,6 +28,12 @@ export const OPTION_LIST: OptionList = {
         ],
       },
     ],
+    pageNumber: 1,
+    totalPages: 1,
+    totalElements: 1,
+    pageSize: 1,
+    first: true,
+    last: true,
   },
   timestamp: '2024-01-01T00:00:00.000Z',
 };
