@@ -70,9 +70,9 @@ public class MenuService {
 
     private final S3Util s3Util;
 
-    public CustomPage<MenuListResponseDto> getMenuList(Integer storeId, Integer categoryId, Pageable pageable) {
+    public CustomPage<MenuListResponseDto> getMenuList(Integer storeId, Integer categoryId, String keyword, Pageable pageable) {
         // 메뉴 리스트 조회
-        Page<Menu> menuList = menuRepository.findByStoreIdAndOptionalCategoryId(storeId, categoryId, pageable);
+        Page<Menu> menuList = menuRepository.findByStoreIdAndOptionalCategoryIdAndKeyword(storeId, categoryId, keyword, pageable);
 
         // 메뉴 리스트에서 아이디 조회
         List<Integer> menuIds = menuList.stream().map(Menu::getId).toList();
