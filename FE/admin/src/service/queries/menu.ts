@@ -15,10 +15,10 @@ import {
 import { MenuAdd, MenuDetailGetType, MenuType } from '@/types/menus';
 import { PaginationResponse, Response } from '@/types/apiResponse';
 
-const useGetMenus = (page?: number, categoryId?: number) => {
+const useGetMenus = (keyword?: string, page?: number, categoryId?: number) => {
   const query = useSuspenseQuery<Response<PaginationResponse<MenuType>>>({
-    queryKey: ['menus', page, categoryId],
-    queryFn: () => getMenus(page, categoryId),
+    queryKey: ['menus', keyword, page, categoryId],
+    queryFn: () => getMenus(keyword, page, categoryId),
   });
 
   const pageInfo = {

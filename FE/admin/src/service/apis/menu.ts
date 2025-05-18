@@ -2,8 +2,13 @@ import { CustomError } from '@/types/apiResponse';
 import authClient from '@/service/authClient';
 import { MenuAdd } from '@/types/menus';
 
-export async function getMenus(page?: number, categoryId?: number) {
+export async function getMenus(
+  keyword?: string,
+  page?: number,
+  categoryId?: number
+) {
   const params = {
+    keyword: keyword || null,
     page: page || 1,
     categoryId: categoryId || null,
   };

@@ -14,6 +14,7 @@ import { Pagination } from '@/types/apiResponse';
 import { useGetCategory } from '@/service/queries/category';
 import { useDeleteMenu, useGetMenus } from '@/service/queries/menu';
 import useModalStore from '@/stores/useModalStore';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface Props {
   selectedNav: NavItemType;
@@ -26,19 +27,22 @@ const Menu = ({
   setIsEditMenuClicked,
   setClickedMenuId,
 }: Props) => {
-  const [searchValue, setSearchValue] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(
     null
   );
   const [searchParams, setSearchParams] = useState<{
+    keyword?: string;
     page?: number;
   }>({
     page: 1,
   });
 
+  const debounceKeyword = useDebounce(searchParams.keyword, 500);
+
   const { openModal } = useModalStore();
 
   const { data: menus, pageInfo } = useGetMenus(
+    debounceKeyword,
     searchParams.page,
     selectedCategory?.categoryId
   );
@@ -46,7 +50,7 @@ const Menu = ({
   const { data: category } = useGetCategory();
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setSearchValue(e.target.value);
+    setSearchParams({ ...searchParams, keyword: e.target.value });
   }
 
   function handleCategoryChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -92,7 +96,7 @@ const Menu = ({
         <Input
           id='searchMenu'
           placeholder='메뉴명 또는 설명으로 검색'
-          value={searchValue}
+          value={searchParams.keyword}
           onChange={handleSearchChange}
           className='w-[85%]'
         />
