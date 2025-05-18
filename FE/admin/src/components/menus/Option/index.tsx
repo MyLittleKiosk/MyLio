@@ -12,16 +12,47 @@ import { Column } from '@/types/tableProps';
 
 import useModalStore from '@/stores/useModalStore';
 import { useGetOptions } from '@/service/queries/option';
+import Input from '@/components/common/Input';
+import React, { useState } from 'react';
+import PageNavigation from '@/components/common/PageNavigation';
+import { Pagination } from '@/types/apiResponse';
+import { useDebounce } from '@/hooks/useDebounce';
 
 const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
   const { openModal } = useModalStore();
 
-  const { data: options } = useGetOptions();
+  const [searchParams, setSearchParams] = useState<{
+    keyword?: string;
+    page?: number;
+  }>({
+    page: 1,
+  });
+
+  const debouncedKeyword = useDebounce(searchParams.keyword, 500);
+
+  const { data: options, pageInfo } = useGetOptions(
+    debouncedKeyword,
+    searchParams.page
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchParams({ ...searchParams, keyword: e.target.value });
+  };
+
+  const handlePageChange = (page: number) => {
+    setSearchParams({ ...searchParams, page });
+  };
 
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex gap-2 max-h-[10%] w-full items-center justify-between'>
-        <h3 className='text-lg font-preMedium'>옵션 관리</h3>
+        <Input
+          id='searchMenu'
+          placeholder='옵션명으로 검색'
+          value={searchParams.keyword}
+          onChange={handleSearchChange}
+          className='w-[85%]'
+        />
         <Button
           type='button'
           text='옵션 그룹 추가'
@@ -43,6 +74,10 @@ const Option = ({ selectedNav }: { selectedNav: NavItemType }) => {
         onDelete={(row) => {
           openModal(<DeleteOptionModal row={row} />);
         }}
+      />
+      <PageNavigation
+        pageInfo={pageInfo as Pagination}
+        onChangePage={(page: number) => handlePageChange(page)}
       />
     </div>
   );

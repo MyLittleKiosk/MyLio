@@ -26,11 +26,3 @@ export type OptionDetailGetType = {
   additionalPrice: number;
   required: boolean;
 };
-
-export interface OptionList {
-  success: boolean;
-  data: {
-    options: OptionGroup[];
-  };
-  timestamp: string;
-}
