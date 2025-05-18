@@ -181,18 +181,19 @@ class OrderProcessor(BaseProcessor):
                 option_name = next_option.get("option_name", "옵션")
                 
                 # LLM이 생성한 응답이 있으면 그것을 사용, 없으면 직접 구성
-                if intent_data.get("reply") and "선택해주세요" in intent_data.get("reply"):
-                    reply = intent_data.get("reply")
-                else:
-                    # 다국어 메시지 생성
-                    reply = self._generate_option_selection_message(menu_name, option_name, "", language)
+                # if intent_data.get("reply") and "선택해주세요" in intent_data.get("reply"):
+                #     reply = intent_data.get("reply")
+                # else:
+                #     # 다국어 메시지 생성
+                #     reply = self._generate_option_selection_message(menu_name, option_name, "", language)
+                reply = self._generate_option_selection_message(menu_name, option_name, "", language)
                 
                 # 이미 추가된 메뉴가 있는 경우 안내 포함
                 if ready_to_add_menus:
                     menu_names = ", ".join([menu.get("name_kr") for menu in ready_to_add_menus])
                     
                     if language == Language.KR:
-                        cart_message = f"주문하신 메뉴가 장바구니에 추가되었습니다. "
+                        cart_message = f"주문하신 메뉴가 장바구니에 추가되었어요. "
                     elif language == Language.EN:
                         cart_message = f"{menu_names} has been added to your cart. "
                     elif language == Language.CN:
@@ -265,7 +266,7 @@ class OrderProcessor(BaseProcessor):
         """옵션 선택 처리"""
         print(f"[옵션 선택 처리] 시작: 텍스트='{text}', 화면 상태={screen_state}")
         
-        # 기본 intent_data 정의 - 이 부분을 추가
+        # 기본 intent_data 정의
         intent_data = {
             "intent_type": IntentType.OPTION_SELECT,
             "confidence": 0.9,
@@ -289,49 +290,6 @@ class OrderProcessor(BaseProcessor):
             # 취소 응답 생성
             return self._generate_cancellation_response(text, language, screen_state, store_id, session)
         
-        # 새로운 메뉴 주문 의도인지 확인
-        new_order_intent = self._check_new_order_intent(text, language, store_id)
-        if new_order_intent:
-            print("[옵션 선택 처리] 새로운 메뉴 주문 의도 감지")
-            
-            # 현재 진행 중인 메뉴를 옵션 선택 없이 완료할 수 없음을 안내
-            context = {
-                "status": ResponseStatus.MISSING_REQUIRED_OPTIONS,
-                "screen_state": screen_state,
-                "menu": session.get("last_state", {}).get("menu", {}),
-                "pending_option": session.get("last_state", {}).get("pending_option", {})
-            }
-            
-            # 안내 메시지 생성
-            option_name = context["pending_option"].get("option_name", "옵션")
-            menu_name = context["menu"].get("name", "메뉴")
-
-            if language == Language.KR:
-                reply = f"{menu_name}의 필수 옵션을 선택해 주세요."
-            elif language == Language.EN:
-                reply = f"Selecting options for {menu_name} is required. Please select options."
-            elif language == Language.CN:
-                reply = f"为{menu_name}选择{option_name}是必需的。请选择一个选项。"
-            elif language == Language.JP:
-                reply = f"{menu_name}の{option_name}の選択は必須です。オプションを選択してください。"
-            else:
-                reply = f"Selecting {option_name} for {menu_name} is required. Please select an option."
-            
-            # 의도 데이터 구성
-            intent_data = {
-                "intent_type": IntentType.OPTION_SELECT,
-                "confidence": 0.9,
-                "post_text": text
-            }
-            
-            # 응답 반환
-            return self._build_response(
-                intent_data, text, language, screen_state, store_id, session,
-                ResponseStatus.MISSING_REQUIRED_OPTIONS, 
-                contents=[context["menu"]], 
-                reply=reply
-            )
-        
         # 세션에서 현재 처리 중인 메뉴와 옵션 가져오기
         menu = session.get("last_state", {}).get("menu", {})
         pending_option = session.get("last_state", {}).get("pending_option", {})
@@ -352,34 +310,43 @@ class OrderProcessor(BaseProcessor):
                 ResponseStatus.UNKNOWN, reply="선택 중인 메뉴가 없습니다."
             )
         
-        # 옵션 선택 처리
+        # 복수 옵션 처리를 위한 코드
+        # LLM으로 사용자 입력에서 모든 가능한 옵션을 추출
+        menu_options = menu.get("options", [])
+        
+        # 텍스트에서 옵션 값 추출 시도
+        all_selected_options = []
+        
+        # 첫 번째 pending_option 처리
         selected_option = self.option_handler.process_option_selection(text, pending_option, menu)
         
-        # 옵션 선택 실패
-        if not selected_option:
-            print("[옵션 선택 처리] 옵션 값 매칭 실패")
+        if selected_option:
+            print(f"[옵션 선택 처리] 옵션 선택 성공: {pending_option.get('option_name')}={selected_option.get('option_details', [{}])[0].get('value', '')}")
+            self.option_handler.option_matcher.apply_option_to_menu(menu, selected_option)
+            all_selected_options.append(selected_option)
+        
+        # 남은 텍스트에서 다른 옵션 처리 시도
+        # 필수 옵션들에 대해 처리 시도
+        for option in menu_options:
+            # 이미 선택된 옵션은 건너뛰기
+            if option.get("is_selected"):
+                continue
             
-            # 의도 데이터 구성
-            intent_data = {
-                "intent_type": IntentType.OPTION_SELECT,
-                "confidence": 0.5,
-                "post_text": text
+            # 현재 옵션 데이터 구성
+            current_option = {
+                "option_id": option.get("option_id"),
+                "option_name": option.get("option_name"),
+                "required": option.get("required"),
+                "option_details": option.get("option_details", [])
             }
             
-            # 옵션 선택 안내 메시지 재생성
-            reply = self.intent_recognizer.generate_option_selection_response(
-                menu, pending_option, language
-            )
+            # 텍스트에서 해당 옵션 매칭 시도
+            option_match = self.option_handler.process_option_selection(text, current_option, menu)
             
-            # 응답 반환
-            return self._build_response(
-                intent_data, text, language, screen_state, store_id, session,
-                ResponseStatus.MISSING_REQUIRED_OPTIONS, contents=[menu], reply=reply
-            )
-        
-        # 옵션 선택 성공 - 메뉴에 옵션 적용
-        print(f"[옵션 선택 처리] 옵션 선택 성공: {selected_option.get('option_name')}={selected_option.get('option_details', [{}])[0].get('value', '')}")
-        self.option_handler.option_matcher.apply_option_to_menu(menu, selected_option)
+            if option_match:
+                print(f"[옵션 선택 처리] 추가 옵션 선택 성공: {current_option.get('option_name')}={option_match.get('option_details', [{}])[0].get('value', '')}")
+                self.option_handler.option_matcher.apply_option_to_menu(menu, option_match)
+                all_selected_options.append(option_match)
         
         # 메뉴 상태 확인
         menu_status = self.option_handler.determine_menu_status(menu)
@@ -399,17 +366,17 @@ class OrderProcessor(BaseProcessor):
                 # 세션 저장
                 self.session_manager._save_session(session_id, session)
                 
-                # 의도 데이터 구성
-                intent_data = {
-                    "intent_type": IntentType.OPTION_SELECT,
-                    "confidence": 0.9,
-                    "post_text": text
-                }
-                
-                # 다음 옵션 선택 안내 메시지 생성
-                reply = self.intent_recognizer.generate_option_selection_response(
-                    menu, next_option, language
-                )
+                # 응답 생성 - _generate_llm_response 사용하지 않도록 수정
+                if 'reply' in locals() and reply:
+                    pass  # 이미 reply가 있으면 그대로 사용
+                else:
+                    # 기본 메시지 생성
+                    if language == Language.KR:
+                        reply = f"{menu.get('name')}를 선택하셨네요."
+                    elif language == Language.EN:
+                        reply = f"You've selected {menu.get('name')}."
+                    else:
+                        reply = f"{menu.get('name')}를 선택하셨네요."
                 
                 # 응답 반환
                 return self._build_response(
@@ -465,7 +432,18 @@ class OrderProcessor(BaseProcessor):
 
         # 세션에서 처리 중인 메뉴 정보 제거
         session["last_state"] = {}
+
+        # 카트 정보 유지를 위해 최신 카트 정보를 세션에 업데이트
+        if updated_cart and len(updated_cart) > 0:
+            session["cart"] = updated_cart
+
         self.session_manager._save_session(session_id, session)
+
+        # 장바구니 저장 확인
+        final_cart = self.session_manager.get_cart(session_id)
+        if not final_cart or len(final_cart) == 0:
+            print(f"[경고] 장바구니 정보 유실, 다시 시도합니다.")
+            self.session_manager.add_to_cart(session_id, cart_menu)
 
         # 대기열에서 다음 메뉴 가져오기 시도
         next_menu = self.session_manager.get_next_queued_menu(session_id)
@@ -477,18 +455,22 @@ class OrderProcessor(BaseProcessor):
             return self._start_menu_processing(next_menu, text, language, store_id, session)
         else:
             # 더 이상 처리할 메뉴가 없는 경우 - 장바구니 추가 완료 응답 생성
-            # 다국어 메시지 생성
-            if language == Language.KR:
-                reply = f"주문하신 메뉴가 장바구니에 담겼어요."
-            elif language == Language.EN:
-                reply = f"{menu.get('name')} has been added to your cart."
-            elif language == Language.CN:
-                reply = f"{menu.get('name')}已添加到您的购物车。"
-            elif language == Language.JP:
-                reply = f"{menu.get('name')}はカートに追加されました。"
+            # 응답 생성 - _generate_llm_response 사용하지 않도록 수정
+            if 'reply' in locals() and reply:
+                pass  # 이미 reply가 있으면 그대로 사용
             else:
-                reply = f"{menu.get('name')} has been added to your cart."
-
+                # 기본 메시지 생성
+                if language == Language.KR:
+                    reply = f"주문하신 메뉴가 장바구니에 담겼어요."
+                elif language == Language.EN:
+                    reply = f"{menu.get('name')} has been added to your cart."
+                elif language == Language.CN:
+                    reply = f"{menu.get('name')}已添加到您的购物车。"
+                elif language == Language.JP:
+                    reply = f"{menu.get('name')}はカートに追加されました。"
+                else:
+                    reply = f"{menu.get('name')} has been added to your cart."
+            
             # 응답 반환
             return self._build_response(
                 intent_data, text, language, ScreenState.MAIN, store_id, session,
@@ -565,17 +547,17 @@ class OrderProcessor(BaseProcessor):
                 # 세션 저장
                 self.session_manager._save_session(session_id, session)
                 
-                # 의도 데이터 구성
-                intent_data = {
-                    "intent_type": IntentType.OPTION_SELECT,
-                    "confidence": 0.9,
-                    "post_text": text
-                }
-                
-                # 옵션 선택 안내 메시지 생성
-                reply = self.intent_recognizer.generate_option_selection_response(
-                    full_menu, next_option, language
-                )
+                # 응답 생성 - _generate_llm_response 사용하지 않도록 수정
+                if 'reply' in locals() and reply:
+                    pass  # 이미 reply가 있으면 그대로 사용
+                else:
+                    # 기본 메시지 생성
+                    if language == Language.KR:
+                        reply = f"{full_menu.get('name')}의 필수 옵션을 선택해주세요."
+                    elif language == Language.EN:
+                        reply = f"Selecting options for {full_menu.get('name')} is required. Please select options."
+                    else:
+                        reply = f"{full_menu.get('name')}의 필수 옵션을 선택해주세요."
                 
                 # 응답 반환
                 return self._build_response(
@@ -603,22 +585,21 @@ class OrderProcessor(BaseProcessor):
             # 모든 메뉴 처리 완료
             print("[메뉴 처리 시작] 모든 메뉴 처리 완료")
             
-            # 의도 데이터 구성
-            intent_data = {
-                "intent_type": IntentType.ORDER,
-                "confidence": 0.9,
-                "post_text": text
-            }
-            
-            # 응답 컨텍스트 구성
-            context = {
-                "status": ResponseStatus.READY_TO_ADD_CART,
-                "screen_state": ScreenState.MAIN,
-                "menus": [full_menu]
-            }
-            
-            # 장바구니 추가 완료 메시지 생성
-            reply = self.response_generator.generate_response(intent_data, language, context)
+            # 응답 생성 - _generate_llm_response 사용하지 않도록 수정
+            if 'reply' in locals() and reply:
+                pass  # 이미 reply가 있으면 그대로 사용
+            else:
+                # 기본 메시지 생성
+                if language == Language.KR:
+                    reply = f"주문하신 메뉴가 장바구니에 담겼어요."
+                elif language == Language.EN:
+                    reply = f"{full_menu.get('name')} has been added to your cart."
+                elif language == Language.CN:
+                    reply = f"{full_menu.get('name')}已添加到您的购物车。"
+                elif language == Language.JP:
+                    reply = f"{full_menu.get('name')}はカートに追加されました。"
+                else:
+                    reply = f"{full_menu.get('name')} has been added to your cart."
             
             # 응답 반환
             return self._build_response(
@@ -726,68 +707,95 @@ class OrderProcessor(BaseProcessor):
         # 세션 ID 가져오기
         session_id = session.get("id", "")
         
-        # 장바구니 정보 새로 불러오기
+        # 장바구니 정보 새로 불러오기 - 반드시 get_cart 메서드 사용
         updated_cart = []
         try:
-            # 최신 세션에서 장바구니 정보만 가져옴
-            updated_session = self.session_manager.get_session(session_id)
-            if updated_session and "cart" in updated_session:
-                updated_cart = updated_session.get("cart", [])
-                print(f"[응답 구성] 최신 장바구니 정보 로드 - 항목 수: {len(updated_cart)}")
+            # 직접 장바구니 조회 API 사용 (session에 의존하지 않음)
+            updated_cart = self.session_manager.get_cart(session_id)
+            print(f"[응답 구성] 카트 API 조회 결과 - 항목 수: {len(updated_cart)}")
         except Exception as e:
-            print(f"[응답 구성] 세션 조회 오류: {str(e)}")
+            print(f"[응답 구성] 장바구니 조회 오류: {str(e)}")
         
+        # 장바구니 항목이 없는 경우 세션의 장바구니 정보 확인 (백업)
+        if not updated_cart and session and "cart" in session:
+            updated_cart = session.get("cart", [])
+            print(f"[응답 구성] 세션 카트 백업 사용 - 항목 수: {len(updated_cart)}")
+        
+        # 로그에 카트 내용 기록 (디버깅용)
+        if updated_cart:
+            cart_items = [f"{item.get('name')} x{item.get('quantity')}" for item in updated_cart]
+            print(f"[응답 구성] 장바구니 구성: {', '.join(cart_items)}")
+
         # contents가 있는 경우 불필요한 정보 제거
         cleaned_contents = []
         if contents:
             for item in contents:
-                # 이미 정제된 메뉴 데이터인 경우 그대로 사용
-                if "menu_id" in item:
-                    cleaned_contents.append(item)
-                else:
-                    # 필요한 정보만 추출
-                    cleaned_item = {
-                        "menu_id": item.get("menu_id") or item.get("id"),
-                        "name": item.get("name") or item.get("name_kr"),
-                        "name_en": item.get("name_en"),
-                        "description": item.get("description", ""),
-                        "base_price": item.get("base_price") or item.get("price", 0),
-                        "total_price": item.get("total_price") or item.get("price", 0),
-                        "image_url": item.get("image_url"),
-                        "quantity": item.get("quantity", 1),
-                        "options": item.get("options", [])
-                    }
-                    
-                    # selected_options가 있으면 추가
-                    if "selected_options" in item:
-                        cleaned_item["selected_options"] = item["selected_options"]
-                    else:
-                        # selected_options 생성
-                        selected_options = []
-                        for option in item.get("options", []):
-                            if option.get("is_selected"):
-                                option_details = []
-                                for detail in option.get("option_details", []):
-                                    if detail.get("id") == option.get("selected_id"):
-                                        option_details.append({
-                                            "id": detail.get("id"),
-                                            "value": detail.get("value"),
-                                            "additional_price": detail.get("additional_price", 0)
-                                        })
-                                
-                                if option_details:
-                                    selected_options.append({
-                                        "option_id": option.get("option_id"),
-                                        "option_name": option.get("option_name"),
-                                        "option_name_en": option.get("option_name_en"),
-                                        "required": option.get("required", False),
-                                        "is_selected": True,
-                                        "option_details": option_details
-                                    })
-                    
-                    cleaned_item["selected_options"] = selected_options
+                # 기본 메뉴 ID와 이름 확인 (에러 방지)
+                menu_id = None
+                name = None
                 
-                cleaned_contents.append(cleaned_item)
+                if "menu_id" in item:
+                    menu_id = item["menu_id"]
+                elif "id" in item:
+                    menu_id = item["id"]
+                
+                if "name" in item:
+                    name = item["name"]
+                elif "name_kr" in item:
+                    name = item["name_kr"]
+                
+                # 모든 필수 필드가 있는지 확인
+                if menu_id is not None and name is not None:
+                    # 이미 정제된 메뉴 데이터인 경우 그대로 사용
+                    if "menu_id" in item and "name" in item and "options" in item:
+                        cleaned_contents.append(item)
+                    else:
+                        # 필요한 정보만 추출
+                        cleaned_item = {
+                            "menu_id": menu_id,
+                            "name": name,
+                            "name_en": item.get("name_en"),
+                            "description": item.get("description", ""),
+                            "base_price": item.get("base_price", 0) if "base_price" in item else item.get("price", 0),
+                            "total_price": item.get("total_price", 0) if "total_price" in item else item.get("price", 0),
+                            "image_url": item.get("image_url"),
+                            "quantity": item.get("quantity", 1),
+                            "options": item.get("options", [])
+                        }
+                        
+                        # selected_options가 있으면 추가
+                        if "selected_options" in item:
+                            cleaned_item["selected_options"] = item["selected_options"]
+                        else:
+                            # selected_options 생성
+                            selected_options = []
+                            for option in item.get("options", []):
+                                if option.get("is_selected"):
+                                    option_details = []
+                                    for detail in option.get("option_details", []):
+                                        if detail.get("id") == option.get("selected_id"):
+                                            option_details.append({
+                                                "id": detail.get("id"),
+                                                "value": detail.get("value"),
+                                                "additional_price": detail.get("additional_price", 0)
+                                            })
+                                    
+                                    if option_details:
+                                        selected_options.append({
+                                            "option_id": option.get("option_id"),
+                                            "option_name": option.get("option_name"),
+                                            "option_name_en": option.get("option_name_en"),
+                                            "required": option.get("required", False),
+                                            "is_selected": True,
+                                            "option_details": option_details
+                                        })
+                        
+                            cleaned_item["selected_options"] = selected_options
+                        
+                        cleaned_contents.append(cleaned_item)
+        
+        # 콘솔에 최종 장바구니 디버깅 정보 출력
+        print(f"[응답 보강] 최종 장바구니 항목 수: {len(updated_cart)}")
         
         response = {
             "intent_type": intent_data.get("intent_type", IntentType.UNKNOWN),
