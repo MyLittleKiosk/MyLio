@@ -57,19 +57,19 @@ const StatisticsContent = () => {
 
         <div className='w-full h-full flex gap-4'>
           <div className='w-full max-h-[300px] min-h-[200px] flex flex-col border border-subContent rounded-md p-2 gap-2'>
-            <h1 className='text-lg font-bold'>결제 수단 별 매출</h1>
+            <h1 className='text-lg font-bold'>결제수단별 매출</h1>
             <div className='relative w-full flex-1 flex flex-col gap-2'>
               <PaymentsPieChart year={year} month={month} />
             </div>
           </div>
           <div className='w-full max-h-[300px] min-h-[200px] flex flex-col border border-subContent rounded-md p-2 gap-2'>
-            <h1 className='text-lg font-bold'>주문 형태 별 매출</h1>
+            <h1 className='text-lg font-bold'>주문 형태별 매출</h1>
             <div className='relative w-full flex-1 flex flex-col gap-2'>
               <OrderTypePieChart year={year} month={month} />
             </div>
           </div>
           <div className='w-full max-h-[300px] min-h-[200px] flex flex-col border border-subContent rounded-md p-2 gap-2'>
-            <h1 className='text-lg font-bold'>카테고리 별 매출</h1>
+            <h1 className='text-lg font-bold'>카테고리별 매출</h1>
             <div className='relative w-full flex-1 flex flex-col gap-2'>
               <CategoryPieChart year={year} month={month} />
             </div>
