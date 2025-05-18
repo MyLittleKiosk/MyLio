@@ -136,7 +136,6 @@ const OrderLayout = () => {
         <Outlet />
       </motion.main>
       <Footer
-        order={order}
         handleRecognitionResult={handleRecognitionResult}
         pathname={pathname}
       />

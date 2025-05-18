@@ -258,14 +258,14 @@ describe('옵션관리 페이지', () => {
     // 옵션 데이터가 테이블에 제대로 렌더링되었는지 확인
     cy.get('table tbody tr').should(
       'have.length',
-      OPTION_LIST.data.options.length
+      OPTION_LIST.data.content.length
     );
 
     // 첫 번째 옵션 데이터의 내용 확인
     cy.get('table tbody tr')
       .first()
       .within(() => {
-        cy.contains(OPTION_LIST.data.options[0].optionNameKr).should('exist');
+        cy.contains(OPTION_LIST.data.content[0].optionNameKr).should('exist');
       });
   });
 
@@ -334,11 +334,11 @@ describe('옵션관리 페이지', () => {
     // 현재 옵션 그룹명이 입력 필드에 있는지 확인
     cy.get('#optionGroupNameEdit').should(
       'have.value',
-      OPTION_LIST.data.options[0].optionNameKr
+      OPTION_LIST.data.content[0].optionNameKr
     );
     cy.get('#optionGroupNameEnEdit').should(
       'have.value',
-      OPTION_LIST.data.options[0].optionNameEn
+      OPTION_LIST.data.content[0].optionNameEn
     );
 
     // 옵션 그룹명 수정
@@ -348,7 +348,7 @@ describe('옵션관리 페이지', () => {
     // API 요청 인터셉트 설정
     cy.intercept(
       'PATCH',
-      `/api/option/${OPTION_LIST.data.options[0].optionId}`,
+      `/api/option/${OPTION_LIST.data.content[0].optionId}`,
       {
         statusCode: 200,
         body: {
@@ -389,7 +389,7 @@ describe('옵션관리 페이지', () => {
     // API 요청 인터셉트 설정
     cy.intercept(
       'DELETE',
-      `/api/option/${OPTION_LIST.data.options[0].optionId}`,
+      `/api/option/${OPTION_LIST.data.content[0].optionId}`,
       {
         statusCode: 200,
         body: {
@@ -486,14 +486,14 @@ describe('옵션관리 페이지', () => {
 
     // 첫 번째 옵션 상세의 이름 수정
     cy.get(
-      `#optionDetailValueEdit-${OPTION_LIST.data.options[0].optionDetail[0].optionDetailId}`
+      `#optionDetailValueEdit-${OPTION_LIST.data.content[0].optionDetails[0].optionDetailId}`
     )
       .clear()
       .type(updatedDetailName);
 
     // 첫 번째 옵션 상세의 가격 수정
     cy.get(
-      `#optionDetailPriceEdit-${OPTION_LIST.data.options[0].optionDetail[0].optionDetailId}`
+      `#optionDetailPriceEdit-${OPTION_LIST.data.content[0].optionDetails[0].optionDetailId}`
     )
       .clear()
       .type(updatedPrice.toString());
@@ -501,7 +501,7 @@ describe('옵션관리 페이지', () => {
     // API 요청 인터셉트 설정
     cy.intercept(
       'PATCH',
-      `/api/option_detail/${OPTION_LIST.data.options[0].optionDetail[0].optionDetailId}`,
+      `/api/option_detail/${OPTION_LIST.data.content[0].optionDetails[0].optionDetailId}`,
       {
         statusCode: 200,
         body: {
@@ -546,7 +546,7 @@ describe('옵션관리 페이지', () => {
     // API 요청 인터셉트 설정
     cy.intercept(
       'DELETE',
-      `/api/option_detail/${OPTION_LIST.data.options[0].optionDetail[0].optionDetailId}`,
+      `/api/option_detail/${OPTION_LIST.data.content[0].optionDetails[0].optionDetailId}`,
       {
         statusCode: 200,
         body: {

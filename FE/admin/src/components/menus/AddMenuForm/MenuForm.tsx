@@ -4,18 +4,18 @@ import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 import OptionTable from '@/components/menus/AddMenuForm/OptionTable';
+import { useMenuFormContext } from '@/components/menus/AddMenuForm/MenuFormContext';
 
-import { CATEGORY_LIST } from '@/service/mock/dummies/category';
+import { useGetCategory } from '@/service/queries/category';
 import { useGetOptions } from '@/service/queries/option';
+import { useGetIngredientList } from '@/service/queries/ingredient';
+import { useGetNutritionList } from '@/service/queries/nutrient';
 
 import IconAdd from '@/assets/icons/IconAdd';
 import IconImage from '@/assets/icons/IconImage';
 import IconTrashCan from '@/assets/icons/IconTrashCan';
 
-import { INGREDIENT_LIST } from '@/datas/IngredientList';
-import { NUTRIENT_LIST } from '@/datas/NutrientList';
 import translator from '@/utils/translator';
-import { useMenuFormContext } from './MenuFormContext';
 
 const MenuForm = () => {
   const {
@@ -47,7 +47,10 @@ const MenuForm = () => {
     updateOptionInfo,
   } = useMenuFormContext();
 
-  const { data: options, isLoading } = useGetOptions();
+  const { data: options } = useGetOptions();
+  const { data: category } = useGetCategory(undefined, undefined, 50);
+  const { data: ingredient } = useGetIngredientList(undefined, undefined, 50);
+  const { data: nutrient } = useGetNutritionList(undefined, undefined, 50);
 
   // 옵션 정보가 변경될 때마다 menuAddData 업데이트
   useEffect(() => {
@@ -62,10 +65,6 @@ const MenuForm = () => {
   async function translateTag() {
     const translatedValue = await translator(tagValueKR);
     setTagValueEN(translatedValue);
-  }
-
-  if (!options || isLoading) {
-    return <div>Loading...</div>;
   }
 
   return (
@@ -104,10 +103,10 @@ const MenuForm = () => {
       </div>
 
       <Select
-        options={CATEGORY_LIST.data.content}
+        options={category || []}
         label='카테고리'
         selected={selectedCategory}
-        onChange={handleCategoryChange}
+        onChange={(e) => handleCategoryChange(e, category || [])}
         placeholder='카테고리를 선택하세요.'
         getOptionLabel={(option) => option.nameKr}
         getOptionValue={(option) => option.categoryId.toString()}
@@ -263,13 +262,13 @@ const MenuForm = () => {
 
       <div className='flex flex-col gap-2 w-full'>
         <Select
-          options={INGREDIENT_LIST.content}
+          options={ingredient || []}
           label='원재료'
           selected={selectedIngredient}
           placeholder='원재료를 선택하세요.'
           getOptionLabel={(option) => option.ingredientTemplateName}
           getOptionValue={(option) => option.ingredientTemplateId.toString()}
-          onChange={handleIngredientChange}
+          onChange={(e) => handleIngredientChange(e, ingredient || [])}
           className='w-full'
         />
         <div className='flex gap-2 w-full'>
@@ -289,13 +288,13 @@ const MenuForm = () => {
       <div className='flex flex-col gap-2 w-full'>
         <div className='flex gap-2'>
           <Select
-            options={NUTRIENT_LIST.content}
+            options={nutrient || []}
             label='영양성분'
             selected={selectedNutrient}
             placeholder='영양성분을 선택하세요.'
             getOptionLabel={(option) => option.nutritionTemplateName}
             getOptionValue={(option) => option.nutritionTemplateId.toString()}
-            onChange={handleNutrientChange}
+            onChange={(e) => handleNutrientChange(e, nutrient || [])}
             className='w-[55%]'
           />
 

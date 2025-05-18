@@ -102,7 +102,7 @@ const MENU_BY_ID: Response<MenuDetailGetType> = {
       imageUrl: 'https://mylio',
       nameKr: '아이스 아메리카노',
       nameEn: 'ice americano',
-      categoryId: 1,
+      category: '커피',
       storeName: 'MaLio 강남점',
       description: 'MaLio 강남점',
       price: 2000,

@@ -21,10 +21,6 @@ const MENU_COLUMNS: Column<MenuType>[] = [
     accessor: 'price' as keyof MenuType,
   },
   {
-    header: '점포',
-    accessor: 'storeName' as keyof MenuType,
-  },
-  {
     header: '설명',
     accessor: 'description' as keyof MenuType,
     className: 'px-4 py-3 text-sm font-preRegular max-w-xs truncate',

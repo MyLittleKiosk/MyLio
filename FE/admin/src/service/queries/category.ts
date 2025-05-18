@@ -15,14 +15,28 @@ import {
 } from '@/service/apis/category';
 import useModalStore from '@/stores/useModalStore';
 
-export const useGetCategory = (page?: number) => {
+export const useGetCategory = (
+  keyword?: string,
+  page?: number,
+  size?: number
+) => {
   const query = useSuspenseQuery<Response<PaginationResponse<CategoryType>>>({
-    queryKey: ['category', page],
-    queryFn: () => getCategory(page),
+    queryKey: ['category', keyword, page, size],
+    queryFn: () => getCategory(keyword, page, size),
   });
+
+  const pageInfo = {
+    first: query.data?.data.first,
+    last: query.data?.data.last,
+    pageNumber: query.data?.data.pageNumber,
+    pageSize: query.data?.data.pageSize,
+    totalElements: query.data?.data.totalElements,
+    totalPages: query.data?.data.totalPages,
+  };
 
   return {
     data: query.data?.data.content,
+    pageInfo,
   };
 };
 

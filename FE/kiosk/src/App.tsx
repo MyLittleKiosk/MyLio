@@ -28,12 +28,12 @@ function App() {
             <Route path='search' element={<Menus />} />
             <Route path='order' element={<Order />} />
             <Route path='pay' element={<Pay />} />
-            <Route path='pay/success' element={<Success />} />
             <Route path='pay/loading' element={<PayLoading />} />
             <Route path='select-pay' element={<SelectPay />} />
             <Route path='confirm' element={<Confirm />} />
             <Route path='detail' element={<Detail />} />
           </Route>
+          <Route path='/success' element={<Success />} />
         </Routes>
       </QueryClientProvider>
     </>

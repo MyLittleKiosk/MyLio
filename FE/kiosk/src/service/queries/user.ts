@@ -28,7 +28,7 @@ export function useLogin() {
     }) => login(email, password, kioskId),
     onSuccess: ({ data }) => {
       localStorage.setItem('kioskId', data.kioskId.toString());
-      navigate('/kiosk');
+      navigate('/landing');
     },
     onError: (error) => {
       alert(error.message);

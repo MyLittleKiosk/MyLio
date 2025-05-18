@@ -4,7 +4,7 @@ import {
   useQuery,
   useSuspenseQuery,
 } from '@tanstack/react-query';
-import { OptionList } from '@/types/options';
+import { OptionGroup } from '@/types/options';
 import {
   addOptionDetail,
   addOptionGroup,
@@ -16,17 +16,26 @@ import {
   getOptions,
 } from '@/service/apis/option';
 import useModalStore from '@/stores/useModalStore';
+import { PaginationResponse, Response } from '@/types/apiResponse';
 
-const useGetOptions = () => {
-  const query = useSuspenseQuery<OptionList>({
-    queryKey: ['options'],
-    queryFn: getOptions,
+const useGetOptions = (keyword?: string, page?: number, size?: number) => {
+  const query = useSuspenseQuery<Response<PaginationResponse<OptionGroup>>>({
+    queryKey: ['options', keyword, page, size],
+    queryFn: () => getOptions(keyword, page, size),
   });
 
+  const pageInfo = {
+    first: query.data?.data.first,
+    last: query.data?.data.last,
+    pageNumber: query.data?.data.pageNumber,
+    pageSize: query.data?.data.pageSize,
+    totalElements: query.data?.data.totalElements,
+    totalPages: query.data?.data.totalPages,
+  };
+
   return {
-    data: query.data?.data.options,
-    isLoading: query.isLoading,
-    isError: query.isError,
+    data: query.data?.data.content,
+    pageInfo,
   };
 };
 
