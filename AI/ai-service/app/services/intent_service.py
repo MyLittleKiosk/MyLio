@@ -136,6 +136,21 @@ class IntentService:
                 updated_session = self.session_manager.get_session(session_id)
                 print(f"[요청 처리] 옵션 처리 후 장바구니: {len(updated_session.get('cart', []))}")
                 
+                # 메뉴 처리 후 대기열 확인 및 상태 디버깅
+                print(f"[대기열 처리 확인] 대기열 존재 여부: {'order_queue' in updated_session}")
+                if 'order_queue' in updated_session:
+                    queue_size = len(updated_session['order_queue'])
+                    print(f"[대기열 처리 확인] 대기열 크기: {queue_size}")
+                    if queue_size > 0:
+                        first_menu = updated_session['order_queue'][0]
+                        menu_name = first_menu.get('name_kr', '') or first_menu.get('menu_name', '') or first_menu.get('name', '')
+                        print(f"[대기열 처리 확인] 다음 메뉴: {menu_name}")
+                        print(f"[대기열 처리 확인] 이제 다음 메뉴 처리 시작할 수 있음: {menu_name}")
+                        
+                        # 여기서 직접 다음 메뉴 처리를 시작할 수도 있음 (그러나 UX 측면에서는 사용자가 제어할 수 있도록 함)
+                else:
+                    print("[대기열 처리 확인] 대기열이 존재하지 않거나 비어있음")
+                
                 self.session_manager.add_to_history(session_id, text, response)
                 return response
             # 3. 대기열 처리 추가
@@ -266,7 +281,7 @@ class IntentService:
             print(f"[대기열 처리] 메뉴 찾기 실패: {menu_name}")
             
             # 대기열에서 현재 메뉴 제거
-            self.session_manager.remove_from_order_queue(session_id)
+            #self.session_manager.remove_from_order_queue(session_id)
             
             # 다음 메뉴가 있는지 확인
             next_menu = self.session_manager.get_next_queued_menu(session_id)

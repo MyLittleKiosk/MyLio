@@ -825,23 +825,43 @@ class RedisSessionManager:
     def get_next_queued_menu(self, session_id: str) -> Optional[Dict[str, Any]]:
         """대기열에서 다음 메뉴 가져오기"""
         session = self.get_session(session_id)
-        if not session or "order_queue" not in session or not session["order_queue"]:
+        queue_exists = session and "order_queue" in session and session["order_queue"]
+        
+        if not queue_exists:
+            print(f"[대기열 조회] 세션 ID: {session_id}, 대기열 비어있음")
             return None
         
         # 첫 번째 메뉴 가져오기 (pop하지 않고 peek만)
-        return session["order_queue"][0]
+        first_menu = session["order_queue"][0]
+        print(f"[대기열 조회] 세션 ID: {session_id}, 다음 메뉴: {first_menu.get('name_kr', '') or first_menu.get('menu_name', '') or first_menu.get('name', '')}")
+        return first_menu
 
     def remove_from_order_queue(self, session_id: str) -> bool:
         """대기열에서 처리 완료된 메뉴 제거"""
         session = self.get_session(session_id)
-        if not session or "order_queue" not in session or not session["order_queue"]:
+        queue_exists = session and "order_queue" in session and session["order_queue"]
+        
+        if not queue_exists:
+            print(f"[대기열 제거] 세션 ID: {session_id}, 대기열 비어있음")
             return False
+        
+        # 제거 전 메뉴 확인
+        first_menu = session["order_queue"][0]
+        menu_name = first_menu.get('name_kr', '') or first_menu.get('menu_name', '') or first_menu.get('name', '')
+        print(f"[대기열 제거] 세션 ID: {session_id}, 제거할 메뉴: {menu_name}")
         
         # 첫 번째 메뉴 제거
         session["order_queue"].pop(0)
+        print(f"[대기열 제거] 세션 ID: {session_id}, 제거 후 크기: {len(session['order_queue'])}")
         
-        # 세션 저장
-        return self._save_session(session_id, session)
+        # 세션 저장 및 결과 확인
+        result = self._save_session(session_id, session)
+        # 저장 후 세션 다시 확인하여 변경 사항이 반영되었는지 검증
+        updated_session = self.get_session(session_id)
+        updated_queue_size = len(updated_session.get("order_queue", [])) if updated_session and "order_queue" in updated_session else 0
+        print(f"[대기열 제거 검증] 세션 ID: {session_id}, 저장 후 대기열 크기: {updated_queue_size}")
+        
+        return result
     
     def update_order_queue_first(self, session_id: str, updated_menu: Dict[str, Any]) -> None:
         session = self.get_session(session_id)
