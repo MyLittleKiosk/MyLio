@@ -66,7 +66,7 @@ const KioskContent = () => {
       </div>
       <Table
         title='키오스크 목록'
-        description={`총 ${kioskList.length}개의 키오스크가 있습니다.`}
+        description={`총 ${pageInfo.totalElements}개의 키오스크가 있습니다.`}
         columns={KIOSK_COLUMNS}
         data={kioskList}
         onEdit={(row) => {

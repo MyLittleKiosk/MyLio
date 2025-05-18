@@ -4,6 +4,7 @@ import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
 import PageNavigation from '@/components/common/PageNavigation';
+import DeleteMenuModal from '@/components/menus/DeleteMenuModal';
 
 import { CategoryType } from '@/types/categories';
 import { MenuType, NavItemType } from '@/types/menus';
@@ -14,7 +15,6 @@ import { useGetCategory } from '@/service/queries/category';
 import { useGetMenus } from '@/service/queries/menu';
 import useModalStore from '@/stores/useModalStore';
 import { useDebounce } from '@/hooks/useDebounce';
-import DeleteMenuModal from '../DeleteMenuModal';
 
 interface Props {
   selectedNav: NavItemType;
@@ -93,7 +93,7 @@ const Menu = ({
       </div>
       <Table<MenuType>
         title='메뉴 목록'
-        description={`총 ${menus.length}개의 메뉴가 있습니다.`}
+        description={`총 ${pageInfo.totalElements}개의 메뉴가 있습니다.`}
         columns={selectedNav.columns as Column<MenuType>[]}
         data={menus as MenuType[]}
         onEdit={(row) => handleEdit(row.menuId)}

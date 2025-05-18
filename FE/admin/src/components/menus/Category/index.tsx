@@ -70,7 +70,7 @@ const Category = ({ selectedNav }: { selectedNav: NavItemType }) => {
       </div>
       <Table<CategoryType>
         title='카테고리 목록'
-        description={`총 ${categoryList.length}개의 카테고리가 있습니다.`}
+        description={`총 ${pageInfo.totalElements}개의 카테고리가 있습니다.`}
         columns={selectedNav.columns as Column<CategoryType>[]}
         data={categoryList as CategoryType[]}
         onEdit={(row) => {

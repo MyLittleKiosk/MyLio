@@ -68,7 +68,7 @@ const AccountContent = () => {
         </div>
         <Table<AccountType>
           title='계정 목록'
-          description={`총 ${accountList?.length}개의 계정이 있습니다.`}
+          description={`총 ${pageInfo.totalElements}개의 계정이 있습니다.`}
           columns={ACCOUNT_COLUMNS}
           data={accountList || []}
           onDelete={(row) => openModal(<DeleteAccountModal row={row} />)}
