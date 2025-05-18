@@ -8,6 +8,7 @@ import AddCategoryModal from '@/components/menus/AddCategoryModal';
 import EditCategoryModal from '@/components/menus/EditCategoryModal';
 import DeleteCategoryModal from '@/components/menus/DeleteCategoryModal';
 import PageNavigation from '@/components/common/PageNavigation';
+import Input from '@/components/common/Input';
 
 import { CategoryType } from '@/types/categories';
 import { NavItemType } from '@/types/menus';
@@ -18,7 +19,6 @@ import useModalStore from '@/stores/useModalStore';
 
 import { useGetCategory } from '@/service/queries/category';
 import { useDebounce } from '@/hooks/useDebounce';
-import Input from '@/components/common/Input';
 
 const Category = ({ selectedNav }: { selectedNav: NavItemType }) => {
   const { openModal } = useModalStore();

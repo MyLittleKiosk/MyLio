@@ -1,10 +1,11 @@
 import { CustomError } from '@/types/apiResponse';
 import authClient from '@/service/authClient';
 
-async function getCategory(keyword?: string, page?: number) {
+async function getCategory(keyword?: string, page?: number, size?: number) {
   const params = {
     keyword: keyword || null,
     page: page || 1,
+    size: size || 10,
   };
   try {
     const res = await authClient.get(`/category`, {

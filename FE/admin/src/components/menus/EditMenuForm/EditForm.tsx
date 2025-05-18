@@ -9,13 +9,11 @@ import { useMenuEditContext } from '@/components/menus/EditMenuForm/MenuEditCont
 import { useGetCategory } from '@/service/queries/category';
 import { useGetOptions } from '@/service/queries/option';
 import { useGetIngredientList } from '@/service/queries/ingredient';
-// import { useGetNutritionList } from '@/service/queries/nutrient';
+import { useGetNutritionList } from '@/service/queries/nutrient';
 
 import IconAdd from '@/assets/icons/IconAdd';
 import IconTrashCan from '@/assets/icons/IconTrashCan';
 import IconImage from '@/assets/icons/IconImage';
-
-import { NUTRIENT_LIST } from '@/datas/NutrientList';
 
 import translator from '@/utils/translator';
 
@@ -50,9 +48,9 @@ const EditForm = () => {
   } = useMenuEditContext();
 
   const { data: options } = useGetOptions();
-  const { data: category } = useGetCategory();
-  const { data: ingredient } = useGetIngredientList();
-  // const { data: nutrient } = useGetNutritionList();
+  const { data: category } = useGetCategory(undefined, undefined, 50);
+  const { data: ingredient } = useGetIngredientList(undefined, undefined, 50);
+  const { data: nutrient } = useGetNutritionList(undefined, undefined, 50);
 
   // 옵션 정보가 변경될 때마다 menuAddData 업데이트
   useEffect(() => {
@@ -291,13 +289,13 @@ const EditForm = () => {
       <div className='flex flex-col gap-2 w-full'>
         <div className='flex gap-2'>
           <Select
-            options={NUTRIENT_LIST.content}
+            options={nutrient || []}
             label='영양성분'
             selected={selectedNutrient}
             placeholder='영양성분을 선택하세요.'
             getOptionLabel={(option) => option.nutritionTemplateName}
             getOptionValue={(option) => option.nutritionTemplateId.toString()}
-            onChange={(e) => handleNutrientChange(e, NUTRIENT_LIST.content)}
+            onChange={(e) => handleNutrientChange(e, nutrient || [])}
             className='w-[55%]'
           />
 

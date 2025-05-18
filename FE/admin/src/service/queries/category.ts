@@ -15,10 +15,14 @@ import {
 } from '@/service/apis/category';
 import useModalStore from '@/stores/useModalStore';
 
-export const useGetCategory = (keyword?: string, page?: number) => {
+export const useGetCategory = (
+  keyword?: string,
+  page?: number,
+  size?: number
+) => {
   const query = useSuspenseQuery<Response<PaginationResponse<CategoryType>>>({
-    queryKey: ['category', keyword, page],
-    queryFn: () => getCategory(keyword, page),
+    queryKey: ['category', keyword, page, size],
+    queryFn: () => getCategory(keyword, page, size),
   });
 
   const pageInfo = {
