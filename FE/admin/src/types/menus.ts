@@ -40,7 +40,7 @@ export type MenuDetailGetType = {
     imageUrl: string;
     nameKr: string;
     nameEn: string;
-    categoryId: number;
+    category: string;
     storeName: string;
     description: string;
     price: number;

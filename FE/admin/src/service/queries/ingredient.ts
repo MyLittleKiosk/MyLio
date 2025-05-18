@@ -6,10 +6,14 @@ import {
 import { IngredientForm, IngredientType } from '@/types/ingredient';
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
 
-export const useGetIngredientList = (keyword?: string, page?: number) => {
+export const useGetIngredientList = (
+  keyword?: string,
+  page?: number,
+  size?: number
+) => {
   const query = useQuery({
-    queryKey: ['ingredientList', keyword, page],
-    queryFn: () => getIngredientList(keyword, page),
+    queryKey: ['ingredientList', keyword, page, size],
+    queryFn: () => getIngredientList(keyword, page, size),
     placeholderData: keepPreviousData,
   });
 
@@ -24,8 +28,6 @@ export const useGetIngredientList = (keyword?: string, page?: number) => {
 
   return {
     data: query.data?.data.content,
-    isLoading: query.isLoading,
-    isError: query.isError,
     pageInfo,
   };
 };

@@ -38,13 +38,13 @@ const OptionTable = ({ options }: OptionTableProps) => {
               (selected) => selected.optionId === option.optionId
             );
 
-            return option.optionDetail.map(
+            return option.optionDetails.map(
               (detail: OptionDetailType, index: number) => (
                 <tr key={`${option.optionId}-${detail.optionDetailId}`}>
                   {index === 0 && (
                     <>
                       <td
-                        rowSpan={option.optionDetail.length}
+                        rowSpan={option.optionDetails.length}
                         className='text-center'
                       >
                         <input
@@ -54,7 +54,7 @@ const OptionTable = ({ options }: OptionTableProps) => {
                         />
                       </td>
                       <td
-                        rowSpan={option.optionDetail.length}
+                        rowSpan={option.optionDetails.length}
                         className='px-4 py-3 text-sm font-preRegular text-center'
                       >
                         {option.optionNameKr}
@@ -80,7 +80,7 @@ const OptionTable = ({ options }: OptionTableProps) => {
                   </td>
                   {index === 0 && (
                     <td
-                      rowSpan={option.optionDetail.length}
+                      rowSpan={option.optionDetails.length}
                       className='text-center'
                     >
                       <input

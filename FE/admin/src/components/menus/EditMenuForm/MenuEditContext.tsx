@@ -3,11 +3,10 @@ import React, { createContext, useContext, useEffect } from 'react';
 import { useMenuAdd } from '@/components/menus/AddMenuForm/useMenuAdd';
 
 import { MenuDetailGetType } from '@/types/menus';
-import { IngredientType } from '@/types/ingredient';
-
-import { CATEGORY_LIST } from '@/service/mock/dummies/category';
-
-import { INGREDIENT_LIST } from '@/datas/IngredientList';
+import { IngredientDetailGetType, IngredientType } from '@/types/ingredient';
+import { CategoryType } from '@/types/categories';
+import { NutrientType } from '@/types/nutrient';
+import { OptionGroup } from '@/types/options';
 
 // 기존 useMenuAdd의 반환 타입과 동일한 타입을 사용
 const MenuEditContext = createContext<ReturnType<typeof useMenuAdd> | null>(
@@ -17,11 +16,19 @@ const MenuEditContext = createContext<ReturnType<typeof useMenuAdd> | null>(
 interface MenuEditProviderProps {
   children: React.ReactNode;
   menuDetail?: MenuDetailGetType;
+  category: CategoryType[];
+  ingredient: IngredientType[];
+  nutrient: NutrientType[];
+  options: OptionGroup[];
 }
 
 export const MenuEditProvider: React.FC<MenuEditProviderProps> = ({
   children,
   menuDetail,
+  category,
+  ingredient,
+  nutrient,
+  options,
 }) => {
   // 기본 useMenuAdd 훅을 사용
   const menuFormValues = useMenuAdd();
@@ -33,7 +40,7 @@ export const MenuEditProvider: React.FC<MenuEditProviderProps> = ({
       menuFormValues.setMenuAddData({
         nameKr: menuDetail.menuInfo.nameKr,
         nameEn: menuDetail.menuInfo.nameEn,
-        categoryId: menuDetail.menuInfo.categoryId,
+        categoryId: 0, //별도처리
         description: menuDetail.menuInfo.description,
         price: menuDetail.menuInfo.price,
         tags: menuDetail.tags.map((tag) => ({
@@ -42,7 +49,7 @@ export const MenuEditProvider: React.FC<MenuEditProviderProps> = ({
         })),
         nutritionInfo: menuDetail.nutritionInfo.map((nutrition) => ({
           nutritionTemplateId: nutrition.nutritionId,
-          nutritionValue: nutrition.nutritionValue,
+          nutritionValue: Number(nutrition.nutritionValue),
         })),
         ingredientInfo: menuDetail.ingredientInfo.map(
           (ingredient) => ingredient.ingredientId
@@ -51,18 +58,21 @@ export const MenuEditProvider: React.FC<MenuEditProviderProps> = ({
       });
 
       // 카테고리 설정
-      const selectedCategory = CATEGORY_LIST.data.content.find(
-        (category) => category.categoryId === menuDetail.menuInfo.categoryId
+      const selectedCategoryId = category.find(
+        (category) => category.nameKr === menuDetail.menuInfo.category
       );
-      if (selectedCategory) {
-        menuFormValues.setSelectedCategory(selectedCategory);
+      if (selectedCategoryId) {
+        menuFormValues.setSelectedCategory(selectedCategoryId);
       }
 
       // 영양성분 설정
       const nutrientList = menuDetail.nutritionInfo.map((nutrition) => {
+        const foundNutrient = nutrient.find(
+          (n) => n.nutritionTemplateId === nutrition.nutritionId
+        );
         return {
           nutritionTemplateId: nutrition.nutritionId,
-          nutritionName: nutrition.nutritionName || '',
+          nutritionName: foundNutrient?.nutritionTemplateName || '',
           nutritionValue: nutrition.nutritionValue,
         };
       });
@@ -70,34 +80,58 @@ export const MenuEditProvider: React.FC<MenuEditProviderProps> = ({
 
       // 원재료 설정
       const ingredientList = menuDetail.ingredientInfo
-        .map((ingredient) => {
-          const foundIngredient = INGREDIENT_LIST.content.find(
-            (i) => i.ingredientTemplateId === ingredient.ingredientId
+        .map((mi: IngredientDetailGetType) => {
+          const foundIngredient = ingredient.find(
+            (i) => i.ingredientTemplateId === mi.ingredientId
           );
           return foundIngredient as IngredientType;
         })
         .filter(Boolean);
+
       menuFormValues.setSelectedIngredientList(ingredientList);
+
+      // 영양성분 설정
 
       // 이미지 설정 (URL이 있을 경우)
       if (menuDetail.menuInfo.imageUrl) {
         menuFormValues.setImagePreview(menuDetail.menuInfo.imageUrl);
       }
 
-      // Group optionInfo by optionId
+      // options와 menuDetail.optionInfo를 매핑하여 옵션 정보 설정
       const optionMap: Record<
         number,
         { isRequired: boolean; selectedDetails: number[] }
       > = {};
 
-      menuDetail.optionInfo.forEach((option) => {
-        if (!optionMap[option.menuOptionId]) {
-          optionMap[option.menuOptionId] = {
-            isRequired: option.required,
+      menuDetail.optionInfo.forEach((menuOption) => {
+        if (!optionMap[menuOption.optionId]) {
+          optionMap[menuOption.optionId] = {
+            isRequired: menuOption.required,
             selectedDetails: [],
           };
         }
-        optionMap[option.menuOptionId].selectedDetails.push(option.optionId);
+
+        // optionValue와 일치하는 optionDetailId 찾기
+        const optionGroup = options.find(
+          (opt) => opt.optionId === menuOption.optionId
+        );
+
+        if (optionGroup) {
+          const matchingDetail = optionGroup.optionDetails.find(
+            (detail) => detail.optionDetailValue === menuOption.optionValue
+          );
+
+          if (
+            matchingDetail &&
+            !optionMap[menuOption.optionId].selectedDetails.includes(
+              matchingDetail.optionDetailId
+            )
+          ) {
+            optionMap[menuOption.optionId].selectedDetails.push(
+              matchingDetail.optionDetailId
+            );
+          }
+        }
       });
 
       const optionList = Object.entries(optionMap).map(([optionId, value]) => ({
@@ -109,7 +143,7 @@ export const MenuEditProvider: React.FC<MenuEditProviderProps> = ({
 
       menuFormValues.setSelectedOptions(optionList);
     }
-  }, [menuDetail]);
+  }, [menuDetail, options]);
 
   return (
     <MenuEditContext.Provider value={menuFormValues}>
