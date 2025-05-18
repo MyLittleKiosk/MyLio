@@ -842,6 +842,12 @@ class RedisSessionManager:
         
         # 세션 저장
         return self._save_session(session_id, session)
+    
+    def update_order_queue_first(self, session_id: str, updated_menu: Dict[str, Any]) -> None:
+        session = self.get_session(session_id)
+        if session and "order_queue" in session and session["order_queue"]:
+            session["order_queue"][0] = updated_menu
+            self._save_session(session_id, session)
 
     def update_session_field(self, session_id: str, field: str, value: Any) -> bool:
         """세션의 특정 필드만 업데이트"""
