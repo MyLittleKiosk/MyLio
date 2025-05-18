@@ -1,17 +1,11 @@
-import { Suspense } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
-
-import Error from '@/components/common/Error';
-import Loading from '@/components/common/Loading';
+import ErrorHandler from '@/components/common/ErrorHandler';
 import NutrientsContent from '@/components/nutrients/NutrientsContent';
 
 const Nutrients = () => {
   return (
-    <ErrorBoundary fallbackRender={() => <Error />}>
-      <Suspense fallback={<Loading />}>
-        <NutrientsContent />
-      </Suspense>
-    </ErrorBoundary>
+    <ErrorHandler>
+      <NutrientsContent />
+    </ErrorHandler>
   );
 };
 
