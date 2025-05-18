@@ -28,8 +28,6 @@ export const useGetIngredientList = (
 
   return {
     data: query.data?.data.content,
-    isLoading: query.isLoading,
-    isError: query.isError,
     pageInfo,
   };
 };
