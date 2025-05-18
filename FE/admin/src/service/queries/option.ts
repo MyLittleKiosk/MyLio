@@ -18,10 +18,10 @@ import {
 import useModalStore from '@/stores/useModalStore';
 import { PaginationResponse, Response } from '@/types/apiResponse';
 
-const useGetOptions = (keyword?: string, page?: number) => {
+const useGetOptions = (keyword?: string, page?: number, size?: number) => {
   const query = useSuspenseQuery<Response<PaginationResponse<OptionGroup>>>({
-    queryKey: ['options', keyword, page],
-    queryFn: () => getOptions(keyword, page),
+    queryKey: ['options', keyword, page, size],
+    queryFn: () => getOptions(keyword, page, size),
   });
 
   const pageInfo = {

@@ -2,10 +2,15 @@ import { CustomError } from '@/types/apiResponse';
 import authClient from '@/service/authClient';
 
 //옵션 전체 조회
-export async function getOptions(keyword?: string, page?: number) {
+export async function getOptions(
+  keyword?: string,
+  page?: number,
+  size?: number
+) {
   const params = {
     keyword: keyword || null,
     page: page || 1,
+    size: size || 50,
   };
   try {
     const res = await authClient.get(`/option`, { params });

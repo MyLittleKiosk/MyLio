@@ -324,12 +324,12 @@ const EditForm = () => {
           />
         </div>
 
-        <div className='flex gap-2'>
+        <div className='flex gap-2 w-full overflow-x-auto'>
           {selectedNutrientList.map((nutrient) => {
             return (
               <p
                 key={nutrient.nutritionTemplateId}
-                className='px-2 py-1 text-sm border border-subContent rounded-full font-preLight cursor-pointer flex gap-1 items-center hover:bg-subContent/50'
+                className='px-2 py-1 text-sm border border-subContent rounded-full font-preLight cursor-pointer flex gap-1 items-center hover:bg-subContent/50 whitespace-nowrap'
                 onClick={() =>
                   handleNutrientRemove(nutrient.nutritionTemplateId)
                 }
