@@ -21,12 +21,18 @@ const SideBar = () => {
   const AUTHORITY = IS_SUPER_ADMIN ? '슈퍼관리자' : '일반관리자';
 
   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
-  const [currentPath, setCurrentPath] = useState(useLocation().pathname);
+  const location = useLocation();
+  const [currentPath, setCurrentPath] = useState(location.pathname);
 
   // 사이드바 너비 조정 애니메이션 완료 여부
   const [isWidthAnimationComplete, setIsWidthAnimationComplete] =
     useState(true);
   const { mutate: logout } = useLogout();
+
+  // 주소 변경 감지하여 currentPath 업데이트
+  useEffect(() => {
+    setCurrentPath(location.pathname);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!isSideBarOpen) {

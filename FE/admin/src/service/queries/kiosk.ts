@@ -17,8 +17,18 @@ export const useGetKioskList = (keyword?: string, page?: number) => {
     queryFn: () => getKioskList(keyword, page),
   });
 
+  const pageInfo = {
+    first: query.data?.data.first,
+    last: query.data?.data.last,
+    pageNumber: query.data?.data.pageNumber,
+    pageSize: query.data?.data.pageSize,
+    totalElements: query.data?.data.totalElements,
+    totalPages: query.data?.data.totalPages,
+  };
+
   return {
     data: query.data?.data.content,
+    pageInfo,
   };
 };
 

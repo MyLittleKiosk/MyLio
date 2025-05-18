@@ -14,7 +14,7 @@ export interface OptionGroup {
   optionId: number;
   optionNameKr: string;
   optionNameEn: string;
-  optionDetail: OptionDetailType[];
+  optionDetails: OptionDetailType[];
 }
 
 export type OptionDetailGetType = {
@@ -26,11 +26,3 @@ export type OptionDetailGetType = {
   additionalPrice: number;
   required: boolean;
 };
-
-export interface OptionList {
-  success: boolean;
-  data: {
-    options: OptionGroup[];
-  };
-  timestamp: string;
-}

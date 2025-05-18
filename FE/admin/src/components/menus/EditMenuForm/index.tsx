@@ -13,6 +13,10 @@ import CompleteModal from '@/components/common/CompleteModal';
 import EditForm from '@/components/menus/EditMenuForm/EditForm';
 
 import { MenuDetailGetType } from '@/types/menus';
+import { useGetCategory } from '@/service/queries/category';
+import { useGetIngredientList } from '@/service/queries/ingredient';
+import { useGetNutritionList } from '@/service/queries/nutrient';
+import { useGetOptions } from '@/service/queries/option';
 
 interface Props {
   setIsEditMenuClicked: (value: boolean) => void;
@@ -21,9 +25,19 @@ interface Props {
 
 const EditMenuForm = ({ setIsEditMenuClicked, clickedMenuId }: Props) => {
   const { data: menuDetail } = useGetMenuById(clickedMenuId);
+  const { data: category } = useGetCategory(undefined, undefined, 50);
+  const { data: ingredient } = useGetIngredientList(undefined, undefined, 50);
+  const { data: nutrient } = useGetNutritionList(undefined, undefined, 50);
+  const { data: options } = useGetOptions(undefined, undefined, 50);
 
   return (
-    <MenuEditProvider menuDetail={menuDetail as MenuDetailGetType}>
+    <MenuEditProvider
+      menuDetail={menuDetail as MenuDetailGetType}
+      category={category || []}
+      ingredient={ingredient || []}
+      nutrient={nutrient || []}
+      options={options || []}
+    >
       <EditMenuFormContent
         setIsEditMenuClicked={setIsEditMenuClicked}
         clickedMenuId={clickedMenuId}
@@ -45,6 +59,8 @@ const EditMenuFormContent = ({
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    console.log('menuAddData', menuAddData);
 
     if (!checkValidation(false)) {
       return;
