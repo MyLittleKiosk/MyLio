@@ -1,5 +1,6 @@
 import ChatContainer from '@/components/Chat/ChatContainer';
 import VoiceAnimation from '@/components/Chat/VoiceAnimation';
+import VolumeMonitorButton from '@/components/Chat/RecordButton/VolumeMonitorButton';
 import { sendAudioToClova } from '@/service/apis/voice';
 import { ClovaResponse } from '@/types/clova';
 import { AxiosError } from 'axios';
@@ -147,29 +148,44 @@ const ClovaPage = () => {
         </h1>
 
         <div className='mb-6'>
-          <div className='flex justify-center mb-4'>
-            <button
-              onMouseDown={handlePressStart}
-              onMouseUp={handlePressEnd}
-              onTouchStart={handlePressStart}
-              onTouchEnd={handlePressEnd}
-              className={`px-6 py-2 rounded-full font-medium ${
-                isRecording
-                  ? 'bg-red-500 text-white scale-110 transition-all'
-                  : 'bg-blue-500 hover:bg-blue-600 text-white transition-all'
-              }`}
-              disabled={isProcessing}
-            >
-              {isRecording ? (
-                <div>
-                  <span>말하는 중...</span>
-                </div>
-              ) : (
-                '눌러서 말하기'
-              )}
-            </button>
+          <div className='flex flex-col items-center gap-8'>
+            {/* 기존 버튼 */}
+            <div className='flex flex-col items-center'>
+              <h2 className='text-lg font-medium mb-4'>
+                기존 방식 (버튼 누르기)
+              </h2>
+              <button
+                onMouseDown={handlePressStart}
+                onMouseUp={handlePressEnd}
+                onTouchStart={handlePressStart}
+                onTouchEnd={handlePressEnd}
+                className={`px-6 py-2 rounded-full font-medium ${
+                  isRecording
+                    ? 'bg-red-500 text-white scale-110 transition-all'
+                    : 'bg-blue-500 hover:bg-blue-600 text-white transition-all'
+                }`}
+                disabled={isProcessing}
+              >
+                {isRecording ? (
+                  <div>
+                    <span>말하는 중...</span>
+                  </div>
+                ) : (
+                  '눌러서 말하기'
+                )}
+              </button>
+            </div>
+
+            {/* 새로운 볼륨 모니터링 버튼 */}
+            <div className='flex flex-col items-center'>
+              <h2 className='text-lg font-medium mb-4'>
+                새로운 방식 (자동 감지)
+              </h2>
+              <VolumeMonitorButton onRecognitionResult={setRecognitionResult} />
+            </div>
           </div>
-          <div className='flex justify-center'>
+
+          <div className='flex justify-center mt-4'>
             <VoiceAnimation />
           </div>
 

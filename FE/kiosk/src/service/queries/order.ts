@@ -51,7 +51,7 @@ export function usePostSuccess() {
     },
     onSuccess: () => {
       sessionStorage.removeItem('cartItem');
-      navigate('/kiosk/pay/success');
+      navigate('/success');
     },
     onError: (error) => {
       console.error('결제 성공 중 오류 발생:', error);

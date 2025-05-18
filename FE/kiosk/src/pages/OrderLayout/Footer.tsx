@@ -1,6 +1,9 @@
 import RecordButton from '@/components/Chat/RecordButton';
 import clsx from 'clsx';
 import { useMemo, useState } from 'react';
+import Item from '@/pages/OrderLayout/Item';
+import useOrderStore from '@/stores/useOrderStore';
+import { useOrderRequest } from '@/service/queries/order';
 const FOOTER_PATHS = [
   '/kiosk/search',
   '/kiosk',
@@ -9,20 +12,14 @@ const FOOTER_PATHS = [
 ];
 
 interface FooterProps {
-  order: {
-    cart: {
-      cartId: string;
-      imageUrl: string;
-      name: string;
-      quantity: number;
-    }[];
-  };
   handleRecognitionResult: (text: string) => void;
   pathname: string;
 }
 
-const Footer = ({ order, handleRecognitionResult, pathname }: FooterProps) => {
+const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
   const [page, setPage] = useState(0);
+  const order = useOrderStore((state) => state.order);
+  const { mutate } = useOrderRequest();
   const cartList = useMemo(() => {
     if (order.cart.length === 0) return [];
     const itemsPerPage = 4;
@@ -35,6 +32,37 @@ const Footer = ({ order, handleRecognitionResult, pathname }: FooterProps) => {
     }
     return result;
   }, [order.cart]);
+
+  // 수량 증가
+  const handleIncrease = (cartId: string) => {
+    const cartItem = order.cart.find((item) => item.cartId === cartId);
+    if (!cartItem) return;
+    const quantity = cartItem.quantity + 1;
+    mutate({
+      text: `${cartItem.name}(${cartId})를 ${quantity}개로 바꿔주세요`,
+      ...order,
+    });
+  };
+  // 수량 감소
+  const handleDecrease = (cartId: string) => {
+    const cartItem = order.cart.find((item) => item.cartId === cartId);
+    if (!cartItem) return;
+    const quantity = cartItem.quantity - 1;
+    mutate({
+      text: `${cartItem.name}(${cartId})를 ${quantity}개로 바꿔주세요`,
+      ...order,
+    });
+  };
+  // 삭제
+  const handleRemove = (cartId: string) => {
+    const cartItem = order.cart.find((item) => item.cartId === cartId);
+    if (!cartItem) return;
+    mutate({
+      text: `${cartItem.name}(${cartId})를 삭제해주세요`,
+      ...order,
+    });
+  };
+
   return (
     <div
       className={clsx(
@@ -43,7 +71,7 @@ const Footer = ({ order, handleRecognitionResult, pathname }: FooterProps) => {
       )}
     >
       {FOOTER_PATHS.includes(pathname) && (
-        <div className='px-2 flex justify-between items-center gap-4 bg-[#F5F5F5] w-[80%] h-full rounded-xl overflow-y-auto'>
+        <div className='flex justify-between items-center gap-4 bg-[#F5F5F5] w-[80%] h-full rounded-xl '>
           <div className='flex items-center gap-2 h-full'>
             <button
               onClick={() => setPage(page - 1)}
@@ -56,18 +84,18 @@ const Footer = ({ order, handleRecognitionResult, pathname }: FooterProps) => {
               {'<'}
             </button>
           </div>
-          <div className='flex items-center gap-2 w-full'>
+          <div className='flex items-center gap-2 w-full justify-between'>
             {cartList[page]?.map((item) => (
-              <div
+              <Item
                 key={item.cartId}
-                className='w-20 h-20 flex flex-col bg-white rounded-xl justify-center items-center gap-2'
-              >
-                <img
-                  src={item.imageUrl}
-                  alt={item.name}
-                  className='w-20 h-20 object-cover rounded-xl'
-                />
-              </div>
+                cartId={item.cartId}
+                imageUrl={item.imageUrl}
+                name={item.name}
+                quantity={item.quantity}
+                onIncrease={() => handleIncrease(item.cartId)}
+                onDecrease={() => handleDecrease(item.cartId)}
+                onRemove={() => handleRemove(item.cartId)}
+              />
             ))}
           </div>
           <button
