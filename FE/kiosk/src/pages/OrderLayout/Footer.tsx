@@ -1,6 +1,6 @@
 import RecordButton from '@/components/Chat/RecordButton';
 import clsx from 'clsx';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Item from '@/pages/OrderLayout/Item';
 import useOrderStore from '@/stores/useOrderStore';
 import { useOrderRequest } from '@/service/queries/order';
@@ -34,6 +34,10 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
     return result;
   }, [order.cart]);
 
+  useEffect(() => {
+    setPage(0);
+  }, [order.cart]);
+
   // 수량 증가
   const handleIncrease = (cartId: string) => {
     const cartItem = order.cart.find((item) => item.cartId === cartId);
@@ -63,8 +67,6 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
       ...order,
     });
   };
-
-  console.log('page ', page);
 
   return (
     <div
