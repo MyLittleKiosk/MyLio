@@ -1,25 +1,41 @@
 import { PAY_METHODS } from '@/datas/PAYS';
 import { formatNumber } from '@/utils/formatNumber';
 import useOrderStore from '@/stores/useOrderStore';
+import { useNavigate } from 'react-router-dom';
+
 const SelectPay = () => {
-  const { order } = useOrderStore();
+  const { order, setOrder } = useOrderStore();
+  const navigate = useNavigate();
   const totalPrice = order.contents.reduce(
     (acc, curr) => acc + curr.totalPrice,
     0
   );
+
+  const handlePayMethodClick = (id: number) => {
+    if (id === 2) {
+      setOrder({ ...order, payment: 'PAY' });
+    }
+    navigate('/kiosk/pay');
+  };
+
   return (
     <section className='flex flex-col w-full h-full pt-5'>
       <h1 className='text-2xl font-preBold inline-block ps-10 mb-4'>
         결제 수단
       </h1>
       <div className='flex flex-wrap w-full px-10 gap-2 justify-center mt-3'>
-        {PAY_METHODS.map((pay) => (
+        {PAY_METHODS.map((method) => (
           <div
-            key={pay.id}
-            className='flex flex-col items-center w-44 h-36 rounded-md justify-center bg-[#F4F4F5]'
+            key={method.id}
+            className='flex flex-col items-center w-44 h-36 rounded-md justify-center bg-[#F4F4F5] cursor-pointer hover:bg-gray-200 transition-colors'
+            onClick={() => handlePayMethodClick(method.id)}
           >
-            <img src={pay.image} alt={pay.name} className='w-10 h-10' />
-            <span className='text-lg font-preBold'>{pay.name}</span>
+            <img
+              src={method.image}
+              alt={method.name}
+              className='w-10 h-10 object-contain'
+            />
+            <span className='text-lg font-preBold mt-2'>{method.name}</span>
           </div>
         ))}
       </div>
