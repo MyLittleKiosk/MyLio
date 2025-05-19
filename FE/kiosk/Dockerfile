@@ -11,7 +11,7 @@ COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn/ .yarn/
 
 # 의존성 설치 (Berry 표준)
-RUN yarn install --immutable
+RUN yarn install
 
 ARG BASE_PATH=/
 ARG VITE_PUBLIC_API_URL
