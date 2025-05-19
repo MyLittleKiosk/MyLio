@@ -1,6 +1,6 @@
 import RecordButton from '@/components/Chat/RecordButton';
 import clsx from 'clsx';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Item from '@/pages/OrderLayout/Item';
 import useOrderStore from '@/stores/useOrderStore';
 import { useOrderRequest } from '@/service/queries/order';
@@ -22,7 +22,11 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
   const { mutate } = useOrderRequest();
 
   const cartList = useMemo(() => {
-    if (order.cart.length === 0) return [];
+    if (order.cart.length === 0) {
+      setPage(0);
+      return [];
+    }
+
     const itemsPerPage = 4;
     const totalPages = Math.ceil(order.cart.length / itemsPerPage);
     const result = [];
@@ -31,11 +35,12 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
       const end = start + itemsPerPage;
       result.push(order.cart.slice(start, end));
     }
-    return result;
-  }, [order.cart]);
 
-  useEffect(() => {
-    setPage(0);
+    if (totalPages === 1) {
+      setPage(0);
+    }
+
+    return result;
   }, [order.cart]);
 
   // 수량 증가
@@ -71,8 +76,8 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
   return (
     <div
       className={clsx(
-        'flex px-4 pt-4 items-center fixed bottom-4 left-0 w-full h-[250px] ',
-        FOOTER_PATHS.includes(pathname) ? 'justify-between' : 'justify-end'
+        'flex px-4 pt-4 items-center fixed bottom-4 left-0 w-full h-[250px] gap-6',
+        FOOTER_PATHS.includes(pathname) ? 'justify-center' : 'justify-end'
       )}
     >
       {FOOTER_PATHS.includes(pathname) && (
@@ -105,10 +110,12 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
           </div>
           <button
             onClick={() => setPage(page + 1)}
-            disabled={page === cartList.length - 1}
+            disabled={page === cartList.length - 1 || cartList.length === 0}
             className={clsx(
               'bg-primary text-white h-full rounded-tr-xl rounded-br-xl px-1',
-              page === cartList.length - 1 && 'bg-subContent'
+              page === cartList.length - 1 || cartList.length === 0
+                ? 'bg-subContent'
+                : 'bg-primary'
             )}
           >
             {'>'}
