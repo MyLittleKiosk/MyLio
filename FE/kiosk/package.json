@@ -53,8 +53,6 @@
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.21",
     "cypress": "^14.3.2",
-    "electron": "^36.2.1",
-    "electron-builder": "26.0.12",
     "eslint": "^9.22.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-cypress": "^4.3.0",
