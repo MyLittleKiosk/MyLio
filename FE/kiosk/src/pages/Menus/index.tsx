@@ -46,7 +46,7 @@ const Menus = () => {
           <button
             onClick={() => setPage(page - 1)}
             disabled={page === 0}
-            className={clsx('block', page === 0 && 'hidden')}
+            className={clsx('block', page === 0 && 'opacity-0 invisible')}
           >
             {'<'}
           </button>
@@ -76,7 +76,10 @@ const Menus = () => {
         <button
           onClick={() => setPage(page + 1)}
           disabled={page === menus.length - 1}
-          className={clsx('block', page === menus.length - 1 && 'hidden')}
+          className={clsx(
+            'block',
+            page === menus.length - 1 && 'opacity-0 invisible'
+          )}
         >
           {'>'}
         </button>
