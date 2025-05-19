@@ -1,25 +1,29 @@
 import { formatNumber } from '@/utils/formatNumber';
 import useOrderStore from '@/stores/useOrderStore';
 import Item from './Item';
-import { useOrderRequest } from '@/service/queries/order';
 
 const Confirm = () => {
-  const { order } = useOrderStore();
-  const { mutate } = useOrderRequest();
+  const { order, setOrder } = useOrderStore();
+
   const increaseCount = (menuId: number) => {
     const cartItem = order.cart.find((item) => item.menuId === menuId);
     const quantity = cartItem ? cartItem.quantity + 1 : 1;
-    mutate({
-      text: `${cartItem?.name}를 ${quantity}로 바꿔주세요`,
+    setOrder({
       ...order,
+      cart: order.cart.map((item) =>
+        item.menuId === menuId ? { ...item, quantity } : item
+      ),
     });
   };
+
   const decreaseCount = (menuId: number) => {
     const cartItem = order.cart.find((item) => item.menuId === menuId);
     const quantity = cartItem ? cartItem.quantity - 1 : 0;
-    mutate({
-      text: `${cartItem?.name}를 ${quantity}로 바꿔주세요`,
+    setOrder({
       ...order,
+      cart: order.cart.map((item) =>
+        item.menuId === menuId ? { ...item, quantity } : item
+      ),
     });
   };
 
@@ -29,12 +33,12 @@ const Confirm = () => {
         주문 확인
       </h1>
       <div className='flex flex-col gap-2 ps-10 pe-10 overflow-y-auto'>
-        {order.contents.map((item, idx) => (
+        {order.cart.map((item, idx) => (
           <Item
             key={item.menuId}
             imageUrl={item.imageUrl}
             name={item.name}
-            selectedOption={item.selectedOption}
+            selectedOption={item.selectedOptions}
             totalPrice={item.totalPrice}
             count={item.quantity}
             isLast={idx === order.contents.length - 1}
