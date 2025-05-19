@@ -23,6 +23,33 @@ class OrderProcessor(BaseProcessor):
         """주문 의도 처리"""
         print(f"[주문 처리] 시작: 텍스트='{text}', 화면 상태={screen_state}")
         
+        # 진행중인 메뉴가 있을 때 또 ORDER가 올 경우 새 메뉴 queue에 저장장
+        if (
+            intent_data.get("intent_type") == IntentType.ORDER
+            and session.get("last_state", {}).get("pending_option")
+        ):
+            # 1) 새 메뉴들을 대기열에 저장
+            self._queue_new_menu(
+                session.get("id", ""),
+                intent_data.get("menus", [])
+            )
+
+            # 2) 아직 진행 중인 메뉴 이름
+            current_menu = session["last_state"]["menu"]
+            menu_name_display = current_menu.get("name") or current_menu.get("name_kr")
+
+            # 3) 사용자에게 "이거 먼저 마저 골라 달라" 안내
+            if language == Language.KR:
+                reply_msg = f"{menu_name_display}의 필수 옵션이 아직 선택되지 않았어요."
+            else:
+                reply_msg = f"Please finish selecting options for {menu_name_display} first."
+
+            return {
+                "reply":        reply_msg,
+                "screen_state": ScreenState.ORDER,
+                "status":       ResponseStatus.OK
+            }
+
         # 세션 ID 가져오기
         session_id = session.get("id", "")
         
@@ -33,12 +60,17 @@ class OrderProcessor(BaseProcessor):
             session["last_state"] = {}
             if "order_queue" in session:
                 session["order_queue"] = []
-            
+
             # 세션 저장
             self.session_manager._save_session(session_id, session)
             
-            # 취소 응답 생성
-            return self._generate_cancellation_response(text, language, screen_state, store_id, session)
+            # 새 메뉴가 있는지 확인
+            if "menus" in intent_data and intent_data["menus"]:
+                print("[주문 처리] 취소 후 새 메뉴 인식됨:", intent_data["menus"])
+                # 여기서 return 하지 않고 아래 코드 계속 실행 (새 메뉴 처리)
+            else:
+                # 새 메뉴가 없으면 취소 응답만 반환
+                return self._generate_cancellation_response(text, language, screen_state, store_id, session)
         
         # LLM 인식 메뉴 목록 확인
         if "menus" not in intent_data or not intent_data["menus"]:
@@ -251,7 +283,9 @@ class OrderProcessor(BaseProcessor):
     def process_option_selection(self, text: str, language: str, screen_state: str, store_id: int, session: Dict[str, Any]) -> Dict[str, Any]:
         """옵션 선택 처리"""
         print(f"[옵션 선택 처리] 시작: 텍스트='{text}', 화면 상태={screen_state}")
-                
+             
+        session_id = session.get("id", "")   
+
         # 세션에서 현재 처리 중인 메뉴와 옵션 가져오기
         menu = session.get("last_state", {}).get("menu", {})
         pending_option = session.get("last_state", {}).get("pending_option", {})
@@ -266,6 +300,32 @@ class OrderProcessor(BaseProcessor):
                 session=session                  # 현재 세션 그대로
             )
             print("[LLM RESULT]\n", json.dumps(llm_result, ensure_ascii=False, indent=2))
+            if llm_result.get("intent_type") == IntentType.ORDER:
+                # 1) 새 메뉴 queue 에 push
+                self._queue_new_menu(session_id, llm_result.get("menus", []))
+
+                # 2) 진행 중 메뉴 이름
+                cur_menu_name = menu.get("name") or menu.get("name_kr")
+
+                # 3) 안내 메시지
+                if language == Language.KR:
+                    reply_msg = f"{cur_menu_name}의 필수 옵션이 아직 선택되지 않았어요."
+                else:
+                    reply_msg = f"Please finish selecting options for {cur_menu_name} first."
+
+                
+                # 4) 그대로 OPTION 화면 유지 & 바로 리턴
+                return self._build_response(
+                    intent_data=llm_result,
+                    text=text,
+                    language=language,
+                    screen_state=ScreenState.ORDER,
+                    store_id=store_id,
+                    session=session,
+                    status=ResponseStatus.MISSING_REQUIRED_OPTIONS,
+                    contents=llm_result.get("menus", []),
+                    reply=reply_msg
+                )
         except Exception as e:
             print("[LLM ERROR]", e)                 # ← 어떤 예외인지 찍기
             traceback.print_exc()                   # ← 스택 트레이스
@@ -639,29 +699,6 @@ class OrderProcessor(BaseProcessor):
         else:
             reply = f"{menu.get('name')} has been added to your cart."
 
-        return self._build_response(
-            intent_data, text, language, ScreenState.MAIN, store_id, session,
-            ResponseStatus.READY_TO_ADD_CART, reply=reply
-        )
-
-        
-        # 대기열에서 다음 메뉴가 없는 경우 - 장바구니 추가 완료 응답 생성
-        if 'reply' in locals() and reply:
-            pass  # 이미 reply가 있으면 그대로 사용
-        else:
-            # 기본 메시지 생성
-            if language == Language.KR:
-                reply = f"주문하신 메뉴가 장바구니에 담겼어요."
-            elif language == Language.EN:
-                reply = f"{menu.get('name')} has been added to your cart."
-            elif language == Language.CN:
-                reply = f"{menu.get('name')}已添加到您的购物车。"
-            elif language == Language.JP:
-                reply = f"{menu.get('name')}はカートに追加されました。"
-            else:
-                reply = f"{menu.get('name')} has been added to your cart."
-        
-        # 응답 반환
         return self._build_response(
             intent_data, text, language, ScreenState.MAIN, store_id, session,
             ResponseStatus.READY_TO_ADD_CART, reply=reply
@@ -1229,3 +1266,29 @@ class OrderProcessor(BaseProcessor):
 
         # (4) 끝까지 못 찾으면 None
         return None
+
+    def _queue_new_menu(self,
+                        session_id: str,
+                        new_menus_from_intent: list[dict]):
+        """
+        진행 중 메뉴가 있을 때, 새로 들어온 주문(menus_from_intent)을
+        order_queue 에 push 하고 즉시 return
+        """
+        if not new_menus_from_intent:
+            return
+
+        from copy import deepcopy
+        payload = [deepcopy(m) for m in new_menus_from_intent]
+        # 내부 포맷으로 맞춰야 하면 여기서 변환
+        self.session_manager.add_to_order_queue(session_id, payload)
+        
+        self.session_manager._save_session(
+            session_id,
+            self.session_manager.get_session(session_id)
+        )
+
+        q = self.session_manager.get_next_queued_menu(session_id)
+        size = len(self.session_manager.get_session(session_id).get("order_queue", []))
+        print(f"[order_queue] PUSH 완료 – 첫 아이템: "
+              f"{q.get('menu_name') if q else None}, "
+              f"queue 크기: {size}")
