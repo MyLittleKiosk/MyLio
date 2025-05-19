@@ -37,9 +37,10 @@ public class CategoryController {
     @Operation(summary = "카테고리 조회", description = "카테고리 목록을 조회합니다")
     public ResponseEntity<CommonResponse<CustomPage<CategoryResponseDto>>> getCategoryList(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestParam(name="keyword", required = false) String keyword,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
-        return CommonResponse.ok(categoryService.getCategoryList(storeId, pageable));
+        return CommonResponse.ok(categoryService.getCategoryList(storeId, keyword, pageable));
     }
 
     @PostMapping
