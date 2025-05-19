@@ -12,7 +12,7 @@ sys.path.append('.')
 
 # 모듈 import
 from app.services.menu_service import MenuService
-from app.services.vector_db_service import VectorDBService
+# from app.services.vector_db_service import VectorDBService
 
 def main():
     """메뉴 데이터로 벡터 DB 구축"""
@@ -35,16 +35,17 @@ def main():
     )
     
     # 벡터 DB 서비스 초기화
-    vector_db_service = VectorDBService.get_instance()
+    # vector_db_service = VectorDBService.get_instance()
     
     # 매장 ID 목록 (필요에 따라 수정)
     store_ids = [1]  # 예: 여러 매장 [1, 2, 3]
     
     # 벡터 DB 구축
-    menu_count = vector_db_service.initialize_from_menus(menu_service, store_ids)
+    # menu_count = vector_db_service.initialize_from_menus(menu_service, store_ids)
     
     end_time = time.time()
-    print(f"벡터 DB 구축 완료: {menu_count}개 메뉴, 소요 시간: {end_time - start_time:.2f}초")
+    
+    # print(f"벡터 DB 구축 완료: {menu_count}개 메뉴, 소요 시간: {end_time - start_time:.2f}초")
 
 if __name__ == "__main__":
     main()

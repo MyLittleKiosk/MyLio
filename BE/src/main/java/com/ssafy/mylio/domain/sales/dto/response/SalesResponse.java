@@ -9,15 +9,15 @@ import lombok.Builder;
 @Builder
 public class SalesResponse {
     @Schema(example = "2",description = "연도별인 경우  1월,2월 .. 월별인 경우 1일, 2일 ..")
-    private Integer type;
+    private Integer element;
 
     @Schema(example = "200000",description = "총매출")
-    private Integer total;
+    private Integer sales;
 
     public SalesResponse of(MonthlySalesSummary data){
         return SalesResponse.builder()
-                .type(data.getMonth())       // 1~12
-                .total(data.getTotalSales())
+                .element(data.getMonth())       // 1~12
+                .sales(data.getTotalSales())
                 .build();
     }
 }

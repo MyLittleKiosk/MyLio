@@ -1,4 +1,4 @@
-#  app/services/processor/payment_processor.py (CONFIRM 화면 처리 수정)
+# app/services/processor/payment_processor.py
 from typing import Dict, Any, Optional, List
 import json
 import re
@@ -6,9 +6,16 @@ from datetime import datetime
 
 from app.models.schemas import IntentType, ScreenState, Language, ResponseStatus
 from app.services.processor.base_processor import BaseProcessor
-
+from app.services.response.response_generator import ResponseGenerator
+from app.models.schemas import ResponseStatus
 class PaymentProcessor(BaseProcessor):
     """결제 처리 프로세서"""
+    
+    def __init__(self, response_generator: ResponseGenerator, menu_service, session_manager):
+        """프로세서 초기화"""
+        self.response_generator = response_generator
+        self.menu_service = menu_service
+        self.session_manager = session_manager
     
     def process(self, intent_data: Dict[str, Any], text: str, language: str, screen_state: str, store_id: int, session: Dict[str, Any]) -> Dict[str, Any]:
         """결제 의도 처리"""
@@ -39,15 +46,21 @@ class PaymentProcessor(BaseProcessor):
         
         else:
             # 기타 상태에서의 기본 응답
-            reply = self.response_service.get_response("unknown", language, {})
+            context = {
+                "status": ResponseStatus.UNKNOWN,
+                "screen_state": screen_state
+            }
+            reply = intent_data.get("reply") or self.response_generator.generate_response(
+                intent_data, language, context
+            )
             return {
                 "intent_type": IntentType.UNKNOWN,
-                "confidence": 0.3,
+                "confidence": intent_data.get("confidence", 0.3),
                 "raw_text": text,
                 "screen_state": screen_state,
                 "data": {
                     "pre_text": text,
-                    "post_text": text,
+                    "post_text": intent_data.get("post_text", text),
                     "reply": reply,
                     "status": ResponseStatus.UNKNOWN,
                     "language": language,
@@ -93,14 +106,29 @@ class PaymentProcessor(BaseProcessor):
     def _process_cancel_request(self, text: str, language: str, screen_state: str, store_id: int, session: Dict[str, Any]) -> Dict[str, Any]:
         """취소 요청 처리"""
         # 현재 화면 상태에 따른 다른 취소 메시지
+        context = {
+            "status": ResponseStatus.UNKNOWN,
+            "screen_state": ScreenState.MAIN
+        }
+        
+        # 의도 데이터 구성
+        intent_data = {
+            "intent_type": IntentType.PAYMENT,
+            "confidence": 0.9
+        }
+        
+        # 화면 상태에 따른 응답 컨텍스트 구성
         if screen_state == ScreenState.CONFIRM:
-            reply = self.response_service.get_response("order_canceled", language, {})
+            context["cancel_type"] = "order"
         elif screen_state == ScreenState.SELECT_PAY:
-            reply = self.response_service.get_response("payment_selection_canceled", language, {})
+            context["cancel_type"] = "payment_selection"
         elif screen_state == ScreenState.PAY:
-            reply = self.response_service.get_response("payment_processing_canceled", language, {})
+            context["cancel_type"] = "payment_processing"
         else:
-            reply = self.response_service.get_response("order_canceled", language, {})
+            context["cancel_type"] = "order"
+        
+        # 응답 생성
+        reply = self.response_generator.generate_response(intent_data, language, context)
         
         return {
             "intent_type": IntentType.PAYMENT,
@@ -123,7 +151,20 @@ class PaymentProcessor(BaseProcessor):
     def _process_view_menu_request(self, text: str, language: str, screen_state: str, store_id: int, session: Dict[str, Any]) -> Dict[str, Any]:
         """메뉴 보기 요청 처리 (SELECT_PAY, PAY 상태에서만 호출)"""
         # 결제 프로세스 중 메뉴 보기 요청이면 주문 취소 안내
-        reply = self.response_service.get_response("order_canceled_for_menu", language, {})
+        context = {
+            "status": ResponseStatus.UNKNOWN,
+            "screen_state": ScreenState.MAIN,
+            "cancel_type": "order_for_menu"
+        }
+        
+        # 의도 데이터 구성
+        intent_data = {
+            "intent_type": IntentType.PAYMENT,
+            "confidence": 0.9
+        }
+        
+        # 응답 생성
+        reply = self.response_generator.generate_response(intent_data, language, context)
         
         return {
             "intent_type": IntentType.PAYMENT,
@@ -150,15 +191,33 @@ class PaymentProcessor(BaseProcessor):
         
         if not cart:
             # 장바구니가 비어있는 경우
-            reply = self.response_service.get_response("empty_cart", language, {})
+            context = {
+                "status": ResponseStatus.UNKNOWN,
+                "screen_state": screen_state,
+                "cart_status": "empty"
+            }
+            # 언어에 따른 응답 생성
+            if language == Language.KR:
+                reply = "장바구니가 비어 있어요. 먼저 메뉴를 선택해주세요."
+            elif language == Language.EN:
+                reply = "Your cart is empty. Please select menu items first."
+            elif language == Language.JP:
+                reply = "カートが空です。まずメニューを選択してください。"
+            elif language == Language.CN:
+                reply = "购物车是空的。请先选择菜单。"
+            else:
+                reply = intent_data.get("reply") or self.response_generator.generate_response(
+                    intent_data, language, context
+                )
+
             return {
                 "intent_type": IntentType.PAYMENT,
-                "confidence": 0.7,
+                "confidence": intent_data.get("confidence", 0.7),
                 "raw_text": text,
                 "screen_state": screen_state,  # 화면 유지
                 "data": {
                     "pre_text": text,
-                    "post_text": text,
+                    "post_text": intent_data.get("post_text", text),
                     "reply": reply,
                     "status": ResponseStatus.UNKNOWN,
                     "language": language,
@@ -172,25 +231,55 @@ class PaymentProcessor(BaseProcessor):
             # 결제 확인 화면으로 이동
             # 장바구니 총액 계산
             total_amount = sum(item.get("total_price", 0) for item in cart)
-            
-            reply = self.response_service.get_response("confirm_order", language, {
-                "total_amount": total_amount
-            })
-            
+
+            # 언어에 따른 장바구니 확인 요청 메시지 생성
+            if language == Language.KR:
+                cart_items = ", ".join([f"{item.get('name')} {item.get('quantity')}개" for item in cart[:3]])
+                if len(cart) > 3:
+                    cart_items += f" 외 {len(cart) - 3}개"
+                reply = f"장바구니에 {cart_items}가 있어요. 총 금액은 {total_amount}원이에요. 결제를 진행할까요?"
+            elif language == Language.EN:
+                cart_items = ", ".join([f"{item.get('quantity')} {item.get('name_en') or item.get('name')}" for item in cart[:3]])
+                if len(cart) > 3:
+                    cart_items += f" and {len(cart) - 3} more items"
+                reply = f"Your cart contains {cart_items}. Total amount is {total_amount} won. Would you like to proceed with payment?"
+            elif language == Language.JP:
+                cart_items = ", ".join([f"{item.get('name')} {item.get('quantity')}個" for item in cart[:3]])
+                if len(cart) > 3:
+                    cart_items += f" 他 {len(cart) - 3}個"
+                reply = f"カートに{cart_items}があります。合計金額は{total_amount}ウォンです。お支払いを続けますか？"
+            elif language == Language.CN:
+                cart_items = ", ".join([f"{item.get('name')} {item.get('quantity')}个" for item in cart[:3]])
+                if len(cart) > 3:
+                    cart_items += f" 等 {len(cart) - 3}个"
+                reply = f"购物车中有{cart_items}。总金额为{total_amount}韩元。您要继续付款吗？"
+            else:
+                # 컨텍스트 구성
+                context = {
+                    "status": ResponseStatus.PAYMENT_CONFIRM,
+                    "screen_state": ScreenState.CONFIRM,
+                    "total_amount": total_amount,
+                    "cart": cart
+                }
+                
+                # 응답 생성
+                reply = intent_data.get("reply") or self.response_generator.generate_response(
+                    intent_data, language, context
+                )
+                
             return {
                 "intent_type": IntentType.PAYMENT,
-                "confidence": 0.8,
+                "confidence": intent_data.get("confidence", 0.8),
                 "raw_text": text,
                 "screen_state": ScreenState.CONFIRM,  # 결제 확인 화면으로 변경
                 "data": {
                     "pre_text": text,
-                    "post_text": text,
+                    "post_text": intent_data.get("post_text", text),
                     "reply": reply,
                     "status": ResponseStatus.PAYMENT_CONFIRM,
                     "language": language,
                     "session_id": session.get("id", ""),
                     "cart": cart,
-                    #"contents": cart,
                     "total_amount": total_amount,
                     "store_id": store_id
                 }
@@ -203,15 +292,22 @@ class PaymentProcessor(BaseProcessor):
         
         if not confirmation:
             # 확인하지 않은 경우 (취소 또는 불명확한 응답)
-            reply = self.response_service.get_response("payment_canceled", language, {})
+            context = {
+                "status": ResponseStatus.UNKNOWN,
+                "screen_state": ScreenState.MAIN,
+                "cancel_type": "payment"
+            }
+            reply = intent_data.get("reply") or self.response_generator.generate_response(
+                intent_data, language, context
+            )
             return {
                 "intent_type": IntentType.PAYMENT,
-                "confidence": 0.7,
+                "confidence": intent_data.get("confidence", 0.7),
                 "raw_text": text,
                 "screen_state": ScreenState.MAIN,  # 메인 화면으로 돌아감
                 "data": {
                     "pre_text": text,
-                    "post_text": text,
+                    "post_text": intent_data.get("post_text", text),
                     "reply": reply,
                     "status": ResponseStatus.UNKNOWN,
                     "language": language,
@@ -223,30 +319,38 @@ class PaymentProcessor(BaseProcessor):
             }
         
         # 결제 수단 선택 화면으로 이동
-        reply = self.response_service.get_response("select_payment", language, {})
+        context = {
+            "status": ResponseStatus.SELECT_PAYMENT,  # 상태를 SELECT_PAYMENT로 변경
+            "screen_state": ScreenState.SELECT_PAY
+        }
         
-        # 결제 수단 목록 
-        # payment_methods = [
-        #     {"id": "CARD", "name": "신용카드", "name_en": "Card"},
-        #     {"id": "MOBILE", "name": "모바일 상품권", "name_en": "Mobile"},
-        #     {"id": "GIFT", "name": "기프트 카드", "name_en": "Gift Card"},
-        #     {"id": "PAY", "name": "카카오페이", "name_en": "Kakao"}
-        # ]
+        # 응답 생성 (intent_data의 reply가 있으면 사용, 없으면 생성)
+        reply = intent_data.get("reply")
+        if not reply:
+            if language == Language.KR:
+                reply = "결제 방법을 선택해주세요."
+            elif language == Language.EN:
+                reply = "Please select your payment method."
+            elif language == Language.JP:
+                reply = "お支払い方法を選択してください。"
+            elif language == Language.CN:
+                reply = "请选择支付方式。"
+            else:
+                reply = self.response_generator.generate_response(intent_data, language, context)
         
         return {
             "intent_type": IntentType.PAYMENT,
-            "confidence": 0.9,
+            "confidence": intent_data.get("confidence", 0.9),
             "raw_text": text,
             "screen_state": ScreenState.SELECT_PAY,  # 결제 수단 선택 화면으로 변경
             "data": {
                 "pre_text": text,
-                "post_text": text,
+                "post_text": intent_data.get("post_text", text),
                 "reply": reply,
-                "status": ResponseStatus.PAYMENT_CONFIRM,
+                "status": ResponseStatus.SELECT_PAYMENT,  # 상태도 일관되게 변경
                 "language": language,
                 "session_id": session.get("id", ""),
                 "cart": session.get("cart", []),
-                #"contents": payment_methods,  # 결제 수단 목록
                 "store_id": store_id,
                 "total_amount": sum(item.get("total_price", 0) for item in session.get("cart", []))
             }
@@ -255,19 +359,26 @@ class PaymentProcessor(BaseProcessor):
     def _process_payment_method_selection(self, intent_data: Dict[str, Any], text: str, language: str, screen_state: str, store_id: int, session: Dict[str, Any]) -> Dict[str, Any]:
         """결제 수단 선택 처리 (SELECT_PAY -> PAY)"""
         # 결제 수단 파악
-        payment_method = self._detect_payment_method(text, language)
+        payment_method = intent_data.get("payment_method") or self._detect_payment_method(text, language)
         
         if not payment_method:
             # 인식할 수 없는 결제 수단
-            reply = self.response_service.get_response("payment_method_unknown", language, {})
+            context = {
+                "status": ResponseStatus.UNKNOWN,
+                "screen_state": ScreenState.SELECT_PAY,
+                "error_type": "payment_method_unknown"
+            }
+            reply = intent_data.get("reply") or self.response_generator.generate_response(
+                intent_data, language, context
+            )
             return {
                 "intent_type": IntentType.PAYMENT,
-                "confidence": 0.6,
+                "confidence": intent_data.get("confidence", 0.6),
                 "raw_text": text,
                 "screen_state": ScreenState.SELECT_PAY,  # 화면 유지
                 "data": {
                     "pre_text": text,
-                    "post_text": text,
+                    "post_text": intent_data.get("post_text", text),
                     "reply": reply,
                     "status": ResponseStatus.UNKNOWN,
                     "language": language,
@@ -278,16 +389,36 @@ class PaymentProcessor(BaseProcessor):
                 }
             }
         
+        # 표준화된 결제 수단 ID와 이름 획득
+        payment_method_id = "PAY"  # 기본값
+        payment_method_name = "카카오페이" if language == Language.KR else "Kakao Pay"  # 기본값
+        
+        # payment_method가 문자열인 경우와 딕셔너리인 경우 처리
+        if isinstance(payment_method, dict):
+            payment_method_id = payment_method.get("id", "PAY")
+            payment_method_name = payment_method.get("name", "카카오페이") if language == Language.KR else payment_method.get("name_en", "Kakao Pay")
+        elif isinstance(payment_method, str):
+            # 문자열인 경우 ID로 사용하고 이름 조회
+            payment_method_id = payment_method.upper()
+            if payment_method_id == "KAKAOPAY":
+                payment_method_id = "PAY"  # KAKAOPAY를 PAY로 표준화
+            payment_method_name = self._get_payment_method_name(payment_method_id, language)
+        
         # 결제 진행 화면으로 이동
-        reply = self.response_service.get_response("processing_payment", language, {
-            "payment_method": payment_method["name"] if language == Language.KR else payment_method["name_en"]
-        })
+        context = {
+            "status": ResponseStatus.PAYMENT_CONFIRM,
+            "screen_state": ScreenState.PAY,
+            "payment_method": payment_method_name
+        }
+        reply = intent_data.get("reply") or self.response_generator.generate_response(
+            intent_data, language, context
+        )
         
         # 세션에 결제 정보 저장
         if "payment_info" not in session:
             session["payment_info"] = {}
         
-        session["payment_info"]["method"] = payment_method["id"]
+        session["payment_info"]["method"] = payment_method_id  # 표준화된 ID 저장
         session["payment_info"]["amount"] = sum(item.get("total_price", 0) for item in session.get("cart", []))
         session["payment_info"]["timestamp"] = datetime.now().isoformat()
         
@@ -296,20 +427,18 @@ class PaymentProcessor(BaseProcessor):
         
         return {
             "intent_type": IntentType.PAYMENT,
-            "confidence": 0.95,
-            "payment_method": payment_method["id"],
+            "confidence": intent_data.get("confidence", 0.95),
+            "payment_method": payment_method_id,  # 표준화된 ID 반환
             "raw_text": text,
             "screen_state": ScreenState.PAY,  # 결제 진행 화면으로 변경
             "data": {
                 "pre_text": text,
-                "post_text": text,
+                "post_text": intent_data.get("post_text", text),
                 "reply": reply,
                 "status": ResponseStatus.PAYMENT_CONFIRM,
                 "language": language,
                 "session_id": session.get("id", ""),
                 "cart": session.get("cart", []),
-                #"contents": [payment_method],  # 선택된 결제 수단
-                #"payment_info": session["payment_info"],
                 "store_id": store_id
             }
         }
@@ -321,15 +450,21 @@ class PaymentProcessor(BaseProcessor):
         
         if not payment_successful:
             # 결제 실패 (가상)
-            reply = self.response_service.get_response("payment_failed", language, {})
+            context = {
+                "status": ResponseStatus.PAYMENT_FAILED,
+                "screen_state": ScreenState.SELECT_PAY
+            }
+            reply = intent_data.get("reply") or self.response_generator.generate_response(
+                intent_data, language, context
+            )
             return {
                 "intent_type": IntentType.PAYMENT,
-                "confidence": 0.9,
+                "confidence": intent_data.get("confidence", 0.9),
                 "raw_text": text,
                 "screen_state": ScreenState.SELECT_PAY,  # 결제 수단 선택 화면으로 돌아감
                 "data": {
                     "pre_text": text,
-                    "post_text": text,
+                    "post_text": intent_data.get("post_text", text),
                     "reply": reply,
                     "status": ResponseStatus.PAYMENT_FAILED,
                     "language": language,
@@ -344,9 +479,14 @@ class PaymentProcessor(BaseProcessor):
         payment_method = session.get("payment_info", {}).get("method", "CARD")
         payment_method_name = self._get_payment_method_name(payment_method, language)
         
-        reply = self.response_service.get_response("payment_success", language, {
+        context = {
+            "status": ResponseStatus.PAYMENT_SUCCESS,
+            "screen_state": ScreenState.MAIN,
             "payment_method": payment_method_name
-        })
+        }
+        reply = intent_data.get("reply") or self.response_generator.generate_response(
+            intent_data, language, context
+        )
         
         # 주문 정보 생성
         cart = session.get("cart", [])
@@ -371,13 +511,13 @@ class PaymentProcessor(BaseProcessor):
         
         return {
             "intent_type": IntentType.PAYMENT,
-            "confidence": 0.95,
+            "confidence": intent_data.get("confidence", 0.95),
             "payment_method": payment_method,
             "raw_text": text,
             "screen_state": ScreenState.MAIN,  # 메인 화면으로 돌아감
             "data": {
                 "pre_text": text,
-                "post_text": text,
+                "post_text": intent_data.get("post_text", text),
                 "reply": reply,
                 "status": ResponseStatus.PAYMENT_SUCCESS,
                 "language": language,
@@ -442,17 +582,25 @@ class PaymentProcessor(BaseProcessor):
                 "id": "GIFT",
                 "name": "기프트 카드",
                 "name_en": "Gift Card",
-                "keywords_kr": ["기프트", "기프트 카드", "선물", "선물 카드"],
+                "keywords_kr": ["기프트", "기프트 카드", "선물", "선물 카드","기프트 카드"],
                 "keywords_en": ["gift", "gift card", "present"]
             },
             "PAY": {
                 "id": "PAY",
                 "name": "카카오페이",
-                "name_en": "Kakao",
-                "keywords_kr": ["카카오", "카카오페이", "카톡", "카톡페이", "페이"],
+                "name_en": "Kakao Pay",
+                "keywords_kr": ["카카오", "카카오페이", "카톡", "카톡페이", "페이", "간편결제", "카페이","카카오 페이"],
                 "keywords_en": ["kakao", "kakaopay", "kakao pay", "pay"]
             }
         }
+        
+        # 직접 카카오페이 체크 (정확한 매칭을 위해) - 항상 PAY 반환
+        if "카카오페이" in text_lower or "kakaopay" in text_lower:
+            return {
+                "id": "PAY",  # 항상 PAY로 표준화
+                "name": "카카오페이",
+                "name_en": "Kakao Pay"
+            }
         
         # 언어에 따라 키워드 선택
         keyword_key = "keywords_kr" if language == Language.KR else "keywords_en"
@@ -467,6 +615,15 @@ class PaymentProcessor(BaseProcessor):
                     "name_en": method_info["name_en"]
                 }
         
+        # PAYMENT 의도로 인식되었지만 결제 수단이 명확하지 않은 경우
+        # 기본값으로 "PAY" 반환 (요구사항에 맞게)
+        if "결제" in text_lower or "pay" in text_lower:
+            return {
+                "id": "PAY",
+                "name": "카카오페이",
+                "name_en": "Kakao Pay"
+            }
+        
         # 감지된 결제 수단이 없는 경우
         return None
     
@@ -476,8 +633,15 @@ class PaymentProcessor(BaseProcessor):
             "CARD": {"kr": "신용카드", "en": "Card"},
             "MOBILE": {"kr": "모바일 상품권", "en": "Mobile"},
             "GIFT": {"kr": "기프트 카드", "en": "Gift Card"},
-            "PAY": {"kr": "카카오페이", "en": "Kakao"}
+            "PAY": {"kr": "카카오페이", "en": "Kakao Pay"}
         }
+        
+        # 대문자로 표준화
+        method_id = method_id.upper()
+        
+        # KAKAOPAY는 PAY로 표준화
+        if method_id == "KAKAOPAY":
+            method_id = "PAY"
         
         lang_key = "kr" if language == Language.KR else "en"
         return payment_method_names.get(method_id, {}).get(lang_key, method_id)
@@ -492,133 +656,3 @@ class PaymentProcessor(BaseProcessor):
         random_suffix = str(random.randint(1000, 9999))
         
         return f"{prefix}-{timestamp}-{random_suffix}"
-    
-    def _get_prompt_template(self):
-        """프롬프트 템플릿 정의"""
-        from langchain.prompts import PromptTemplate
-        
-        template = """
-        당신은 카페 키오스크의 음성 인식 시스템입니다. 사용자의 발화를 분석하고 정확한 의도를 파악해야 합니다.
-
-        ### 현재 상황:
-        - 화면 상태: {screen_state}
-        - 언어: {language}
-        - 이전 대화 기록: {history}
-
-        ### 컨텍스트 정보:
-        {context}
-
-        ### 결제 의도 인식 예제:
-        {examples}
-
-        ### 사용자 발화:
-        "{text}"
-
-        사용자의 발화가 결제 관련 의도인지 판단하세요. 만약 결제 의도라면, 어떤 결제 방식을 선택했는지 파악하세요.
-
-        JSON 형식으로 응답하세요:
-        ```json
-        {
-          "intent_type": "PAYMENT",
-          "payment_method": "CARD" 또는 다른 결제 방식,
-          "confidence": 0.9
-        }
-        ```
-        """
-        
-        return PromptTemplate(
-            input_variables=["screen_state", "language", "context", "history", "examples", "text"],
-            template=template
-        )
-    
-    def _load_examples(self):
-        """결제 관련 Few-shot 학습 예제"""
-        return {
-            "payment": [
-                {
-                    "input": "결제할게요",
-                    "output": {
-                        "intent_type": "PAYMENT",
-                        "confidence": 0.9
-                    }
-                },
-                {
-                    "input": "카드로 결제할게요",
-                    "output": {
-                        "intent_type": "PAYMENT",
-                        "payment_method": "CARD",
-                        "confidence": 0.95
-                    }
-                },
-                {
-                    "input": "카카오페이로 결제할게요",
-                    "output": {
-                        "intent_type": "PAYMENT",
-                        "payment_method": "PAY",
-                        "confidence": 0.95
-                    }
-                },
-                {
-                    "input": "모바일 상품권으로 결제할게요",
-                    "output": {
-                        "intent_type": "PAYMENT",
-                        "payment_method": "MOBILE",
-                        "confidence": 0.95
-                    }
-                },
-                {
-                    "input": "기프트 카드로 결제할게요",
-                    "output": {
-                        "intent_type": "PAYMENT",
-                        "payment_method": "GIFT",
-                        "confidence": 0.95
-                    }
-                },
-                {
-                    "input": "결제 진행해주세요",
-                    "output": {
-                        "intent_type": "PAYMENT",
-                        "confidence": 0.9
-                    }
-                },
-                {
-                    "input": "네, 결제할게요",
-                    "output": {
-                        "intent_type": "PAYMENT",
-                        "confidence": 0.9
-                    }
-                }
-            ]
-        }
-    
-    def _select_examples(self, screen_state, language):
-        """화면 상태에 맞는 Few-shot 예제 선택"""
-        examples = []
-        
-        # 화면 상태에 따라 다른 예제 제공
-        if screen_state == ScreenState.MAIN or screen_state == ScreenState.ORDER:
-            # 결제 시작 관련 예제
-            examples.append(self.examples["payment"][0])  # "결제할게요"
-            examples.append(self.examples["payment"][5])  # "결제 진행해주세요"
-        
-        elif screen_state == ScreenState.CONFIRM:
-            # 결제 확인 관련 예제
-            examples.append(self.examples["payment"][6])  # "네, 결제할게요"
-        
-        elif screen_state == ScreenState.SELECT_PAY:
-            # 결제 수단 선택 관련 예제
-            examples.append(self.examples["payment"][1])  # 카드
-            examples.append(self.examples["payment"][2])  # 카카오페이
-            examples.append(self.examples["payment"][3])  # 모바일 상품권
-            examples.append(self.examples["payment"][4])  # 기프트 카드
-        
-        else:
-            # 기본 예제
-            examples.append(self.examples["payment"][0])
-        
-        # 예제 포맷팅
-        formatted_examples = []
-        for example in examples:
-            formatted_examples.append(f"사용자: \"{example['input']}\"\n분석 결과: ```json\n{json.dumps(example['output'], ensure_ascii=False, indent=2)}\n```")
-        
-        return "\n\n".join(formatted_examples)

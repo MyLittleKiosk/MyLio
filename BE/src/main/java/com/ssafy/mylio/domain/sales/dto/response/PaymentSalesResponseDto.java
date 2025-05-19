@@ -10,14 +10,14 @@ import java.math.BigDecimal;
 @Builder
 public class PaymentSalesResponseDto {
     @Schema(example = "CARD",description = "결제 방법")
-    private String payment_name;
+    private String paymentName;
 
     @Schema(example = "23.93",description = "총 비율")
     private BigDecimal ratio;
 
     public static PaymentSalesResponseDto of(String payment_name,BigDecimal ratio){
         return PaymentSalesResponseDto.builder()
-                .payment_name(payment_name)
+                .paymentName(payment_name)
                 .ratio(ratio)
                 .build();
     }

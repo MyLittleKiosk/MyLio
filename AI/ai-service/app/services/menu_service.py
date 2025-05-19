@@ -2,6 +2,7 @@
 import copy
 from typing import Dict, List, Any, Optional
 from app.db.mysql_connector import MySQLConnector
+from app.models.schemas import ResponseStatus
 
 class MenuService:
     def __init__(self, db: MySQLConnector):
@@ -388,3 +389,52 @@ class MenuService:
                     }
                     
                     menus[menu_id]["nutrition"].append(nutrition_item)
+
+    def find_menu_by_id(self, menu_id: int, store_id: int) -> Optional[Dict[str, Any]]:
+        """메뉴 ID로 메뉴 검색"""
+        if not menu_id:
+            return None
+        
+        # 1. 스토어 메뉴 데이터 가져오기
+        menus = self.get_store_menus(store_id)
+        
+        # 2. ID로 메뉴 찾기
+        if menu_id in menus:
+            return copy.deepcopy(menus[menu_id])
+        
+        return None
+
+    def find_similar_menu(self, menu_name: str, store_id: int) -> Optional[Dict[str, Any]]:
+        """유사한 이름의 메뉴 찾기"""
+        # 메뉴 목록 가져오기
+        store_menus = self.get_store_menus(store_id)
+        
+        # 별칭 사전 가져오기
+        aliases = self._get_menu_aliases()
+        
+        # 별칭으로 먼저 검색
+        for alias, real_name in aliases.items():
+            if menu_name.lower() in alias.lower() or alias.lower() in menu_name.lower():
+                # 실제 메뉴 이름으로 검색
+                for menu_id, menu in store_menus.items():
+                    if real_name.lower() == menu.get("name_kr", "").lower():
+                        return menu
+        
+        # 유사도 기반 검색 (간단한 방식)
+        best_match = None
+        highest_similarity = 0
+        
+        for menu_id, menu in store_menus.items():
+            # 메뉴 이름 유사도 계산 (포함 관계 확인)
+            menu_kr = menu.get("name_kr", "").lower()
+            if menu_kr in menu_name.lower() or menu_name.lower() in menu_kr:
+                similarity = len(set(menu_kr) & set(menu_name.lower())) / max(len(menu_kr), len(menu_name.lower()))
+                if similarity > highest_similarity:
+                    highest_similarity = similarity
+                    best_match = menu
+        
+        # 유사도가 일정 수준(30%) 이상인 경우에만 반환
+        if highest_similarity >= 0.3:
+            return best_match
+        
+        return None

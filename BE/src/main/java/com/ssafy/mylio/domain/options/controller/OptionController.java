@@ -2,10 +2,10 @@ package com.ssafy.mylio.domain.options.controller;
 
 import com.ssafy.mylio.domain.options.dto.request.OptionRequestDto;
 import com.ssafy.mylio.domain.options.dto.request.OptionUpdateRequestDto;
-import com.ssafy.mylio.domain.options.dto.response.OptionListResponseDto;
 import com.ssafy.mylio.domain.options.dto.response.OptionResponseDto;
 import com.ssafy.mylio.domain.options.service.OptionService;
 import com.ssafy.mylio.global.aop.swagger.ApiErrorCodeExamples;
+import com.ssafy.mylio.global.common.CustomPage;
 import com.ssafy.mylio.global.common.response.CommonResponse;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.security.auth.UserPrincipal;
@@ -14,10 +14,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,10 +35,12 @@ public class OptionController {
     @GetMapping
     @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND})
     @Operation(summary = "옵션 전체 조회", description = "전체 옵션 리스트를 조회합니다.")
-    public ResponseEntity<CommonResponse<OptionListResponseDto>> getOptionList(
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
-        return CommonResponse.ok(optionService.getOptionList(storeId));
+    public ResponseEntity<CommonResponse<CustomPage<OptionResponseDto>>> getOptionList(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestParam(name="keyword", required = false) String keyword,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+        return CommonResponse.ok(optionService.getOptionList(storeId, keyword, pageable));
     }
 
     @GetMapping("/{option_id}")
@@ -46,7 +49,7 @@ public class OptionController {
     public ResponseEntity<CommonResponse<OptionResponseDto>> getOptionDetail(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("option_id") Integer optionId) {
-        Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         return CommonResponse.ok(optionService.getOptionDetail(storeId, optionId));
     }
 
@@ -56,7 +59,7 @@ public class OptionController {
     public ResponseEntity<CommonResponse<Void>> deleteOption(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("option_id") Integer optionId) {
-        Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         optionService.deleteOption(storeId, optionId);
         return CommonResponse.ok();
     }

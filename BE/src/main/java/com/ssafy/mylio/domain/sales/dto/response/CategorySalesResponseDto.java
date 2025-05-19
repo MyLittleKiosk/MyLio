@@ -9,19 +9,15 @@ import java.util.List;
 @Data
 @Builder
 public class CategorySalesResponseDto {
-    private List<CategoryRatioDto> ratioByCategory;
 
-    @Data
-    @Builder
-    public static class CategoryRatioDto {
-        private String categoryName;
-        private BigDecimal ratio;
+    private String categoryName;
+    private BigDecimal ratio;
 
-        public static CategoryRatioDto of(String categoryName, BigDecimal ratio) {
-            return CategoryRatioDto.builder()
-                    .categoryName(categoryName)
-                    .ratio(ratio)
-                    .build();
-        }
+    public static CategorySalesResponseDto of(String categoryName, BigDecimal ratio) {
+        return CategorySalesResponseDto.builder()
+                .categoryName(categoryName)
+                .ratio(ratio)
+                .build();
     }
+
 }

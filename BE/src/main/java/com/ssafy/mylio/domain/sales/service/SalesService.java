@@ -32,17 +32,17 @@ public class SalesService {
     private final YearlyPaymentMethodRatioRepository yearlyPaymentMethodRatioRepository;
     private final MonthlyDineInTakeoutRatioRepository monthlyDineInTakeoutRatioRepository;
     private final YearlyDineInTakeoutRatioRepository yearlyDineInTakeoutRatioRepository;
-    public CategorySalesResponseDto getCategorySales(Integer storeId, Integer year, Integer month){
-        Store store = getStore(storeId);
+    public List<CategorySalesResponseDto> getCategorySales(Integer storeId, Integer year, Integer month){
+        getStore(storeId);
 
-        List<CategorySalesResponseDto.CategoryRatioDto> ratios;
+        List<CategorySalesResponseDto> ratios;
 
         if (month != null) {
             // 월별 엔티티에서 조회
             List<MonthlyCategorySalesRatio> list =
                     monthlyCategorySalesRatioRepository.findByStoreIdAndYearAndMonth(storeId, year, month);
             ratios = list.stream()
-                    .map(e -> CategorySalesResponseDto.CategoryRatioDto.of(
+                    .map(e -> CategorySalesResponseDto.of(
                             e.getCategory().getNameKr(),
                             e.getRatio()
                     ))
@@ -52,16 +52,14 @@ public class SalesService {
             List<YearlyCategorySalesRatio> list =
                     yearlyCategorySalesRatioRepository.findByStoreIdAndYear(storeId, year);
             ratios = list.stream()
-                    .map(e -> CategorySalesResponseDto.CategoryRatioDto.of(
+                    .map(e -> CategorySalesResponseDto.of(
                             e.getCategory().getNameKr(),
                             e.getRatio()
                     ))
                     .collect(Collectors.toList());
         }
 
-        return CategorySalesResponseDto.builder()
-                .ratioByCategory(ratios)
-                .build();
+        return ratios;
     }
 
     private Store getStore(Integer storeId) {
@@ -71,35 +69,29 @@ public class SalesService {
 
     public List<SalesResponse> getSalesStatistics(String userType, int storeId, int year, Integer month){
         //역할이 STORE가 아니면 불가
-        if (!userType.equals(AccountRole.STORE.getCode())) {
-            throw new CustomException(ErrorCode.INVALID_ROLE)
-                    .addParameter("userType",userType);
-        }
+        validateStoreRole(userType);
 
         //월이 없으면 년도 조회
         if(month == null){
             return monthlySalesRepo.findByStoreIdAndYear(storeId, year).stream()
                     .map(e -> SalesResponse.builder()
-                            .type(e.getMonth())       // 1~12
-                            .total(e.getTotalSales())
+                            .element(e.getMonth())       // 1~12
+                            .sales(e.getTotalSales())
                             .build())
                     .toList();
         }
         //월별 조회
         return dailySalesRepo.findByStoreIdAndYearAndMonth(storeId, year, month).stream()
                 .map(e -> SalesResponse.builder()
-                        .type(e.getStatDate().getDayOfMonth()) // 1~31
-                        .total(e.getTotalSales())
+                        .element(e.getStatDate().getDayOfMonth()) // 1~31
+                        .sales(e.getTotalSales())
                         .build())
                 .toList();
     }
 
     public DailySalesResponseDto getDailySales(Integer storeId, String userType){
         //역할이 STORE가 아니면 불가
-        if (!userType.equals(AccountRole.STORE.getCode())) {
-            throw new CustomException(ErrorCode.INVALID_ROLE)
-                    .addParameter("userType",userType);
-        }
+        validateStoreRole(userType);
 
         Integer totalSales = orderRepository.getTodayTotalSales(storeId);
         Integer totalOrders = orderRepository.getTodayOrderCount(storeId);
@@ -110,10 +102,7 @@ public class SalesService {
 
     public List<PaymentSalesResponseDto> getPaymentMethodRatio(String userType ,Integer storeId, Integer year, Integer month) {
         //역할이 STORE가 아니면 불가
-        if (!userType.equals(AccountRole.STORE.getCode())) {
-            throw new CustomException(ErrorCode.INVALID_ROLE)
-                    .addParameter("userType",userType);
-        }
+        validateStoreRole(userType);
 
         if (month != null) {
             // 월별 결제 수단 비율
@@ -130,10 +119,7 @@ public class SalesService {
 
     public List<OrderTypeSalesResponseDto> getOrderTypeStatics(String userType, Integer storeId, Integer year, Integer month){
         //역할이 STORE가 아니면 불가
-        if (!userType.equals(AccountRole.STORE.getCode())) {
-            throw new CustomException(ErrorCode.INVALID_ROLE)
-                    .addParameter("userType",userType);
-        }
+        validateStoreRole(userType);
 
         if(month != null){
             //월별 결제
@@ -145,6 +131,14 @@ public class SalesService {
             return yearlyDineInTakeoutRatioRepository.findByStoreIdAndYear(storeId,year).stream()
                     .map(e -> OrderTypeSalesResponseDto.of(e.getType().getDescription(),  e.getRatio()))
                     .toList();
+        }
+    }
+
+    private void validateStoreRole(String userType) {
+        //역할이 STORE가 아니면 불가
+        if (!userType.equals(AccountRole.STORE.getCode())) {
+            throw new CustomException(ErrorCode.INVALID_ROLE)
+                    .addParameter("userType",userType);
         }
     }
 }

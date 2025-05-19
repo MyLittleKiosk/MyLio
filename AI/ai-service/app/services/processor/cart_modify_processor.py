@@ -1,0 +1,264 @@
+from typing import Dict, Any, List, Optional
+from app.models.schemas import IntentType, ScreenState, Language, ResponseStatus
+from app.services.processor.base_processor import BaseProcessor
+
+class CartModifyProcessor(BaseProcessor):
+    """장바구니 수정 처리 프로세서"""
+    
+    def __init__(self, response_generator, menu_service, session_manager):
+        """프로세서 초기화"""
+        self.response_generator = response_generator
+        self.menu_service = menu_service
+        self.session_manager = session_manager
+    
+    def process(self, intent_data: Dict[str, Any], text: str, language: str, screen_state: str, store_id: int, session: Dict[str, Any]) -> Dict[str, Any]:
+        """장바구니 수정 의도 처리"""
+        # LLM에서 생성한 응답 가져오기 (나중에 사용)
+        llm_reply = intent_data.get("reply", "")
+        
+        # 장바구니 가져오기
+        cart = session.get("cart", [])
+        session_id = session.get("id", "")
+        
+        if not cart:
+            # 장바구니가 비어있는 경우
+            reply = llm_reply or "장바구니가 비어있어요. 먼저 메뉴를 추가해주세요."
+            return self._build_response(
+                intent_data, text, language, screen_state, store_id, session,
+                ResponseStatus.UNKNOWN, reply=reply
+            )
+        
+        # 액션 타입 확인 (UPDATE, REMOVE, QUANTITY)
+        action_type = intent_data.get("action_type", "UNKNOWN").upper()
+        menu_name = intent_data.get("menu_name", "")
+        
+        # 1. 전체 장바구니 비우기
+        if action_type == "REMOVE" and not menu_name:
+            self.session_manager.clear_cart(session_id)
+            reply = llm_reply or "장바구니를 비웠어요."
+            return self._build_response(
+                intent_data, text, language, screen_state, store_id, session,
+                ResponseStatus.CART_CLEARED, reply=reply, contents=[]
+            )
+            
+        # 수정할 메뉴 검색
+        target_item = None
+        target_index = -1
+        
+        if menu_name:
+            # 메뉴 이름으로 검색
+            for i, item in enumerate(cart):
+                if menu_name.lower() in item.get("name", "").lower():
+                    target_item = item
+                    target_index = i
+                    break
+        else:
+            # 메뉴 이름이 없으면 가장 최근에 추가된 메뉴 선택
+            if cart:
+                target_item = cart[-1]
+                target_index = len(cart) - 1
+        
+        if not target_item:
+            reply = llm_reply or f"장바구니에서 '요청하신 메뉴를 찾을 수 없어요."
+            return self._build_response(
+                intent_data, text, language, screen_state, store_id, session,
+                ResponseStatus.UNKNOWN, reply=reply
+            )
+        
+        # 2. 특정 메뉴 삭제
+        if action_type == "REMOVE":
+            # 장바구니에서 메뉴 삭제
+            removed_item = cart.pop(target_index)
+            
+            # 세션 업데이트
+            session["cart"] = cart
+            self.session_manager._save_session(session_id, session)
+            
+            reply = llm_reply or f"요청하신 메뉴를 장바구니에서 삭제했어요."
+            return self._build_response(
+                intent_data, text, language, screen_state, store_id, session,
+                ResponseStatus.ITEM_REMOVED, reply=reply
+            )
+            
+        # 3. 메뉴 수량 변경
+        elif action_type == "QUANTITY":
+            quantity_change = intent_data.get("quantity_change", 0)
+            
+            if quantity_change == 0:
+                reply = llm_reply or "변경할 수량을 명확히 말씀해주세요."
+                return self._build_response(
+                    intent_data, text, language, screen_state, store_id, session,
+                    ResponseStatus.UNKNOWN, reply=reply
+                )
+            
+            # 현재 수량
+            current_quantity = target_item.get("quantity", 1)
+            
+            # 수량 업데이트
+            if quantity_change > 0:
+                # 수량 증가
+                target_item["quantity"] = current_quantity + quantity_change
+                if not llm_reply:
+                    reply = f"{target_item.get('name')} {quantity_change}개를 추가했어요."
+                else:
+                    reply = llm_reply
+            else:
+                # 수량 감소
+                new_quantity = max(1, current_quantity + quantity_change)  # 최소 1개
+                
+                if new_quantity == current_quantity:
+                    reply = llm_reply or f"수량은 최소 1개 이상이어야 해요."
+                else:
+                    target_item["quantity"] = new_quantity
+                    reply = llm_reply or f"{target_item.get('name')}의 수량을 {new_quantity}개로 변경했어요."
+            
+            # 세션 업데이트
+            cart[target_index] = target_item
+            session["cart"] = cart
+            result = self.session_manager._save_session(session_id, session)
+            print(f"[장바구니 수정] 수량 변경 세션 저장 결과: {result}")
+            
+            return self._build_response(
+                intent_data, text, language, screen_state, store_id, session,
+                ResponseStatus.QUANTITY_UPDATED, reply=reply
+            )
+            
+        # 4. 옵션 변경
+        elif action_type == "UPDATE":
+            # LLM 응답에서 옵션 정보 추출
+            menus = intent_data.get("menus", [])
+            options_from_llm = []
+            
+            # 메뉴 배열에서 옵션 정보 추출
+            for menu in menus:
+                if "options" in menu:
+                    options_from_llm.extend(menu.get("options", []))
+            
+            # 직접 주어진 new_options나 options가 있으면 그것 사용
+            if intent_data.get("new_options"):
+                options_from_llm = intent_data.get("new_options")
+            elif intent_data.get("options") and not options_from_llm:
+                options_from_llm = intent_data.get("options")
+            
+            # 옵션 정보가 없는 경우
+            if not options_from_llm:
+                reply = llm_reply or "변경할 옵션을 명확히 말씀해주세요."
+                return self._build_response(
+                    intent_data, text, language, screen_state, store_id, session,
+                    ResponseStatus.UNKNOWN, reply=reply
+                )
+            
+            print(f"[장바구니 수정] 변경할 옵션 정보: {options_from_llm}")
+            
+            # 기존 옵션 가져오기
+            selected_options = target_item.get("selected_options", [])
+            print(f"[장바구니 수정] 현재 선택된 옵션: {selected_options}")
+            
+            # 변경된 옵션 추적
+            updated_options = []
+            
+            # LLM에서 받은 옵션 정보로 옵션 업데이트
+            for llm_option in options_from_llm:
+                option_name = llm_option.get("option_name", "").lower()
+                option_value = llm_option.get("option_value", "").upper()
+                
+                if not option_name or not option_value:
+                    continue  # 옵션 이름이나 값이 없으면 건너뛰기
+                
+                print(f"[장바구니 수정] 옵션 변경: {option_name} -> {option_value}")
+                
+                # 기존 옵션에서 일치하는 이름 찾기
+                found = False
+                for i, existing_option in enumerate(selected_options):
+                    existing_name = existing_option.get("option_name", "").lower()
+                    
+                    # 옵션 이름이 일치하면 값 업데이트
+                    if option_name == existing_name:
+                        # 옵션 detail 찾기
+                        if "option_details" in existing_option and existing_option["option_details"]:
+                            # option_details 배열의 첫 번째 항목만 값 변경 (기존 id와 추가 가격은 유지)
+                            detail = existing_option["option_details"][0]
+                            detail["value"] = option_value
+                            print(f"[장바구니 수정] 옵션 값 변경됨: {option_name} = {option_value}")
+                            updated_options.append(option_name)
+                            found = True
+                            break
+                
+                # 기존에 없는 옵션이면 새로 추가 (기본 형식으로)
+                if not found:
+                    new_option = {
+                        "option_id": None,  # ID는 알 수 없음
+                        "option_name": llm_option.get("option_name"),
+                        "is_selected": True,
+                        "option_details": [{
+                            "id": None,  # ID는 알 수 없음
+                            "value": option_value,
+                            "additional_price": 0  # 추가 가격 정보 없음
+                        }]
+                    }
+                    selected_options.append(new_option)
+                    updated_options.append(option_name)
+                    print(f"[장바구니 수정] 새 옵션 추가됨: {option_name} = {option_value}")
+            
+            # 옵션이 변경되었으면 세션 업데이트
+            if updated_options:
+                # 타겟 아이템 업데이트
+                target_item["selected_options"] = selected_options
+                
+                # 세션 업데이트
+                cart[target_index] = target_item
+                session["cart"] = cart
+                result = self.session_manager._save_session(session_id, session)
+                print(f"[장바구니 수정] 옵션 변경 세션 저장 결과: {result}, 변경된 옵션: {', '.join(updated_options)}")
+                
+                # 디버깅: 세션 저장 후 다시 확인
+                updated_session = self.session_manager.get_session(session_id)
+                updated_cart = updated_session.get("cart", [])
+                if updated_cart and len(updated_cart) > target_index:
+                    print(f"[장바구니 수정] 업데이트 후 옵션: {updated_cart[target_index].get('selected_options')}")
+            else:
+                print("[장바구니 수정] 변경된 옵션 없음")
+            
+            # 응답 반환
+            return self._build_response(
+                intent_data, text, language, screen_state, store_id, session,
+                ResponseStatus.OPTIONS_UPDATED, reply=llm_reply
+            )
+            
+        else:
+            # 알 수 없는 액션 타입
+            reply = llm_reply or "장바구니 수정 요청을 이해하지 못했습니다. 다시 말씀해주세요."
+            return self._build_response(
+                intent_data, text, language, screen_state, store_id, session,
+                ResponseStatus.UNKNOWN, reply=reply
+            )
+    
+    def _build_response(self, intent_data: Dict[str, Any], text: str, language: str, screen_state: str, store_id: int, session: Dict[str, Any], status: str, contents: List[Dict[str, Any]] = None, reply: str = None) -> Dict[str, Any]:
+        """응답 구성 헬퍼 메서드"""
+        # 세션 ID 확인
+        session_id = session.get("id", "")
+        
+        # 최신 장바구니 정보 확인 (변경 후)
+        cart = self.session_manager.get_cart(session_id)
+        
+        # 컨텐츠가 None이면 빈 리스트로 초기화
+        if contents is None:
+            contents = []
+            
+        return {
+            "intent_type": IntentType.CART_MODIFY,
+            "confidence": intent_data.get("confidence", 0.8),
+            "raw_text": text,
+            "screen_state": ScreenState.MAIN,
+            "data": {
+                "pre_text": text,
+                "post_text": intent_data.get("post_text", text),
+                "reply": reply or intent_data.get("reply", ""),
+                "status": status,
+                "language": language,
+                "session_id": session_id,
+                "cart": cart,
+                "contents": contents,
+                "store_id": store_id
+            }
+        }

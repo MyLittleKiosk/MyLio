@@ -21,6 +21,7 @@ class IntentType(str, Enum):
     PAYMENT = "PAYMENT"        # 결제 의도
     CONFIRM = "CONFIRM"        # 확인 의도
     DETAIL = "DETAIL"          # 메뉴 영양 성분 조회
+    CART_MODIFY = "CART_MODIFY"  # 장바구니 수정 의도
     UNKNOWN = "UNKNOWN"        # 알 수 없는 의도
 
 class Language(str, Enum):
@@ -49,9 +50,14 @@ class ResponseStatus(str, Enum):
     RECOMMENDATION = "RECOMMENDATION"         # 추천 메뉴
     SEARCH_RESULTS = "SEARCH_RESULTS"        # 검색 결과
     PAYMENT_CONFIRM = "PAYMENT_CONFIRM"       # 결제 확인
+    SELECT_PAYMENT = "SELECT_PAYMENT"         # 결제 수단 선택
     PAYMENT_SUCCESS = "PAYMENT_SUCCESS"       # 결제 완료
     PAYMENT_FAILED = "PAYMENT_FAILED"         # 결제 실패
     DETAIL = "DETAIL"          # 메뉴 영양 성분 조회
+    CART_CLEARED = "CART_CLEARED"             # 장바구니 비움
+    ITEM_REMOVED = "ITEM_REMOVED"             # 장바구니 항목 삭제
+    QUANTITY_UPDATED = "QUANTITY_UPDATED"     # 장바구니 항목 수량 변경
+    OPTIONS_UPDATED = "OPTIONS_UPDATED"       # 장바구니 항목 옵션 변경
     UNKNOWN = "UNKNOWN"                       # 알 수 없음
 
 class VoiceInputResponse(BaseModel):
@@ -77,7 +83,7 @@ class VoiceInputResponse(BaseModel):
         }
     )
 
-    # app/models/schemas.py에 추가
+# app/models/schemas.py에 추가
 
 class RecognizedMenu(BaseModel):
     """인식된 메뉴 정보 모델"""

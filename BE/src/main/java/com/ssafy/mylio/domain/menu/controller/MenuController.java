@@ -40,10 +40,11 @@ public class MenuController {
     public ResponseEntity<CommonResponse<CustomPage<MenuListResponseDto>>> getMenuList(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam(name="category_id", required = false) @PositiveOrZero(message = "카테고리 ID는 0 이상 숫자여야 합니다.")  Integer categoryId ,
+            @RequestParam(name="keyword", required = false) String keyword,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
 
-        Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
-        return CommonResponse.ok(menuService.getMenuList(storeId, categoryId, pageable));
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
+        return CommonResponse.ok(menuService.getMenuList(storeId, categoryId, keyword, pageable));
     }
 
     @GetMapping("/{menu_id}")
@@ -52,7 +53,7 @@ public class MenuController {
     public ResponseEntity<CommonResponse<MenuDetailResponseDto>> getMenuDetail(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("menu_id") Integer menuId ) {
-        Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         return CommonResponse.ok(menuService.getMenuDetail(storeId, menuId));
     }
 
@@ -62,7 +63,7 @@ public class MenuController {
     public ResponseEntity<CommonResponse<Void>> deleteMenu(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("menu_id") Integer menuId) {
-        Integer storeId = authenticationUtil.getCurrentUserId(userPrincipal);
+        Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         menuService.deleteMenu(storeId, menuId);
         return CommonResponse.ok();
     }

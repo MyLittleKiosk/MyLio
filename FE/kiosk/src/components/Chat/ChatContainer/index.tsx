@@ -68,23 +68,22 @@ const ChatContainer = ({ userChat, gptChat, isExpand }: Props) => {
 
   return (
     <motion.div
-      className='w-full h-full px-10 flex flex-col items-center gap-5'
+      className='w-full h-full px-4 sm:px-6 md:px-10 flex flex-col items-center justify-start gap-5'
       transition={layoutTransition}
       layout
     >
       <motion.div
         className={clsx(
-          'h-full flex items-center justify-center',
+          'w-full max-w-7xl h-full flex items-center justify-start',
           isExpand ? 'flex-col gap-10' : 'flex-row gap-4'
         )}
         layout
         transition={layoutTransition}
       >
         <motion.div
-          className='p-2 pe-1 flex justify-center items-center rounded-full'
+          className='p-2 pe-1 flex justify-center items-center rounded-full shrink-0'
           style={{
-            // boxShadow: 'inset 0px 0px 10px rgba(0, 0, 0, 0.25)',
-            aspectRatio: '1/1', // 정사각형 비율 유지
+            aspectRatio: '1/1',
             overflow: 'hidden',
           }}
           variants={imageVariants}
@@ -98,17 +97,19 @@ const ChatContainer = ({ userChat, gptChat, isExpand }: Props) => {
             draggable={false}
           />
         </motion.div>
-        <motion.p
+        <motion.div
           className={clsx(
-            'w-10/12 font-preBold whitespace-pre-line break-keep',
+            'w-[min(600px,80vw)] font-preBold whitespace-pre-line break-keep',
             isExpand ? 'text-xl text-center' : 'text-lg text-start'
           )}
           variants={textVariants}
           animate={isExpand ? 'expanded' : 'collapsed'}
           layout
         >
-          {gptChat}
-        </motion.p>
+          <div className='w-full h-full overflow-y-auto font-preBold'>
+            {gptChat}
+          </div>
+        </motion.div>
       </motion.div>
       <motion.div
         layout

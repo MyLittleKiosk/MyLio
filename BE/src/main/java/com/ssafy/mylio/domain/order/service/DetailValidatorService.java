@@ -4,9 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.ssafy.mylio.domain.menu.entity.Menu;
+import com.ssafy.mylio.domain.menu.repository.MenuRepository;
 import com.ssafy.mylio.domain.nutrition.entity.NutritionValue;
 import com.ssafy.mylio.domain.nutrition.repository.NutritionRepository;
 import com.ssafy.mylio.domain.order.dto.common.NutritionInfoDto;
+import com.ssafy.mylio.domain.order.dto.response.CartResponseDto;
 import com.ssafy.mylio.domain.order.dto.response.ContentsResponseDto;
 import com.ssafy.mylio.domain.order.dto.response.OrderResponseDto;
 import com.ssafy.mylio.domain.order.util.OrderJsonMapper;
@@ -33,6 +36,7 @@ public class DetailValidatorService {
 
     private final NutritionRepository nutritionRepository;
     private final OrderJsonMapper mapper;
+    private final MenuRepository menuRepository;
 
     public Mono<OrderResponseDto> validate(String pyJson, UserPrincipal user) {
         log.info("영양정보 검증 로직 진입 : {}", pyJson);
@@ -46,7 +50,31 @@ public class DetailValidatorService {
                 .map(this::syncNutritionInfo)
                 .toList();
 
-        return order.toBuilder().contents(fixed).build();
+        // cart.imageUrl 보정
+        List<CartResponseDto> fixedCarts = null;
+        if (order.getCart() != null) {
+            fixedCarts = order.getCart().stream()
+                    .map(cart -> {
+                        if (cart.getImageUrl() == null || cart.getImageUrl().isEmpty()) {
+                            Menu menu = menuRepository.findById(cart.getMenuId())
+                                    .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND, "menuId", cart.getMenuId()));
+                            return cart.toBuilder()
+                                    .imageUrl(menu.getImageUrl())
+                                    .build();
+                        }
+                        return cart;
+                    }).toList();
+        }
+
+        // 최종 결과 조립
+        OrderResponseDto.OrderResponseDtoBuilder builder = order.toBuilder()
+                .contents(fixed);
+
+        if (fixedCarts != null) {
+            builder.cart(fixedCarts);
+        }
+
+        return builder.build();
     }
 
 

@@ -29,7 +29,7 @@ public class SalesController {
     @GetMapping("/by_category")
     @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND})
     @Operation(summary = "카테고리 별 매출 통계", description = "카테고리를 기준으로 매출 통계를 조회합니다")
-    ResponseEntity<CommonResponse<CategorySalesResponseDto>> getCategoryStatistics(
+    ResponseEntity<CommonResponse<List<CategorySalesResponseDto>>> getCategoryStatistics(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam(value = "year") Integer year,
             @RequestParam(value = "month", required = false) Integer month) {
