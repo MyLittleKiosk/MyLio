@@ -1,27 +1,9 @@
 import { formatNumber } from '@/utils/formatNumber';
 import useOrderStore from '@/stores/useOrderStore';
-import Item from './Item';
-import { useOrderRequest } from '@/service/queries/order';
+import Item from '@/pages/Confirm/Item';
 
 const Confirm = () => {
   const { order } = useOrderStore();
-  const { mutate } = useOrderRequest();
-  const increaseCount = (menuId: number) => {
-    const cartItem = order.cart.find((item) => item.menuId === menuId);
-    const quantity = cartItem ? cartItem.quantity + 1 : 1;
-    mutate({
-      text: `${cartItem?.name}를 ${quantity}로 바꿔주세요`,
-      ...order,
-    });
-  };
-  const decreaseCount = (menuId: number) => {
-    const cartItem = order.cart.find((item) => item.menuId === menuId);
-    const quantity = cartItem ? cartItem.quantity - 1 : 0;
-    mutate({
-      text: `${cartItem?.name}를 ${quantity}로 바꿔주세요`,
-      ...order,
-    });
-  };
 
   return (
     <section className='flex flex-col w-full h-full pt-5'>
@@ -32,22 +14,24 @@ const Confirm = () => {
         {order.contents.map((item, idx) => (
           <Item
             key={item.menuId}
+            menuId={item.menuId}
             imageUrl={item.imageUrl}
             name={item.name}
             selectedOption={item.selectedOption}
             totalPrice={item.totalPrice}
             count={item.quantity}
-            isLast={idx === order.contents.length - 1}
-            onIncrease={() => increaseCount(item.menuId)}
-            onDecrease={() => decreaseCount(item.menuId)}
+            isLast={idx === order.cart.length - 1}
           />
         ))}
-        <div className='flex flex-col gap-2 w-full border-t-2 '>
-          <div className='flex items-center justify-between border-t-2 pt-4 border-gray-200 me-4'>
+        <div className='flex flex-col gap-2 w-full pb-6'>
+          <div className='flex items-center justify-between pt-4 border-gray-200 me-4'>
             <div>총 주문금액</div>
             <div>
               {formatNumber(
-                order.contents.reduce((acc, curr) => acc + curr.totalPrice, 0)
+                order.contents.reduce(
+                  (acc, curr) => acc + curr.totalPrice * curr.quantity,
+                  0
+                )
               )}
               원
             </div>
