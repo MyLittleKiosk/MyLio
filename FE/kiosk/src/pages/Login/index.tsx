@@ -36,7 +36,7 @@ const Login = () => {
           className='flex flex-col gap-3 max-w-md bg-white p-10 rounded-md'
         >
           <h1 className='text-7xl font-preBold text-primary text-center'>
-            MaLio
+            MyLio
           </h1>
           <div className='flex flex-col'>
             <label htmlFor='id' className='text-sm text-gray-500'>
