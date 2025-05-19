@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: Pretendard-ExtraLight;
+  font-weight: 300;
+  src:
+    local("Pretendard ExtraLight"),
+    url("./assets/fonts/Pretendard-ExtraLight.woff") format("woff"),
+}
+
+@font-face {
+  font-family: Pretendard-Light;
+  font-weight: 300;
+  src:
+    local("Pretendard Light"),
+    url("./assets/fonts/Pretendard-Light.woff") format("woff"),
+}
+
+@font-face {
+  font-family: Pretendard-Regular;
+  font-weight: 300;
+  src:
+    local("Pretendard Regular"),
+    url("./assets/fonts/Pretendard-Regular.woff") format("woff"),
+}
+
+@font-face {
+  font-family: Pretendard-Medium;
+  font-weight: 300;
+  src:
+    local("Pretendard Medium"),
+    url("./assets/fonts/Pretendard-Medium.woff") format("woff"),
+}
+
+@font-face {
+  font-family: Pretendard-SemiBold;
+  font-weight: 300;
+  src:
+    local("Pretendard SemiBold"),
+    url("./assets/fonts/Pretendard-SemiBold.woff") format("woff"),
+}
+
+@font-face {
+  font-family: Pretendard-Bold;
+  font-weight: 300;
+  src:
+    local("Pretendard Bold"),
+    url("./assets/fonts/Pretendard-Bold.woff") format("woff"),
+}
+
+@font-face {
+  font-family: Pretendard-ExtraBold;
+  font-weight: 300;
+  src:
+    local("Pretendard ExtraBold"),
+    url("./assets/fonts/Pretendard-ExtraBold.woff") format("woff")
+}
+
+@font-face {
+  font-family: NotoSans-ExtraLight;
+  font-weight: 300;
+  src:
+    local("NotoSans ExtraLight"),
+    url("./assets/fonts/NotoSans-ExtraLight.ttf") format("ttf"),
+}
+
+@font-face {
+  font-family: NotoSans-Light;
+  font-weight: 300;
+  src:
+    local("NotoSans Light"),
+    url("./assets/fonts/NotoSans-Light.ttf") format("ttf"),
+}
+
+@font-face {
+  font-family: NotoSans-Regular;
+  font-weight: 300;
+  src:
+    local("NotoSans Regular"),
+    url("./assets/fonts/NotoSans-Regular.ttf") format("ttf"),
+}
+
+@font-face {
+  font-family: NotoSans-Medium;
+  font-weight: 300;
+  src:
+    local("NotoSans Medium"),
+    url("./assets/fonts/NotoSans-Medium.ttf") format("ttf"),
+}
+
+@font-face {
+  font-family: NotoSans-SemiBold;
+  font-weight: 300;
+  src:
+    local("NotoSans SemiBold"),
+    url("./assets/fonts/NotoSans-SemiBold.ttf") format("ttf"),
+}
+
+@font-face {
+  font-family: NotoSans-Bold;
+  font-weight: 300;
+  src:
+    local("NotoSans Bold"),
+    url("./assets/fonts/NotoSans-Bold.ttf") format("ttf"),
+}
+
+@font-face {
+  font-family: NotoSans-ExtraBold;
+  font-weight: 300;
+  src:
+    local("NotoSans ExtraBold"),
+    url("./assets/fonts/NotoSans-ExtraBold.ttf") format("ttf")
+}
+@media screen and (max-width: 344px) {
+  html {
+    @apply text-[12px];
+  }
+}
+
+/* 스마트폰 모바일(세로) ~ 479px*/
+@media screen and (min-width: 375px) and (max-width: 479px) {
+  html {
+    @apply text-[14px];
+  }
+}
+
+/* 스마트폰 모바일(가로) & 태블릿 세로 */
+@media screen and (min-width: 480px) and (max-width: 767px) {
+  html {
+    @apply text-[16px];
+  }
+}
+
+/* 태블릿 가로 */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+  html {
+    @apply text-[18px];
+  }
+}
+
+/* 노트북 & 이외 사이즈 */
+@media screen and (min-width: 1024px) {
+  html {
+    @apply text-[32px];
+  }
+}

@@ -1,8 +1,10 @@
 package com.ssafy.mylio.global.config.security;
 
+import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.security.DevAuthenticationFilter;
 import com.ssafy.mylio.global.security.jwt.JwtAuthenticationFilter;
 import com.ssafy.mylio.global.security.jwt.JwtTokenProvider;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +65,37 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                // 여기에 exceptionHandling 추가
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            log.error("인증 오류 (401 Unauthorized): {}", authException.getMessage());
+
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+                            response.setContentType("application/json;charset=UTF-8");
+
+                            String errorJson = String.format(
+                                    "{\"success\": false, \"data\": null, \"error\": {\"code\": \"%s\", \"message\": \"%s\"}, \"timestamp\": \"%s\"}",
+                                    ErrorCode.UNAUTHORIZED_ACCESS.getCode(),
+                                    ErrorCode.UNAUTHORIZED_ACCESS.getMessage(),
+                                    java.time.LocalDateTime.now()
+                            );
+                            response.getWriter().write(errorJson);
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            log.error("접근 거부 (403 Forbidden): {}", accessDeniedException.getMessage());
+
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403
+                            response.setContentType("application/json;charset=UTF-8");
+
+                            String errorJson = String.format(
+                                    "{\"success\": false, \"data\": null, \"error\": {\"code\": \"%s\", \"message\": \"%s\"}, \"timestamp\": \"%s\"}",
+                                    ErrorCode.FORBIDDEN_ACCESS.getCode(),
+                                    ErrorCode.FORBIDDEN_ACCESS.getMessage(),
+                                    java.time.LocalDateTime.now()
+                            );
+                            response.getWriter().write(errorJson);
+                        })
+                )
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers("/auth/login","/auth/login/kiosk","/test",
@@ -90,7 +123,7 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-
+        log.info("CORS 설정 중... 허용된 오리진: {}", allowedOrigins);
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(allowedOrigins);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
