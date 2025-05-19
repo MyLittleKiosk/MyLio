@@ -87,8 +87,8 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
               onClick={() => setPage(page - 1)}
               disabled={page === 0}
               className={clsx(
-                'bg-primary text-white h-full rounded-tl-xl rounded-bl-xl px-1',
-                page === 0 && 'bg-subContent'
+                'text-white h-full rounded-tl-xl rounded-bl-xl px-1',
+                page === 0 ? 'bg-subContent' : 'bg-secondary'
               )}
             >
               {'<'}
@@ -112,10 +112,10 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
             onClick={() => setPage(page + 1)}
             disabled={page === cartList.length - 1 || cartList.length === 0}
             className={clsx(
-              'bg-primary text-white h-full rounded-tr-xl rounded-br-xl px-1',
+              'text-white h-full rounded-tr-xl rounded-br-xl px-1',
               page === cartList.length - 1 || cartList.length === 0
                 ? 'bg-subContent'
-                : 'bg-primary'
+                : 'bg-secondary'
             )}
           >
             {'>'}
