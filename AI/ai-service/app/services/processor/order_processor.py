@@ -350,7 +350,7 @@ class OrderProcessor(BaseProcessor):
                     screen_state=ScreenState.ORDER,
                     store_id=store_id,
                     session=session,
-                    payment_method= self.session_manager.get_session_value("payment_method"),
+                    payment_method= self.session_manager.get_session_value(session_id,"payment_method"),
                     status=ResponseStatus.MISSING_REQUIRED_OPTIONS,
                     contents=llm_result.get("menus", []),
                     reply=reply_msg
