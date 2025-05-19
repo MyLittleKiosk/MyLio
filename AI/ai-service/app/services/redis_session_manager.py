@@ -139,7 +139,7 @@ class RedisSessionManager:
                 for option in menu.get("options", []):
                     if option.get("is_selected") or option.get("selected_id") or option.get("option_value"):
                         cart_item["selected_options"].append(_build_selected_option(option))
-                    
+
             # 장바구니에 추가
             print(f"[카트 추가] 카트 아이템: {cart_item}")
             session["cart"].append(cart_item)
@@ -269,6 +269,7 @@ class RedisSessionManager:
                 minimal_data = {
                     "id": session_id,
                     "session_id": session_id,
+                    "payment_method" : session.get("payment_method",""),
                     "created_at": session_data.get("created_at", datetime.now().isoformat()),
                     "last_accessed": datetime.now().isoformat(),
                     "cart": convert_decimal(session_data.get("cart", [])),  # 카트는 Decimal 변환 후 보존
@@ -490,33 +491,33 @@ class RedisSessionManager:
                     sanitized["last_state"]["menu"]["options"] = []
                     required_only = []
                     
-                    # for option in menu.get("options", []):
-                    #     # 필수 옵션 또는 이미 선택된 옵션만 저장
-                    #     if option.get("required", False) or option.get("is_selected", False):
-                    #         # 중복 필드 제거 및 최소 정보만 포함
-                    #         min_option = {
-                    #             "option_id": option.get("option_id"),
-                    #             "option_name": option.get("option_name"),
-                    #             "required": option.get("required", False),
-                    #             "is_selected": option.get("is_selected", False)
-                    #         }
+                    for option in menu.get("options", []):
+                        # 필수 옵션 또는 이미 선택된 옵션만 저장
+                        if option.get("required", False) or option.get("is_selected", False):
+                            # 중복 필드 제거 및 최소 정보만 포함
+                            min_option = {
+                                "option_id": option.get("option_id"),
+                                "option_name": option.get("option_name"),
+                                "required": option.get("required", False),
+                                "is_selected": option.get("is_selected", False)
+                            }
                             
-                    #         # 선택된 옵션이면 ID 추가
-                    #         if option.get("is_selected", False):
-                    #             min_option["selected_id"] = option.get("selected_id")
+                            # 선택된 옵션이면 ID 추가
+                            if option.get("is_selected", False):
+                                min_option["selected_id"] = option.get("selected_id")
                             
-                    #         # 옵션 상세 정보는 최소화
-                    #         if "option_details" in option:
-                    #             min_option["option_details"] = []
-                    #             for detail in option.get("option_details", []):
-                    #                 min_option["option_details"].append({
-                    #                     "id": detail.get("id"),
-                    #                     "value": detail.get("value")
-                    #                 })
+                            # 옵션 상세 정보는 최소화
+                            if "option_details" in option:
+                                min_option["option_details"] = []
+                                for detail in option.get("option_details", []):
+                                    min_option["option_details"].append({
+                                        "id": detail.get("id"),
+                                        "value": detail.get("value")
+                                    })
                             
-                    #         required_only.append(min_option)
+                            required_only.append(min_option)
                     
-                    # sanitized["last_state"]["menu"]["options"] = required_only
+                    sanitized["last_state"]["menu"]["options"] = required_only
                     sanitized["last_state"]["menu"]["options"] = copy.deepcopy(menu.get("options", []))
                 
                 # 선택된 옵션 정보 복사 (중복 제거)

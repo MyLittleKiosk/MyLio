@@ -24,7 +24,7 @@ class OrderProcessor(BaseProcessor):
         """주문 의도 처리"""
         print(f"[주문 처리] 시작: 텍스트='{text}', 화면 상태={screen_state}")
         
-        # 진행중인 메뉴가 있을 때 또 ORDER가 올 경우 새 메뉴 queue에 저장장
+        # 진행중인 메뉴가 있을 때 또 ORDER가 올 경우 새 메뉴 queue에 저장
         if (
             intent_data.get("intent_type") == IntentType.ORDER
             and session.get("last_state", {}).get("pending_option")
@@ -149,6 +149,7 @@ class OrderProcessor(BaseProcessor):
         # paymennt_method가 있다면 세션에 저장
         if intent_data.get("payment_method"):
             print(f"[받아온 payment가 있는가 ]{intent_data.get('payment_method')}")
+            
             self.session_manager.set_session_value(session_id,"payment_method", intent_data["payment_method"])
             print(f"[바로 제대로 저장되었는지 확인 ]{self.session_manager.get_session_value(session_id,'payment_method')}")
         
@@ -182,7 +183,10 @@ class OrderProcessor(BaseProcessor):
             if next_option:
                 # 기존 장바구니 정보 보존
                 current_cart = self.session_manager.get_cart(session_id)
-                
+                # payment 정보 있으면 저장
+                if self.session_manager.get_session_value(session_id,'payment_method'):
+                    session["payment_method"] = self.session_manager.get_session_value(session_id,'payment_method')
+
                 # 세션에 메뉴 및 다음 옵션 정보 저장
                 session["last_state"] = {
                     "menu": {
@@ -346,6 +350,7 @@ class OrderProcessor(BaseProcessor):
                     screen_state=ScreenState.ORDER,
                     store_id=store_id,
                     session=session,
+                    payment_method= self.session_manager.get_session_value("payment_method"),
                     status=ResponseStatus.MISSING_REQUIRED_OPTIONS,
                     contents=llm_result.get("menus", []),
                     reply=reply_msg
@@ -471,52 +476,7 @@ class OrderProcessor(BaseProcessor):
         for opt in remaining_any:     
             if opt.get("is_selected"):
                 continue  # 이미 선택된 옵션은 건너뜀
-            
-            # 얼음량 옵션에 대한 특별 처리
-            # if opt.get("option_name") == "얼음량" and ("얼음" in text.lower() or "ice" in text.lower()):
-            #     print(f"[얼음량 옵션 처리] 텍스트에서 얼음량 옵션 검색: '{text}'")
-                
-            #     # 얼음 많이/적게 등 직접 키워드 검색
-            #     ice_keywords = {
-            #         "많이": ["많이", "많은", "많게", "풍부", "가득"],
-            #         "적게": ["적게", "적은", "조금", "약간"],
-            #         "없음": ["없이", "빼고", "제외", "없이"],
-            #         "보통": ["보통", "기본", "스탠다드"]
-            #     }
-                
-            #     matched_ice_amount = None
-            #     for amount, keywords in ice_keywords.items():
-            #         if any(kw in text.lower() for kw in keywords):
-            #             matched_ice_amount = amount
-            #             print(f"[얼음량 옵션 처리] 매칭된 얼음량: {matched_ice_amount}")
-            #             break
-                
-            #     if matched_ice_amount:
-            #         # 매칭된 얼음량으로 옵션 찾기
-            #         for detail in opt.get("option_details", []):
-            #             detail_value = detail.get("value", "").lower()
-            #             if matched_ice_amount in detail_value:
-            #                 # 옵션 적용
-            #                 ice_option = {
-            #                     "option_id": opt.get("option_id"),
-            #                     "option_name": opt.get("option_name"),
-            #                     "option_name_en": opt.get("option_name_en"),
-            #                     "required": opt.get("required", False),
-            #                     "is_selected": True,
-            #                     "option_details": [{
-            #                         "id": detail.get("id"),
-            #                         "value": detail.get("value"),
-            #                         "additional_price": detail.get("additional_price", 0)
-            #                     }]
-            #                 }
-                            
-            #                 print(f"[LLM 옵션 선택 로그] 텍스트에서 직접 인식한 옵션: {opt.get('option_name')}={detail.get('value')}(ID:{detail.get('id')})")
-            #                 self.option_handler.option_matcher.apply_option_to_menu(menu, ice_option)
-            #                 all_selected_options.append(ice_option)
-            #                 all_options_identified.append(f"{opt.get('option_name')}={detail.get('value')}")
-            #                 break
-            
-            #opt_match = self.option_handler.option_matcher.parse_option_response(text, opt, menu)
+        
             opt_match = self.option_handler.process_option_selection(text, opt, menu)
             if opt_match:
                 print(f"[옵션 선택 처리] 추가 옵션 선택 성공: "
@@ -709,7 +669,7 @@ class OrderProcessor(BaseProcessor):
         # 5) 필요 정보(last_state, cart 등)만 갱신 후 **한 번만** save
         session["last_state"] = {}
         session["cart"] = self.session_manager.get_cart(session_id)
-        self.session_manager._save_session(session_id, session)
+        #여기 한번 지워봄 다시 살려야 할 수 있음self.session_manager._save_session(session_id, session)
 
         # 6) 다음 메뉴가 있으면 처리 진입
         if next_menu:
@@ -718,10 +678,12 @@ class OrderProcessor(BaseProcessor):
             )
 
         #payment method가 있으면 confirm화면으로 이동
-        payment_method = self.session_manager.get_session_value(session_id,
-                                                    "payment_method")
-        print(f"[두번째 더하기 payment 확인 {payment_method}")
+        payment_method = self.session_manager.get_session_value(session_id, "payment_method")
+      
+        print(f"[두번째 더하기 payment 확인 {payment_method} ")
         if payment_method:
+            session["payment_method"] = payment_method
+
             payment_proc = PaymentProcessor(self.response_generator,
                                             self.menu_service,
                                             self.session_manager)
@@ -730,6 +692,7 @@ class OrderProcessor(BaseProcessor):
                 "confidence": 0.9,
                 "payment_method": payment_method
             }
+
             return payment_proc.process(payment_intent, text, language,
                                         ScreenState.MAIN, store_id, session)
         
