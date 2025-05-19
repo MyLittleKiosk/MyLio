@@ -10,10 +10,14 @@ import {
 } from '@/service/apis/nutrient';
 import { NutritionTemplateAddType } from '@/types/nutrient';
 
-export const useGetNutritionList = (keyword?: string, page?: number) => {
+export const useGetNutritionList = (
+  keyword?: string,
+  page?: number,
+  size?: number
+) => {
   const query = useSuspenseQuery({
-    queryKey: ['nutritionList', keyword, page],
-    queryFn: () => getNutritionList(keyword, page),
+    queryKey: ['nutritionList', keyword, page, size],
+    queryFn: () => getNutritionList(keyword, page, size),
   });
 
   const pageInfo = {

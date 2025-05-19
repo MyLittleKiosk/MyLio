@@ -32,10 +32,10 @@ const EditOptionModal = ({ row }: Props) => {
     row.optionNameEn
   );
   const [optionDetailValueEdit, setOptionDetailValueEdit] = useState(
-    row.optionDetail.map((optionDetail) => optionDetail.optionDetailValue)
+    row.optionDetails.map((optionDetail) => optionDetail.optionDetailValue)
   );
   const [optionDetailPriceEdit, setOptionDetailPriceEdit] = useState(
-    row.optionDetail.map((optionDetail) => optionDetail.additionalPrice)
+    row.optionDetails.map((optionDetail) => optionDetail.additionalPrice)
   );
   const [optionDetailNameAdd, setOptionDetailNameAdd] = useState('');
   const [optionDetailPriceAdd, setOptionDetailPriceAdd] = useState(0);
@@ -70,11 +70,15 @@ const EditOptionModal = ({ row }: Props) => {
   }
 
   function handleOptionDetailEdit(optionDetailId: number) {
+    const index = row.optionDetails.findIndex(
+      (detail) => detail.optionDetailId === optionDetailId
+    );
+
     editOptionDetail(
       {
         optionDetailId,
-        value: optionDetailValueEdit[optionDetailId],
-        additionalPrice: optionDetailPriceEdit[optionDetailId],
+        value: optionDetailValueEdit[index],
+        additionalPrice: optionDetailPriceEdit[index],
       },
       {
         onSuccess: () => {
@@ -92,18 +96,20 @@ const EditOptionModal = ({ row }: Props) => {
   }
 
   function handleOptionDetailDelete(optionDetailId: number) {
-    deleteOptionDetail(optionDetailId, {
-      onSuccess: () => {
-        openModal(
-          <CompleteModal
-            title='옵션 상세 삭제'
-            description='옵션 상세 삭제가 완료되었습니다.'
-            buttonText='확인'
-          />,
-          'sm'
-        );
-      },
-    });
+    if (confirm('정말 삭제하시겠습니까?')) {
+      deleteOptionDetail(optionDetailId, {
+        onSuccess: () => {
+          openModal(
+            <CompleteModal
+              title='옵션 상세 삭제'
+              description='옵션 상세 삭제가 완료되었습니다.'
+              buttonText='확인'
+            />,
+            'sm'
+          );
+        },
+      });
+    }
   }
 
   function handleOptionDetailAdd(e: React.FormEvent) {
@@ -183,7 +189,7 @@ const EditOptionModal = ({ row }: Props) => {
             </tr>
           </thead>
           <tbody>
-            {row.optionDetail.map((optionDetail, index) => (
+            {row.optionDetails.map((optionDetail, index) => (
               <tr key={optionDetail.optionDetailId} className='w-full'>
                 <td className='w-[30%] text-center p-2'>
                   <Input

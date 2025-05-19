@@ -17,7 +17,7 @@ const Table = <T extends object>({
 }: TableProps<T>) => {
   function checkColumn(column: Column<T>, row: T) {
     switch (column.accessor) {
-      case 'optionDetail':
+      case 'optionDetails':
         return (
           <div>
             {(
@@ -33,10 +33,6 @@ const Table = <T extends object>({
           </div>
         );
       case 'imageUrl':
-        console.log(
-          'row[column.accessor as keyof T]:',
-          row[column.accessor as keyof T]
-        );
         return (
           <img
             src={String(row[column.accessor as keyof T])}

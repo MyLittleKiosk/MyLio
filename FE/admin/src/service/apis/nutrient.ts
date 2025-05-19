@@ -4,10 +4,11 @@ import authClient from '@/service/authClient';
 
 export async function getNutritionList(
   keyword?: string,
-  page: number = 1
+  page: number = 1,
+  size: number = 10
 ): Promise<Response<PaginationResponse<NutrientType>>> {
   try {
-    const params = keyword ? { keyword, page } : { page };
+    const params = keyword ? { keyword, page, size } : { page, size };
     const response = await authClient.get('/nutrition', { params });
     return response.data;
   } catch (error: unknown) {

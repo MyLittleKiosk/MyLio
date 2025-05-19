@@ -6,15 +6,15 @@ import Button from '@/components/common/Button';
 import EditOptionTable from '@/components/menus/EditMenuForm/EditOptionTable';
 import { useMenuEditContext } from '@/components/menus/EditMenuForm/MenuEditContext';
 
-import { CATEGORY_LIST } from '@/service/mock/dummies/category';
+import { useGetCategory } from '@/service/queries/category';
 import { useGetOptions } from '@/service/queries/option';
+import { useGetIngredientList } from '@/service/queries/ingredient';
+import { useGetNutritionList } from '@/service/queries/nutrient';
 
 import IconAdd from '@/assets/icons/IconAdd';
 import IconTrashCan from '@/assets/icons/IconTrashCan';
 import IconImage from '@/assets/icons/IconImage';
 
-import { NUTRIENT_LIST } from '@/datas/NutrientList';
-import { INGREDIENT_LIST } from '@/datas/IngredientList';
 import translator from '@/utils/translator';
 
 const EditForm = () => {
@@ -47,9 +47,10 @@ const EditForm = () => {
     updateOptionInfo,
   } = useMenuEditContext();
 
-  console.log('props ', menuAddData);
-
-  const { data: options, isLoading } = useGetOptions();
+  const { data: options } = useGetOptions();
+  const { data: category } = useGetCategory(undefined, undefined, 50);
+  const { data: ingredient } = useGetIngredientList(undefined, undefined, 50);
+  const { data: nutrient } = useGetNutritionList(undefined, undefined, 50);
 
   // 옵션 정보가 변경될 때마다 menuAddData 업데이트
   useEffect(() => {
@@ -64,10 +65,6 @@ const EditForm = () => {
   async function translateTag() {
     const translatedValue = await translator(tagValueKR);
     setTagValueEN(translatedValue);
-  }
-
-  if (!options || isLoading) {
-    return <div>Loading...</div>;
   }
 
   return (
@@ -106,10 +103,10 @@ const EditForm = () => {
       </div>
 
       <Select
-        options={CATEGORY_LIST.data.content}
+        options={category || []}
         label='카테고리'
         selected={selectedCategory}
-        onChange={handleCategoryChange}
+        onChange={(e) => handleCategoryChange(e, category || [])}
         placeholder='카테고리를 선택하세요.'
         getOptionLabel={(option) => option.nameKr}
         getOptionValue={(option) => option.categoryId.toString()}
@@ -266,13 +263,13 @@ const EditForm = () => {
 
       <div className='flex flex-col gap-2 w-full'>
         <Select
-          options={INGREDIENT_LIST.content}
+          options={ingredient || []}
           label='원재료'
           selected={selectedIngredient}
           placeholder='원재료를 선택하세요.'
           getOptionLabel={(option) => option.ingredientTemplateName}
           getOptionValue={(option) => option.ingredientTemplateId.toString()}
-          onChange={handleIngredientChange}
+          onChange={(e) => handleIngredientChange(e, ingredient || [])}
           className='w-full'
         />
         <div className='flex gap-2 w-full'>
@@ -292,13 +289,13 @@ const EditForm = () => {
       <div className='flex flex-col gap-2 w-full'>
         <div className='flex gap-2'>
           <Select
-            options={NUTRIENT_LIST.content}
+            options={nutrient || []}
             label='영양성분'
             selected={selectedNutrient}
             placeholder='영양성분을 선택하세요.'
             getOptionLabel={(option) => option.nutritionTemplateName}
             getOptionValue={(option) => option.nutritionTemplateId.toString()}
-            onChange={handleNutrientChange}
+            onChange={(e) => handleNutrientChange(e, nutrient || [])}
             className='w-[55%]'
           />
 
@@ -327,12 +324,12 @@ const EditForm = () => {
           />
         </div>
 
-        <div className='flex gap-2'>
+        <div className='flex gap-2 w-full overflow-x-auto'>
           {selectedNutrientList.map((nutrient) => {
             return (
               <p
                 key={nutrient.nutritionTemplateId}
-                className='px-2 py-1 text-sm border border-subContent rounded-full font-preLight cursor-pointer flex gap-1 items-center hover:bg-subContent/50'
+                className='px-2 py-1 text-sm border border-subContent rounded-full font-preLight cursor-pointer flex gap-1 items-center hover:bg-subContent/50 whitespace-nowrap'
                 onClick={() =>
                   handleNutrientRemove(nutrient.nutritionTemplateId)
                 }
