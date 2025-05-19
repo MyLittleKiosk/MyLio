@@ -1,0 +1,23 @@
+{
+  "name": "mylio",
+  "version": "1.0.0",
+  "description": "Kiosk Electron App",
+  "author": "MyLio",
+  "main": "main.js",
+  "packageManager": "yarn@4.9.1",
+  "devDependencies": {
+    "electron": "^36.2.1",
+    "electron-builder": "26.0.12"
+  },
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "build": {
+    "appId": "com.example.kioskapp",
+    "productName": "KioskApp",
+    "win": {
+      "target": "nsis"
+    }
+  }
+}
