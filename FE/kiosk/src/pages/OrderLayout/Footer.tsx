@@ -20,6 +20,7 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
   const [page, setPage] = useState(0);
   const order = useOrderStore((state) => state.order);
   const { mutate } = useOrderRequest();
+
   const cartList = useMemo(() => {
     if (order.cart.length === 0) return [];
     const itemsPerPage = 4;
@@ -84,7 +85,7 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
               {'<'}
             </button>
           </div>
-          <div className='flex items-center gap-2 w-full justify-between'>
+          <div className='grid grid-cols-4 gap-2 w-full pl-2'>
             {cartList[page]?.map((item) => (
               <Item
                 key={item.cartId}
