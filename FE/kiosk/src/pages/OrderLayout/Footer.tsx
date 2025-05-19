@@ -64,6 +64,8 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
     });
   };
 
+  console.log('page ', page);
+
   return (
     <div
       className={clsx(
@@ -79,7 +81,7 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
               disabled={page === 0}
               className={clsx(
                 'bg-primary text-white h-full rounded-tl-xl rounded-bl-xl px-1',
-                page === 0 && 'bg-gray-200'
+                page === 0 && 'bg-subContent'
               )}
             >
               {'<'}
@@ -104,7 +106,7 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
             disabled={page === cartList.length - 1}
             className={clsx(
               'bg-primary text-white h-full rounded-tr-xl rounded-br-xl px-1',
-              page === cartList.length - 1 && 'bg-gray-200'
+              page === cartList.length - 1 && 'bg-subContent'
             )}
           >
             {'>'}
