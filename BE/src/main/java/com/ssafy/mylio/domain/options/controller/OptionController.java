@@ -43,22 +43,22 @@ public class OptionController {
         return CommonResponse.ok(optionService.getOptionList(storeId, keyword, pageable));
     }
 
-    @GetMapping("/{option_id}")
+    @GetMapping("/{optionId}")
     @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.OPTION_NOT_FOUND, ErrorCode.OPTION_STORE_NOT_MATCH})
     @Operation(summary = "옵션 상세 조회", description = "optionId로 특정 옵션을 조회합니다.")
     public ResponseEntity<CommonResponse<OptionResponseDto>> getOptionDetail(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("option_id") Integer optionId) {
+            @PathVariable("optionId") Integer optionId) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         return CommonResponse.ok(optionService.getOptionDetail(storeId, optionId));
     }
 
-    @DeleteMapping("/{option_id}")
+    @DeleteMapping("/{optionId}")
     @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.OPTION_NOT_FOUND, ErrorCode.OPTION_STORE_NOT_MATCH})
     @Operation(summary = "옵션 삭제", description = "optionId로 특정 옵션을 삭제합니다.")
     public ResponseEntity<CommonResponse<Void>> deleteOption(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("option_id") Integer optionId) {
+            @PathVariable("optionId") Integer optionId) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         optionService.deleteOption(storeId, optionId);
         return CommonResponse.ok();
@@ -75,13 +75,13 @@ public class OptionController {
         return CommonResponse.ok();
     }
 
-    @PatchMapping("/{option_id}")
+    @PatchMapping("/{optionId}")
     @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.OPTION_NOT_FOUND, ErrorCode.OPTION_STORE_NOT_MATCH})
     @Operation(summary = "옵션 수정", description = "optionId로 옵션을 수정합니다 (그룹옵션)")
     public ResponseEntity<CommonResponse<Void>> updateOption(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody OptionUpdateRequestDto optionUpdateRequestDto,
-            @PathVariable("option_id") Integer optionId) {
+            @PathVariable("optionId") Integer optionId) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         optionService.updateOption(storeId, optionId, optionUpdateRequestDto);
         return CommonResponse.ok();
