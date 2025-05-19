@@ -483,7 +483,8 @@ class RedisSessionManager:
                     "menu_id": menu.get("menu_id"),
                     "name": menu.get("name"),
                     "base_price": menu.get("base_price", 0),
-                    "total_price": menu.get("total_price", 0)
+                    "total_price": menu.get("total_price", 0),
+                    "quantity":   menu.get("quantity", 1)
                 }
                 
                 # 옵션 정보 복사 (필수만 최소화)
@@ -493,7 +494,8 @@ class RedisSessionManager:
                     
                     for option in menu.get("options", []):
                         # 필수 옵션 또는 이미 선택된 옵션만 저장
-                        if option.get("required", False) or option.get("is_selected", False):
+                        # if option.get("required", False) or option.get("is_selected", False):
+                        if option.get("is_selected", False):
                             # 중복 필드 제거 및 최소 정보만 포함
                             min_option = {
                                 "option_id": option.get("option_id"),
