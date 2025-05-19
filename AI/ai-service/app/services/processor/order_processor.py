@@ -7,6 +7,7 @@ from app.models.schemas import IntentType, ScreenState, Language, ResponseStatus
 from app.services.processor.base_processor import BaseProcessor
 from app.services.response.response_generator import ResponseGenerator
 from app.services.option.option_handler import OptionHandler
+from app.services.processor.payment_processor import PaymentProcessor
 
 class OrderProcessor(BaseProcessor):
     """주문 처리 프로세서"""
@@ -145,6 +146,12 @@ class OrderProcessor(BaseProcessor):
                 ready_to_add_menus.append(full_menu)
                 self.session_manager.add_to_cart(session_id, full_menu)
         
+        # paymennt_method가 있다면 세션에 저장
+        if intent_data.get("payment_method"):
+            print(f"[받아온 payment가 있는가 ]{intent_data.get('payment_method')}")
+            self.session_manager.set_session_value(session_id,"payment_method", intent_data["payment_method"])
+            print(f"[바로 제대로 저장되었는지 확인 ]{self.session_manager.get_session_value(session_id,'payment_method')}")
+        
         # 옵션 선택이 필요한 메뉴가 있는 경우
         if pending_option_menus:
             print(f"[주문 처리] 옵션 선택이 필요한 메뉴 {len(pending_option_menus)}개 있음")
@@ -249,6 +256,23 @@ class OrderProcessor(BaseProcessor):
         # 모든 메뉴가 장바구니에 바로 추가된 경우
         elif ready_to_add_menus:
             print(f"[주문 처리] 모든 메뉴 {len(ready_to_add_menus)}개가 장바구니에 추가됨")
+            
+            session = self.session_manager.get_session(session_id)   # ★ 추가
+            # payment_method가 있다면 confirm으로이동
+            payment_method = self.session_manager.get_session_value(session_id,
+                                                        "payment_method")
+            print(f"[첫번째 더하기 payment 확인 {payment_method}")
+            if payment_method:
+                payment_proc = PaymentProcessor(self.response_generator,
+                                                self.menu_service,
+                                                self.session_manager)
+                payment_intent = {
+                    "intent_type": IntentType.PAYMENT,
+                    "confidence": 0.9,
+                    "payment_method": payment_method
+                }
+                return payment_proc.process(payment_intent, text, language,
+                                            ScreenState.MAIN, store_id, session)
             
             # 장바구니에 대한 응답 메시지 생성
             menu_names = ", ".join([menu.get("name_kr", "") or menu.get("name", "") for menu in ready_to_add_menus])
@@ -693,6 +717,23 @@ class OrderProcessor(BaseProcessor):
                 next_menu, text, language, store_id, session
             )
 
+        #payment method가 있으면 confirm화면으로 이동
+        payment_method = self.session_manager.get_session_value(session_id,
+                                                    "payment_method")
+        print(f"[두번째 더하기 payment 확인 {payment_method}")
+        if payment_method:
+            payment_proc = PaymentProcessor(self.response_generator,
+                                            self.menu_service,
+                                            self.session_manager)
+            payment_intent = {
+                "intent_type": IntentType.PAYMENT,
+                "confidence": 0.9,
+                "payment_method": payment_method
+            }
+            return payment_proc.process(payment_intent, text, language,
+                                        ScreenState.MAIN, store_id, session)
+        
+
         # (next_menu 가 없으면) → 장바구니 완료 메시지 한 번만 만들고 종료
         if language == Language.KR:
             reply = "주문하신 메뉴가 장바구니에 담겼어요."
@@ -813,9 +854,7 @@ class OrderProcessor(BaseProcessor):
             print("[메뉴 처리 시작] 장바구니 추가 가능")
 
             # 1) 카트에 담기
-            print("order_processor.py 818에서 cart 담아")
             self.session_manager.add_to_cart(session_id, full_menu)
-            print("order_processor.py 818에서 remove")
             # 2) 대기열에서 현재 메뉴 제거
             self.session_manager.remove_from_order_queue(session_id)
 
@@ -842,6 +881,23 @@ class OrderProcessor(BaseProcessor):
             # 모든 메뉴 처리 완료
             print("[메뉴 처리 시작] 모든 메뉴 처리 완료")
             
+            # payment_method가 있다면 confirm으로이동
+            payment_method = self.session_manager.get_session_value(session_id,
+                                                        "payment_method")
+            print(f"[세번째 더하기 payment 확인 {payment_method}")
+            if payment_method:
+                payment_proc = PaymentProcessor(self.response_generator,
+                                                self.menu_service,
+                                                self.session_manager)
+                payment_intent = {
+                    "intent_type": IntentType.PAYMENT,
+                    "confidence": 0.9,
+                    "payment_method": payment_method
+                }
+                return payment_proc.process(payment_intent, text, language,
+                                            ScreenState.MAIN, store_id, session)
+            
+
             # 기본 메시지 생성
             if language == Language.KR:
                 reply = f"주문하신 메뉴가 장바구니에 담겼어요."
