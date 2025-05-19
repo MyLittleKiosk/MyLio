@@ -42,8 +42,8 @@ const Confirm = () => {
             onDecrease={() => decreaseCount(item.menuId)}
           />
         ))}
-        <div className='flex flex-col gap-2 w-full border-t-2 '>
-          <div className='flex items-center justify-between border-t-2 pt-4 border-gray-200 me-4'>
+        <div className='flex flex-col gap-2 w-full pb-6'>
+          <div className='flex items-center justify-between pt-4 border-gray-200 me-4'>
             <div>총 주문금액</div>
             <div>
               {formatNumber(
