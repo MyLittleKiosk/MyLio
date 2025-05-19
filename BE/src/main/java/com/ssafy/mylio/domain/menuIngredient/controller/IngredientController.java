@@ -51,12 +51,12 @@ class IngredientController {
         return CommonResponse.ok();
     }
 
-    @PatchMapping("/{ingredient_id}")
+    @PatchMapping("/{ingredientId}")
     @Operation(summary = "원재료 수정", description = "원재료를 수정할 수 있습니다")
     @ApiErrorCodeExamples({ErrorCode.INGREDIENT_TEMPLATE_NOT_FOUND})
     public ResponseEntity<CommonResponse<Void>> ingredientTemplateUpdate(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("ingredient_id") Integer ingredientId,
+            @PathVariable("ingredientId") Integer ingredientId,
             @RequestBody IngredientTemplateRequestDto requestDto) {
         String userType = authenticationUtil.getCurrntUserType(userPrincipal);
         ingredientService.ingredientTemplateUpdate(userType, ingredientId, requestDto);

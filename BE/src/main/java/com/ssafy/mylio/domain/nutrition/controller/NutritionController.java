@@ -35,23 +35,23 @@ public class NutritionController {
     private final NutritionService nutritionService;
     private final NutritionTemplateService nutritionTemplateService;
 
-    @GetMapping("/{menu_id}")
+    @GetMapping("/{menuId}")
     @Operation(summary = "영양성분 조회", description = "메뉴 ID로 영양성분을 조회합니다")
     @ApiErrorCodeExamples({ErrorCode.MENU_NOT_FOUND, ErrorCode.MENU_STORE_NOT_MATCH})
     public ResponseEntity<CommonResponse<List<NutritionResponseDto>>> getNutritionInfo(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("menu_id") Integer menuId) {
+            @PathVariable("menuId") Integer menuId) {
 
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         return CommonResponse.ok(nutritionService.getNutritionInfo(storeId, menuId));
     }
 
-    @PostMapping("/{menu_id}")
+    @PostMapping("/{menuId}")
     @Operation(summary = "영양성분 등록", description = "메뉴 ID의 영양성분을 새로 등록합니다")
     @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND,ErrorCode.MENU_NOT_FOUND, ErrorCode.MENU_STORE_NOT_MATCH, ErrorCode.NUTRITION_TEMPLATE_NOT_FOUND})
     public ResponseEntity<CommonResponse<Void>> nutritionAdd(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("menu_id") Integer menuId,
+            @PathVariable("menuId") Integer menuId,
             @RequestBody NutritionValuePostRequestDto postRequestDto) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         nutritionService.nutritionInfoAdd(storeId, menuId, postRequestDto);
@@ -80,12 +80,12 @@ public class NutritionController {
         return CommonResponse.ok();
     }
 
-    @PatchMapping("/{nutrition_id}")
+    @PatchMapping("/{nutritionId}")
     @Operation(summary = "슈퍼관리자 영양성분 템플릿 수정", description = "슈퍼관리자가 영양성분 템플릿을 수정할 수 있습니다")
     @ApiErrorCodeExamples({ErrorCode.NUTRITION_TEMPLATE_NOT_FOUND})
     public ResponseEntity<CommonResponse<Void>> adminNutritionUpdate(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("nutrition_id") Integer nutritionId,
+            @PathVariable("nutritionId") Integer nutritionId,
             @RequestBody NutritionTemplateUpdateRequestDto updateRequestDto) {
         String userType = authenticationUtil.getCurrntUserType(userPrincipal);
         nutritionTemplateService.updateNutritionTemplate(userType, nutritionId, updateRequestDto);

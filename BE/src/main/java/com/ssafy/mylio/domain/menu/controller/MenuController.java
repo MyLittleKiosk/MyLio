@@ -39,7 +39,7 @@ public class MenuController {
     @Operation(summary = "메뉴 전체 조회", description = "전체 메뉴 리스트를 조회합니다.")
     public ResponseEntity<CommonResponse<CustomPage<MenuListResponseDto>>> getMenuList(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestParam(name="category_id", required = false) @PositiveOrZero(message = "카테고리 ID는 0 이상 숫자여야 합니다.")  Integer categoryId ,
+            @RequestParam(name="categoryId", required = false) @PositiveOrZero(message = "카테고리 ID는 0 이상 숫자여야 합니다.")  Integer categoryId ,
             @RequestParam(name="keyword", required = false) String keyword,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
 
@@ -47,22 +47,22 @@ public class MenuController {
         return CommonResponse.ok(menuService.getMenuList(storeId, categoryId, keyword, pageable));
     }
 
-    @GetMapping("/{menu_id}")
+    @GetMapping("/{menuId}")
     @Operation(summary = "메뉴 상세 조회", description = "메뉴 정보를 상세조회합니다.")
     @ApiErrorCodeExamples({ErrorCode.MENU_NOT_FOUND})
     public ResponseEntity<CommonResponse<MenuDetailResponseDto>> getMenuDetail(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("menu_id") Integer menuId ) {
+            @PathVariable("menuId") Integer menuId ) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         return CommonResponse.ok(menuService.getMenuDetail(storeId, menuId));
     }
 
-    @DeleteMapping("/{menu_id}")
+    @DeleteMapping("/{menuId}")
     @Operation(summary = "메뉴 삭제", description = "메뉴를 삭제합니다")
     @ApiErrorCodeExamples({ErrorCode.MENU_NOT_FOUND})
     public ResponseEntity<CommonResponse<Void>> deleteMenu(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("menu_id") Integer menuId) {
+            @PathVariable("menuId") Integer menuId) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         menuService.deleteMenu(storeId, menuId);
         return CommonResponse.ok();
@@ -86,7 +86,7 @@ public class MenuController {
     }
 
     @PutMapping(
-            value = "/{menu_id}",
+            value = "/{menuId}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
@@ -95,7 +95,7 @@ public class MenuController {
             ErrorCode.INGREDIENT_TEMPLATE_NOT_FOUND, ErrorCode.OPTION_NOT_FOUND, ErrorCode.OPTION_DETAIL_NOT_FOUND})
     public ResponseEntity<CommonResponse<Void>> updateMenu(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("menu_id") Integer menuId,
+            @PathVariable("menuId") Integer menuId,
             @RequestPart(value = "file", required = false) MultipartFile menuImg,
             @RequestPart("menu_data") MenuUpdateRequestDto menuRequestDto
     ) {

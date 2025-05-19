@@ -59,11 +59,11 @@ public class AccountController {
         return CommonResponse.ok(accountService.modifyAccount(userId,storeId,userType,request));
     }
 
-    @DeleteMapping("{account_id}")
+    @DeleteMapping("{accountId}")
     @Operation(summary = "매장 관리자 계정 삭제", description = "매장 관리자 계정을 삭제합니다.\n\n매장관리자 id를 보내줘야합니다.")
     @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND,ErrorCode.ACOUNT_NOT_FOUND,ErrorCode.INVALID_ROLE})
     public ResponseEntity<CommonResponse<Void>> deleteAccount(
-            @PathVariable("account_id") Integer accountId,
+            @PathVariable("accountId") Integer accountId,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         String userType = authenticationUtil.getCurrntUserType(userPrincipal);
