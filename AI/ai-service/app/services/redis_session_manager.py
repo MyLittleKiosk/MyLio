@@ -363,7 +363,7 @@ class RedisSessionManager:
         sanitized = {}
         
         # 기본 필드 복사
-        for key in ["id", "created_at", "last_accessed"]:
+        for key in ["id", "created_at", "last_accessed", "payment_method"]:
             if key in session_data:
                 sanitized[key] = session_data[key]
         
@@ -917,3 +917,35 @@ class RedisSessionManager:
         # 선택 안 함
         return None
 
+    # --- payment_method persistence -------------------------
+    def save_pending_payment(self, session_id: str, method: str):
+        self.set_session_value(session_id, "pending_payment_method", method)
+
+    def pop_pending_payment(self, session_id: str) -> Optional[str]:
+        """가져오면서 바로 삭제"""
+        pm = self.get_session_value(session_id, "pending_payment_method")
+        if pm:
+            self.delete_session_value(session_id, "pending_payment_method")
+        return pm
+
+
+    def get_session_value(self, session_id: str, field: str) -> Optional[Any]:
+        """세션에서 특정 필드 값을 읽어온다."""
+        session = self.get_session(session_id)
+        return session.get(field) if session else None
+
+    def set_session_value(self, session_id: str, field: str, value: Any) -> bool:
+        """세션의 특정 필드를 저장한다."""
+        session = self.get_session(session_id)
+        if not session:
+            return False
+        session[field] = value
+        return self._save_session(session_id, session)
+
+    def delete_session_value(self, session_id: str, field: str) -> bool:
+        """세션에서 특정 필드를 삭제한다."""
+        session = self.get_session(session_id)
+        if not session or field not in session:
+            return False
+        del session[field]
+        return self._save_session(session_id, session)
