@@ -8,6 +8,7 @@ import { useLogout, useRefresh } from '@/service/queries/user';
 import useOrderStore from '@/stores/useOrderStore';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useOrderRequest } from '@/service/queries/order';
+import useConsecutiveClick from '@/hooks/useConsecutiveClick';
 
 const OrderLayout = () => {
   const { pathname } = useLocation();
@@ -45,6 +46,7 @@ const OrderLayout = () => {
       storeId: order.storeId,
     });
   }
+
   function handleSessionReset() {
     resetOrder();
     orderRequest({
@@ -57,7 +59,17 @@ const OrderLayout = () => {
       payment: order.payment,
       storeId: order.storeId,
     });
+    window.location.reload();
   }
+
+  const handleTopLeftClick = useConsecutiveClick({
+    onSuccess: handleSessionReset,
+  });
+
+  const handleTopRightClick = useConsecutiveClick({
+    onSuccess: handleLogout,
+  });
+
   function testHandleRecognitionResult() {
     handleRecognitionResult(inputRef.current?.value || '');
   }
@@ -65,7 +77,14 @@ const OrderLayout = () => {
   return (
     // 배경 색은 추후 변경 예정
     <div className='flex flex-col h-dvh bg-gradient-to-b from-secondary to-white justify-between'>
-      {/* 임시 네비게이터 */}
+      <div
+        className='fixed top-0 left-0 w-20 h-20 z-20 cursor-pointer'
+        onClick={handleTopLeftClick}
+      />
+      <div
+        className='fixed top-0 right-0 w-20 h-20 z-20 cursor-pointer'
+        onClick={handleTopRightClick}
+      />
       <div className='flex justify-center items-center z-10 fixed top-0 left-0 w-full h-[100px] flex-wrap'>
         <ul className='flex justify-center items-center gap-4 rounded-xl p-4'>
           <li>
@@ -91,8 +110,6 @@ const OrderLayout = () => {
           </li>
         </ul>
         <div className='flex gap-4'>
-          <button onClick={handleLogout}>로그아웃</button>
-          <button onClick={handleSessionReset}>세션 초기화</button>
           <div className='flex gap-2 h-full'>
             <form
               onSubmit={(e) => {
