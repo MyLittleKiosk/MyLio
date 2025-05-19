@@ -47,11 +47,11 @@ public class OrderListController {
         return CommonResponse.ok(orderListService.getOrderList(storeId, startDate, endDate, pageable));
     }
 
-    @GetMapping("/{order_id}")
+    @GetMapping("/{orderId}")
     @Operation(summary = "주문 상세 조회", description = "주문의 상세 내용을 조회합니다")
     @ApiErrorCodeExamples({ErrorCode.ORDER_NOT_FOUND})
     public ResponseEntity<CommonResponse<OrderDetailResponseDto>> getOrderDetail(
-            @PathVariable("order_id") Integer orderId)
+            @PathVariable("orderId") Integer orderId)
     {
         return CommonResponse.ok(orderListService.getOrderDetail(orderId));
     }
