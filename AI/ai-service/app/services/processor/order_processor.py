@@ -625,6 +625,7 @@ class OrderProcessor(BaseProcessor):
         # 5) 필요 정보(last_state, cart 등)만 갱신 후 **한 번만** save
         session["last_state"] = {}
         session["cart"] = self.session_manager.get_cart(session_id)
+        session["payment_method"] = self.session_manager.get_session_value(session_id, "payment_method")
         self.session_manager._save_session(session_id, session)
 
         # 6) 다음 메뉴가 있으면 처리 진입
@@ -632,6 +633,26 @@ class OrderProcessor(BaseProcessor):
             return self._start_menu_processing(
                 next_menu, text, language, store_id, session
             )
+        
+        #payment method가 있으면 confirm화면으로 이동
+        payment_method = self.session_manager.get_session_value(session_id, "payment_method")
+      
+        print(f"[두번째 더하기 payment 확인 {payment_method} ")
+        if payment_method:
+            session["payment_method"] = payment_method
+
+            payment_proc = PaymentProcessor(self.response_generator,
+                                            self.menu_service,
+                                            self.session_manager)
+            payment_intent = {
+                "intent_type": IntentType.PAYMENT,
+                "confidence": 0.9,
+                "payment_method": payment_method
+            }
+
+            return payment_proc.process(payment_intent, text, language,
+                                        ScreenState.MAIN, store_id, session)
+        
 
         # (next_menu 가 없으면) → 장바구니 완료 메시지 한 번만 만들고 종료
         if language == Language.KR:
