@@ -113,43 +113,6 @@ class CartModifyProcessor(BaseProcessor):
                 ResponseStatus.ITEM_REMOVED, reply=reply, new_screen_state = new_screen_state
             )
             
-        # 3. 메뉴 수량 변경
-        elif action_type == "QUANTITY":
-            # 현재 수량
-            current_quantity = target_item.get("quantity", 1)
-            num = intent_data["quantity_change"] or intent_data["quantity"]
-            if "quantity_change" in intent_data:
-                # ± 증감값
-                new_quantity = intent_data["quantity_change"]
-            elif "quantity" in intent_data:
-                # 절대값
-                new_quantity = intent_data["quantity"]
-            else:
-                reply = llm_reply or "변경할 수량을 명확히 말씀해주세요."
-                return self._build_response(
-                    intent_data, text, language, screen_state, store_id, session,
-                    ResponseStatus.UNKNOWN, reply=reply, new_screen_state=ScreenState.CONFIRM
-                )
-            
-             # 실제 업데이트
-            if new_quantity == current_quantity:
-                reply = llm_reply or "이미 해당 수량으로 설정되어 있어요."
-            else:
-                target_item["quantity"] = new_quantity
-                reply = llm_reply or f"{target_item['name']}의 수량을 {new_quantity}개로 변경했어요."
-            
-            # 세션 업데이트
-            cart[target_index] = target_item
-            session["cart"] = cart
-            result = self.session_manager._save_session(session_id, session)
-            print(f"[장바구니 수정] 수량 변경 세션 저장 결과: {result}")
-            
-            return self._build_response(
-                intent_data, text, language, screen_state, store_id, session,
-                ResponseStatus.QUANTITY_UPDATED, reply=reply,
-                new_screen_state=ScreenState.CONFIRM
-            )
-            
         # 4. 옵션 변경
         elif action_type == "UPDATE":
             # LLM 응답에서 옵션 정보 추출
@@ -185,20 +148,66 @@ class CartModifyProcessor(BaseProcessor):
             updated_options = []
             
             # LLM에서 받은 옵션 정보로 옵션 업데이트
+            # for llm_option in options_from_llm:
+            #     option_name = llm_option["option_name"].lower()
+            #     option_value = llm_option["option_value"].upper()
+            #     is_sel = llm_option.get("is_selected", True)
+
+            #     # ① 현재 선택 목록에서 같은 이름 제거
+            #     # selected_options = [
+            #     #     o for o in selected_options
+            #     #     if o.get("option_name", "").lower() != option_name
+            #     # ]
+            #     if not is_sel:
+            #         selected_options = [
+            #             o for o in selected_options
+            #             if o.get("option_name","").lower() != option_name
+            #         ]
+            #         updated_options.append(f"removed {option_name}")
+            #         continue
+
+            #     # ③ 추가(또는 교체) 요청이면 기존에 있으면 제거 후 다시 추가
+            #     selected_options = [
+            #         o for o in selected_options
+            #         if o.get("option_name","").lower() != option_name
+            #     ]
+
+            #     # ② 상세 ID·추가금 조회
+            #     detail_id, add_price = self.menu_service.get_option_detail(
+            #         option_name, option_value, store_id
+            #     )
             for llm_option in options_from_llm:
-                option_name = llm_option["option_name"].lower()
+                option_name  = llm_option["option_name"].lower()
                 option_value = llm_option["option_value"].upper()
 
-                # ① 현재 선택 목록에서 같은 이름 제거
+                # ① 삭제 요청(is_selected=False) 처리
+                if not llm_option.get("is_selected", True):
+                    selected_options = [
+                        o for o in selected_options
+                        if o["option_name"].lower() != option_name
+                    ]
+                    updated_options.append(f"removed {option_name}")
+                    continue
+
+                # ② 추가 요청: 기존 동일 옵션 제거
                 selected_options = [
                     o for o in selected_options
-                    if o.get("option_name", "").lower() != option_name
+                    if o["option_name"].lower() != option_name
                 ]
 
-                # ② 상세 ID·추가금 조회
-                detail_id, add_price = self.menu_service.get_option_detail(
-                    option_name, option_value, store_id
-                )
+                # ③ detail_id 우선, 없으면 get_option_detail 호출
+                detail_id = llm_option.get("option_detail_id")
+                if detail_id is None:
+                    detail_id, add_price = self.menu_service.get_option_detail(
+                        option_name, option_value, store_id
+                    )
+                else:
+                    # 추가금까지 정확히 가져오려면 helper 메서드로 조회
+                    add_price = getattr(
+                        self.menu_service,
+                        "get_price_by_detail_id",
+                        lambda _id, _sid: 0
+                    )(detail_id, store_id)
 
                 # ③ 새 옵션 객체 생성
                 new_option = {
@@ -212,13 +221,26 @@ class CartModifyProcessor(BaseProcessor):
                     }]
                 }
                 selected_options.append(new_option)
-                updated_options.append(option_name)
+                # updated_options.append(option_name)
+                updated_options.append(f"added {option_name}")
 
             # 옵션이 변경되었으면 세션 업데이트
             if updated_options:
                 # 타겟 아이템 업데이트
                 target_item["selected_options"] = selected_options
                 
+                # 2) total_price 재계산
+                base_price = self.menu_service.get_menu_price(
+                    target_item["menu_id"], store_id
+                )
+                options_sum = sum(
+                    d["additional_price"]
+                    for opt in selected_options
+                    for d in opt.get("option_details", [])
+                )
+                new_total = (base_price + options_sum)
+                target_item["total_price"] = new_total
+
                 # 세션 업데이트
                 cart[target_index] = target_item
                 session["cart"] = cart
@@ -237,6 +259,43 @@ class CartModifyProcessor(BaseProcessor):
             return self._build_response(
                 intent_data, text, language, screen_state, store_id, session,
                 ResponseStatus.OPTIONS_UPDATED, reply=llm_reply
+            )
+
+        # 3. 메뉴 수량 변경
+        elif action_type == "QUANTITY":
+            # 현재 수량
+            current_quantity = target_item.get("quantity", 1)
+            num = intent_data["quantity_change"] or intent_data["quantity"]
+            if "quantity_change" in intent_data:
+                # ± 증감값
+                new_quantity = intent_data["quantity_change"]
+            elif "quantity" in intent_data:
+                # 절대값
+                new_quantity = intent_data["quantity"]
+            else:
+                reply = llm_reply or "변경할 수량을 명확히 말씀해주세요."
+                return self._build_response(
+                    intent_data, text, language, screen_state, store_id, session,
+                    ResponseStatus.UNKNOWN, reply=reply, new_screen_state=ScreenState.CONFIRM
+                )
+            
+             # 실제 업데이트
+            if new_quantity == current_quantity:
+                reply = llm_reply or "이미 해당 수량으로 설정되어 있어요."
+            else:
+                target_item["quantity"] = new_quantity
+                reply = llm_reply or f"{target_item['name']}의 수량을 {new_quantity}개로 변경했어요."
+            
+            # 세션 업데이트
+            cart[target_index] = target_item
+            session["cart"] = cart
+            result = self.session_manager._save_session(session_id, session)
+            print(f"[장바구니 수정] 수량 변경 세션 저장 결과: {result}")
+            
+            return self._build_response(
+                intent_data, text, language, screen_state, store_id, session,
+                ResponseStatus.QUANTITY_UPDATED, reply=reply,
+                new_screen_state=ScreenState.CONFIRM
             )
             
         else:

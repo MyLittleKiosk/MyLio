@@ -455,3 +455,11 @@ class MenuService:
                         if detail["value"].upper() == option_value.upper():
                             return detail["id"], detail["additional_price"]
         return None, 0
+
+    def get_menu_price(self, menu_id: int, store_id: int) -> int:
+        """
+        메뉴 ID로 기본 가격을 조회합니다.
+        """
+        menu = self.find_menu_by_id(menu_id, store_id)
+        # 메뉴가 없거나 price 필드가 없으면 0 리턴
+        return menu.get("price", 0) if menu else 0
