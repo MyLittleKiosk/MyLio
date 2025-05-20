@@ -11,9 +11,15 @@ const PayLoading = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // 팝업에서 결제 성공 시 부모 창에 메시지 전송 후 팝업 닫기
+    if (window.opener) {
+      window.opener.postMessage('KAKAO_PAY_SUCCESS', '*');
+      window.close();
+    }
+
+    // 기존 결제 성공 처리 로직
     const pgToken = searchParams.get('pg_token');
     const orderId = searchParams.get('orderId');
-
     if (pgToken && orderId) {
       postSuccess({ orderId, pgToken });
     } else if (!order.sessionId) {

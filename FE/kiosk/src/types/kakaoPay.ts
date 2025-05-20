@@ -9,6 +9,8 @@ export interface PayRequest {
 export interface Pay {
   tid: string;
   next_redirect_pc_url: string;
+  next_redirect_mobile_url: string;
+  next_redirect_app_url: string;
 }
 
 export interface PaySuccessRequest {
