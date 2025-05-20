@@ -488,6 +488,7 @@ class IntentRecognizer:
 
         11. 장바구니 규칙:
         - 만약 장바구니에 담긴 메뉴의 옵션을 변경하는 이야기를 한다면 변경할 option에 대해 new_options를 반드시 작성하여 주세요.
+        - new_options들은 반드시 넘겨준 menu context로 option_id와 option_detail_id option_name들로 작성해 줘, 절대 너가 임의로 작성하지 말아줘
         ```json
         {{
         "intent_type": "CART_MODIFY",
@@ -495,10 +496,10 @@ class IntentRecognizer:
         "menu_name": "아메리카노",
         "new_options": [
             {{
-                "option_id": 102,
-                "option_name": "온도",
-                "option_detail_id": 1005,
-                "option_value": "Ice"
+                "option_id": 101,
+                "option_name": "사이즈",
+                "option_detail_id": 1001,
+                "option_value": "S"
             }}
         ],
         "post_text": "...",
