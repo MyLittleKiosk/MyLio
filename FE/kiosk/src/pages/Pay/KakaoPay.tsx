@@ -2,11 +2,13 @@ import { useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useRequestPay } from '@/service/queries/order';
 import useOrderStore from '@/stores/useOrderStore';
+import { usePostSuccess } from '@/service/queries/order';
 
 const KakaoPay = () => {
   const [searchParams] = useSearchParams();
   const { order } = useOrderStore();
   const { mutate: requestPay } = useRequestPay();
+  const { mutate: postSuccess } = usePostSuccess();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,13 +35,21 @@ const KakaoPay = () => {
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (event.data === 'KAKAO_PAY_SUCCESS') {
-        navigate('/kiosk/pay/success');
+      if (
+        event.data &&
+        event.data.type === 'KAKAO_PAY_SUCCESS' &&
+        event.data.pgToken &&
+        event.data.orderId
+      ) {
+        postSuccess({
+          orderId: event.data.orderId,
+          pgToken: event.data.pgToken,
+        });
       }
     };
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [navigate]);
+  }, [postSuccess, navigate]);
 
   return (
     <div className='flex flex-col items-center justify-center w-full h-full'>
