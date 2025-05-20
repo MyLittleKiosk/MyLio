@@ -74,13 +74,52 @@ const OrderLayout = () => {
     handleRecognitionResult(inputRef.current?.value || '');
   }
 
+  const [isLargeFont, setIsLargeFont] = useState(false);
+
+  function handleTopCenterClick() {
+    setIsLargeFont(!isLargeFont);
+  }
+
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (isLargeFont) {
+      root.classList.add('large-font');
+    } else {
+      root.classList.remove('large-font');
+    }
+  }, [isLargeFont]);
+
   return (
     // 배경 색은 추후 변경 예정
-    <div className='flex flex-col h-dvh bg-gradient-to-b from-secondary to-white justify-between'>
+    <div
+      className={clsx(
+        'flex flex-col h-dvh bg-gradient-to-b from-secondary to-white justify-between'
+      )}
+    >
       <div
-        className='fixed top-0 left-0 w-20 h-20 z-20 cursor-pointer'
+        className='fixed top-10 left-0 w-20 h-20 z-20 cursor-pointer'
         onClick={handleTopLeftClick}
       />
+
+      <div className='fixed top-0 left-0 w-24 z-20 cursor-pointer '>
+        <button
+          onClick={handleTopCenterClick}
+          className='flex flex-col items-start justify-center w-full rounded-lg p-2'
+        >
+          <span
+            className={clsx(
+              'w-[150px] font-preSemiBold  bg-white border border-2 rounded-full p-1',
+              isLargeFont
+                ? 'border-content text-content text-xs'
+                : 'border-primary text-primary text-lg'
+            )}
+          >
+            {isLargeFont ? '작은 글자' : '큰 글자'}
+          </span>
+        </button>
+      </div>
+
       <div
         className='fixed top-0 right-0 w-20 h-20 z-20 cursor-pointer'
         onClick={handleTopRightClick}
