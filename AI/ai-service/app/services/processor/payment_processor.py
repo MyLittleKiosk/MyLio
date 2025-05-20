@@ -188,8 +188,7 @@ class PaymentProcessor(BaseProcessor):
         """결제 요청 처리 (MAIN/ORDER -> CONFIRM)"""
         # 장바구니에 물건이 있는지 확인
         cart = session.get("cart", [])
-        session_id = session.get("id","")
-
+        
         if not cart:
             # 장바구니가 비어있는 경우
             context = {
@@ -267,15 +266,12 @@ class PaymentProcessor(BaseProcessor):
                 reply = intent_data.get("reply") or self.response_generator.generate_response(
                     intent_data, language, context
                 )
-            # 결제 수단이 선택되어있는지 확인
-            payment_method = self.session_manager.get_session_value(session_id,
-                                                        "payment_method")
+                
             return {
                 "intent_type": IntentType.PAYMENT,
                 "confidence": intent_data.get("confidence", 0.8),
                 "raw_text": text,
                 "screen_state": ScreenState.CONFIRM,  # 결제 확인 화면으로 변경
-                "payment_method" : payment_method,
                 "data": {
                     "pre_text": text,
                     "post_text": intent_data.get("post_text", text),
@@ -293,7 +289,7 @@ class PaymentProcessor(BaseProcessor):
         """결제 확인 처리 (CONFIRM -> SELECT_PAY)"""
         # 확인 의도 판단
         confirmation = self._is_confirmation(text, language)
-        session_id = session.get("id", "")
+        
         if not confirmation:
             # 확인하지 않은 경우 (취소 또는 불명확한 응답)
             context = {
@@ -322,30 +318,6 @@ class PaymentProcessor(BaseProcessor):
                 }
             }
         
-        # 결제 수단이 선택되어있는지 확인
-        payment_method = self.session_manager.get_session_value(session_id,
-                                                        "payment_method")
-
-        if payment_method:
-            return {
-                "intent_type": IntentType.PAYMENT,
-                "confidence": intent_data.get("confidence", 0.9),
-                "raw_text": text,
-                "screen_state": ScreenState.PAY,  # 결제 수단 선택 화면으로 변경
-                "payment_method" : payment_method,
-                "data": {
-                    "pre_text": text,
-                    "post_text": intent_data.get("post_text", text),
-                    "reply": "결제가 진행중이에요.",
-                    "status": ResponseStatus.PAYMENT_CONFIRM,  # 상태도 일관되게 변경
-                    "language": language,
-                    "session_id": session.get("id", ""),
-                    "cart": session.get("cart", []),
-                    "store_id": store_id,
-                    "total_amount": sum(item.get("total_price", 0) for item in session.get("cart", []))
-                }
-            }
-
         # 결제 수단 선택 화면으로 이동
         context = {
             "status": ResponseStatus.SELECT_PAYMENT,  # 상태를 SELECT_PAYMENT로 변경
