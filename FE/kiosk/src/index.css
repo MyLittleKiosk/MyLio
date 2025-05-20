@@ -163,6 +163,6 @@
   }
 
   html.large-font {
-    @apply text-[40px];
+    @apply text-[38px];
   }
 }

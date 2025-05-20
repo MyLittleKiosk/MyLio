@@ -76,7 +76,7 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
   return (
     <div
       className={clsx(
-        'flex px-4 pt-4 items-center fixed bottom-4 left-0 w-full h-[230px] gap-6',
+        'flex px-4 pt-4 items-center fixed bottom-4 left-0 w-full h-32 gap-6',
         FOOTER_PATHS.includes(pathname) ? 'justify-center' : 'justify-end'
       )}
     >
