@@ -915,5 +915,6 @@ class RedisSessionManager:
             return {k: d[k] for k in ("id", "value", "additional_price")}
 
         # 선택 안 함
-        return None
+        return None 
+        
 
