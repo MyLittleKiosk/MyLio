@@ -169,7 +169,13 @@ class IntentService:
             # 4. 의도에 따른 프로세서 선택 및 처리
             processor = self.processor_factory.get_processor(intent_data["intent_type"])
             print(f"[요청 처리] 선택된 프로세서: {processor.__class__.__name__}")
-            
+            # 혹시라도 클래스가 넘어오면 즉석 인스턴스화
+            if isinstance(processor, type):
+                processor = processor(
+                    self.response_generator,
+                    self.menu_service,
+                    self.session_manager
+                )
             response = processor.process(intent_data, text, language, screen_state, store_id, session)
             
             # 프로세서 처리 후 세션 다시 가져와서 상태 출력
@@ -239,7 +245,7 @@ class IntentService:
         
         # 한국어 확인 키워드
         if language == Language.KR:
-            confirm_keywords = ["네", "예", "맞아", "응", "좋아", "그래", "확인", "진행", "해줘", "결제", "맞습니다", "맞아요"]
+            confirm_keywords = ["네", "예", "맞아", "응", "좋아", "그래", "확인", "진행", "결제", "맞습니다", "맞아요","계산"]
             return any(keyword in text_lower for keyword in confirm_keywords)
         
         # 영어 확인 키워드
