@@ -15,7 +15,6 @@ const VolumeMonitorButton = ({ onRecognitionResult }: Props) => {
 
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [isMonitoring, setIsMonitoring] = useState<boolean>(false);
   const [currentVolume, setCurrentVolume] = useState<number>(0);
 
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -25,13 +24,17 @@ const VolumeMonitorButton = ({ onRecognitionResult }: Props) => {
   const silenceStartTimeRef = useRef<number>(0);
   const lastRecordingStartRef = useRef<number>(0);
   const isRecordingRef = useRef<boolean>(false);
+  const preBufferRef = useRef<Float32Array[]>([]);
+  const scriptNodeRef = useRef<ScriptProcessorNode | null>(null);
 
   // 볼륨 임계값 설정 (0-1 사이 값)
-  const VOLUME_THRESHOLD = 0.25;
+  const VOLUME_THRESHOLD = 0.1;
   // 무음 감지 후 녹음 종료까지 대기 시간 (ms)
   const SILENCE_DURATION = 800;
   // 녹음 시작 간 최소 대기 시간 (ms)
   const MIN_RECORDING_INTERVAL = 1000;
+  // 프리버퍼 크기 (초)
+  const PREBUFFER_SEC = 1;
 
   // isRecording 상태가 변경될 때마다 ref 업데이트
   useEffect(() => {
@@ -54,7 +57,8 @@ const VolumeMonitorButton = ({ onRecognitionResult }: Props) => {
       const source = audioContext.createMediaStreamSource(stream);
       source.connect(analyser);
 
-      setIsMonitoring(true);
+      setupScriptProcessor(audioContext, source);
+
       console.log('마이크 모니터링 시작됨');
       console.log('현재 임계값:', VOLUME_THRESHOLD);
       checkVolume();
@@ -75,7 +79,10 @@ const VolumeMonitorButton = ({ onRecognitionResult }: Props) => {
     if (audioContextRef.current) {
       audioContextRef.current.close();
     }
-    setIsMonitoring(false);
+    if (scriptNodeRef.current) {
+      scriptNodeRef.current.disconnect();
+    }
+    preBufferRef.current = [];
     console.log('마이크 모니터링 중지됨');
   };
 
@@ -172,7 +179,30 @@ const VolumeMonitorButton = ({ onRecognitionResult }: Props) => {
     if (isRecordingRef.current) {
       try {
         console.log('녹음 중지 시작');
-        const audioBlob = await stopRecording();
+        // 현재 프리버퍼의 스냅샷을 찍어서 전달
+        const preBufferSnapshot = preBufferRef.current.map((buffer) => {
+          // Float32Array를 직접 복사
+          return new Float32Array(buffer);
+        });
+
+        // 프리버퍼 데이터 검증
+        const totalSamples = preBufferSnapshot.reduce(
+          (sum, arr) => sum + arr.length,
+          0
+        );
+        console.log('프리버퍼 스냅샷:', {
+          bufferCount: preBufferSnapshot.length,
+          totalSamples,
+          sampleRate: audioContextRef.current?.sampleRate,
+          expectedSamples: audioContextRef.current?.sampleRate || 0,
+        });
+
+        // 프리버퍼가 너무 작으면 경고
+        if (totalSamples < (audioContextRef.current?.sampleRate || 0) * 0.5) {
+          console.warn('프리버퍼가 너무 작습니다:', totalSamples, 'samples');
+        }
+
+        const audioBlob = await stopRecording(preBufferSnapshot);
         console.log('녹음 중지 완료, 오디오 Blob:', audioBlob);
 
         if (audioBlob) {
@@ -183,6 +213,50 @@ const VolumeMonitorButton = ({ onRecognitionResult }: Props) => {
         setError('녹음을 중지하는 중 오류가 발생했습니다.');
       }
     }
+  };
+
+  // ScriptProcessorNode 설정 (프리버퍼용)
+  const setupScriptProcessor = (
+    audioContext: AudioContext,
+    source: MediaStreamAudioSourceNode
+  ) => {
+    const scriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+    scriptNodeRef.current = scriptNode;
+    source.connect(scriptNode);
+    scriptNode.connect(audioContext.destination);
+
+    scriptNode.onaudioprocess = (e) => {
+      if (!isRecordingRef.current) {
+        const inputData = e.inputBuffer.getChannelData(0);
+        // 새로운 Float32Array로 복사하여 저장
+        preBufferRef.current.push(new Float32Array(inputData));
+
+        // 프리버퍼 크기 제한 (1초)
+        const maxBufferLength = audioContext.sampleRate * PREBUFFER_SEC;
+        let currentLength = preBufferRef.current.reduce(
+          (sum, arr) => sum + arr.length,
+          0
+        );
+
+        while (currentLength > maxBufferLength) {
+          const removed = preBufferRef.current.shift();
+          if (removed) {
+            currentLength -= removed.length;
+          }
+        }
+
+        // 프리버퍼 상태 로깅
+        if (currentLength > 0) {
+          console.log('프리버퍼 상태:', {
+            bufferCount: preBufferRef.current.length,
+            totalSamples: currentLength,
+            maxSamples: maxBufferLength,
+            sampleRate: audioContext.sampleRate,
+            bufferSizes: preBufferRef.current.map((arr) => arr.length),
+          });
+        }
+      }
+    };
   };
 
   // 컴포넌트 마운트 시 마이크 모니터링 시작
@@ -226,37 +300,23 @@ const VolumeMonitorButton = ({ onRecognitionResult }: Props) => {
   }
 
   return (
-    <div className='flex flex-col items-center gap-2'>
-      <button
-        className={clsx(
-          'p-2 w-16 h-16 shadow-lg rounded-full flex justify-center items-center transition-all',
-          'animate-[pulse_1s_ease-in-out_infinite]',
-          isRecording
-            ? 'scale-90 shadow-inner shadow-green-500 bg-green-100'
-            : 'bg-white hover:bg-gray-100'
-        )}
-        disabled={isProcessing}
-      >
-        <img src={mic} alt='microphone' className='w-full h-full' />
-      </button>
-      <div className='text-sm'>
-        <div>모니터링 상태: {isMonitoring ? '활성화' : '비활성화'}</div>
-        <div>현재 볼륨: {(currentVolume * 100).toFixed(1)}%</div>
-        <div>임계값: {(VOLUME_THRESHOLD * 100).toFixed(1)}%</div>
-        <div>녹음 상태: {isRecording ? '녹음 중' : '대기 중'}</div>
-        {isRecording && silenceStartTimeRef.current !== 0 && (
-          <div>
-            무음 지속:{' '}
-            {((Date.now() - silenceStartTimeRef.current) / 1000).toFixed(1)}초
-          </div>
-        )}
-      </div>
+    <button
+      className={clsx(
+        'p-2 w-16 h-16 shadow-lg rounded-full flex justify-center items-center transition-all',
+        'animate-[pulse_1s_ease-in-out_infinite]',
+        isRecording
+          ? 'scale-90 shadow-inner shadow-green-500 bg-green-100'
+          : 'bg-white hover:bg-gray-100'
+      )}
+      disabled={isProcessing}
+    >
+      <img src={mic} alt='microphone' className='w-full h-full' />
       {error && (
-        <div className='p-2 bg-red-100 text-red-700 rounded-md text-sm'>
+        <div className='absolute bottom-full right-0 mb-2 p-2 bg-red-100 text-red-700 rounded-md text-sm whitespace-nowrap'>
           {error}
         </div>
       )}
-    </div>
+    </button>
   );
 };
 

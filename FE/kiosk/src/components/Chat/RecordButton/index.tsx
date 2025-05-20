@@ -2,22 +2,125 @@ import mic from '@/assets/images/mic.png';
 import { sendAudioToClova } from '@/service/apis/voice';
 import audioStore from '@/stores/audioStore';
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+
+// 상수 정의
+const AUDIO_SETTINGS = {
+  PREBUFFER_SEC: 1,
+  BUFFER_SIZE: 2048,
+  MIN_RECORDING_SIZE: 1000,
+  PROCESSING_DELAY: 300,
+} as const;
 
 interface Props {
   onRecognitionResult: (text: string) => void;
 }
 
 const RecordButton = ({ onRecognitionResult }: Props) => {
+  // 상태 관리
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // 오디오 관련 refs
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const scriptNodeRef = useRef<ScriptProcessorNode | null>(null);
+  const preBufferRef = useRef<Float32Array[]>([]);
+  const isRecordingRef = useRef(false);
+
+  // Zustand 스토어
   const isRecording = audioStore((s) => s.isRecording);
   const startRecording = audioStore((s) => s.startRecording);
   const stopRecording = audioStore((s) => s.stopRecording);
 
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  // isRecording 상태 동기화
+  useEffect(() => {
+    isRecordingRef.current = isRecording;
+  }, [isRecording]);
 
-  // 녹음된 오디오를 Clova로 전송하는 함수
-  async function handleSendToClova(audioBlob: Blob) {
+  // 오디오 모니터링 시작
+  const startMonitoring = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+
+      const audioContext = new AudioContext();
+      audioContextRef.current = audioContext;
+
+      const source = audioContext.createMediaStreamSource(stream);
+      const scriptNode = audioContext.createScriptProcessor(
+        AUDIO_SETTINGS.BUFFER_SIZE,
+        1,
+        1
+      );
+      scriptNodeRef.current = scriptNode;
+
+      source.connect(scriptNode);
+      scriptNode.connect(audioContext.destination);
+
+      scriptNode.onaudioprocess = (e) => {
+        if (!isRecordingRef.current) {
+          const inputData = e.inputBuffer.getChannelData(0);
+          preBufferRef.current.push(new Float32Array(inputData));
+
+          // 프리버퍼 크기 제한
+          const maxBufferLength =
+            audioContext.sampleRate * AUDIO_SETTINGS.PREBUFFER_SEC;
+          let currentLength = preBufferRef.current.reduce(
+            (sum, arr) => sum + arr.length,
+            0
+          );
+
+          while (currentLength > maxBufferLength) {
+            const removed = preBufferRef.current.shift();
+            if (removed) {
+              currentLength -= removed.length;
+            }
+          }
+
+          // 프리버퍼 상태 로깅
+          if (currentLength > 0 && Date.now() % 1000 < 50) {
+            console.log('프리버퍼 상태:', {
+              bufferCount: preBufferRef.current.length,
+              totalSamples: currentLength,
+              maxSamples: maxBufferLength,
+              sampleRate: audioContext.sampleRate,
+              bufferSizes: preBufferRef.current.map((arr) => arr.length),
+            });
+          }
+        }
+      };
+
+      console.log('오디오 모니터링 시작됨');
+    } catch (err) {
+      console.error('마이크 접근 오류:', err);
+      setError('마이크 접근에 실패했습니다.');
+    }
+  };
+
+  // 오디오 모니터링 중지
+  const stopMonitoring = () => {
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+    }
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+    }
+    if (scriptNodeRef.current) {
+      scriptNodeRef.current.disconnect();
+    }
+    preBufferRef.current = [];
+    console.log('오디오 모니터링 중지됨');
+  };
+
+  // 컴포넌트 마운트/언마운트 처리
+  useEffect(() => {
+    startMonitoring();
+    return () => stopMonitoring();
+  }, []);
+
+  // Clova로 오디오 전송
+  const handleSendToClova = async (audioBlob: Blob) => {
     if (!audioBlob) {
       setError('녹음된 오디오가 없습니다.');
       return;
@@ -32,25 +135,18 @@ const RecordButton = ({ onRecognitionResult }: Props) => {
         type: audioBlob.type,
       });
 
-      // 오디오 데이터가 너무 작으면 오류 표시 (거의 껐다 킨 경우)
-      if (audioBlob.size < 1000) {
+      if (audioBlob.size < AUDIO_SETTINGS.MIN_RECORDING_SIZE) {
         setError('녹음된 오디오가 너무 짧습니다. 더 긴 녹음을 시도해주세요.');
         setIsProcessing(false);
         return;
       }
 
-      console.log('FastAPI 서버로 오디오 전송 시도...');
-
-      // FastAPI 백엔드로 오디오 전송
       const result = await sendAudioToClova(audioBlob);
-
       console.log('FastAPI 응답 수신:', result);
 
-      // 백엔드가 반환한 데이터에서 직접 텍스트 추출
       if (result.status === 'success' && result.text) {
         onRecognitionResult(result.text);
       } else {
-        // 백엔드 응답 메시지 또는 기본 메시지 표시
         setError('인식 결과가 없거나 오류가 발생했습니다.');
       }
     } catch (err) {
@@ -59,36 +155,52 @@ const RecordButton = ({ onRecognitionResult }: Props) => {
     } finally {
       setIsProcessing(false);
     }
-  }
+  };
 
-  // 버튼을 누르고 있는 동안 녹음하는 핸들러
-  async function handlePressStart() {
+  // 녹음 시작
+  const handlePressStart = async () => {
     setError(null);
-    // 새 녹음 시작 전에 이전 오디오 상태 초기화
     await startRecording();
-  }
+  };
 
-  // 버튼을 떼면 녹음 중지 및 Clova로 자동 전송
-  async function handlePressEnd() {
+  // 녹음 중지
+  const handlePressEnd = async () => {
     if (isRecording) {
       try {
-        // 녹음 중지하고 Blob 받기
-        const audioBlob = await stopRecording();
+        const preBufferSnapshot = preBufferRef.current.map(
+          (buffer) => new Float32Array(buffer)
+        );
+        const totalSamples = preBufferSnapshot.reduce(
+          (sum, arr) => sum + arr.length,
+          0
+        );
 
+        console.log('프리버퍼 스냅샷:', {
+          bufferCount: preBufferSnapshot.length,
+          totalSamples,
+          sampleRate: audioContextRef.current?.sampleRate,
+          expectedSamples: audioContextRef.current?.sampleRate || 0,
+          bufferSizes: preBufferSnapshot.map((arr) => arr.length),
+        });
+
+        if (totalSamples < (audioContextRef.current?.sampleRate || 0) * 0.5) {
+          console.warn('프리버퍼가 너무 작습니다:', totalSamples, 'samples');
+        }
+
+        const audioBlob = await stopRecording(preBufferSnapshot);
         console.log('녹음 완료, 오디오 Blob:', audioBlob);
 
-        // 약간의 지연 후 서버로 전송 (오디오 처리 완료 보장)
         setTimeout(() => {
           if (audioBlob) {
             handleSendToClova(audioBlob);
           }
-        }, 300);
+        }, AUDIO_SETTINGS.PROCESSING_DELAY);
       } catch (err) {
         console.error('녹음 중지 중 오류:', err);
         setError('녹음을 중지하는 중 오류가 발생했습니다.');
       }
     }
-  }
+  };
 
   return (
     <button
