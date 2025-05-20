@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import Item from '@/pages/OrderLayout/Item';
 import useOrderStore from '@/stores/useOrderStore';
 import { useOrderRequest } from '@/service/queries/order';
+import PitchDetector from '@/components/Chat/PitchDetector';
 const FOOTER_PATHS = [
   '/kiosk/search',
   '/kiosk',
@@ -122,6 +123,7 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
           </button>
         </div>
       )}
+      <PitchDetector onRecognitionResult={handleRecognitionResult} />
       <RecordButton onRecognitionResult={handleRecognitionResult} />
     </div>
   );

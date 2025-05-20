@@ -229,13 +229,22 @@ const SmartRecordButton = ({
       setIsProcessing(true);
       setError(null);
 
+      console.log('오디오 Blob 정보:', {
+        size: audioBlob.size,
+        type: audioBlob.type,
+      });
+
       if (audioBlob.size < AUDIO_SETTINGS.MIN_RECORDING_SIZE) {
-        setError('녹음된 오디오가 너무 짧습니다.');
+        setError('녹음된 오디오가 너무 짧습니다. 더 긴 녹음을 시도해주세요.');
         setIsProcessing(false);
         return;
       }
 
+      console.log('FastAPI 서버로 오디오 전송 시도...');
+
       const result = await sendAudioToClova(audioBlob);
+
+      console.log('FastAPI 응답 수신:', result);
 
       if (result.status === 'success' && result.text) {
         onRecognitionResult(result.text);
