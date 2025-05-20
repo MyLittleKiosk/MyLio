@@ -307,7 +307,7 @@ class CartModifyProcessor(BaseProcessor):
             )
     
     def _build_response(self, intent_data: Dict[str, Any], text: str, language: str, screen_state: str, store_id: int, session: Dict[str, Any], status: str, contents: List[Dict[str, Any]] = None, reply: str = None,
-                    new_screen_state: str = ScreenState.MAIN) -> Dict[str, Any]:
+                    new_screen_state: str = ScreenState.CONFIRM) -> Dict[str, Any]:
         """응답 구성 헬퍼 메서드"""
         # 세션 ID 확인
         session_id = session.get("id", "")
