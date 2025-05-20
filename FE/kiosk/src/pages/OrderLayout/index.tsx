@@ -74,9 +74,25 @@ const OrderLayout = () => {
     handleRecognitionResult(inputRef.current?.value || '');
   }
 
+  const [isLargeFont, setIsLargeFont] = useState(false);
+
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (isLargeFont) {
+      root.classList.add('large-font');
+    } else {
+      root.classList.remove('large-font');
+    }
+  }, [isLargeFont]);
+
   return (
     // 배경 색은 추후 변경 예정
-    <div className='flex flex-col h-dvh bg-gradient-to-b from-secondary to-white justify-between'>
+    <div
+      className={clsx(
+        'flex flex-col h-dvh bg-gradient-to-b from-secondary to-white justify-between'
+      )}
+    >
       <div
         className='fixed top-0 left-0 w-20 h-20 z-20 cursor-pointer'
         onClick={handleTopLeftClick}
@@ -104,6 +120,11 @@ const OrderLayout = () => {
           </li>
           <li>
             <Link to='confirm'>확인</Link>
+          </li>
+          <li>
+            <button onClick={() => setIsLargeFont(!isLargeFont)}>
+              {isLargeFont ? '작게' : '크게'}
+            </button>
           </li>
           <li>
             <Link to='detail'>상세</Link>
