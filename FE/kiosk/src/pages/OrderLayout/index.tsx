@@ -109,9 +109,9 @@ const OrderLayout = () => {
         >
           <span
             className={clsx(
-              'w-[150px] font-preSemiBold  bg-transparent border border-2 rounded-full p-1',
+              'w-[150px] font-preSemiBold  bg-white border border-2 rounded-full p-1',
               isLargeFont
-                ? 'border-white text-white text-xs'
+                ? 'border-content text-content text-xs'
                 : 'border-primary text-primary text-lg'
             )}
           >
@@ -124,7 +124,7 @@ const OrderLayout = () => {
         className='fixed top-0 right-0 w-20 h-20 z-20 cursor-pointer'
         onClick={handleTopRightClick}
       />
-      <div className='flex justify-center items-center z-10 fixed top-0 left-0 w-full h-[100px] flex-wrap'>
+      <div className='flex justify-center items-center z-10 fixed top-0 left-0 w-full h-[100px] flex-wrap hidden'>
         <ul className='flex justify-center items-center gap-4 rounded-xl p-4'>
           <li>
             <Link to='/kiosk'>홈</Link>
