@@ -139,7 +139,7 @@ class RedisSessionManager:
                 for option in menu.get("options", []):
                     if option.get("is_selected") or option.get("selected_id") or option.get("option_value"):
                         cart_item["selected_options"].append(_build_selected_option(option))
-                    
+
             # 장바구니에 추가
             print(f"[카트 추가] 카트 아이템: {cart_item}")
             session["cart"].append(cart_item)
@@ -269,6 +269,7 @@ class RedisSessionManager:
                 minimal_data = {
                     "id": session_id,
                     "session_id": session_id,
+                    "payment_method" : session.get("payment_method",""),
                     "created_at": session_data.get("created_at", datetime.now().isoformat()),
                     "last_accessed": datetime.now().isoformat(),
                     "cart": convert_decimal(session_data.get("cart", [])),  # 카트는 Decimal 변환 후 보존
@@ -363,7 +364,7 @@ class RedisSessionManager:
         sanitized = {}
         
         # 기본 필드 복사
-        for key in ["id", "created_at", "last_accessed"]:
+        for key in ["id", "created_at", "last_accessed", "payment_method"]:
             if key in session_data:
                 sanitized[key] = session_data[key]
         
@@ -482,7 +483,8 @@ class RedisSessionManager:
                     "menu_id": menu.get("menu_id"),
                     "name": menu.get("name"),
                     "base_price": menu.get("base_price", 0),
-                    "total_price": menu.get("total_price", 0)
+                    "total_price": menu.get("total_price", 0),
+                    "quantity":   menu.get("quantity", 1)
                 }
                 
                 # 옵션 정보 복사 (필수만 최소화)
@@ -490,33 +492,34 @@ class RedisSessionManager:
                     sanitized["last_state"]["menu"]["options"] = []
                     required_only = []
                     
-                    # for option in menu.get("options", []):
-                    #     # 필수 옵션 또는 이미 선택된 옵션만 저장
-                    #     if option.get("required", False) or option.get("is_selected", False):
-                    #         # 중복 필드 제거 및 최소 정보만 포함
-                    #         min_option = {
-                    #             "option_id": option.get("option_id"),
-                    #             "option_name": option.get("option_name"),
-                    #             "required": option.get("required", False),
-                    #             "is_selected": option.get("is_selected", False)
-                    #         }
+                    for option in menu.get("options", []):
+                        # 필수 옵션 또는 이미 선택된 옵션만 저장
+                        # if option.get("required", False) or option.get("is_selected", False):
+                        if option.get("is_selected", False):
+                            # 중복 필드 제거 및 최소 정보만 포함
+                            min_option = {
+                                "option_id": option.get("option_id"),
+                                "option_name": option.get("option_name"),
+                                "required": option.get("required", False),
+                                "is_selected": option.get("is_selected", False)
+                            }
                             
-                    #         # 선택된 옵션이면 ID 추가
-                    #         if option.get("is_selected", False):
-                    #             min_option["selected_id"] = option.get("selected_id")
+                            # 선택된 옵션이면 ID 추가
+                            if option.get("is_selected", False):
+                                min_option["selected_id"] = option.get("selected_id")
                             
-                    #         # 옵션 상세 정보는 최소화
-                    #         if "option_details" in option:
-                    #             min_option["option_details"] = []
-                    #             for detail in option.get("option_details", []):
-                    #                 min_option["option_details"].append({
-                    #                     "id": detail.get("id"),
-                    #                     "value": detail.get("value")
-                    #                 })
+                            # 옵션 상세 정보는 최소화
+                            if "option_details" in option:
+                                min_option["option_details"] = []
+                                for detail in option.get("option_details", []):
+                                    min_option["option_details"].append({
+                                        "id": detail.get("id"),
+                                        "value": detail.get("value")
+                                    })
                             
-                    #         required_only.append(min_option)
+                            required_only.append(min_option)
                     
-                    # sanitized["last_state"]["menu"]["options"] = required_only
+                    sanitized["last_state"]["menu"]["options"] = required_only
                     sanitized["last_state"]["menu"]["options"] = copy.deepcopy(menu.get("options", []))
                 
                 # 선택된 옵션 정보 복사 (중복 제거)
@@ -917,3 +920,35 @@ class RedisSessionManager:
         # 선택 안 함
         return None
 
+    # --- payment_method persistence -------------------------
+    def save_pending_payment(self, session_id: str, method: str):
+        self.set_session_value(session_id, "pending_payment_method", method)
+
+    def pop_pending_payment(self, session_id: str) -> Optional[str]:
+        """가져오면서 바로 삭제"""
+        pm = self.get_session_value(session_id, "pending_payment_method")
+        if pm:
+            self.delete_session_value(session_id, "pending_payment_method")
+        return pm
+
+
+    def get_session_value(self, session_id: str, field: str) -> Optional[Any]:
+        """세션에서 특정 필드 값을 읽어온다."""
+        session = self.get_session(session_id)
+        return session.get(field) if session else None
+
+    def set_session_value(self, session_id: str, field: str, value: Any) -> bool:
+        """세션의 특정 필드를 저장한다."""
+        session = self.get_session(session_id)
+        if not session:
+            return False
+        session[field] = value
+        return self._save_session(session_id, session)
+
+    def delete_session_value(self, session_id: str, field: str) -> bool:
+        """세션에서 특정 필드를 삭제한다."""
+        session = self.get_session(session_id)
+        if not session or field not in session:
+            return False
+        del session[field]
+        return self._save_session(session_id, session)
