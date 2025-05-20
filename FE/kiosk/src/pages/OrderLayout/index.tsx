@@ -76,6 +76,10 @@ const OrderLayout = () => {
 
   const [isLargeFont, setIsLargeFont] = useState(false);
 
+  function handleTopCenterClick() {
+    setIsLargeFont(!isLargeFont);
+  }
+
   useEffect(() => {
     const root = document.documentElement;
 
@@ -94,9 +98,28 @@ const OrderLayout = () => {
       )}
     >
       <div
-        className='fixed top-0 left-0 w-20 h-20 z-20 cursor-pointer'
+        className='fixed top-10 left-0 w-20 h-20 z-20 cursor-pointer'
         onClick={handleTopLeftClick}
       />
+
+      <div className='fixed top-0 left-0 w-24 z-20 cursor-pointer '>
+        <button
+          onClick={handleTopCenterClick}
+          className='flex flex-col items-start justify-center w-full rounded-lg p-2'
+        >
+          <span
+            className={clsx(
+              'w-[150px] font-preSemiBold  bg-transparent border border-2 rounded-full p-1',
+              isLargeFont
+                ? 'border-white text-white text-xs'
+                : 'border-primary text-primary text-lg'
+            )}
+          >
+            {isLargeFont ? '작은 글자' : '큰 글자'}
+          </span>
+        </button>
+      </div>
+
       <div
         className='fixed top-0 right-0 w-20 h-20 z-20 cursor-pointer'
         onClick={handleTopRightClick}
@@ -120,11 +143,6 @@ const OrderLayout = () => {
           </li>
           <li>
             <Link to='confirm'>확인</Link>
-          </li>
-          <li>
-            <button onClick={() => setIsLargeFont(!isLargeFont)}>
-              {isLargeFont ? '작게' : '크게'}
-            </button>
           </li>
           <li>
             <Link to='detail'>상세</Link>
