@@ -438,3 +438,28 @@ class MenuService:
             return best_match
         
         return None
+
+
+    def get_option_detail(
+            self, option_name: str, option_value: str, store_id: int
+    ) -> tuple[int | None, int]:
+        """
+        옵션명·값으로 option_detail.id와 additional_price를 반환.
+        못 찾으면 (None, 0) 리턴
+        """
+        menus = self.get_store_menus(store_id)
+        for menu in menus.values():
+            for opt in menu["options"]:
+                if opt["option_name"].lower() == option_name.lower():
+                    for detail in opt["option_details"]:
+                        if detail["value"].upper() == option_value.upper():
+                            return detail["id"], detail["additional_price"]
+        return None, 0
+
+    def get_menu_price(self, menu_id: int, store_id: int) -> int:
+        """
+        메뉴 ID로 기본 가격을 조회합니다.
+        """
+        menu = self.find_menu_by_id(menu_id, store_id)
+        # 메뉴가 없거나 price 필드가 없으면 0 리턴
+        return menu.get("price", 0) if menu else 0
