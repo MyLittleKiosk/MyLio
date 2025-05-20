@@ -669,14 +669,15 @@ class OrderProcessor(BaseProcessor):
         # 5) 필요 정보(last_state, cart 등)만 갱신 후 **한 번만** save
         session["last_state"] = {}
         session["cart"] = self.session_manager.get_cart(session_id)
-        #여기 한번 지워봄 다시 살려야 할 수 있음self.session_manager._save_session(session_id, session)
+        session["payment_method"] = self.session_manager.get_session_value(session_id, "payment_method")
+        self.session_manager._save_session(session_id, session)
 
         # 6) 다음 메뉴가 있으면 처리 진입
         if next_menu:
             return self._start_menu_processing(
                 next_menu, text, language, store_id, session
             )
-
+        
         #payment method가 있으면 confirm화면으로 이동
         payment_method = self.session_manager.get_session_value(session_id, "payment_method")
       
