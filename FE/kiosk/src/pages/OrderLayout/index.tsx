@@ -1,14 +1,14 @@
+import { DEFAULT_COMMENT } from '@/datas/COMMENT';
+import useConsecutiveClick from '@/hooks/useConsecutiveClick';
+import Main from '@/pages/Main';
+import Footer from '@/pages/OrderLayout/Footer';
+import { useOrderRequest } from '@/service/queries/order';
+import { useLogout, useRefresh } from '@/service/queries/user';
+import useOrderStore from '@/stores/useOrderStore';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { DEFAULT_COMMENT } from '@/datas/COMMENT';
-import Main from '@/pages/Main';
-import Footer from '@/pages/OrderLayout/Footer';
-import { useLogout, useRefresh } from '@/service/queries/user';
-import useOrderStore from '@/stores/useOrderStore';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useOrderRequest } from '@/service/queries/order';
-import useConsecutiveClick from '@/hooks/useConsecutiveClick';
 
 const OrderLayout = () => {
   const { pathname } = useLocation();
@@ -109,7 +109,7 @@ const OrderLayout = () => {
         >
           <span
             className={clsx(
-              'w-[150px] font-preSemiBold  bg-white border border-2 rounded-full p-1',
+              'w-[150px] font-preSemiBold  bg-white border-2 rounded-full p-1',
               isLargeFont
                 ? 'border-content text-content text-xs'
                 : 'border-primary text-primary text-lg'
