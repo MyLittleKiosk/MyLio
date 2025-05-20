@@ -231,7 +231,7 @@ class PaymentProcessor(BaseProcessor):
         else:
             # 결제 확인 화면으로 이동
             # 장바구니 총액 계산
-            total_amount = sum(item.get("total_price", 0) for item in cart)
+            total_amount = sum(item.get("total_price", 0) * item.get("quantity",1) for item in cart)
 
             # 언어에 따른 장바구니 확인 요청 메시지 생성
             if language == Language.KR:
