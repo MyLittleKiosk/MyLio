@@ -34,14 +34,14 @@ const Menus = () => {
   }, [order.contents]);
 
   return (
-    <section className='flex flex-col w-full h-full pt-5'>
+    <section className='flex flex-col w-full h-full pt-4'>
       <h1 className='text-2xl font-preBold inline-block ps-10'>메뉴</h1>
       <div className='w-full items-start mb-4 ps-10'>
         <span className='font-preBold text-gray-500 text-sm'>
           총 {order.contents.length}개의 메뉴
         </span>
       </div>
-      <div className='flex justify-between w-[95%] mx-auto h-[65%]'>
+      <div className='flex justify-between w-[95%] mx-auto h-[750px]'>
         <div className='flex h-full items-center justify-center gap-2'>
           <button
             onClick={() => setPage(page - 1)}
@@ -51,7 +51,7 @@ const Menus = () => {
             {'<'}
           </button>
         </div>
-        <div className='grid grid-cols-3 justify-items-center items-start gap-1 overflow-y-auto w-11/12 overflow-x-hidden'>
+        <div className='grid grid-cols-3 justify-items-center items-start overflow-y-auto w-10/12 overflow-x-hidden'>
           {menus[page]?.map((item) => {
             return (
               <div
@@ -61,7 +61,7 @@ const Menus = () => {
                 <img
                   src={item.imageUrl}
                   alt={item.name}
-                  className='w-[130px] h-[130px] object-cover mx-auto rounded-lg'
+                  className='w-14 h-14 object-cover mx-auto rounded-lg'
                 />
                 <div className='flex flex-col items-center h-[100px] justify-center mx-auto'>
                   <h1 className='text-sm font-preBold'>{item.name}</h1>
@@ -84,11 +84,11 @@ const Menus = () => {
           {'>'}
         </button>
       </div>
-      <div className='flex justify-center items-center gap-2 mt-1'>
+      <div className='flex justify-center items-center gap-2'>
         {menus.map((_, index) => (
           <div
             key={index}
-            className={`w-2 h-2 rounded-full transition-all duration-200 ${
+            className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
               page === index ? 'bg-black scale-125' : 'bg-subContent'
             }`}
           />

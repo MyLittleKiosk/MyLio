@@ -37,7 +37,7 @@ const Item = ({
         >
           -
         </button>
-        <span className='mx-1 w-4 text-center'>{quantity}</span>
+        <span className='mx-1 w-4 text-center text-xs'>{quantity}</span>
         <button className='text-gray-500 px-2' onClick={onIncrease}>
           +
         </button>
