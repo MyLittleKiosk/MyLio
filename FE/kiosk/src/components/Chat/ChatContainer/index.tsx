@@ -2,41 +2,57 @@ import lio from '@/assets/images/ListenLio.png';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import VoiceAnimation from '../VoiceAnimation';
-
+import { useLocation } from 'react-router-dom';
+import { IMAGE_ROUTE } from '@/datas/IMAGE_ROUTE';
+import { useMemo } from 'react';
 interface Props {
   userChat: string;
   gptChat: string;
-  isRecording: boolean;
-  volume: number;
-  isExpand: boolean; // 하단 컨텐츠가 있으면 true로 받아옴
+  isExpand: boolean;
 }
 
-// 이미지 크기 variants - 실제 애니메이션 속성만 사용
+// 이미지 크기 variants (width만 조절)
 const imageVariants = {
-  expanded: { width: 400, height: 400 },
-  collapsed: { width: 100, height: 100 },
+  expanded: {
+    width: 600,
+    transition: { type: 'spring', stiffness: 100, damping: 20, mass: 1 },
+  },
+  collapsed: {
+    width: 200,
+    transition: { type: 'spring', stiffness: 100, damping: 20, mass: 1 },
+  },
 };
 
 // gptChat 텍스트 variants
 const textVariants = {
-  expanded: { scale: 1.2 },
-  collapsed: { scale: 1 },
+  expanded: {
+    scale: 1.2,
+    transition: { type: 'spring', stiffness: 100, damping: 20, mass: 1 },
+  },
+  collapsed: {
+    scale: 1,
+    transition: { type: 'spring', stiffness: 100, damping: 20, mass: 1 },
+  },
 };
 
-// 스프링 애니메이션 설정
-const springTransition = {
+// 레이아웃 애니메이션 설정
+const layoutTransition = {
   type: 'spring',
-  stiffness: 300,
-  damping: 30,
+  stiffness: 100,
+  damping: 20,
+  mass: 1,
+  duration: 0.3,
 };
 
-const ChatContainer = ({
-  userChat,
-  gptChat,
-  isRecording,
-  volume,
-  isExpand,
-}: Props) => {
+const ChatContainer = ({ userChat, gptChat, isExpand }: Props) => {
+  const { pathname } = useLocation();
+  const image = useMemo(() => {
+    if (pathname === '/kiosk') return lio;
+    const imagePath = pathname.split('/').pop();
+    console.log('imagePath:', imagePath);
+    return IMAGE_ROUTE[imagePath as keyof typeof IMAGE_ROUTE];
+  }, [pathname]);
+  console.log('image:', image);
   function handleUserChatFontSize() {
     if (!userChat) return isExpand ? 'text-xl' : 'text-lg';
 
@@ -52,49 +68,56 @@ const ChatContainer = ({
 
   return (
     <motion.div
-      className='w-full h-full px-10 flex flex-col items-center gap-5'
-      transition={springTransition}
+      className='w-full h-full px-4 sm:px-6 md:px-10 flex flex-col items-center justify-start gap-5'
+      transition={layoutTransition}
       layout
     >
       <motion.div
         className={clsx(
-          'h-full flex items-center justify-center',
+          'w-full max-w-7xl h-full flex items-center justify-start',
           isExpand ? 'flex-col gap-10' : 'flex-row gap-4'
         )}
-        layout // 이것이 중요! flex 방향 변화를 애니메이션화
-        transition={springTransition}
+        layout
+        transition={layoutTransition}
       >
         <motion.div
-          className='w-fit p-2 flex justify-center items-center bg-white rounded-full'
-          style={{ boxShadow: 'inset 0px 0px 10px rgba(0, 0, 0, 0.25)' }}
-          transition={springTransition}
+          className='p-2 pe-1 flex justify-center items-center rounded-full shrink-0'
+          style={{
+            aspectRatio: '1/1',
+            overflow: 'hidden',
+          }}
+          variants={imageVariants}
+          animate={isExpand ? 'expanded' : 'collapsed'}
           layout
         >
-          <motion.img
-            src={lio}
+          <img
+            src={image}
             alt='img'
-            className='object-cover'
-            variants={imageVariants}
-            animate={isExpand ? 'expanded' : 'collapsed'}
-            transition={springTransition}
-            layout
+            className='object-contain w-full h-full mb-2'
+            draggable={false}
           />
         </motion.div>
-        <motion.p
+        <motion.div
           className={clsx(
-            'font-preBold whitespace-pre-line break-keep',
+            'w-[min(600px,80vw)] font-preBold whitespace-pre-line break-keep',
             isExpand ? 'text-xl text-center' : 'text-lg text-start'
           )}
           variants={textVariants}
           animate={isExpand ? 'expanded' : 'collapsed'}
-          transition={springTransition}
           layout
         >
-          {gptChat}
-        </motion.p>
+          <div className='w-full h-full overflow-y-auto font-preBold'>
+            {gptChat}
+          </div>
+        </motion.div>
       </motion.div>
-      <motion.div layout transition={springTransition}>
-        <VoiceAnimation isRecording={isRecording} volume={volume} />
+      <motion.div
+        layout
+        transition={layoutTransition}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        <VoiceAnimation />
       </motion.div>
       <motion.div
         className={clsx(
@@ -102,9 +125,13 @@ const ChatContainer = ({
           handleUserChatFontSize()
         )}
         layout
-        transition={springTransition}
+        transition={layoutTransition}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
       >
-        {userChat !== '' && <span>&quot;{userChat}&quot;</span>}
+        {userChat !== '' && (
+          <span className='font-preBold'>&quot;{userChat}&quot;</span>
+        )}
       </motion.div>
     </motion.div>
   );

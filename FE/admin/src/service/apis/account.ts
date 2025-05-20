@@ -4,10 +4,10 @@ import { CustomError, PaginationResponse, Response } from '@/types/apiResponse';
 
 export const getAccountList = async (
   keyword?: string,
-  pageable: number = 1
+  page: number = 1
 ): Promise<Response<PaginationResponse<AccountType>>> => {
   try {
-    const params = keyword ? { keyword, pageable } : { pageable };
+    const params = keyword ? { keyword, page } : { page };
     const response = await authClient.get('/account', {
       params,
     });

@@ -22,14 +22,18 @@ public interface MenuRepository extends JpaRepository<Menu, Integer> {
     List<Menu> findAllByStoreId(@Param("storeId")  Integer storeId);
 
     @Query("""
-            SELECT m
-            FROM Menu m
-            WHERE m.store.id = :storeId
-              AND (:categoryId IS NULL OR m.category.id = :categoryId)
-        """)
-    Page<Menu> findByStoreIdAndOptionalCategoryId(
+    SELECT m
+    FROM Menu m
+    WHERE m.store.id = :storeId
+      AND m.status != com.ssafy.mylio.domain.menu.entity.MenuStatus.DELETED
+      AND (:categoryId IS NULL OR m.category.id = :categoryId)
+      AND (:keyword IS NULL OR LOWER(m.nameKr) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                             OR LOWER(m.nameEn) LIKE LOWER(CONCAT('%', :keyword, '%')))
+""")
+    Page<Menu> findByStoreIdAndOptionalCategoryIdAndKeyword(
             @Param("storeId") Integer storeId,
             @Param("categoryId") Integer categoryId,
+            @Param("keyword") String keyword,
             Pageable pageable
     );
 }

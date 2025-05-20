@@ -55,7 +55,7 @@ public class KakaoPayService implements PayService {
         body.put("quantity", "1");
         body.put("total_amount", payRequestDto.getTotalAmount());
         body.put("tax_free_amount",0);
-        body.put("approval_url", BASE_URL +"/api/pay/success-view?orderId=" + payRequestDto.getSessionId());
+        body.put("approval_url", BASE_URL +"/kiosk/kiosk/pay/loading?orderId=" + payRequestDto.getSessionId());
         body.put("cancel_url", BASE_URL +"/api/pay/cancel");
         body.put("fail_url", BASE_URL + "/api/pay/fail");
 

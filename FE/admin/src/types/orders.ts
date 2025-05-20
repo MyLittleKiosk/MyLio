@@ -1,8 +1,18 @@
 export type OrderType = {
   orderId: string;
-  orderStore: string;
-  orderDate: string;
-  orderPrice: number;
+  orderedAt: string;
+  totalPrice: number;
   orderType: string;
-  orderPayment: string;
+  paidBy: string;
+};
+
+export type OrderDetailType = OrderType & {
+  orderItems: OrderItem[];
+};
+
+export type OrderItem = {
+  itemName: string;
+  quantity: number;
+  price: number;
+  options: string[];
 };

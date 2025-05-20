@@ -9,7 +9,7 @@ interface Props {
 }
 
 const DeleteOptionModal = ({ row }: Props) => {
-  const { openModal } = useModalStore();
+  const { openModal, closeModal } = useModalStore();
   const { mutate: deleteOptionGroup } = useDeleteOptionGroup();
 
   function handleDeleteOptionGroup(optionId: number) {
@@ -33,13 +33,22 @@ const DeleteOptionModal = ({ row }: Props) => {
       <p className='font-preMedium text-lg text-longContent'>
         &quot;{row.optionNameKr}&quot; 옵션 그룹을 삭제하시겠습니까?
       </p>
-
-      <Button
-        buttonType='button'
-        text='삭제'
-        onClick={() => handleDeleteOptionGroup(row.optionId)}
-        className='w-full mt-4 flex justify-center'
-      />
+      <div className='flex gap-4 items-center mt-4'>
+        <Button
+          type='button'
+          text='취소'
+          id='cancelDeleteKioskBtn'
+          onClick={closeModal}
+          className='w-full'
+          cancel
+        />
+        <Button
+          type='button'
+          text='삭제'
+          onClick={() => handleDeleteOptionGroup(row.optionId)}
+          className='w-full'
+        />
+      </div>
     </div>
   );
 };

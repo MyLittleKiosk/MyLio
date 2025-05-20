@@ -1,10 +1,27 @@
 import { CategoryType } from '@/types/categories';
-import { OptionInfoType, OptionGroup } from '@/types/options';
+import {
+  OptionInfoType,
+  OptionGroup,
+  OptionDetailGetType,
+} from '@/types/options';
 import { Column } from '@/types/tableProps';
-import { NutritionInfoType } from '@/types/nutrient';
-import { TagType } from '@/types/tags';
+import { NutritionDetailAddType, NutritionMenuGetType } from '@/types/nutrient';
+import { TagDetailGetType, TagType } from '@/types/tags';
+import { IngredientDetailGetType } from './ingredient';
 
 export type MenuType = {
+  menuId: number;
+  nameKr: string;
+  nameEn: string;
+  category: string;
+  storeName: string;
+  description: string;
+  price: number;
+  status: string;
+  tags: string[];
+};
+
+export type MenuResponseType = {
   menuId: number;
   imageUrl: string;
   nameKr: string;
@@ -17,15 +34,32 @@ export type MenuType = {
   tags: string[];
 };
 
+export type MenuDetailGetType = {
+  menuInfo: {
+    menuId: number;
+    imageUrl: string;
+    nameKr: string;
+    nameEn: string;
+    category: string;
+    storeName: string;
+    description: string;
+    price: number;
+    status: string;
+  };
+  tags: TagDetailGetType[];
+  nutritionInfo: NutritionMenuGetType[];
+  ingredientInfo: IngredientDetailGetType[];
+  optionInfo: OptionDetailGetType[];
+};
+
 export interface MenuAdd {
-  imageUrl: string;
   nameKr: string;
   nameEn: string;
   categoryId: number;
   description: string;
   price: number;
   tags: TagType[];
-  nutritionInfo: NutritionInfoType[];
+  nutritionInfo: NutritionDetailAddType[];
   ingredientInfo: number[];
   optionInfo: OptionInfoType[];
 }

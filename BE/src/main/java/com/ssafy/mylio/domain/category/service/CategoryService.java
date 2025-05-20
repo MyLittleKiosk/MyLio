@@ -26,12 +26,12 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final StoreRepository storeRepository;
 
-    public CustomPage<CategoryResponseDto> getCategoryList(Integer storeId, Pageable pageable){
+    public CustomPage<CategoryResponseDto> getCategoryList(Integer storeId, String keyword, Pageable pageable){
         // store 검증
         Store store = getStore(storeId);
 
         // 카테고리 조회
-        Page<Category> categoryList = categoryRepository.findAllByStoreId(storeId, pageable);
+        Page<Category> categoryList = categoryRepository.findAllByStoreIdAndKeyword(storeId, keyword, pageable);
         return new CustomPage<>(categoryList.map(CategoryResponseDto::of));
     }
 

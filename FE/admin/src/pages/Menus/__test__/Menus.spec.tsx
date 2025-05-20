@@ -1,5 +1,5 @@
 //절대 경로 사용이 불가합니다 !
-import MENU_LIST from '../../../service/mock/dummies/menu';
+import { MENU_LIST } from '../../../service/mock/dummies/menu';
 import { CATEGORY_LIST } from '../../../service/mock/dummies/category';
 import { OPTION_LIST } from '../../../service/mock/dummies/option';
 
@@ -119,6 +119,120 @@ describe('카테고리 관리 페이지', () => {
     cy.contains('새 카테고리 추가').should('not.exist');
     //then - 추가 버튼을 클릭해 카테고리 추가에 성공한다.
   });
+
+  it('카테고리를 수정할 수 있다.', () => {
+    //given - 메뉴 관리 페이지 - 카테고리 탭에 접근한다.
+    cy.visit('/menus');
+    cy.get('#카테고리').click();
+
+    //when - 카테고리 목록의 첫 번째 항목의 수정 버튼을 클릭한다.
+    cy.get('table tbody tr')
+      .first()
+      .find('td')
+      .eq(1) // 수정 버튼이 있는 마지막 셀
+      .find('#edit') // 수정 버튼 ID
+      .click();
+
+    // 수정 모달이 나타나는지 확인
+    cy.contains('카테고리 수정').should('exist');
+
+    // 현재 카테고리명이 입력 필드에 있는지 확인
+    cy.get('#categoryAdd').should(
+      'have.value',
+      CATEGORY_LIST.data.content[0].nameKr
+    );
+    cy.get('#engCategory').should(
+      'have.value',
+      CATEGORY_LIST.data.content[0].nameEn
+    );
+
+    // 카테고리명 수정
+    const updatedName = '수정된 카테고리';
+    cy.get('#categoryAdd').clear().type(updatedName);
+
+    // 번역하기 버튼 클릭
+    cy.contains('button', '번역하기').click();
+
+    // 번역된 영문명이 나타날 때까지 대기
+    cy.get('#engCategory').should(
+      'not.have.value',
+      CATEGORY_LIST.data.content[0].nameEn
+    );
+
+    // API 요청 인터셉트 설정
+    cy.intercept(
+      'PATCH',
+      `/api/category/${CATEGORY_LIST.data.content[0].categoryId}`,
+      {
+        statusCode: 200,
+        body: {
+          success: true,
+          data: {},
+          timestamp: new Date().toISOString(),
+        },
+      }
+    ).as('editCategory');
+
+    // 수정 버튼 클릭
+    cy.get('#addCategory').click();
+
+    // 성공 모달이 나타나는지 확인
+    cy.contains('수정 완료').should('exist');
+    cy.contains('카테고리 수정이 완료되었습니다.').should('exist');
+
+    // 성공 모달의 확인 버튼 클릭
+    cy.contains('button', '확인').click();
+
+    // 모달이 닫혔는지 확인
+    cy.contains('카테고리 수정').should('not.exist');
+  });
+
+  it('카테고리를 삭제할 수 있다.', () => {
+    //given - 메뉴 관리 페이지 - 카테고리 탭에 접근한다.
+    cy.visit('/menus');
+    cy.get('#카테고리').click();
+
+    //when - 카테고리 목록의 첫 번째 항목의 삭제 아이콘을 클릭한다.
+    cy.get('table tbody tr')
+      .first()
+      .find('td')
+      .last()
+      .find('svg') // 삭제 아이콘
+      .click();
+
+    // 삭제 확인 모달이 나타나는지 확인
+    cy.contains('삭제 확인').should('exist');
+    cy.contains(
+      `"${CATEGORY_LIST.data.content[0].nameKr}" 카테고리를 삭제하시겠습니까?`
+    ).should('exist');
+
+    // API 요청 인터셉트 설정
+    cy.intercept(
+      'DELETE',
+      `/api/category/${CATEGORY_LIST.data.content[0].categoryId}`,
+      {
+        statusCode: 200,
+        body: {
+          success: true,
+          data: {},
+          timestamp: new Date().toISOString(),
+        },
+      }
+    ).as('deleteCategory');
+
+    // 삭제 버튼 클릭
+    cy.contains('button', '삭제').click();
+
+    // 성공 모달이 나타나는지 확인
+    cy.contains('삭제 성공').should('exist');
+    cy.contains('삭제에 성공했습니다.').should('exist');
+
+    // 성공 모달의 확인 버튼 클릭
+    cy.contains('button', '확인').click();
+
+    // 모달이 닫혔는지 확인
+    cy.contains('삭제 확인').should('not.exist');
+  });
 });
 
 describe('옵션관리 페이지', () => {
@@ -144,14 +258,14 @@ describe('옵션관리 페이지', () => {
     // 옵션 데이터가 테이블에 제대로 렌더링되었는지 확인
     cy.get('table tbody tr').should(
       'have.length',
-      OPTION_LIST.data.options.length
+      OPTION_LIST.data.content.length
     );
 
     // 첫 번째 옵션 데이터의 내용 확인
     cy.get('table tbody tr')
       .first()
       .within(() => {
-        cy.contains(OPTION_LIST.data.options[0].optionNameKr).should('exist');
+        cy.contains(OPTION_LIST.data.content[0].optionNameKr).should('exist');
       });
   });
 
@@ -220,21 +334,21 @@ describe('옵션관리 페이지', () => {
     // 현재 옵션 그룹명이 입력 필드에 있는지 확인
     cy.get('#optionGroupNameEdit').should(
       'have.value',
-      OPTION_LIST.data.options[0].optionNameKr
+      OPTION_LIST.data.content[0].optionNameKr
     );
     cy.get('#optionGroupNameEnEdit').should(
       'have.value',
-      OPTION_LIST.data.options[0].optionNameEn
+      OPTION_LIST.data.content[0].optionNameEn
     );
 
     // 옵션 그룹명 수정
-    const updatedName = '수정된 옵션명';
+    const updatedName = '수정된 옵션 그룹';
     cy.get('#optionGroupNameEdit').clear().type(updatedName);
 
     // API 요청 인터셉트 설정
     cy.intercept(
       'PATCH',
-      `/api/option/${OPTION_LIST.data.options[0].optionId}`,
+      `/api/option/${OPTION_LIST.data.content[0].optionId}`,
       {
         statusCode: 200,
         body: {
@@ -246,10 +360,7 @@ describe('옵션관리 페이지', () => {
     ).as('editOptionGroup');
 
     // 수정 버튼 클릭
-    cy.get('#optionGroupNameEdit')
-      .parents('form')
-      .find('button[type="submit"]')
-      .click();
+    cy.get('#optionGroupNameEditBtn').click();
 
     // 성공 모달이 나타나는지 확인
     cy.contains('dialog', '옵션 그룹명 수정').should('exist');
@@ -278,7 +389,7 @@ describe('옵션관리 페이지', () => {
     // API 요청 인터셉트 설정
     cy.intercept(
       'DELETE',
-      `/api/option/${OPTION_LIST.data.options[0].optionId}`,
+      `/api/option/${OPTION_LIST.data.content[0].optionId}`,
       {
         statusCode: 200,
         body: {
@@ -375,14 +486,14 @@ describe('옵션관리 페이지', () => {
 
     // 첫 번째 옵션 상세의 이름 수정
     cy.get(
-      `#optionDetailValueEdit-${OPTION_LIST.data.options[0].optionDetail[0].optionDetailId}`
+      `#optionDetailValueEdit-${OPTION_LIST.data.content[0].optionDetails[0].optionDetailId}`
     )
       .clear()
       .type(updatedDetailName);
 
     // 첫 번째 옵션 상세의 가격 수정
     cy.get(
-      `#optionDetailPriceEdit-${OPTION_LIST.data.options[0].optionDetail[0].optionDetailId}`
+      `#optionDetailPriceEdit-${OPTION_LIST.data.content[0].optionDetails[0].optionDetailId}`
     )
       .clear()
       .type(updatedPrice.toString());
@@ -390,7 +501,7 @@ describe('옵션관리 페이지', () => {
     // API 요청 인터셉트 설정
     cy.intercept(
       'PATCH',
-      `/api/option_detail/${OPTION_LIST.data.options[0].optionDetail[0].optionDetailId}`,
+      `/api/option_detail/${OPTION_LIST.data.content[0].optionDetails[0].optionDetailId}`,
       {
         statusCode: 200,
         body: {
@@ -417,16 +528,16 @@ describe('옵션관리 페이지', () => {
     cy.visit('/menus');
     cy.get('#옵션').click();
 
-    //when - 옵션 목록의 첫 번째 항목의 수정 버튼을 클릭한다.
+    //when - 옵션 목록의 첫 번째 항목의 삭제제 버튼을 클릭한다.
     cy.get('table tbody tr')
       .first()
       .find('td')
-      .eq(2) // 수정 버튼이 있는 셀
-      .find('#edit')
+      .eq(2) // 삭제 버튼이 있는 셀
+      .find('#delete')
       .click();
 
-    // 수정 모달이 나타나는지 확인
-    cy.contains('옵션 편집').should('exist');
+    // 삭제 모달이 나타나는지 확인
+    cy.contains('삭제 확인').should('exist');
 
     // 옵션 상세 테이블이 존재하는지 확인
     cy.contains('옵션 상세').should('exist');
@@ -435,7 +546,7 @@ describe('옵션관리 페이지', () => {
     // API 요청 인터셉트 설정
     cy.intercept(
       'DELETE',
-      `/api/option_detail/${OPTION_LIST.data.options[0].optionDetail[0].optionDetailId}`,
+      `/api/option_detail/${OPTION_LIST.data.content[0].optionDetails[0].optionDetailId}`,
       {
         statusCode: 200,
         body: {

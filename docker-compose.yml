@@ -39,7 +39,7 @@ services:
       - "${REDIS_PORT}:${REDIS_PORT}"
     volumes:
       - /home/ubuntu/MyLio/redis_data:/data
-    command: redis-server --appendonly yes 
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
     networks:
       - app-network
 
@@ -127,6 +127,7 @@ services:
       OPENAI_API_KEY: ${OPEN_AI_KEY}
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
       CHROMA_HOST: ${CHROMA_HOST}
       COLLECTION_NAME: ${COLLECTION_NAME}
     depends_on:

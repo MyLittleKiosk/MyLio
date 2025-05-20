@@ -23,8 +23,10 @@ public class NutritionTemplateService {
     private final NutritionTemplateRepository nutritionTemplateRepository;
 
     public CustomPage<NutritionTemplateResponseDto> getNutritionTemplate(String userType, String keyword, Pageable pageable) {
-        // 관리자인지 검증
-        validateSuperAdmin(userType);
+        // userType 검증
+        if(!(userType.equals("SUPER") || userType.equals("STORE"))){
+            throw new CustomException(ErrorCode.FORBIDDEN_ACCESS, "userType", userType);
+        }
 
         // 영양성분 템플릿 모두 조회
         Page<NutritionTemplate> nutritionTemplates = nutritionTemplateRepository.findAllByKeyword(keyword, pageable);

@@ -1,5 +1,5 @@
 export type SalesTrendType = {
-  type: number;
+  element: number;
   sales: number;
 };
 

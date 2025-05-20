@@ -14,13 +14,15 @@ export interface OptionGroup {
   optionId: number;
   optionNameKr: string;
   optionNameEn: string;
-  optionDetail: OptionDetailType[];
+  optionDetails: OptionDetailType[];
 }
 
-export interface OptionList {
-  success: boolean;
-  data: {
-    options: OptionGroup[];
-  };
-  timestamp: string;
-}
+export type OptionDetailGetType = {
+  menuOptionId: number;
+  optionId: number;
+  optionNameKr: string;
+  optionNameEn: string;
+  optionValue: string;
+  additionalPrice: number;
+  required: boolean;
+};

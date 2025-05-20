@@ -37,9 +37,10 @@ public class CategoryController {
     @Operation(summary = "카테고리 조회", description = "카테고리 목록을 조회합니다")
     public ResponseEntity<CommonResponse<CustomPage<CategoryResponseDto>>> getCategoryList(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestParam(name="keyword", required = false) String keyword,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
-        return CommonResponse.ok(categoryService.getCategoryList(storeId, pageable));
+        return CommonResponse.ok(categoryService.getCategoryList(storeId, keyword, pageable));
     }
 
     @PostMapping
@@ -53,24 +54,24 @@ public class CategoryController {
         return CommonResponse.ok();
     }
 
-    @PatchMapping("/{category_id}")
+    @PatchMapping("/{categoryId}")
     @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.CATEGORY_NOT_FOUND, ErrorCode.CATEGORY_STORE_NOT_MATCH, ErrorCode.INVALID_CATEGORY_STATUS})
-    @Operation(summary = "카테고리 수정", description = "category_id로 카테고리를 수정합니다")
+    @Operation(summary = "카테고리 수정", description = "categoryId로 카테고리를 수정합니다")
     public ResponseEntity<CommonResponse<Void>> updateCategory(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody CategoryUpdateRequestDto categoryUpdateRequestDto,
-            @PathVariable("category_id") Integer categoryId) {
+            @PathVariable("categoryId") Integer categoryId) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         categoryService.updateCategory(storeId, categoryId, categoryUpdateRequestDto);
         return CommonResponse.ok();
     }
 
-    @DeleteMapping("/{category_id}")
+    @DeleteMapping("/{categoryId}")
     @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.CATEGORY_NOT_FOUND, ErrorCode.CATEGORY_STORE_NOT_MATCH})
-    @Operation(summary = "카테고리 삭제", description = "category_id로 카테고리를 삭제합니다")
+    @Operation(summary = "카테고리 삭제", description = "categoryId로 카테고리를 삭제합니다")
     public ResponseEntity<CommonResponse<Void>> deleteCategory(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("category_id") Integer categoryId) {
+            @PathVariable("categoryId") Integer categoryId) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         categoryService.deleteCategory(storeId, categoryId);
         return CommonResponse.ok();

@@ -350,8 +350,7 @@ class IntentRecognizer:
             
             # 결제 수단 표준화 - KAKAOPAY는 PAY로 변환
             if result.get("intent_type") == IntentType.PAYMENT and result.get("payment_method"):
-                pm = re.sub(r"[\s_]+", "", str(result["payment_method"]).upper())
-                if pm in ("KAKAOPAY", "KAKAO","KAKAO_PAY","KAKAO PAY"):
+                if result["payment_method"].upper() == "KAKAOPAY":
                     result["payment_method"] = "PAY"
 
             # OPTION_SELECT 일 때 menu_id / menu_name 이 없어도 버리지 않는다
@@ -515,10 +514,6 @@ class IntentRecognizer:
         - 디카페인 아메리카노와 아메리카노는 다른 메뉴에요. 디카페인음료를 물어볼때 "아메리카노", "콜드브루"는 제외시키고 "디카페인 아메리카노", "디카페인 콜드브루"와 같은 메뉴를 가져와야 해요.
         - 전체 메뉴를 보여달라고 하면 전체 메뉴 리스트를 전부 보내야 합니다.
         - 검색된 메뉴의 이름과 menu_id를 함께 보내야 합니다.
-
-        10. 결제 규칙:
-        - payment_method의 경우 반드시 "CARD","MOBILE", "GIFT", "PAY" 중 하나여야 합니다.
-        - 카카오페이, 카카오 페이 경우 PAY로 들어가야 합니다.
 
         주의: 응답을 생성할 때 템플릿 문자열이 아닌 실제 사용자에게 보여질 자연스러운 응답을 직접 생성해주세요.
         "감자탕 있어?", "화장실이 어디야?" 와 같이 제공된 메뉴 이외의 질문을 한다면 "죄송하지만 대답할 수 없는 질문이네요. 카페와 관련된 질문을 해주시면 대답해드릴 수 있어요."라고 답변하고 screen_state는 MAIN으로 해주세요.

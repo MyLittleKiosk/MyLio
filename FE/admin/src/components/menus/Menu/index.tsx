@@ -1,36 +1,55 @@
 import React, { useState } from 'react';
 
-import IconAdd from '@/assets/icons/IconAdd';
-
-import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 import Table from '@/components/common/Table';
-import AddMenuModal from '@/components/menus/AddMenuModal';
-
-import STORE_LIST from '@/datas/storeList';
+import PageNavigation from '@/components/common/PageNavigation';
+import DeleteMenuModal from '@/components/menus/DeleteMenuModal';
 
 import { CategoryType } from '@/types/categories';
-import { StoreType } from '@/types/stores';
 import { MenuType, NavItemType } from '@/types/menus';
 import { Column } from '@/types/tableProps';
-
-import useModalStore from '@/stores/useModalStore';
+import { Pagination } from '@/types/apiResponse';
 
 import { useGetCategory } from '@/service/queries/category';
-import useGetMenus from '@/service/queries/menu';
+import { useGetMenus } from '@/service/queries/menu';
+import useModalStore from '@/stores/useModalStore';
+import { useDebounce } from '@/hooks/useDebounce';
 
-const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
-  const { openModal } = useModalStore();
+interface Props {
+  selectedNav: NavItemType;
+  setIsEditMenuClicked: (value: boolean) => void;
+  setClickedMenuId: (value: number) => void;
+}
 
-  const [searchValue, setSearchValue] = useState('');
+const Menu = ({
+  selectedNav,
+  setIsEditMenuClicked,
+  setClickedMenuId,
+}: Props) => {
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(
     null
   );
-  const [selectedStore, setSelectedStore] = useState<StoreType | null>(null);
+  const [searchParams, setSearchParams] = useState<{
+    keyword?: string;
+    page?: number;
+  }>({
+    page: 1,
+  });
+
+  const debounceKeyword = useDebounce(searchParams.keyword, 500);
+
+  const { openModal } = useModalStore();
+
+  const { data: menus, pageInfo } = useGetMenus(
+    debounceKeyword,
+    searchParams.page,
+    selectedCategory?.categoryId
+  );
+  const { data: category } = useGetCategory();
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setSearchValue(e.target.value);
+    setSearchParams({ ...searchParams, keyword: e.target.value });
   }
 
   function handleCategoryChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -40,64 +59,49 @@ const Menu = ({ selectedNav }: { selectedNav: NavItemType }) => {
     setSelectedCategory(selected || null);
   }
 
-  function handleStoreChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const selected = STORE_LIST.find(
-      (store) => store.storeName === e.target.value
-    );
-    setSelectedStore(selected || null);
+  function handleEdit(menuId: number) {
+    setIsEditMenuClicked(true);
+    setClickedMenuId(menuId);
   }
 
-  const { data: menus, isLoading: getMenusLoading } = useGetMenus();
-  const { data: category, isLoading: getCategoryLoading } = useGetCategory();
-
-  if (!menus || !category || getMenusLoading || getCategoryLoading) {
-    return <div>Loading...</div>;
+  function handlePageChange(page: number) {
+    setSearchParams({
+      ...searchParams,
+      page,
+    });
   }
 
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex gap-2 max-h-[10%] w-full justify-between'>
         <Input
-          inputId='searchMenu'
+          id='searchMenu'
           placeholder='메뉴명 또는 설명으로 검색'
-          inputType='text'
-          inputValue={searchValue}
+          value={searchParams.keyword}
           onChange={handleSearchChange}
-          className='w-[65%]'
+          className='w-[85%]'
         />
         <Select<CategoryType>
           options={category}
           selected={selectedCategory}
           onChange={handleCategoryChange}
           placeholder='모든 카테고리'
-          className='w-[11%]'
+          className='w-[15%]'
           getOptionLabel={(option) => option.nameKr}
           getOptionValue={(option) => option.nameKr}
-        />
-        <Select<StoreType>
-          options={STORE_LIST}
-          selected={selectedStore}
-          onChange={handleStoreChange}
-          placeholder='모든 점포'
-          className='w-[11%]'
-          getOptionLabel={(option) => option.storeName}
-          getOptionValue={(option) => option.storeName}
-        />
-        <Button
-          buttonType='button'
-          text='메뉴 추가'
-          icon={<IconAdd fillColor='white' />}
-          onClick={() => {
-            openModal(<AddMenuModal />);
-          }}
-          className='w-[11%] items-center justify-center'
         />
       </div>
       <Table<MenuType>
         title='메뉴 목록'
-        description='총 6개의 메뉴가 있습니다.'
+        description={`총 ${pageInfo.totalElements}개의 메뉴가 있습니다.`}
         columns={selectedNav.columns as Column<MenuType>[]}
         data={menus as MenuType[]}
+        onEdit={(row) => handleEdit(row.menuId)}
+        onDelete={(row) => openModal(<DeleteMenuModal row={row} />, 'lg')}
+      />
+      <PageNavigation
+        pageInfo={pageInfo as Pagination}
+        onChangePage={(page: number) => handlePageChange(page)}
       />
     </div>
   );

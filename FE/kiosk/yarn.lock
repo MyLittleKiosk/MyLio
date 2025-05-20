@@ -199,6 +199,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.25.0, @babel/runtime@npm:^7.27.1":
+  version: 7.27.1
+  resolution: "@babel/runtime@npm:7.27.1"
+  checksum: 10c0/530a7332f86ac5a7442250456823a930906911d895c0b743bf1852efc88a20a016ed4cd26d442d0ca40ae6d5448111e02a08dd638a4f1064b47d080e2875dc05
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.26.9, @babel/template@npm:^7.27.0":
   version: 7.27.0
   resolution: "@babel/template@npm:7.27.0"
@@ -1589,6 +1596,20 @@ __metadata:
     "@tailwindcss/oxide-win32-x64-msvc":
       optional: true
   checksum: 10c0/1e01157774265587cdc7209f4c248a21463b0dde1672e49ff3667b6b8918bdbdc48ebb4bdf228489170dc221c5dec54492a9cdf699244562d8966ae8c6cdd508
+  languageName: node
+  linkType: hard
+
+"@tailwindcss/typography@npm:^0.5.16":
+  version: 0.5.16
+  resolution: "@tailwindcss/typography@npm:0.5.16"
+  dependencies:
+    lodash.castarray: "npm:^4.4.0"
+    lodash.isplainobject: "npm:^4.0.6"
+    lodash.merge: "npm:^4.6.2"
+    postcss-selector-parser: "npm:6.0.10"
+  peerDependencies:
+    tailwindcss: "*"
+  checksum: 10c0/35a7387876810c23c270a23848b920517229b707c8ead6a63c8bb7d6720a62f23728c3117f0a93b422a66d1e5ee9c7ad8a6c3f0fbf5255b535c0e4971ffa0158
   languageName: node
   linkType: hard
 
@@ -4410,6 +4431,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"html-parse-stringify@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "html-parse-stringify@npm:3.0.1"
+  dependencies:
+    void-elements: "npm:3.1.0"
+  checksum: 10c0/159292753d48b84d216d61121054ae5a33466b3db5b446e2ffc093ac077a411a99ce6cbe0d18e55b87cf25fa3c5a86c4d8b130b9719ec9b66623259000c72c15
+  languageName: node
+  linkType: hard
+
 "http-cache-semantics@npm:^4.1.1":
   version: 4.1.1
   resolution: "http-cache-semantics@npm:4.1.1"
@@ -4452,6 +4482,20 @@ __metadata:
   version: 1.1.1
   resolution: "human-signals@npm:1.1.1"
   checksum: 10c0/18810ed239a7a5e23fb6c32d0fd4be75d7cd337a07ad59b8dbf0794cb0761e6e628349ee04c409e605fe55344716eab5d0a47a62ba2a2d0d367c89a2b4247b1e
+  languageName: node
+  linkType: hard
+
+"i18next@npm:^25.2.0":
+  version: 25.2.0
+  resolution: "i18next@npm:25.2.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.27.1"
+  peerDependencies:
+    typescript: ^5
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10c0/393d45b405c53edda3cb37e8882e1a8169d0b649578541e0bb6802d28ce9c260b503f49b5b08953ef4547dbccd5d8a9adcab51290dfad6844ca7390493e274eb
   languageName: node
   linkType: hard
 
@@ -5083,6 +5127,7 @@ __metadata:
     "@storybook/react": "npm:8.6.12"
     "@storybook/react-vite": "npm:8.6.12"
     "@storybook/test": "npm:8.6.12"
+    "@tailwindcss/typography": "npm:^0.5.16"
     "@tailwindcss/vite": "npm:^4.1.4"
     "@tanstack/eslint-plugin-query": "npm:^5.74.7"
     "@tanstack/react-query": "npm:^5.74.7"
@@ -5110,12 +5155,14 @@ __metadata:
     filesize: "npm:^10.1.6"
     framer-motion: "npm:^12.9.2"
     globals: "npm:^16.0.0"
+    i18next: "npm:^25.2.0"
     msw: "npm:^2.7.5"
     postcss: "npm:^8.5.3"
     prettier: "npm:^3.5.3"
     react: "npm:^19.0.0"
     react-confetti: "npm:^6.4.0"
     react-dom: "npm:^19.0.0"
+    react-i18next: "npm:^15.5.1"
     react-router-dom: "npm:^7.5.2"
     storybook: "npm:8.6.12"
     strip-ansi: "npm:^7.1.0"
@@ -5296,6 +5343,20 @@ __metadata:
   dependencies:
     p-locate: "npm:^5.0.0"
   checksum: 10c0/d3972ab70dfe58ce620e64265f90162d247e87159b6126b01314dd67be43d50e96a50b517bce2d9452a79409c7614054c277b5232377de50416564a77ac7aad3
+  languageName: node
+  linkType: hard
+
+"lodash.castarray@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "lodash.castarray@npm:4.4.0"
+  checksum: 10c0/0bf523ad1596a5bf17869ba047235b4453eee927005013ae152345e2b291b81a02e7f2b7c38f876a1d16f73c34aa3c3241e965193e5b31595035bc8f330c4358
+  languageName: node
+  linkType: hard
+
+"lodash.isplainobject@npm:^4.0.6":
+  version: 4.0.6
+  resolution: "lodash.isplainobject@npm:4.0.6"
+  checksum: 10c0/afd70b5c450d1e09f32a737bed06ff85b873ecd3d3d3400458725283e3f2e0bb6bf48e67dbe7a309eb371a822b16a26cca4a63c8c52db3fc7dc9d5f9dd324cbb
   languageName: node
   linkType: hard
 
@@ -6126,6 +6187,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"postcss-selector-parser@npm:6.0.10":
+  version: 6.0.10
+  resolution: "postcss-selector-parser@npm:6.0.10"
+  dependencies:
+    cssesc: "npm:^3.0.0"
+    util-deprecate: "npm:^1.0.2"
+  checksum: 10c0/a0b27c5e3f7604c8dc7cd83f145fdd7b21448e0d86072da99e0d78e536ba27aa9db2d42024c50aa530408ee517c4bdc0260529e1afb56608f9a82e839c207e82
+  languageName: node
+  linkType: hard
+
 "postcss-selector-parser@npm:^6.1.1, postcss-selector-parser@npm:^6.1.2":
   version: 6.1.2
   resolution: "postcss-selector-parser@npm:6.1.2"
@@ -6341,6 +6412,27 @@ __metadata:
   peerDependencies:
     react: ^19.1.0
   checksum: 10c0/3e26e89bb6c67c9a6aa86cb888c7a7f8258f2e347a6d2a15299c17eb16e04c19194e3452bc3255bd34000a61e45e2cb51e46292392340432f133e5a5d2dfb5fc
+  languageName: node
+  linkType: hard
+
+"react-i18next@npm:^15.5.1":
+  version: 15.5.1
+  resolution: "react-i18next@npm:15.5.1"
+  dependencies:
+    "@babel/runtime": "npm:^7.25.0"
+    html-parse-stringify: "npm:^3.0.1"
+  peerDependencies:
+    i18next: ">= 23.2.3"
+    react: ">= 16.8.0"
+    typescript: ^5
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+    react-native:
+      optional: true
+    typescript:
+      optional: true
+  checksum: 10c0/448e190beb3338e5e6e48936c82b5e8610fdb54d0b3dafc14c2af76115a6c931eff601c3e4aee00b3d3c1b78d4d7061bbac443fc9bcff786d131e695c79f5822
   languageName: node
   linkType: hard
 
@@ -7822,6 +7914,13 @@ __metadata:
   bin:
     vite: bin/vite.js
   checksum: 10c0/7ea27d2c80a9e0b7ccf6cbd6c251455501286568160e8b632984e5332440f21a6d05f9236408212ba7653f7d2d4790f848956d8a620bbf4dd2ecb792a2fe1ab1
+  languageName: node
+  linkType: hard
+
+"void-elements@npm:3.1.0":
+  version: 3.1.0
+  resolution: "void-elements@npm:3.1.0"
+  checksum: 10c0/0b8686f9f9aa44012e9bd5eabf287ae0cde409b9a2854c5a2335cb83920c957668ac5876e3f0d158dd424744ac411a7270e64128556b451ed3bec875ef18534d
   languageName: node
   linkType: hard
 

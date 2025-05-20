@@ -2,6 +2,8 @@ import IconEdit from '@/assets/icons/IconEdit';
 import IconTrashCan from '@/assets/icons/IconTrashCan';
 
 import { Column, TableProps } from '@/types/tableProps';
+import { formatDate } from '@/utils/formatDate';
+import { formatMoney } from '@/utils/formatMoney';
 
 const Table = <T extends object>({
   title,
@@ -15,7 +17,7 @@ const Table = <T extends object>({
 }: TableProps<T>) => {
   function checkColumn(column: Column<T>, row: T) {
     switch (column.accessor) {
-      case 'optionDetail':
+      case 'optionDetails':
         return (
           <div>
             {(
@@ -31,10 +33,6 @@ const Table = <T extends object>({
           </div>
         );
       case 'imageUrl':
-        console.log(
-          'row[column.accessor as keyof T]:',
-          row[column.accessor as keyof T]
-        );
         return (
           <img
             src={String(row[column.accessor as keyof T])}
@@ -64,8 +62,9 @@ const Table = <T extends object>({
         );
       case 'price':
       case 'orderPrice':
-        return `₩${String(row[column.accessor as keyof T]).toLocaleString()}`;
-      case 'status':
+      case 'totalPrice':
+        return formatMoney(Number(row[column.accessor as keyof T]));
+      case 'isActivate':
         return (
           <div
             className={`ms-2 w-3 h-3 rounded-full ${
@@ -75,6 +74,8 @@ const Table = <T extends object>({
         );
       case 'password':
         return '********';
+      case 'orderedAt':
+        return formatDate(String(row[column.accessor as keyof T]));
       default:
         return String(row[column.accessor as keyof T]);
     }

@@ -119,11 +119,11 @@ const AddAccountModal = () => {
         <div className='flex flex-col gap-2'>
           <div id='account-name-input'>
             <Input
-              inputId='accountId'
+              id='accountId'
               label='사용자 이름'
               placeholder='사용자 이름을 입력하세요.'
-              inputType='text'
-              inputValue={formData.userName}
+              type='text'
+              value={formData.userName}
               onChange={(e) => handleChange('userName', e.target.value)}
               error={!!errors.userName}
             />
@@ -147,11 +147,11 @@ const AddAccountModal = () => {
 
           <div id='store-name-input'>
             <Input
-              inputId='storeId'
+              id='storeId'
               label='매장 이름'
               placeholder='매장 이름을 입력하세요.'
-              inputType='text'
-              inputValue={formData.storeName}
+              type='text'
+              value={formData.storeName}
               onChange={(e) => handleChange('storeName', e.target.value)}
               error={!!errors.storeName}
             />
@@ -162,11 +162,11 @@ const AddAccountModal = () => {
 
           <div id='address-input'>
             <Input
-              inputId='addressId'
+              id='addressId'
               label='매장 주소'
               placeholder='주소를 입력하세요.'
-              inputType='text'
-              inputValue={formData.address}
+              type='text'
+              value={formData.address}
               onChange={(e) => handleChange('address', e.target.value)}
               error={!!errors.address}
             />
@@ -176,8 +176,8 @@ const AddAccountModal = () => {
           </div>
         </div>
         <div className='w-full mt-8 flex justify-end gap-2'>
-          <Button buttonType='button' text='취소' onClick={closeModal} cancel />
-          <Button buttonType='submit' text='생성' />
+          <Button type='button' text='취소' onClick={closeModal} cancel />
+          <Button type='submit' text='생성' />
         </div>
       </form>
     </div>

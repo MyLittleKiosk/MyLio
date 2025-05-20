@@ -25,6 +25,12 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
     List<OrderItem> findByStoreAndCreatedAtBetween(
             @Param("storeId") Integer storeId,
             @Param("start") LocalDateTime start,
-            @Param("end")     LocalDateTime end
+            @Param("end") LocalDateTime end
     );
+
+    @Query("SELECT oi " +
+            "FROM OrderItem oi " +
+            "WHERE oi.order.id = :orderId")
+    List<OrderItem> findAllByOrderId(@Param("orderId") Integer orderId);
+
 }

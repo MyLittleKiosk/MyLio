@@ -1,11 +1,13 @@
 import Button from '@/components/common/Button';
-import { useLogin } from '@/service/queries/useLogin';
-import React, { useRef } from 'react';
+import { useLogin } from '@/service/queries/user';
+import React, { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 const Login = () => {
   const { mutate: login } = useLogin();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const kioskIdRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!emailRef.current || !passwordRef.current || !kioskIdRef.current) {
@@ -19,6 +21,13 @@ const Login = () => {
     });
   }
 
+  useEffect(() => {
+    const kioskId = localStorage.getItem('kioskId');
+    if (kioskId) {
+      navigate('/landing');
+    }
+  }, []);
+
   return (
     <>
       <div className='flex flex-col items-center justify-center h-screen bg-primary gap-3'>
@@ -27,7 +36,7 @@ const Login = () => {
           className='flex flex-col gap-3 max-w-md bg-white p-10 rounded-md'
         >
           <h1 className='text-7xl font-preBold text-primary text-center'>
-            MaLio
+            MyLio
           </h1>
           <div className='flex flex-col'>
             <label htmlFor='id' className='text-sm text-gray-500'>

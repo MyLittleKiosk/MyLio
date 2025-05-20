@@ -8,7 +8,7 @@ const OPTION_COLUMNS: Column<OptionGroup>[] = [
   },
   {
     header: '옵션 항목',
-    accessor: 'optionDetail' as keyof OptionGroup,
+    accessor: 'optionDetails' as keyof OptionGroup,
   },
   {
     header: '편집',

@@ -1,27 +1,40 @@
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import Main from '@/pages/Main';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import RecordButton from '@/components/Chat/RecordButton';
-import { useState } from 'react';
-import { useOrderRequest } from '@/service/queries/useOrderRequest';
-import useOrderStore from '@/stores/useOrderStore';
+import { useEffect, useRef, useState } from 'react';
 import { DEFAULT_COMMENT } from '@/datas/COMMENT';
-import { useLogout } from '@/service/queries/useLogout';
-import useKioskStore from '@/stores/useKioskStore';
+import Main from '@/pages/Main';
+import Footer from '@/pages/OrderLayout/Footer';
+import { useLogout, useRefresh } from '@/service/queries/user';
+import useOrderStore from '@/stores/useOrderStore';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useOrderRequest } from '@/service/queries/order';
+import useConsecutiveClick from '@/hooks/useConsecutiveClick';
+
 const OrderLayout = () => {
   const { pathname } = useLocation();
-  const [userChat] = useState<string>('');
+  const [userChat, setUserChat] = useState<string>('');
   const { order, resetOrder } = useOrderStore();
-  const { mutate: orderRequest } = useOrderRequest();
+  const { mutate: orderRequest, isPending } = useOrderRequest();
   const { mutate: logout } = useLogout();
-  const { kioskId } = useKioskStore();
+  const { mutate: refresh } = useRefresh();
   const navigate = useNavigate();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const kioskId = localStorage.getItem('kioskId');
+    if (!kioskId) {
+      navigate('/');
+    } else {
+      refresh();
+    }
+  }, [navigate]);
+
   function handleLogout() {
-    logout(kioskId);
-    navigate('/');
+    logout();
   }
+
   function handleRecognitionResult(text: string) {
+    setUserChat(text);
     orderRequest({
       text: text,
       screenState: order.screenState,
@@ -33,6 +46,7 @@ const OrderLayout = () => {
       storeId: order.storeId,
     });
   }
+
   function handleSessionReset() {
     resetOrder();
     orderRequest({
@@ -45,13 +59,72 @@ const OrderLayout = () => {
       payment: order.payment,
       storeId: order.storeId,
     });
+    window.location.reload();
   }
+
+  const handleTopLeftClick = useConsecutiveClick({
+    onSuccess: handleSessionReset,
+  });
+
+  const handleTopRightClick = useConsecutiveClick({
+    onSuccess: handleLogout,
+  });
+
+  function testHandleRecognitionResult() {
+    handleRecognitionResult(inputRef.current?.value || '');
+  }
+
+  const [isLargeFont, setIsLargeFont] = useState(false);
+
+  function handleTopCenterClick() {
+    setIsLargeFont(!isLargeFont);
+  }
+
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (isLargeFont) {
+      root.classList.add('large-font');
+    } else {
+      root.classList.remove('large-font');
+    }
+  }, [isLargeFont]);
 
   return (
     // 배경 색은 추후 변경 예정
-    <div className='flex flex-col h-dvh bg-gradient-to-b from-primary to-white justify-between'>
-      {/* 임시 네비게이터 */}
-      <div className='flex justify-center items-center z-10 fixed top-0 left-0 w-full h-[100px]'>
+    <div
+      className={clsx(
+        'flex flex-col h-dvh bg-gradient-to-b from-secondary to-white justify-between'
+      )}
+    >
+      <div
+        className='fixed top-10 left-0 w-20 h-20 z-20 cursor-pointer'
+        onClick={handleTopLeftClick}
+      />
+
+      <div className='fixed top-0 left-0 w-24 z-20 cursor-pointer '>
+        <button
+          onClick={handleTopCenterClick}
+          className='flex flex-col items-start justify-center w-full rounded-lg p-2'
+        >
+          <span
+            className={clsx(
+              'w-[150px] font-preSemiBold  bg-white border border-2 rounded-full p-1',
+              isLargeFont
+                ? 'border-content text-content text-xs'
+                : 'border-primary text-primary text-lg'
+            )}
+          >
+            {isLargeFont ? '작은 글자' : '큰 글자'}
+          </span>
+        </button>
+      </div>
+
+      <div
+        className='fixed top-0 right-0 w-20 h-20 z-20 cursor-pointer'
+        onClick={handleTopRightClick}
+      />
+      <div className='flex justify-center items-center z-10 fixed top-0 left-0 w-full h-[100px] flex-wrap'>
         <ul className='flex justify-center items-center gap-4 rounded-xl p-4'>
           <li>
             <Link to='/kiosk'>홈</Link>
@@ -76,8 +149,18 @@ const OrderLayout = () => {
           </li>
         </ul>
         <div className='flex gap-4'>
-          <button onClick={handleLogout}>로그아웃</button>
-          <button onClick={handleSessionReset}>세션 초기화</button>
+          <div className='flex gap-2 h-full'>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                testHandleRecognitionResult();
+              }}
+              className='flex gap-2 h-full'
+            >
+              <input type='text' ref={inputRef} />
+              <button type='submit'>전송</button>
+            </form>
+          </div>
         </div>
       </div>
       <header
@@ -89,11 +172,11 @@ const OrderLayout = () => {
         <Main
           userChat={userChat}
           gptChat={order.reply ? order.reply : DEFAULT_COMMENT}
+          isPending={isPending}
         />
-        <RecordButton onRecognitionResult={handleRecognitionResult} />
       </header>
       <motion.main
-        className='rounded-t-xl bg-white shadow-t-2xl flex flex-col justify-center items-center'
+        className='rounded-t-xl bg-white  shadow-t-2xl flex flex-col justify-center items-center'
         initial={{ y: '100%', height: 0 }}
         animate={{
           y: pathname === '/kiosk' ? '100%' : 0,
@@ -108,6 +191,10 @@ const OrderLayout = () => {
       >
         <Outlet />
       </motion.main>
+      <Footer
+        handleRecognitionResult={handleRecognitionResult}
+        pathname={pathname}
+      />
     </div>
   );
 };

@@ -11,7 +11,7 @@ import {
   PaymentSalesRatioType,
 } from '@/types/statistics';
 import { CATEGORY_LIST } from './dummies/category';
-import MENU_LIST from './dummies/menu';
+import { MENU_LIST, MENU_BY_ID } from './dummies/menu';
 import DUMMY_MY_INFO from './dummies/my';
 import { OPTION_LIST } from './dummies/option';
 import {
@@ -24,6 +24,8 @@ import {
   DUMMY_SALES_BY_YEAR_2024,
   DUMMY_SALES_BY_YEAR_2025,
 } from './dummies/statistics';
+import { KIOSK_LIST } from '@/datas/kioskList';
+import { NUTRIENT_LIST } from '@/datas/NutrientList';
 
 const baseUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
@@ -57,6 +59,34 @@ export const handlers = [
 
   http.get(`${baseUrl}/menus`, () => {
     return HttpResponse.json(MENU_LIST);
+  }),
+
+  http.get(`${baseUrl}/menus/:menuId`, () => {
+    return HttpResponse.json(MENU_BY_ID);
+  }),
+
+  http.post(`${baseUrl}/menus`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.put(`${baseUrl}/menus/:menuId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.delete(`${baseUrl}/menus/:menuId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
   }),
 
   http.get(`${baseUrl}/option`, () => {
@@ -155,6 +185,30 @@ export const handlers = [
     return HttpResponse.json(CATEGORY_LIST);
   }),
 
+  http.patch(`${baseUrl}/category/:categoryId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.delete(`${baseUrl}/category/:categoryId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.post(`${baseUrl}/category`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
   http.get(`${baseUrl}/account?pageable=1`, () => {
     const response: Response<PaginationResponse<AccountType>> = {
       success: true,
@@ -170,14 +224,6 @@ export const handlers = [
       timestamp: new Date().toISOString(),
     };
     return HttpResponse.json(response);
-  }),
-
-  http.post(`${baseUrl}/category`, () => {
-    return HttpResponse.json({
-      success: true,
-      data: {},
-      timestamp: new Date().toISOString(),
-    });
   }),
 
   http.get(`${baseUrl}/account/detail`, () => {
@@ -201,6 +247,85 @@ export const handlers = [
   }),
 
   http.patch(`${baseUrl}/account/change_pw`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.get(`${baseUrl}/kiosk`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: KIOSK_LIST,
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.post(`${baseUrl}/kiosk`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {
+        kioskId: 1,
+        startOrder: 'A',
+        name: '키오스크 01',
+        isActivate: false,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.get(`${baseUrl}/kiosk/:kioskId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {
+        kioskId: 1,
+        startOrder: 'A',
+        name: '키오스크 01',
+        isActivate: false,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.delete(`${baseUrl}/kiosk/:kioskId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.patch(`${baseUrl}/kiosk/:kioskId`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {
+        kioskId: 1,
+        startOrder: 'A',
+        name: '키오스크 01',
+        isActivate: false,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.get(`${baseUrl}/nutrition`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: NUTRIENT_LIST,
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.post(`${baseUrl}/nutrition`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {},
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.patch(`${baseUrl}/nutrition/:nutritionId`, () => {
     return HttpResponse.json({
       success: true,
       data: {},

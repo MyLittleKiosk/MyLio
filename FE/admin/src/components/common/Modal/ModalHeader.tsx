@@ -7,7 +7,9 @@ const ModalHeader = ({ title, description }: ModalHeaderProps) => {
   return (
     <header className='flex flex-col items-start justify-between'>
       <h2 className='font-preBold text-xl'>{title}</h2>
-      <p className='font-preRegular text-md text-content'>{description}</p>
+      <p className='font-preRegular text-md text-content whitespace-pre-line leading-tight'>
+        {description}
+      </p>
     </header>
   );
 };

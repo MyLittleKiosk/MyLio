@@ -8,18 +8,30 @@ import {
   patchResetPassword,
   postAccount,
 } from '@services/apis/account';
-import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
+import {
+  QueryClient,
+  useMutation,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
 
-export const useGetAccountList = () => {
-  const query = useQuery({
-    queryKey: ['accountList'],
-    queryFn: () => getAccountList(),
+export const useGetAccountList = (keyword?: string, page?: number) => {
+  const query = useSuspenseQuery({
+    queryKey: ['accountList', keyword, page],
+    queryFn: () => getAccountList(keyword, page),
   });
+
+  const pageInfo = {
+    first: query.data?.data.first,
+    last: query.data?.data.last,
+    pageNumber: query.data?.data.pageNumber,
+    pageSize: query.data?.data.pageSize,
+    totalElements: query.data?.data.totalElements,
+    totalPages: query.data?.data.totalPages,
+  };
 
   return {
     data: query.data?.data.content,
-    isLoading: query.isLoading,
-    isError: query.isError,
+    pageInfo,
   };
 };
 
@@ -57,15 +69,13 @@ export const useDeleteAccount = () => {
 };
 
 export const useGetAccountDetail = () => {
-  const query = useQuery({
+  const query = useSuspenseQuery({
     queryKey: ['accountDetail'],
     queryFn: () => getAccountDetail(),
   });
 
   return {
     data: query.data?.data,
-    isLoading: query.isLoading,
-    isError: query.isError,
   };
 };
 

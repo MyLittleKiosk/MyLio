@@ -1,6 +1,7 @@
-import mic from '@/assets/icons/mic.svg';
-import { useAudioRecord } from '@/hooks/useAudioRecord';
+import mic from '@/assets/images/mic.png';
 import { sendAudioToClova } from '@/service/apis/voice';
+import audioStore from '@/stores/audioStore';
+import clsx from 'clsx';
 import { useState } from 'react';
 
 interface Props {
@@ -8,7 +9,10 @@ interface Props {
 }
 
 const RecordButton = ({ onRecognitionResult }: Props) => {
-  const { isRecording, startRecording, stopRecording } = useAudioRecord();
+  const isRecording = audioStore((s) => s.isRecording);
+  const startRecording = audioStore((s) => s.startRecording);
+  const stopRecording = audioStore((s) => s.stopRecording);
+
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -92,12 +96,16 @@ const RecordButton = ({ onRecognitionResult }: Props) => {
       onMouseUp={handlePressEnd}
       onTouchStart={handlePressStart}
       onTouchEnd={handlePressEnd}
-      className={`absolute bottom-10 right-10 bg-white rounded-full p-2 flex justify-center items-center transition-all ${
-        isRecording ? 'scale-110 bg-red-100' : 'hover:bg-gray-100'
-      }`}
+      className={clsx(
+        'p-2 w-16 h-16 shadow-lg rounded-full flex justify-center items-center transition-all',
+        'animate-[pulse_1s_ease-in-out_infinite]',
+        isRecording
+          ? 'scale-90 shadow-inner shadow-green-500 bg-green-100'
+          : 'bg-white hover:bg-gray-100'
+      )}
       disabled={isProcessing}
     >
-      <img src={mic} alt='microphone' className='w-10 h-10' />
+      <img src={mic} alt='microphone' className='w-full h-full' />
       {error && (
         <div className='absolute bottom-full right-0 mb-2 p-2 bg-red-100 text-red-700 rounded-md text-sm whitespace-nowrap'>
           {error}
