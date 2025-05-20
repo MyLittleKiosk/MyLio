@@ -42,11 +42,11 @@ public class KioskController {
         return CommonResponse.ok(kioskService.createKiosk(userId,userType,storeId,request));
     }
 
-    @DeleteMapping("/{kiosk_id}")
+    @DeleteMapping("/{kioskId}")
     @Operation(summary = "키오스크 삭제", description = "매장 관리자가 키오스크를 삭제합니다.")
     @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE,ErrorCode.STORE_NOT_FOUND,ErrorCode.KIOSK_NOT_FOUND})
     public ResponseEntity<CommonResponse<Void>> deleteKiosk(
-            @PathVariable("kiosk_id") Integer kioskId,
+            @PathVariable("kioskId") Integer kioskId,
             @AuthenticationPrincipal UserPrincipal userPrincipal){
         String userType = authenticationUtil.getCurrntUserType(userPrincipal);
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
@@ -56,11 +56,11 @@ public class KioskController {
         return CommonResponse.ok();
     }
 
-    @PatchMapping("/{kiosk_id}")
+    @PatchMapping("/{kioskId}")
     @Operation(summary = "키오스크 수정", description = "매장 관리자가 키오스크를 수정합니다.")
     @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE,ErrorCode.STORE_NOT_FOUND,ErrorCode.KIOSK_NOT_FOUND})
     public ResponseEntity<CommonResponse<KioskResponseDto>> modifyKiosk(
-            @PathVariable("kiosk_id") Integer kioskId,
+            @PathVariable("kioskId") Integer kioskId,
             @Valid @RequestBody KioskCreateRequestDto request,
             @AuthenticationPrincipal UserPrincipal userPrincipal){
         Integer userId = authenticationUtil.getCurrentUserId(userPrincipal);
@@ -84,11 +84,11 @@ public class KioskController {
 
     }
 
-    @GetMapping("/{kiosk_id}")
+    @GetMapping("/{kioskId}")
     @Operation(summary = "키오스크 상세 조회", description = "매장 관리자가 키오스크 정보를 조회합니다..")
     @ApiErrorCodeExamples({ErrorCode.INVALID_ROLE,ErrorCode.KIOSK_NOT_FOUND})
     public ResponseEntity<CommonResponse<KioskResponseDto>> getKioskDetail(
-            @PathVariable("kiosk_id") Integer kioskId,
+            @PathVariable("kioskId") Integer kioskId,
             @AuthenticationPrincipal UserPrincipal userPrincipal){
         String userType = authenticationUtil.getCurrntUserType(userPrincipal);
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);

@@ -1,19 +1,18 @@
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useRequestPay } from '@/service/queries/order';
 import useOrderStore from '@/stores/useOrderStore';
+import { usePostSuccess } from '@/service/queries/order';
 
 const KakaoPay = () => {
   const [searchParams] = useSearchParams();
   const { order } = useOrderStore();
   const { mutate: requestPay } = useRequestPay();
-  const [redirectUrl, setRedirectUrl] = useState<string>('');
+  const { mutate: postSuccess } = usePostSuccess();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // 결제 요청
-    if (!order.sessionId) {
-      throw new Error('세션 ID가 없습니다.');
-    }
+    if (!order.sessionId) throw new Error('세션 ID가 없습니다.');
     const payRequest = {
       itemName: order.cart.map((item) => item.name).join(', '),
       totalAmount: order.cart.reduce((acc, item) => acc + item.quantity, 0),
@@ -21,27 +20,43 @@ const KakaoPay = () => {
     };
     requestPay(payRequest, {
       onSuccess: (data) => {
-        setRedirectUrl(data.data.next_redirect_pc_url);
+        const width = 800;
+        const height = 1000;
+        const left = (window.screen.width - width) / 2;
+        const top = (window.screen.height - height) / 2;
+        window.open(
+          data.data.next_redirect_pc_url,
+          'kakaoPay',
+          `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=no,status=no,location=no,menubar=no,toolbar=no,titlebar=no`
+        );
       },
     });
   }, [searchParams]);
 
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (
+        event.data &&
+        event.data.type === 'KAKAO_PAY_SUCCESS' &&
+        event.data.pgToken &&
+        event.data.orderId
+      ) {
+        postSuccess({
+          orderId: event.data.orderId,
+          pgToken: event.data.pgToken,
+        });
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [postSuccess, navigate]);
+
   return (
     <div className='flex flex-col items-center justify-center w-full h-full'>
-      {redirectUrl ? (
-        <iframe
-          src={redirectUrl}
-          className='w-full h-full border-none rounded-xl mt-5'
-          title='카카오페이 결제'
-        />
-      ) : (
-        <>
-          <h2 className='text-xl font-preBold mb-4'>
-            카카오페이 결제 진행중...
-          </h2>
-          <p className='text-gray-600'>잠시만 기다려주세요.</p>
-        </>
-      )}
+      <h2 className='text-xl font-preBold mb-4'>
+        카카오페이 결제 창이 열립니다...
+      </h2>
+      <p className='text-gray-600'>팝업 창에서 결제를 진행해주세요.</p>
     </div>
   );
 };

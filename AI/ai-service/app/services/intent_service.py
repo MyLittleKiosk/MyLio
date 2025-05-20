@@ -78,28 +78,28 @@ class IntentService:
             print(f"[요청 처리] 세션 ID: {session_id}, 장바구니 항목 수: {len(session.get('cart', []))}")
             
             # "결제" 관련 키워드 직접 처리 추가
-            if self._is_payment_request(text, language):
-                print("[요청 처리] 결제 요청 키워드 감지, PaymentProcessor로 직접 처리")
-                intent_data = {
-                    "intent_type": IntentType.PAYMENT,
-                    "confidence": 0.95,
-                    "post_text": "결제를 진행합니다.",
-                    "reply": None  # Reply는 processor에서 생성
-                }
+            # if self._is_payment_request(text, language):
+            #     print("[요청 처리] 결제 요청 키워드 감지, PaymentProcessor로 직접 처리")
+            #     intent_data = {
+            #         "intent_type": IntentType.PAYMENT,
+            #         "confidence": 0.95,
+            #         "post_text": "결제를 진행합니다.",
+            #         "reply": None  # Reply는 processor에서 생성
+            #     }
                 
-                response = self.payment_processor.process(intent_data, text, language, screen_state, store_id, session)
+            #     response = self.payment_processor.process(intent_data, text, language, screen_state, store_id, session)
                 
-                # 응답 후 세션 다시 가져와서 상태 출력
-                updated_session = self.session_manager.get_session(session_id)
-                print(f"[요청 처리] 결제 요청 처리 후 장바구니: {len(updated_session.get('cart', []))}")
+            #     # 응답 후 세션 다시 가져와서 상태 출력
+            #     updated_session = self.session_manager.get_session(session_id)
+            #     print(f"[요청 처리] 결제 요청 처리 후 장바구니: {len(updated_session.get('cart', []))}")
                 
-                # 응답에 장바구니 보강
-                if "data" in response and "cart" in response["data"]:
-                    response["data"]["cart"] = updated_session.get("cart", [])
+            #     # 응답에 장바구니 보강
+            #     if "data" in response and "cart" in response["data"]:
+            #         response["data"]["cart"] = updated_session.get("cart", [])
                     
-                # 대화 기록 저장
-                self.session_manager.add_to_history(session_id, text, response)
-                return response
+            #     # 대화 기록 저장
+            #     self.session_manager.add_to_history(session_id, text, response)
+            #     return response
             # CONFIRM 화면에서의 확인 응답 특별 처리
             if screen_state == ScreenState.CONFIRM and self._is_confirmation_response(text, language):
                 print("[요청 처리] CONFIRM 화면에서 확인 응답 감지, PaymentProcessor로 직접 처리")

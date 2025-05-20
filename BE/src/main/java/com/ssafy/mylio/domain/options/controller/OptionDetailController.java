@@ -25,35 +25,35 @@ public class OptionDetailController {
     private final OptionDetailService optionDetailService;
     private final AuthenticationUtil authenticationUtil;
 
-    @DeleteMapping("/{option_detail_id}")
+    @DeleteMapping("/{optionDetailId}")
     @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.OPTION_STORE_NOT_MATCH, ErrorCode.OPTION_DETAIL_NOT_FOUND})
     @Operation(summary = "옵션 상세 삭제", description = "상세 옵션을 삭제합니다.")
     public ResponseEntity<CommonResponse<Void>> deleteOptionDetail(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("option_detail_id") Integer optionDetailId) {
+            @PathVariable("optionDetailId") Integer optionDetailId) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         optionDetailService.deleteOptionDetail(storeId, optionDetailId);
         return CommonResponse.ok();
     }
 
-    @PostMapping("/{option_id}")
+    @PostMapping("/{optionId}")
     @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.OPTION_NOT_FOUND, ErrorCode.OPTION_STORE_NOT_MATCH})
     @Operation(summary = "옵션 상세 추가", description = "optionId에 해당하는 상세 옵션을 추가합니다.")
     public ResponseEntity<CommonResponse<Void>> addOptionDetail(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("option_id") Integer optionId,
+            @PathVariable("optionId") Integer optionId,
             @Validated @RequestBody OptionDetailRequestDto optionDetailRequestDto) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         optionDetailService.addOptionDetail(storeId, optionId, optionDetailRequestDto);
         return CommonResponse.ok();
     }
 
-    @PatchMapping("/{option_detail_id}")
+    @PatchMapping("/{optionDetailId}")
     @ApiErrorCodeExamples({ErrorCode.STORE_NOT_FOUND, ErrorCode.OPTION_DETAIL_NOT_FOUND, ErrorCode.OPTION_STORE_NOT_MATCH })
     @Operation(summary = "옵션 상세 수정", description = "optionDetailId에 해당하는 상세 옵션을 수정합니다")
     public ResponseEntity<CommonResponse<Void>> updateOptionDetail(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable("option_detail_id") Integer optionDetailId,
+            @PathVariable("optionDetailId") Integer optionDetailId,
             @Validated @RequestBody OptionDetailUpdateRequestDto optionDetailUpdateRequestDto) {
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
         optionDetailService.updateOptionDetail(storeId, optionDetailId, optionDetailUpdateRequestDto);

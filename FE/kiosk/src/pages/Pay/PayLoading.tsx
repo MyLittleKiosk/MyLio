@@ -1,24 +1,20 @@
 import { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import useOrderStore from '@/stores/useOrderStore';
-import { usePostSuccess } from '@/service/queries/order';
+import { useLocation } from 'react-router-dom';
 
 const PayLoading = () => {
-  const { order } = useOrderStore();
-  const { mutate: postSuccess } = usePostSuccess();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const pgToken = searchParams.get('pg_token');
-    const orderId = searchParams.get('orderId');
-
-    if (pgToken && orderId) {
-      postSuccess({ orderId, pgToken });
-    } else if (!order.sessionId) {
-      alert('세션 ID가 없습니다.');
-      navigate('/kiosk/select-pay');
+    // 결제 성공 시 부모 창에 메시지와 파라미터 전달 후 팝업 닫기
+    if (window.opener) {
+      const pgToken = searchParams.get('pg_token');
+      const orderId = searchParams.get('orderId');
+      window.opener.postMessage(
+        { type: 'KAKAO_PAY_SUCCESS', pgToken, orderId },
+        '*'
+      );
+      window.close();
     }
   }, []);
 
