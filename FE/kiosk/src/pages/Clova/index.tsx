@@ -1,11 +1,11 @@
 import ChatContainer from '@/components/Chat/ChatContainer';
 import VoiceAnimation from '@/components/Chat/VoiceAnimation';
-import VolumeMonitorButton from '@/components/Chat/RecordButton/VolumeMonitorButton';
 import { sendAudioToClova } from '@/service/apis/voice';
 import { ClovaResponse } from '@/types/clova';
 import { AxiosError } from 'axios';
 import { useState } from 'react';
 import { useAudioRecord } from '@/hooks/useAudioRecord';
+import Example from '@/components/Chat/SmartRecordButton/example';
 
 /**
  * Clova 테스트 페이지
@@ -181,7 +181,7 @@ const ClovaPage = () => {
               <h2 className='text-lg font-medium mb-4'>
                 새로운 방식 (자동 감지)
               </h2>
-              <VolumeMonitorButton onRecognitionResult={setRecognitionResult} />
+              <Example />
             </div>
           </div>
 

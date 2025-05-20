@@ -1,21 +1,15 @@
-import mic from '@/assets/images/mic.png';
 import { sendAudioToClova } from '@/service/apis/voice';
 import audioStore from '@/stores/audioStore';
-import clsx from 'clsx';
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface Props {
   onRecognitionResult: (text: string) => void;
 }
 
-const VolumeMonitorButton = ({ onRecognitionResult }: Props) => {
+const PitchDetector = ({ onRecognitionResult }: Props) => {
   const isRecording = audioStore((s) => s.isRecording);
   const startRecording = audioStore((s) => s.startRecording);
   const stopRecording = audioStore((s) => s.stopRecording);
-
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [currentVolume, setCurrentVolume] = useState<number>(0);
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -64,7 +58,6 @@ const VolumeMonitorButton = ({ onRecognitionResult }: Props) => {
       checkVolume();
     } catch (err) {
       console.error('마이크 접근 오류:', err);
-      setError('마이크 접근에 실패했습니다.');
     }
   };
 
@@ -96,7 +89,6 @@ const VolumeMonitorButton = ({ onRecognitionResult }: Props) => {
     // 볼륨 계산 (평균값)
     const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
     const volume = average / 255; // 0-1 사이 값으로 정규화
-    setCurrentVolume(volume);
 
     const now = Date.now();
 
@@ -210,7 +202,6 @@ const VolumeMonitorButton = ({ onRecognitionResult }: Props) => {
         }
       } catch (err) {
         console.error('녹음 중지 중 오류:', err);
-        setError('녹음을 중지하는 중 오류가 발생했습니다.');
       }
     }
   };
@@ -245,16 +236,16 @@ const VolumeMonitorButton = ({ onRecognitionResult }: Props) => {
           }
         }
 
-        // 프리버퍼 상태 로깅
-        if (currentLength > 0) {
-          console.log('프리버퍼 상태:', {
-            bufferCount: preBufferRef.current.length,
-            totalSamples: currentLength,
-            maxSamples: maxBufferLength,
-            sampleRate: audioContext.sampleRate,
-            bufferSizes: preBufferRef.current.map((arr) => arr.length),
-          });
-        }
+        // // 프리버퍼 상태 로깅
+        // if (currentLength > 0) {
+        //   console.log('프리버퍼 상태:', {
+        //     bufferCount: preBufferRef.current.length,
+        //     totalSamples: currentLength,
+        //     maxSamples: maxBufferLength,
+        //     sampleRate: audioContext.sampleRate,
+        //     bufferSizes: preBufferRef.current.map((arr) => arr.length),
+        //   });
+        // }
       }
     };
   };
@@ -270,54 +261,21 @@ const VolumeMonitorButton = ({ onRecognitionResult }: Props) => {
   // 녹음된 오디오를 Clova로 전송하는 함수
   async function handleSendToClova(audioBlob: Blob) {
     if (!audioBlob) {
-      setError('녹음된 오디오가 없습니다.');
       return;
     }
 
     try {
-      setIsProcessing(true);
-      setError(null);
-
-      if (audioBlob.size < 1000) {
-        setError('녹음된 오디오가 너무 짧습니다.');
-        setIsProcessing(false);
-        return;
-      }
-
       const result = await sendAudioToClova(audioBlob);
 
       if (result.status === 'success' && result.text) {
         onRecognitionResult(result.text);
-      } else {
-        setError('인식 결과가 없거나 오류가 발생했습니다.');
       }
     } catch (err) {
       console.error('Clova 처리 중 오류 발생:', err);
-      setError('음성 인식 중 오류가 발생했습니다.');
-    } finally {
-      setIsProcessing(false);
     }
   }
 
-  return (
-    <button
-      className={clsx(
-        'p-2 w-16 h-16 shadow-lg rounded-full flex justify-center items-center transition-all',
-        'animate-[pulse_1s_ease-in-out_infinite]',
-        isRecording
-          ? 'scale-90 shadow-inner shadow-green-500 bg-green-100'
-          : 'bg-white hover:bg-gray-100'
-      )}
-      disabled={isProcessing}
-    >
-      <img src={mic} alt='microphone' className='w-full h-full' />
-      {error && (
-        <div className='absolute bottom-full right-0 mb-2 p-2 bg-red-100 text-red-700 rounded-md text-sm whitespace-nowrap'>
-          {error}
-        </div>
-      )}
-    </button>
-  );
+  return null;
 };
 
-export default VolumeMonitorButton;
+export default PitchDetector;

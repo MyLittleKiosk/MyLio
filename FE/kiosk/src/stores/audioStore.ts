@@ -18,6 +18,15 @@ interface AudioState {
   isRecording: boolean;
   mediaRecorder: MediaRecorder | null;
   audioChunks: Blob[];
+  volume: number;
+  _refs: {
+    audioCtx?: AudioContext;
+    analyser?: AnalyserNode;
+    dataArray?: Uint8Array;
+    rafId?: number;
+    stream?: MediaStream;
+    lastVolumeUpdate?: number;
+  };
   startRecording: () => Promise<void>;
   stopRecording: (preBuffer: Float32Array[]) => Promise<Blob>;
 }
@@ -65,6 +74,8 @@ const audioStore = create<AudioState>((set, get) => ({
   isRecording: false,
   mediaRecorder: null,
   audioChunks: [],
+  volume: 0,
+  _refs: {},
 
   startRecording: async () => {
     try {
@@ -81,8 +92,64 @@ const audioStore = create<AudioState>((set, get) => ({
         }
       };
 
+      // 오디오 컨텍스트 및 분석기 설정
+      const audioContext = createAudioContext();
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 1024; // FFT 크기 감소
+      analyser.smoothingTimeConstant = 0.8; // 부드러운 전환을 위한 스무딩 추가
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+      // 볼륨 계산 및 업데이트
+      const updateVolume = () => {
+        const state = get();
+        if (
+          !state._refs.analyser ||
+          !state._refs.dataArray ||
+          !state.isRecording
+        )
+          return;
+
+        const now = performance.now();
+        if (
+          state._refs.lastVolumeUpdate &&
+          now - state._refs.lastVolumeUpdate < 16
+        ) {
+          // 약 60fps
+          state._refs.rafId = requestAnimationFrame(updateVolume);
+          return;
+        }
+
+        state._refs.analyser.getByteTimeDomainData(state._refs.dataArray);
+        const rms = Math.sqrt(
+          state._refs.dataArray.reduce((s, v) => s + (v - 128) ** 2, 0) /
+            state._refs.dataArray.length
+        );
+
+        // 볼륨 변화가 일정 임계값 이상일 때만 상태 업데이트
+        if (Math.abs(state.volume - rms) > 0.1) {
+          set({ volume: rms });
+        }
+
+        state._refs.lastVolumeUpdate = now;
+        state._refs.rafId = requestAnimationFrame(updateVolume);
+      };
+
+      set({
+        _refs: {
+          audioCtx: audioContext,
+          analyser,
+          dataArray,
+          stream,
+          lastVolumeUpdate: 0,
+        },
+      });
+
       mediaRecorder.start(100);
       set({ isRecording: true, mediaRecorder, audioChunks });
+      updateVolume();
       console.log('녹음 시작됨');
     } catch (error) {
       console.error('녹음 시작 실패:', error);
@@ -91,13 +158,27 @@ const audioStore = create<AudioState>((set, get) => ({
   },
 
   stopRecording: async (preBuffer: Float32Array[]) => {
-    const { mediaRecorder, audioChunks } = get();
+    const { mediaRecorder, audioChunks, _refs } = get();
     if (!mediaRecorder) throw new Error('녹음이 시작되지 않았습니다.');
 
     try {
       // MediaRecorder 중지
       mediaRecorder.stop();
-      mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+
+      // 볼륨 업데이트 중지
+      if (_refs.rafId) {
+        cancelAnimationFrame(_refs.rafId);
+      }
+
+      // 스트림 정리
+      if (_refs.stream) {
+        _refs.stream.getTracks().forEach((track) => track.stop());
+      }
+
+      // 오디오 컨텍스트 정리
+      if (_refs.audioCtx) {
+        await _refs.audioCtx.close();
+      }
 
       // 녹음된 데이터 처리
       const recordedBlob = new Blob(audioChunks, { type: 'audio/webm' });
@@ -141,11 +222,23 @@ const audioStore = create<AudioState>((set, get) => ({
       console.log('최종 wav Blob 크기:', wavBlob.size);
 
       // 상태 초기화
-      set({ isRecording: false, mediaRecorder: null, audioChunks: [] });
+      set({
+        isRecording: false,
+        mediaRecorder: null,
+        audioChunks: [],
+        volume: 0,
+        _refs: {},
+      });
       return wavBlob;
     } catch (error) {
       console.error('녹음 중지 중 오류:', error);
-      set({ isRecording: false, mediaRecorder: null, audioChunks: [] });
+      set({
+        isRecording: false,
+        mediaRecorder: null,
+        audioChunks: [],
+        volume: 0,
+        _refs: {},
+      });
       throw error;
     }
   },
