@@ -23,6 +23,7 @@ class IntentType(str, Enum):
     DETAIL = "DETAIL"          # 메뉴 영양 성분 조회
     CART_MODIFY = "CART_MODIFY"  # 장바구니 수정 의도
     UNKNOWN = "UNKNOWN"        # 알 수 없는 의도
+    CART_VIEW = "CART_VIEW"
 
 class Language(str, Enum):
     """지원 언어 정의"""
@@ -59,7 +60,8 @@ class ResponseStatus(str, Enum):
     QUANTITY_UPDATED = "QUANTITY_UPDATED"     # 장바구니 항목 수량 변경
     OPTIONS_UPDATED = "OPTIONS_UPDATED"       # 장바구니 항목 옵션 변경
     UNKNOWN = "UNKNOWN"                       # 알 수 없음
-
+    CART_VIEWED = "CART_VIEWED"    # 장바구니 보여줌
+    
 class VoiceInputResponse(BaseModel):
     """음성 입력 응답 모델"""
     intent_type: IntentType

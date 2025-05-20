@@ -1,7 +1,11 @@
 from typing import Dict, Any, List, Optional
 from app.models.schemas import IntentType, ScreenState, Language, ResponseStatus
 from app.services.processor.base_processor import BaseProcessor
-
+import re
+uuid_pat = re.compile(
+    r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+    re.I
+)
 class CartModifyProcessor(BaseProcessor):
     """장바구니 수정 처리 프로세서"""
     
@@ -31,6 +35,16 @@ class CartModifyProcessor(BaseProcessor):
         # 액션 타입 확인 (UPDATE, REMOVE, QUANTITY)
         action_type = intent_data.get("action_type", "UNKNOWN").upper()
         menu_name = intent_data.get("menu_name", "")
+
+        # 0. 장바구니 페이지 이동
+        if action_type == "SHOW":
+            reply = llm_reply or "장바구니 내역입니다."
+            return self._build_response(
+                intent_data, text, language, screen_state, store_id, session,
+                ResponseStatus.CART_VIEWED, reply=reply,
+                new_screen_state=ScreenState.CONFIRM,  
+                contents=cart                           # 그대로 내려줌
+            )
         
         # 1. 전체 장바구니 비우기
         if action_type == "REMOVE" and not menu_name:
@@ -38,13 +52,25 @@ class CartModifyProcessor(BaseProcessor):
             reply = llm_reply or "장바구니를 비웠어요."
             return self._build_response(
                 intent_data, text, language, screen_state, store_id, session,
-                ResponseStatus.CART_CLEARED, reply=reply, contents=[]
+                ResponseStatus.CART_CLEARED, reply=reply, contents=[],
+                new_screen_state=ScreenState.MAIN
             )
-            
+        
+        #cart id 매칭
+        cart_id_in_text = None
+
         # 수정할 메뉴 검색
         target_item = None
         target_index = -1
-        
+
+        m = uuid_pat.search(text)
+        if m:
+            cart_id_in_text = m.group(0).lower()
+            for i, item in enumerate(cart):
+                if item.get("cart_id", "").lower() == cart_id_in_text:
+                    target_item, target_index = item, i
+                    break
+
         if menu_name:
             # 메뉴 이름으로 검색
             for i, item in enumerate(cart):
@@ -65,6 +91,7 @@ class CartModifyProcessor(BaseProcessor):
                 ResponseStatus.UNKNOWN, reply=reply
             )
         
+        
         # 2. 특정 메뉴 삭제
         if action_type == "REMOVE":
             # 장바구니에서 메뉴 삭제
@@ -75,42 +102,41 @@ class CartModifyProcessor(BaseProcessor):
             self.session_manager._save_session(session_id, session)
             
             reply = llm_reply or f"요청하신 메뉴를 장바구니에서 삭제했어요."
+
+            if len(cart) < 1:
+                new_screen_state=ScreenState.MAIN
+            else:
+                new_screen_state=ScreenState.CONFIRM
+
             return self._build_response(
                 intent_data, text, language, screen_state, store_id, session,
-                ResponseStatus.ITEM_REMOVED, reply=reply
+                ResponseStatus.ITEM_REMOVED, reply=reply, new_screen_state = new_screen_state
             )
             
         # 3. 메뉴 수량 변경
         elif action_type == "QUANTITY":
-            quantity_change = intent_data.get("quantity_change", 0)
-            
-            if quantity_change == 0:
+            # 현재 수량
+            current_quantity = target_item.get("quantity", 1)
+            num = intent_data["quantity_change"] or intent_data["quantity"]
+            if "quantity_change" in intent_data:
+                # ± 증감값
+                new_quantity = intent_data["quantity_change"]
+            elif "quantity" in intent_data:
+                # 절대값
+                new_quantity = intent_data["quantity"]
+            else:
                 reply = llm_reply or "변경할 수량을 명확히 말씀해주세요."
                 return self._build_response(
                     intent_data, text, language, screen_state, store_id, session,
-                    ResponseStatus.UNKNOWN, reply=reply
+                    ResponseStatus.UNKNOWN, reply=reply, new_screen_state=ScreenState.CONFIRM
                 )
             
-            # 현재 수량
-            current_quantity = target_item.get("quantity", 1)
-            
-            # 수량 업데이트
-            if quantity_change > 0:
-                # 수량 증가
-                target_item["quantity"] = current_quantity + quantity_change
-                if not llm_reply:
-                    reply = f"{target_item.get('name')} {quantity_change}개를 추가했어요."
-                else:
-                    reply = llm_reply
+             # 실제 업데이트
+            if new_quantity == current_quantity:
+                reply = llm_reply or "이미 해당 수량으로 설정되어 있어요."
             else:
-                # 수량 감소
-                new_quantity = max(1, current_quantity + quantity_change)  # 최소 1개
-                
-                if new_quantity == current_quantity:
-                    reply = llm_reply or f"수량은 최소 1개 이상이어야 해요."
-                else:
-                    target_item["quantity"] = new_quantity
-                    reply = llm_reply or f"{target_item.get('name')}의 수량을 {new_quantity}개로 변경했어요."
+                target_item["quantity"] = new_quantity
+                reply = llm_reply or f"{target_item['name']}의 수량을 {new_quantity}개로 변경했어요."
             
             # 세션 업데이트
             cart[target_index] = target_item
@@ -120,7 +146,8 @@ class CartModifyProcessor(BaseProcessor):
             
             return self._build_response(
                 intent_data, text, language, screen_state, store_id, session,
-                ResponseStatus.QUANTITY_UPDATED, reply=reply
+                ResponseStatus.QUANTITY_UPDATED, reply=reply,
+                new_screen_state=ScreenState.CONFIRM
             )
             
         # 4. 옵션 변경
@@ -159,47 +186,34 @@ class CartModifyProcessor(BaseProcessor):
             
             # LLM에서 받은 옵션 정보로 옵션 업데이트
             for llm_option in options_from_llm:
-                option_name = llm_option.get("option_name", "").lower()
-                option_value = llm_option.get("option_value", "").upper()
-                
-                if not option_name or not option_value:
-                    continue  # 옵션 이름이나 값이 없으면 건너뛰기
-                
-                print(f"[장바구니 수정] 옵션 변경: {option_name} -> {option_value}")
-                
-                # 기존 옵션에서 일치하는 이름 찾기
-                found = False
-                for i, existing_option in enumerate(selected_options):
-                    existing_name = existing_option.get("option_name", "").lower()
-                    
-                    # 옵션 이름이 일치하면 값 업데이트
-                    if option_name == existing_name:
-                        # 옵션 detail 찾기
-                        if "option_details" in existing_option and existing_option["option_details"]:
-                            # option_details 배열의 첫 번째 항목만 값 변경 (기존 id와 추가 가격은 유지)
-                            detail = existing_option["option_details"][0]
-                            detail["value"] = option_value
-                            print(f"[장바구니 수정] 옵션 값 변경됨: {option_name} = {option_value}")
-                            updated_options.append(option_name)
-                            found = True
-                            break
-                
-                # 기존에 없는 옵션이면 새로 추가 (기본 형식으로)
-                if not found:
-                    new_option = {
-                        "option_id": None,  # ID는 알 수 없음
-                        "option_name": llm_option.get("option_name"),
-                        "is_selected": True,
-                        "option_details": [{
-                            "id": None,  # ID는 알 수 없음
-                            "value": option_value,
-                            "additional_price": 0  # 추가 가격 정보 없음
-                        }]
-                    }
-                    selected_options.append(new_option)
-                    updated_options.append(option_name)
-                    print(f"[장바구니 수정] 새 옵션 추가됨: {option_name} = {option_value}")
-            
+                option_name = llm_option["option_name"].lower()
+                option_value = llm_option["option_value"].upper()
+
+                # ① 현재 선택 목록에서 같은 이름 제거
+                selected_options = [
+                    o for o in selected_options
+                    if o.get("option_name", "").lower() != option_name
+                ]
+
+                # ② 상세 ID·추가금 조회
+                detail_id, add_price = self.menu_service.get_option_detail(
+                    option_name, option_value, store_id
+                )
+
+                # ③ 새 옵션 객체 생성
+                new_option = {
+                    "option_id": llm_option.get("option_id"),
+                    "option_name": llm_option["option_name"],
+                    "is_selected": True,
+                    "option_details": [{
+                        "id": detail_id,
+                        "value": option_value,
+                        "additional_price": add_price
+                    }]
+                }
+                selected_options.append(new_option)
+                updated_options.append(option_name)
+
             # 옵션이 변경되었으면 세션 업데이트
             if updated_options:
                 # 타겟 아이템 업데이트
@@ -233,7 +247,8 @@ class CartModifyProcessor(BaseProcessor):
                 ResponseStatus.UNKNOWN, reply=reply
             )
     
-    def _build_response(self, intent_data: Dict[str, Any], text: str, language: str, screen_state: str, store_id: int, session: Dict[str, Any], status: str, contents: List[Dict[str, Any]] = None, reply: str = None) -> Dict[str, Any]:
+    def _build_response(self, intent_data: Dict[str, Any], text: str, language: str, screen_state: str, store_id: int, session: Dict[str, Any], status: str, contents: List[Dict[str, Any]] = None, reply: str = None,
+                    new_screen_state: str = ScreenState.MAIN) -> Dict[str, Any]:
         """응답 구성 헬퍼 메서드"""
         # 세션 ID 확인
         session_id = session.get("id", "")
@@ -249,7 +264,7 @@ class CartModifyProcessor(BaseProcessor):
             "intent_type": IntentType.CART_MODIFY,
             "confidence": intent_data.get("confidence", 0.8),
             "raw_text": text,
-            "screen_state": ScreenState.MAIN,
+            "screen_state": new_screen_state,
             "data": {
                 "pre_text": text,
                 "post_text": intent_data.get("post_text", text),
