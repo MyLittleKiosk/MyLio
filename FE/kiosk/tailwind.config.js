@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+// import typography from '@tailwindcss/typography';
+
 export default {
   content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
   theme: {
@@ -50,6 +52,16 @@ export default {
       animation: {
         ripple: 'ripple 1s cubic-bezier(0, 0, 0.2, 1)',
       },
+      typography: (theme) => ({
+        large: {
+          css: {
+            fontSize: theme('fontSize.xl'), // 기본 폰트 크기
+            h1: { fontSize: theme('fontSize.4xl') },
+            h2: { fontSize: theme('fontSize.3xl') },
+            p: { fontSize: theme('fontSize.lg') },
+          },
+        },
+      }),
     },
   },
   plugins: [],
