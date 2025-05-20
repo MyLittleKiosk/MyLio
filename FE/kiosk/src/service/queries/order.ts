@@ -25,7 +25,7 @@ export function useRequestPay() {
     mutationFn: (payRequest: PayRequest) => requestPay(payRequest),
     onSuccess: (data) => {
       sessionStorage.setItem('cartItem', JSON.stringify(order.cart));
-      window.location.href = data.data.next_redirect_pc_url;
+      return data;
     },
     onError: (error) => {
       console.error('결제 중 오류 발생:', error);
