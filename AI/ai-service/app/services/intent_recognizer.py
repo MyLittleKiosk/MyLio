@@ -59,28 +59,52 @@ class IntentRecognizer:
         
         # 디버깅 정보
         print(f"[의도 인식] 입력: '{text}', 인식 결과: {result}")
+        if self._is_cart_view_intent(text, language):
+            return {
+                "intent_type": IntentType.CART_VIEW,
+                "action_type": "SHOW",
+                "confidence": 0.9,
+                "reply": "담으신 메뉴를 보여드릴게요.",
+            }        
         
+        # if result.get("intent_type") == "CART_MODIFY":
+        #     # 수량 절대값이 온 경우 action_type 교정
+        #     if "quantity" in result and "action_type" in result and result["action_type"] != "QUANTITY":
+        #         result["action_type"] = "QUANTITY"
+
         # 장바구니 수정 키워드 확인 및 의도 오버라이드
+        # 
+        
+        # CART_MODIFY 키워드 감지
         if self._is_cart_modify_intent(text, language) and session.get("cart"):
-            result["intent_type"] = IntentType.CART_MODIFY
-            
-            # 액션 타입 결정
+            # ① 삭제
             if self._is_cart_remove_intent(text, language):
-                result["action_type"] = "REMOVE"
-            elif self._is_cart_quantity_update_intent(text, language):
-                result["action_type"] = "QUANTITY"
-                # 숫자 추출
-                quantity_change = self._extract_quantity_change(text, language)
-                result["quantity_change"] = quantity_change
-            else:
-                result["action_type"] = "UPDATE"
-                
-            # 메뉴 이름 추출
-            menu_name = self._extract_menu_name_from_cart(text, session, language)
-            if menu_name:
-                result["menu_name"] = menu_name
-                
-            print(f"[의도 오버라이드] 장바구니 수정 의도 감지: {result}")
+                return {
+                    **result,
+                    "intent_type": IntentType.CART_MODIFY,
+                    "action_type": "REMOVE",
+                    "menu_name": self._extract_menu_name_from_cart(text, session, language) or "",
+                }
+
+            # ② 수량 변경
+            if self._is_cart_quantity_update_intent(text, language):
+                return {
+                    **result,
+                    "intent_type": IntentType.CART_MODIFY,
+                    "action_type": "QUANTITY",
+                    "menu_name": self._extract_menu_name_from_cart(text, session, language) or "",
+                    "quantity_change": self._extract_quantity_change(text, language),
+                }
+
+            # ③ 옵션 변경(UPDATE) — LLM 파싱 결과에 담긴 new_options를 그대로 살려 보냅니다.
+            if result.get("action_type") == "UPDATE" or "new_options" in result:
+                return {
+                    **result,
+                    "intent_type": IntentType.CART_MODIFY,
+                    "action_type": "UPDATE",
+                    "menu_name": result.get("menu_name") or self._extract_menu_name_from_cart(text, session, language) or "",
+                    # new_options 필드는 이미 result 안에 있습니다.
+                }
         
         # DetailProcessor가 없어도 영양 성분 관련 의도를 인식할 수 있도록
         elif self._is_detail_intent(text, language):
@@ -94,6 +118,20 @@ class IntentRecognizer:
                 if menu:
                     result["menu_id"] = menu["id"]
         
+
+        if result.get("intent_type") == IntentType.CART_MODIFY:
+            # ① LLM이 UPDATE 로 돌려도 quantity 키가 있으면 QUANTITY 로 교정
+            if "quantity" in result and result.get("action_type") != "QUANTITY":
+                result["action_type"] = "QUANTITY"
+
+            # ② quantity_change 필드가 없으면 절대값 → 증감값 계산
+            if (
+                result["action_type"] == "QUANTITY"
+                and "quantity_change" not in result
+                and "quantity" in result
+            ):
+                result["quantity_change"] = result["quantity"]   # 증감값 = 절대값 (나머지는 Processor에서 처리)
+
         return result
     
     def _is_detail_intent(self, text: str, language: str) -> bool:
@@ -125,78 +163,6 @@ class IntentRecognizer:
                 return name
         
         return None
-    
-    # def _build_context(self, screen_state: str, store_id: int, store_menus: Dict[int, Dict[str, Any]], session: Dict[str, Any]) -> str:
-    #     """상황에 맞는 컨텍스트 구성"""
-    #     context_parts = []
-        
-    #     # 1. 메뉴 정보 요약 (모든 메뉴 포함)
-    #     menu_list = list(store_menus.values())  # 모든 메뉴 포함
-        
-    #     # 카테고리별로 메뉴 그룹화
-    #     categorized_menus = {}
-    #     for menu in menu_list:
-    #         category_id = menu.get("category_id")
-    #         if category_id not in categorized_menus:
-    #             categorized_menus[category_id] = []
-    #         categorized_menus[category_id].append(menu)
-        
-    #     # 카테고리별로 메뉴 정보 구성
-    #     for category_id, menus in categorized_menus.items():
-    #         category_name = self._get_category_name(category_id, store_id) or f"카테고리 {category_id}"
-    #         category_items = []
-            
-    #         for menu in menus:
-    #             # 기본 메뉴 정보 (ID만 포함)
-    #             menu_info = [f"{menu['name_kr']} [ID:{menu['id']}]"]
-                
-    #             # 옵션 정보 추가 (옵션 선택 시 필요)
-    #             if menu.get('options') and screen_state == ScreenState.ORDER:
-    #                 options_info = ["옵션:"]
-    #                 for opt in menu['options']:
-    #                     opt_id = opt.get('option_id', '')
-    #                     opt_name = opt.get('option_name', '')
-    #                     required = "필수" if opt.get('required', False) else "선택"
-    #                     options_info.append(f"- {opt_name} [ID:{opt_id}] ({required})")
-                        
-    #                     # 옵션 상세 정보
-    #                     if opt.get('option_details'):
-    #                         detail_items = []
-    #                         for detail in opt['option_details']:
-    #                             detail_id = detail.get('id', '')
-    #                             value = detail.get('value', '')
-    #                             detail_items.append(f"  * {value} [ID:{detail_id}]")
-    #                         options_info.extend(detail_items)
-                    
-    #                 menu_info.append("\n".join(options_info))
-                
-    #             category_items.append("\n".join(menu_info))
-            
-    #         context_parts.append(f"## {category_name}\n" + "\n\n".join(category_items))
-        
-    #     # 2. 장바구니 정보 (있는 경우)
-    #     cart = session.get("cart", [])
-    #     if cart:
-    #         cart_summary = ["## 현재 장바구니"]
-    #         for item in cart:
-    #             option_text = ""
-    #             if item.get("selected_options"):
-    #                 option_strs = []
-    #                 for opt in item["selected_options"]:
-    #                     if opt.get("option_details"):
-    #                         opt_value = opt["option_details"][0].get("value", "")
-    #                         option_strs.append(f"{opt['option_name']}: {opt_value}")
-    #                 if option_strs:
-    #                     option_text = f" ({', '.join(option_strs)})"
-    #             cart_summary.append(f"- {item['name']}{option_text} x {item['quantity']}개")
-    #         context_parts.append("\n".join(cart_summary))
-        
-    #     # 3. 화면 상태별 추가 컨텍스트
-    #     if screen_state == ScreenState.ORDER and session.get("last_state", {}).get("menu"):
-    #         menu = session["last_state"]["menu"]
-    #         context_parts.append(f"## 현재 선택된 메뉴\n{menu['name_kr']}")
-        
-    #     return "\n\n".join(context_parts)
     
     def _build_context(
             self,
@@ -519,6 +485,26 @@ class IntentRecognizer:
         10. 결제 규칙:
         - payment_method의 경우 반드시 "CARD","MOBILE", "GIFT", "PAY" 중 하나여야 합니다.
         - 카카오페이, 카카오 페이 경우 PAY로 들어가야 합니다.
+
+        11. 장바구니 규칙:
+        - 만약 장바구니에 담긴 메뉴의 옵션을 변경하는 이야기를 한다면 변경할 option에 대해 new_options를 반드시 작성하여 주세요.
+        ```json
+        {{
+        "intent_type": "CART_MODIFY",
+        "action_type": "UPDATE",
+        "menu_name": "아메리카노",
+        "new_options": [
+            {{
+                "option_id": 102,
+                "option_name": "온도",
+                "option_detail_id": 1005,
+                "option_value": "Ice"
+            }}
+        ],
+        "post_text": "...",
+        "reply": "..."
+        }}
+        ```
 
         주의: 응답을 생성할 때 템플릿 문자열이 아닌 실제 사용자에게 보여질 자연스러운 응답을 직접 생성해주세요.
         "감자탕 있어?", "화장실이 어디야?" 와 같이 제공된 메뉴 이외의 질문을 한다면 "죄송하지만 대답할 수 없는 질문이네요. 카페와 관련된 질문을 해주시면 대답해드릴 수 있어요."라고 답변하고 screen_state는 MAIN으로 해주세요.
@@ -1102,6 +1088,18 @@ class IntentRecognizer:
                         "reply": "블루베리 스무디의 사이즈를 S로 변경했어요."
                     }
                 }
+            ],
+            "cart_view": [
+                {
+                    "input": "장바구니 보여줘",
+                    "output": {
+                    "intent_type": "CART_VIEW",
+                    "confidence": 0.9,
+                    "action_type": "SHOW",
+                    "post_text": "장바구니 보여줘",
+                    "reply": "현재 담으신 메뉴를 보여드릴게요."
+                    }
+                }
             ]
         }
     
@@ -1273,7 +1271,10 @@ class IntentRecognizer:
         text_lower = text.lower()
         
         if language == Language.KR:
-            quantity_keywords = ["하나 더", "한개 더", "두개 더", "2개 더", "3개 더", "개 추가", "더 넣어", "추가해"]
+            quantity_keywords = [
+                "하나 더","한개 더","두개 더","2개 더","3개 더","개 추가",
+                "더 넣어","추가해","개로 변경","개로 바꿔","개로 수정"
+            ]            
             return any(keyword in text_lower for keyword in quantity_keywords)
         elif language == Language.EN:
             quantity_keywords = ["one more", "two more", "add more", "add another", "more of", "additional"]
@@ -1368,3 +1369,13 @@ class IntentRecognizer:
         
         # 메뉴 이름을 추출하지 못한 경우, 가장 최근에 추가된 메뉴 반환
         return cart[-1].get("name") if cart else None
+
+    def _is_cart_view_intent(self, text: str, language: str) -> bool:
+        t = text.lower()
+        if language == Language.KR:
+            keywords = ["장바구니", "카트"]
+            verbs = ["보여", "확인", "뭐 담았", "지금까지 뭐"]
+            return any(k in t for k in keywords) and any(v in t for v in verbs)
+        else:
+            verbs = ["show", "view", "what's in"]
+            return any(v in t for v in verbs) and ("cart" in t)

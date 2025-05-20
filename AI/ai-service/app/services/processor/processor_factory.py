@@ -23,7 +23,8 @@ class ProcessorFactory:
             IntentType.DETAIL: detail_processor,
             IntentType.OPTION_SELECT: order_processor,  
             IntentType.UNKNOWN: unknown_processor,
-            IntentType.CART_MODIFY: cart_modify_processor if cart_modify_processor else unknown_processor
+            IntentType.CART_MODIFY: cart_modify_processor if cart_modify_processor else unknown_processor,
+            IntentType.CART_VIEW:   cart_modify_processor if cart_modify_processor else unknown_processor,
         }
     
     def get_processor(self, intent_type: IntentType):
