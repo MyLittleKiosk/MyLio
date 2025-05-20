@@ -677,7 +677,7 @@ class OrderProcessor(BaseProcessor):
             return self._start_menu_processing(
                 next_menu, text, language, store_id, session
             )
-
+        
         #payment method가 있으면 confirm화면으로 이동
         payment_method = self.session_manager.get_session_value(session_id, "payment_method")
 
