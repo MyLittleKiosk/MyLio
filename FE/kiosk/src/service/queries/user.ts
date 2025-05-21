@@ -28,6 +28,7 @@ export function useLogin() {
     }) => login(email, password, kioskId),
     onSuccess: ({ data }) => {
       localStorage.setItem('kioskId', data.kioskId.toString());
+      sessionStorage.setItem('orderCount', '1');
       navigate('/landing');
     },
     onError: (error) => {

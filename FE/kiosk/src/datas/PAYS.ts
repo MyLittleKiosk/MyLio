@@ -5,22 +5,22 @@ import phone from '@/assets/images/phone.png';
 
 export const PAY_METHODS = [
   {
-    id: 1,
+    id: 'CARD',
     name: '카드',
     image: card,
   },
   {
-    id: 2,
+    id: 'PAY',
     name: '카카오페이',
     image: kakaoPay,
   },
   {
-    id: 3,
+    id: 'GIFT',
     name: '기프티콘',
     image: gift,
   },
   {
-    id: 4,
+    id: 'MOBILE',
     name: '모바일상품권',
     image: phone,
   },

@@ -4,10 +4,14 @@ import { motion } from 'framer-motion';
 import useKioskStore from '@/stores/useKioskStore';
 const Success = () => {
   const navigate = useNavigate();
-  const { orderId } = useKioskStore();
-
+  const { kioskId } = useKioskStore();
+  const orderId = Number(sessionStorage.getItem('orderCount'));
   useEffect(() => {
     const timer = setTimeout(() => {
+      sessionStorage.setItem(
+        'orderCount',
+        (Number(sessionStorage.getItem('orderCount')) + 1).toString()
+      );
       navigate('/landing');
     }, 3000);
     return () => clearTimeout(timer);
@@ -53,7 +57,9 @@ const Success = () => {
         <span className='font-preBold text-4xl bg-gradient-to-r from-[#578771] to-[#0471FF] text-transparent bg-clip-text'>
           결제 완료!
         </span>
-        <p className='font-preBold text-2xl'>{orderId}번으로 알려드릴게요</p>
+        <p className='font-preBold text-2xl'>
+          {kioskId}-{orderId < 10 ? `0${orderId}` : orderId}번으로 알려드릴게요
+        </p>
       </div>
       <div className='flex flex-col items-center justify-center gap-2'>
         <p className='font-preBold text-sm text-gray-500'>

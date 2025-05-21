@@ -1,10 +1,22 @@
+import { usePostSuccess } from '@/service/queries/order';
+import useOrderStore from '@/stores/useOrderStore';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const CardPay = () => {
   const navigate = useNavigate();
+  const { order } = useOrderStore();
+  const { mutate: postSuccess } = usePostSuccess();
+  const [searchParams] = useSearchParams();
+  const payMethod = searchParams.get('pay_method');
   useEffect(() => {
     const timeout = setTimeout(() => {
+      sessionStorage.setItem('cartItem', JSON.stringify(order.cart));
+      postSuccess({
+        orderId: order.sessionId || '',
+        pgToken: null,
+        payMethod: payMethod || '',
+      });
       navigate('/success');
     }, 3000);
     return () => {

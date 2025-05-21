@@ -44,6 +44,7 @@ const KakaoPay = () => {
         postSuccess({
           orderId: event.data.orderId,
           pgToken: event.data.pgToken,
+          payMethod: 'PAY',
         });
       }
     };

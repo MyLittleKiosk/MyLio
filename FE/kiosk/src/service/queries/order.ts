@@ -34,23 +34,30 @@ export function useRequestPay() {
 }
 
 export function usePostSuccess() {
+  const { resetOrder } = useOrderStore();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: ({
       orderId,
       pgToken,
+      payMethod,
     }: {
       orderId: string;
-      pgToken: string;
+      pgToken: string | null;
+      payMethod: string;
     }) => {
-      return postSuccess({
-        orderId,
-        pgToken,
-        cart: JSON.parse(sessionStorage.getItem('cartItem') || '[]'),
-      });
+      return postSuccess(
+        {
+          orderId,
+          pgToken: pgToken || null,
+          cart: JSON.parse(sessionStorage.getItem('cartItem') || '[]'),
+        },
+        payMethod
+      );
     },
     onSuccess: () => {
       sessionStorage.removeItem('cartItem');
+      resetOrder();
       navigate('/success');
     },
     onError: (error) => {
