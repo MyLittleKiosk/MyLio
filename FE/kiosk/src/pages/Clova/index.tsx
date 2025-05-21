@@ -1,6 +1,5 @@
 import ChatContainer from '@/components/Chat/ChatContainer';
 import VoiceAnimation from '@/components/Chat/VoiceAnimation';
-import VolumeMonitorButton from '@/components/Chat/RecordButton/VolumeMonitorButton';
 import { sendAudioToClova } from '@/service/apis/voice';
 import { ClovaResponse } from '@/types/clova';
 import { AxiosError } from 'axios';
@@ -181,7 +180,6 @@ const ClovaPage = () => {
               <h2 className='text-lg font-medium mb-4'>
                 새로운 방식 (자동 감지)
               </h2>
-              <VolumeMonitorButton onRecognitionResult={setRecognitionResult} />
             </div>
           </div>
 

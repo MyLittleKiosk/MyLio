@@ -1,9 +1,12 @@
-import RecordButton from '@/components/Chat/RecordButton';
+import RecordButton, { RecordButtonRef } from '@/components/Chat/RecordButton';
 import clsx from 'clsx';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import Item from '@/pages/OrderLayout/Item';
 import useOrderStore from '@/stores/useOrderStore';
 import { useOrderRequest } from '@/service/queries/order';
+import PitchDetector, {
+  PitchDetectorRef,
+} from '@/components/Chat/PitchDetector';
 const FOOTER_PATHS = [
   '/kiosk/search',
   '/kiosk',
@@ -18,8 +21,20 @@ interface FooterProps {
 
 const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
   const [page, setPage] = useState(0);
+  const [recordingMethod, setRecordingMethod] = useState<'pitch' | 'hold'>(
+    'pitch'
+  );
   const order = useOrderStore((state) => state.order);
   const { mutate } = useOrderRequest();
+  const recordButtonRef = useRef<RecordButtonRef>(null);
+  const pitchDetectorRef = useRef<PitchDetectorRef>(null);
+
+  // order가 변경될 때마다 PitchDetector 초기화
+  useEffect(() => {
+    if (pitchDetectorRef.current) {
+      pitchDetectorRef.current.reset();
+    }
+  }, [order]);
 
   const cartList = useMemo(() => {
     if (order.cart.length === 0) {
@@ -122,7 +137,38 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
           </button>
         </div>
       )}
-      <RecordButton onRecognitionResult={handleRecognitionResult} />
+      {recordingMethod === 'pitch' && (
+        <PitchDetector
+          ref={pitchDetectorRef}
+          onRecognitionResult={handleRecognitionResult}
+          setRecordingMethod={setRecordingMethod}
+          onRecordStart={() => {
+            const recordButton = document.querySelector(
+              'button[aria-label="Record"]'
+            );
+            if (recordButton) {
+              recordButton.dispatchEvent(new MouseEvent('mousedown'));
+            }
+          }}
+          onRecordStop={() => {
+            const recordButton = document.querySelector(
+              'button[aria-label="Record"]'
+            );
+            if (recordButton) {
+              recordButton.dispatchEvent(new MouseEvent('mouseup'));
+            }
+          }}
+          onPreBufferUpdate={(buffer) => {
+            recordButtonRef.current?.updatePreBuffer(buffer);
+          }}
+        />
+      )}
+      <RecordButton
+        ref={recordButtonRef}
+        onRecognitionResult={handleRecognitionResult}
+        setRecordingMethod={setRecordingMethod}
+        recordingMethod={recordingMethod}
+      />
     </div>
   );
 };
