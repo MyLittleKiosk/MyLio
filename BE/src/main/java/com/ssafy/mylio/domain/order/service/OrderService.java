@@ -96,7 +96,7 @@ public class OrderService {
     }
 
     @Transactional
-    public Mono<Void> saveOrderAfterKakaoPay(Integer storeId, List<CartResponseDto> cart) {
+    public Mono<Void> saveOrderAfterKakaoPay(Integer storeId, List<CartResponseDto> cart, PaymentMethod paymentMethod) {
 
         return Mono.fromRunnable(() -> {
             // 1. 매장 조회
@@ -106,7 +106,7 @@ public class OrderService {
             // 2. Orders 저장
             Orders orders = Orders.builder()
                     .store(store)
-                    .paymentMethod(PaymentMethod.PAY)
+                    .paymentMethod(paymentMethod)
                     .totalPrice(cart.stream().mapToInt(CartResponseDto::getTotalPrice).sum())
                     .isToGo(true)
                     .build();
