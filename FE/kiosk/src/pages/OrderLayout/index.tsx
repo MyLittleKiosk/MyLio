@@ -7,7 +7,7 @@ import { useLogout, useRefresh } from '@/service/queries/user';
 import useOrderStore from '@/stores/useOrderStore';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const OrderLayout = () => {
@@ -18,7 +18,7 @@ const OrderLayout = () => {
   const { mutate: logout } = useLogout();
   const { mutate: refresh } = useRefresh();
   const navigate = useNavigate();
-  const inputRef = useRef<HTMLInputElement>(null);
+  // const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const kioskId = localStorage.getItem('kioskId');
@@ -74,9 +74,9 @@ const OrderLayout = () => {
     onSuccess: handleLogout,
   });
 
-  function testHandleRecognitionResult() {
-    handleRecognitionResult(inputRef.current?.value || '');
-  }
+  // function testHandleRecognitionResult() {
+  //   handleRecognitionResult(inputRef.current?.value || '');
+  // }
 
   const [isLargeFont, setIsLargeFont] = useState(false);
 
@@ -106,7 +106,19 @@ const OrderLayout = () => {
         onClick={handleTopLeftClick}
       />
 
-      <div className='fixed top-0 left-0 w-24 z-20 cursor-pointer '>
+      <div className='flex fixed top-0 left-2 w-24 z-20 cursor-pointer items-center'>
+        <div
+          className={clsx(
+            'w-[150px] font-preBold  bg-white border-2 rounded-full px-2 py-1',
+            isLargeFont
+              ? 'border-content text-content text-xs'
+              : 'border-primary text-primary text-lg'
+          )}
+        >
+          <Link className='text-center font-preSemiBold' to='/kiosk'>
+            홈
+          </Link>
+        </div>
         <button
           onClick={handleTopCenterClick}
           className='flex flex-col items-start justify-center w-full rounded-lg p-2'
@@ -128,45 +140,6 @@ const OrderLayout = () => {
         className='fixed top-0 right-0 w-20 h-20 z-20 cursor-pointer'
         onClick={handleTopRightClick}
       />
-      <div className='flex justify-center items-center z-10 fixed top-0 left-0 w-full h-[100px] flex-wrap'>
-        <ul className='flex justify-center items-center gap-4 rounded-xl p-4'>
-          <li>
-            <Link to='/kiosk'>홈</Link>
-          </li>
-          <li>
-            <Link to='search'>검색</Link>
-          </li>
-          <li>
-            <Link to='order'>주문</Link>
-          </li>
-          <li>
-            <Link to='select-pay'>결제 수단</Link>
-          </li>
-          <li>
-            <Link to='pay'>결제</Link>
-          </li>
-          <li>
-            <Link to='confirm'>확인</Link>
-          </li>
-          <li>
-            <Link to='detail'>상세</Link>
-          </li>
-        </ul>
-        <div className='flex gap-4'>
-          <div className='flex gap-2 h-full'>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                testHandleRecognitionResult();
-              }}
-              className='flex gap-2 h-full'
-            >
-              <input type='text' ref={inputRef} />
-              <button type='submit'>전송</button>
-            </form>
-          </div>
-        </div>
-      </div>
       <header
         className={clsx(
           'flex justify-center items-center relative',
