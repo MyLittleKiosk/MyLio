@@ -64,8 +64,8 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
     if (!cartItem) return;
     const quantity = cartItem.quantity + 1;
     mutate({
-      cartId,
-      quantity,
+      text: `${cartItem.name}(${cartId})를 ${quantity}개로 바꿔주세요`,
+      ...order,
     });
   };
   // 수량 감소
@@ -74,8 +74,8 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
     if (!cartItem) return;
     const quantity = cartItem.quantity - 1;
     mutate({
-      cartId,
-      quantity,
+      text: `${cartItem.name}(${cartId})를 ${quantity}개로 바꿔주세요`,
+      ...order,
     });
   };
   // 삭제
@@ -83,8 +83,8 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
     const cartItem = order.cart.find((item) => item.cartId === cartId);
     if (!cartItem) return;
     mutate({
-      cartId,
-      quantity: 0,
+      text: `${cartItem.name}(${cartId})를 삭제해주세요`,
+      ...order,
     });
   };
 

@@ -242,4 +242,6 @@ const RecordButton = forwardRef<RecordButtonRef, Props>(
   }
 );
 
+RecordButton.displayName = 'RecordButton';
+
 export default RecordButton;

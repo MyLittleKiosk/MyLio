@@ -15,16 +15,7 @@ export interface PitchDetectorRef {
 }
 
 const PitchDetector = forwardRef<PitchDetectorRef, Props>(
-  (
-    {
-      onRecognitionResult,
-      setRecordingMethod,
-      onRecordStart,
-      onRecordStop,
-      onPreBufferUpdate,
-    },
-    ref
-  ) => {
+  ({ onRecognitionResult, setRecordingMethod }, ref) => {
     const isRecording = audioStore((s) => s.isRecording);
     const startRecording = audioStore((s) => s.startRecording);
     const stopRecording = audioStore((s) => s.stopRecording);
@@ -180,7 +171,7 @@ const PitchDetector = forwardRef<PitchDetectorRef, Props>(
         }
       } else {
         // 녹음 중일 때는 임계값 이하로 내려가면 무음 타이머 시작
-        console.log('녹음 중일 때 볼륨:', volume);
+        // console.log('녹음 중일 때 볼륨:', volume);
         if (volume <= VOLUME_THRESHOLD) {
           // 무음이 시작된 시점 기록
           if (silenceStartTimeRef.current === 0) {
@@ -194,7 +185,7 @@ const PitchDetector = forwardRef<PitchDetectorRef, Props>(
           }
 
           const silenceDuration = now - silenceStartTimeRef.current;
-          console.log('무음 지속 시간:', silenceDuration, 'ms');
+          // console.log('무음 지속 시간:', silenceDuration, 'ms');
 
           // 무음이 일정 시간 이상 지속되면 녹음 종료
           if (silenceDuration >= SILENCE_DURATION) {
