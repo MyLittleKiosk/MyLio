@@ -15,7 +15,7 @@ export interface Pay {
 
 export interface PaySuccessRequest {
   orderId: string;
-  pgToken: string;
+  pgToken: string | null;
   cart: CartItem[];
 }
 

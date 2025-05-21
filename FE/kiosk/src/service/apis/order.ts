@@ -25,7 +25,10 @@ export async function requestPay(
   payRequest: PayRequest
 ): Promise<ApiResponse<Pay>> {
   try {
-    const response = await authClient.post('/pay/ready', payRequest);
+    const response = await authClient.post(
+      '/pay/ready?pay_method=PAY',
+      payRequest
+    );
     return response.data;
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -39,10 +42,14 @@ export async function requestPay(
 }
 
 export async function postSuccess(
-  paySuccessRequest: PaySuccessRequest
+  paySuccessRequest: PaySuccessRequest,
+  payMethod: string
 ): Promise<ApiResponse<PaySuccess>> {
   try {
-    const response = await authClient.post('/pay/success', paySuccessRequest);
+    const response = await authClient.post(
+      `/pay/success?pay_method=${payMethod}`,
+      paySuccessRequest
+    );
     return response.data;
   } catch (error: unknown) {
     if (error instanceof Error) {
