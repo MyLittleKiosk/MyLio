@@ -115,151 +115,166 @@ class CartModifyProcessor(BaseProcessor):
             
         # 4. 옵션 변경
         elif action_type == "UPDATE":
-            # LLM 응답에서 옵션 정보 추출
-            menus = intent_data.get("menus", [])
-            options_from_llm = []
-            
-            # 메뉴 배열에서 옵션 정보 추출
-            for menu in menus:
-                if "options" in menu:
-                    options_from_llm.extend(menu.get("options", []))
-            
-            # 직접 주어진 new_options나 options가 있으면 그것 사용
-            if intent_data.get("new_options"):
-                options_from_llm = intent_data.get("new_options")
-            elif intent_data.get("options") and not options_from_llm:
-                options_from_llm = intent_data.get("options")
-            
-            # 옵션 정보가 없는 경우
-            if not options_from_llm:
-                reply = llm_reply or "변경할 옵션을 명확히 말씀해주세요."
+            # 1) 메뉴 컨텍스트(메타) 조회
+            menu_info = self.menu_service.find_menu_by_id(target_item["menu_id"], store_id)
+            if not menu_info:
                 return self._build_response(
                     intent_data, text, language, screen_state, store_id, session,
-                    ResponseStatus.UNKNOWN, reply=reply
+                    ResponseStatus.UNKNOWN,
+                    reply="메뉴 정보를 가져오지 못했습니다."
                 )
-            
-            print(f"[장바구니 수정] 변경할 옵션 정보: {options_from_llm}")
-            
-            # 기존 옵션 가져오기
-            selected_options = target_item.get("selected_options", [])
-            print(f"[장바구니 수정] 현재 선택된 옵션: {selected_options}")
-            
-            # 변경된 옵션 추적
-            updated_options = []
-            
-            # LLM에서 받은 옵션 정보로 옵션 업데이트
-            # for llm_option in options_from_llm:
-            #     option_name = llm_option["option_name"].lower()
-            #     option_value = llm_option["option_value"].upper()
-            #     is_sel = llm_option.get("is_selected", True)
 
-            #     # ① 현재 선택 목록에서 같은 이름 제거
-            #     # selected_options = [
-            #     #     o for o in selected_options
-            #     #     if o.get("option_name", "").lower() != option_name
-            #     # ]
-            #     if not is_sel:
-            #         selected_options = [
-            #             o for o in selected_options
-            #             if o.get("option_name","").lower() != option_name
-            #         ]
-            #         updated_options.append(f"removed {option_name}")
-            #         continue
-
-            #     # ③ 추가(또는 교체) 요청이면 기존에 있으면 제거 후 다시 추가
-            #     selected_options = [
-            #         o for o in selected_options
-            #         if o.get("option_name","").lower() != option_name
-            #     ]
-
-            #     # ② 상세 ID·추가금 조회
-            #     detail_id, add_price = self.menu_service.get_option_detail(
-            #         option_name, option_value, store_id
-            #     )
-            for llm_option in options_from_llm:
-                option_name  = llm_option["option_name"].lower()
-                option_value = llm_option["option_value"].upper()
-
-                # ① 삭제 요청(is_selected=False) 처리
-                if not llm_option.get("is_selected", True):
-                    selected_options = [
-                        o for o in selected_options
-                        if o["option_name"].lower() != option_name
-                    ]
-                    updated_options.append(f"removed {option_name}")
-                    continue
-
-                # ② 추가 요청: 기존 동일 옵션 제거
-                selected_options = [
-                    o for o in selected_options
-                    if o["option_name"].lower() != option_name
-                ]
-
-                # ③ detail_id 우선, 없으면 get_option_detail 호출
-                detail_id = llm_option.get("option_detail_id")
-                if detail_id is None:
-                    detail_id, add_price = self.menu_service.get_option_detail(
-                        option_name, option_value, store_id
-                    )
-                else:
-                    # 추가금까지 정확히 가져오려면 helper 메서드로 조회
-                    add_price = getattr(
-                        self.menu_service,
-                        "get_price_by_detail_id",
-                        lambda _id, _sid: 0
-                    )(detail_id, store_id)
-
-                # ③ 새 옵션 객체 생성
-                new_option = {
-                    "option_id": llm_option.get("option_id"),
-                    "option_name": llm_option["option_name"],
-                    "is_selected": True,
-                    "option_details": [{
-                        "id": detail_id,
-                        "value": option_value,
-                        "additional_price": add_price
-                    }]
-                }
-                selected_options.append(new_option)
-                # updated_options.append(option_name)
-                updated_options.append(f"added {option_name}")
-
-            # 옵션이 변경되었으면 세션 업데이트
-            if updated_options:
-                # 타겟 아이템 업데이트
-                target_item["selected_options"] = selected_options
-                
-                # 2) total_price 재계산
-                base_price = self.menu_service.get_menu_price(
-                    target_item["menu_id"], store_id
+            # 2) LLM이 준 옵션 목록 확보 (new_options 우선, 없으면 options)
+            options_from_llm = intent_data.get("new_options") \
+                            or intent_data.get("options") \
+                            or []
+            if not options_from_llm:
+                return self._build_response(
+                    intent_data, text, language, screen_state, store_id, session,
+                    ResponseStatus.UNKNOWN,
+                    reply=llm_reply or "변경할 옵션을 명확히 말씀해주세요."
                 )
-                options_sum = sum(
-                    d["additional_price"]
-                    for opt in selected_options
-                    for d in opt.get("option_details", [])
-                )
-                new_total = (base_price + options_sum)
-                target_item["total_price"] = new_total
 
-                # 세션 업데이트
-                cart[target_index] = target_item
-                session["cart"] = cart
-                result = self.session_manager._save_session(session_id, session)
-                print(f"[장바구니 수정] 옵션 변경 세션 저장 결과: {result}, 변경된 옵션: {', '.join(updated_options)}")
-                
-                # 디버깅: 세션 저장 후 다시 확인
-                updated_session = self.session_manager.get_session(session_id)
-                updated_cart = updated_session.get("cart", [])
-                if updated_cart and len(updated_cart) > target_index:
-                    print(f"[장바구니 수정] 업데이트 후 옵션: {updated_cart[target_index].get('selected_options')}")
-            else:
-                print("[장바구니 수정] 변경된 옵션 없음")
-            
-            # 응답 반환
+            # 3) 이름+값으로 ID 매핑 후 target_item 수정
+            try:
+                self._apply_new_options(menu_info, target_item, options_from_llm)
+            except ValueError as err:
+                # 매핑 실패 시 사용자에게 오류 메시지로 알려줌
+                return self._build_response(
+                    intent_data, text, language, screen_state, store_id, session,
+                    ResponseStatus.UNKNOWN,
+                    reply=str(err)
+                )
+
+            # 4) 세션에 저장
+            cart[target_index] = target_item
+            session["cart"] = cart
+            saved = self.session_manager._save_session(session_id, session)
+            print(f"[장바구니 수정] 옵션 변경 세션 저장 결과: {saved}")
+
+            # 5) 응답 반환
             return self._build_response(
                 intent_data, text, language, screen_state, store_id, session,
-                ResponseStatus.OPTIONS_UPDATED, reply=llm_reply
+                ResponseStatus.OPTIONS_UPDATED,
+                reply=llm_reply or "옵션을 변경했어요."
             )
+        # elif action_type == "UPDATE":
+        #     # LLM 응답에서 옵션 정보 추출
+        #     menus = intent_data.get("menus", [])
+        #     options_from_llm = []
+            
+        #     # 메뉴 배열에서 옵션 정보 추출
+        #     for menu in menus:
+        #         if "options" in menu:
+        #             options_from_llm.extend(menu.get("options", []))
+            
+        #     # 직접 주어진 new_options나 options가 있으면 그것 사용
+        #     if intent_data.get("new_options"):
+        #         options_from_llm = intent_data.get("new_options")
+        #     elif intent_data.get("options") and not options_from_llm:
+        #         options_from_llm = intent_data.get("options")
+            
+        #     # 옵션 정보가 없는 경우
+        #     if not options_from_llm:
+        #         reply = llm_reply or "변경할 옵션을 명확히 말씀해주세요."
+        #         return self._build_response(
+        #             intent_data, text, language, screen_state, store_id, session,
+        #             ResponseStatus.UNKNOWN, reply=reply
+        #         )
+            
+        #     print(f"[장바구니 수정] 변경할 옵션 정보: {options_from_llm}")
+            
+        #     # 기존 옵션 가져오기
+        #     selected_options = target_item.get("selected_options", [])
+        #     print(f"[장바구니 수정] 현재 선택된 옵션: {selected_options}")
+            
+        #     # 변경된 옵션 추적
+        #     updated_options = []
+            
+        #     for llm_option in options_from_llm:
+        #         option_name  = llm_option["option_name"].lower()
+        #         option_value = llm_option["option_value"].upper()
+
+        #         # ① 삭제 요청(is_selected=False) 처리
+        #         if not llm_option.get("is_selected", True):
+        #             selected_options = [
+        #                 o for o in selected_options
+        #                 if o["option_name"].lower() != option_name
+        #             ]
+        #             updated_options.append(f"removed {option_name}")
+        #             continue
+
+        #         # ② 추가 요청: 기존 동일 옵션 제거
+        #         selected_options = [
+        #             o for o in selected_options
+        #             if o["option_name"].lower() != option_name
+        #         ]
+
+        #         # ③ detail_id 우선, 없으면 get_option_detail 호출
+        #         detail_id = llm_option.get("option_detail_id")
+        #         if detail_id is None:
+        #             detail_id, add_price = self.menu_service.get_option_detail(
+        #                 option_name, option_value, store_id
+        #             )
+        #         else:
+        #             # 추가금까지 정확히 가져오려면 helper 메서드로 조회
+        #             add_price = getattr(
+        #                 self.menu_service,
+        #                 "get_price_by_detail_id",
+        #                 lambda _id, _sid: 0
+        #             )(detail_id, store_id)
+
+        #         # ③ 새 옵션 객체 생성
+        #         new_option = {
+        #             "option_id": llm_option.get("option_id"),
+        #             "option_name": llm_option["option_name"],
+        #             "is_selected": True,
+        #             "option_details": [{
+        #                 "id": detail_id,
+        #                 "value": option_value,
+        #                 "additional_price": add_price
+        #             }]
+        #         }
+        #         selected_options.append(new_option)
+        #         # updated_options.append(option_name)
+        #         updated_options.append(f"added {option_name}")
+
+        #     # 옵션이 변경되었으면 세션 업데이트
+        #     if updated_options:
+        #         # 타겟 아이템 업데이트
+        #         target_item["selected_options"] = selected_options
+                
+        #         # 2) total_price 재계산
+        #         base_price = self.menu_service.get_menu_price(
+        #             target_item["menu_id"], store_id
+        #         )
+        #         options_sum = sum(
+        #             d["additional_price"]
+        #             for opt in selected_options
+        #             for d in opt.get("option_details", [])
+        #         )
+        #         new_total = (base_price + options_sum)
+        #         target_item["total_price"] = new_total
+
+        #         # 세션 업데이트
+        #         cart[target_index] = target_item
+        #         session["cart"] = cart
+        #         result = self.session_manager._save_session(session_id, session)
+        #         print(f"[장바구니 수정] 옵션 변경 세션 저장 결과: {result}, 변경된 옵션: {', '.join(updated_options)}")
+                
+        #         # 디버깅: 세션 저장 후 다시 확인
+        #         updated_session = self.session_manager.get_session(session_id)
+        #         updated_cart = updated_session.get("cart", [])
+        #         if updated_cart and len(updated_cart) > target_index:
+        #             print(f"[장바구니 수정] 업데이트 후 옵션: {updated_cart[target_index].get('selected_options')}")
+        #     else:
+        #         print("[장바구니 수정] 변경된 옵션 없음")
+            
+        #     # 응답 반환
+        #     return self._build_response(
+        #         intent_data, text, language, screen_state, store_id, session,
+        #         ResponseStatus.OPTIONS_UPDATED, reply=llm_reply
+        #     )
 
         # 3. 메뉴 수량 변경
         elif action_type == "QUANTITY":
@@ -343,3 +358,49 @@ class CartModifyProcessor(BaseProcessor):
                 "store_id": store_id
             }
         }
+
+    def _apply_new_options(self,
+                        menu_info: Dict[str, Any],
+                        target_item: Dict[str, Any],
+                        new_options: List[Dict[str, Any]]):
+        # 기존 선택 옵션 초기화
+        target_item["selected_options"] = []
+        base_price = menu_info["price"]
+        extras_sum = 0
+
+        for opt in new_options:
+            name = opt["option_name"].lower()
+            value = opt["option_value"].lower()
+
+            # 1) Option 메타 찾기
+            opt_meta = next(
+                (o for o in menu_info["options"]
+                if o["option_name"].lower() == name),
+                None
+            )
+            if not opt_meta:
+                raise ValueError(f"알 수 없는 옵션명: {opt['option_name']}")
+
+            # 2) OptionDetail 찾기
+            detail = next(
+                (d for d in opt_meta["option_details"]
+                if d["value"].lower() == value),
+                None
+            )
+            if not detail:
+                raise ValueError(
+                    f"옵션 '{opt['option_name']}'에 '{opt['option_value']}' 값이 없습니다."
+                )
+
+            # 3) 선택 옵션 추가
+            target_item["selected_options"].append({
+                "option_id":     opt_meta["option_id"],
+                "option_name":   opt_meta["option_name"],
+                "selected_id":   detail["id"],
+                "option_details":[detail],
+            })
+            extras_sum += detail.get("additional_price", 0)
+
+        # 4) 가격 재계산
+        target_item["base_price"]  = base_price
+        target_item["total_price"] = base_price + extras_sum
