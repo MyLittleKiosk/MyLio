@@ -128,7 +128,7 @@ const OrderLayout = () => {
         className='fixed top-0 right-0 w-20 h-20 z-20 cursor-pointer'
         onClick={handleTopRightClick}
       />
-      <div className='flex justify-center items-center z-10 fixed top-0 left-0 w-full h-[100px] flex-wrap'>
+      {/* <div className='flex justify-center items-center z-10 fixed top-0 left-0 w-full h-[100px] flex-wrap'>
         <ul className='flex justify-center items-center gap-4 rounded-xl p-4'>
           <li>
             <Link to='/kiosk'>홈</Link>
@@ -166,7 +166,7 @@ const OrderLayout = () => {
             </form>
           </div>
         </div>
-      </div>
+      </div> */}
       <header
         className={clsx(
           'flex justify-center items-center relative',
