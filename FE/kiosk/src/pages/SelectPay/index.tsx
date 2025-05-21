@@ -11,11 +11,11 @@ const SelectPay = () => {
     0
   );
 
-  const handlePayMethodClick = (id: number) => {
-    if (id === 2) {
+  const handlePayMethodClick = (id: string) => {
+    if (id === 'PAY') {
       setOrder({ ...order, payment: 'PAY' });
     }
-    navigate('/kiosk/pay');
+    navigate(`/kiosk/pay?pay_method=${id}`);
   };
 
   return (
