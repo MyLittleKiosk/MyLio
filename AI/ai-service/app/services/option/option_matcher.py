@@ -9,14 +9,14 @@ class OptionMatcher:
         """옵션 매핑 함수"""
         # 입력 검증 추가
         if not options or not option_name or not option_value:
-            print(f"[옵션 매칭] 유효하지 않은 입력: options={bool(options)}, name={bool(option_name)}, value={bool(option_value)}")
+            # print(f"[옵션 매칭] 유효하지 않은 입력: options={bool(options)}, name={bool(option_name)}, value={bool(option_value)}")
             return None
         
         # 디버깅을 위한 로그 추가
-        print(f"옵션 매핑: 이름={option_name}, 값={option_value}, 사용 가능한 옵션={options}")
+        # print(f"옵션 매핑: 이름={option_name}, 값={option_value}, 사용 가능한 옵션={options}")
         
         # 디버깅을 위한 로그 추가
-        print(f"옵션 매핑: 이름={option_name}, 값={option_value}, 사용 가능한 옵션={options}")
+        # print(f"옵션 매핑: 이름={option_name}, 값={option_value}, 사용 가능한 옵션={options}")
     
         # 1. 옵션 이름으로 매칭 시도
         matching_options = []
@@ -236,7 +236,7 @@ class OptionMatcher:
                         selected_option["option_details"][0])
 
         sel_value  = sel_detail.get("value")
-        print(f"[옵션 적용] 선택된 값: {sel_value} (ID: {sel_id})")
+        # print(f"[옵션 적용] 선택된 값: {sel_value} (ID: {sel_id})")
         
         # 만약 option_details 길이가 1보다 크면 잘라낸다
         selected_option["option_details"] = [sel_detail]
@@ -252,7 +252,7 @@ class OptionMatcher:
                     if d["id"] == sel_id:
                         d["additional_price"] = sel_detail.get("additional_price", 0)
                         d["value"]            = sel_value
-                print(f"[옵션 적용] ID 업데이트: {old_id} -> {sel_id}")
+                # print(f"[옵션 적용] ID 업데이트: {old_id} -> {sel_id}")
                 break  # 찾으면 종료
 
         # 2) menu['selected_options'] 갱신
@@ -265,7 +265,7 @@ class OptionMatcher:
                 break
         else:
             menu["selected_options"].append(selected_option)
-            print(f"[옵션 적용] 새 선택 옵션 추가: {selected_option.get('option_name')}={sel_value}")
+            # print(f"[옵션 적용] 새 선택 옵션 추가: {selected_option.get('option_name')}={sel_value}")
 
         # 3) 총액 재계산 – base_price + 모든 추가요금
         base_price = menu.get("base_price") or menu.get("price") or 0
@@ -275,14 +275,14 @@ class OptionMatcher:
                 extra += d.get("additional_price", 0)
         old_total          = menu.get("total_price", base_price)
         menu["total_price"] = base_price + extra
-        print(f"[옵션 적용] 가격 업데이트: {old_total} -> {menu['total_price']}")
+        # print(f"[옵션 적용] 가격 업데이트: {old_total} -> {menu['total_price']}")
 
         # 디버깅: 현재 선택된 옵션 상태
-        print("[옵션 적용] 최종 메뉴 옵션 상태:")
+        # print("[옵션 적용] 최종 메뉴 옵션 상태:")
         for option in menu.get("options", []):
             if option.get("is_selected"):
                 chosen = next((d for d in option.get("option_details", []) if d["id"] == option.get("selected_id")), {})
-                print(f"  - {option.get('option_name')} = {chosen.get('value')} (ID: {chosen.get('id')})")
+                # print(f"  - {option.get('option_name')} = {chosen.get('value')} (ID: {chosen.get('id')})")
 
     
     def get_next_required_option(self, menu: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -341,20 +341,20 @@ class OptionMatcher:
         
         # LLM이 제공한 detail_id가 있으면 그것을 우선 사용
         if option_detail_id:
-            print(f"[옵션 매처] ID 기반 매칭 시도: option_detail_id={option_detail_id}")
+            # print(f"[옵션 매처] ID 기반 매칭 시도: option_detail_id={option_detail_id}")
             for detail in option.get('option_details', []):
                 if detail.get('id') == option_detail_id:
                     option_value_matched = detail.get('value', '')
-                    print(f"[옵션 매처] ID 기반 매칭 성공: option_value={option_value_matched}")
+                    # print(f"[옵션 매처] ID 기반 매칭 성공: option_value={option_value_matched}")
                     option['is_selected'] = True
                     option['selected_id'] = detail.get('id')
                     return option
             
             # ID로 매칭 실패 시 로그 출력
-            print(f"[옵션 매처] ID 기반 매칭 실패: option_detail_id={option_detail_id}, 텍스트 기반 매칭으로 전환")
+            # print(f"[옵션 매처] ID 기반 매칭 실패: option_detail_id={option_detail_id}, 텍스트 기반 매칭으로 전환")
         
         # 기존 텍스트 기반 매칭 로직
-        print(f"[옵션 매처] 텍스트 기반 매칭 시도: option_value={option_value}")
+        # print(f"[옵션 매처] 텍스트 기반 매칭 시도: option_value={option_value}")
         for detail in option.get('option_details', []):
             normalized_value = option_value.lower().replace(" ", "")
             normalized_detail_value = detail.get('value', '').lower().replace(" ", "")
@@ -363,10 +363,10 @@ class OptionMatcher:
                 normalized_value in normalized_detail_value or 
                 normalized_detail_value in normalized_value):
                 
-                print(f"[옵션 매처] 텍스트 기반 매칭 성공: detail_value={detail.get('value')}")
+                # print(f"[옵션 매처] 텍스트 기반 매칭 성공: detail_value={detail.get('value')}")
                 option['is_selected'] = True
                 option['selected_id'] = detail.get('id')
                 return option
         
-        print(f"[옵션 매처] 모든 매칭 실패: option_name={option.get('option_name')}, option_value={option_value}")
+        # print(f"[옵션 매처] 모든 매칭 실패: option_name={option.get('option_name')}, option_value={option_value}")
         return None

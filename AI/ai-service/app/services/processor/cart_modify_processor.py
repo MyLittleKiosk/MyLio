@@ -150,7 +150,7 @@ class CartModifyProcessor(BaseProcessor):
             cart[target_index] = target_item
             session["cart"] = cart
             saved = self.session_manager._save_session(session_id, session)
-            print(f"[장바구니 수정] 옵션 변경 세션 저장 결과: {saved}")
+            # print(f"[장바구니 수정] 옵션 변경 세션 저장 결과: {saved}")
 
             # 5) 응답 반환
             return self._build_response(
@@ -182,11 +182,11 @@ class CartModifyProcessor(BaseProcessor):
         #             ResponseStatus.UNKNOWN, reply=reply
         #         )
             
-        #     print(f"[장바구니 수정] 변경할 옵션 정보: {options_from_llm}")
+        #     # print(f"[장바구니 수정] 변경할 옵션 정보: {options_from_llm}")
             
         #     # 기존 옵션 가져오기
         #     selected_options = target_item.get("selected_options", [])
-        #     print(f"[장바구니 수정] 현재 선택된 옵션: {selected_options}")
+        #     # print(f"[장바구니 수정] 현재 선택된 옵션: {selected_options}")
             
         #     # 변경된 옵션 추적
         #     updated_options = []
@@ -260,15 +260,15 @@ class CartModifyProcessor(BaseProcessor):
         #         cart[target_index] = target_item
         #         session["cart"] = cart
         #         result = self.session_manager._save_session(session_id, session)
-        #         print(f"[장바구니 수정] 옵션 변경 세션 저장 결과: {result}, 변경된 옵션: {', '.join(updated_options)}")
+        #         # print(f"[장바구니 수정] 옵션 변경 세션 저장 결과: {result}, 변경된 옵션: {', '.join(updated_options)}")
                 
         #         # 디버깅: 세션 저장 후 다시 확인
         #         updated_session = self.session_manager.get_session(session_id)
         #         updated_cart = updated_session.get("cart", [])
         #         if updated_cart and len(updated_cart) > target_index:
-        #             print(f"[장바구니 수정] 업데이트 후 옵션: {updated_cart[target_index].get('selected_options')}")
+        #             # print(f"[장바구니 수정] 업데이트 후 옵션: {updated_cart[target_index].get('selected_options')}")
         #     else:
-        #         print("[장바구니 수정] 변경된 옵션 없음")
+        #         # print("[장바구니 수정] 변경된 옵션 없음")
             
         #     # 응답 반환
         #     return self._build_response(
@@ -280,7 +280,7 @@ class CartModifyProcessor(BaseProcessor):
         elif action_type == "QUANTITY":
             # 현재 수량
             current_quantity = target_item.get("quantity", 1)
-            print(f"현재 수량 : {current_quantity}")
+            # print(f"현재 수량 : {current_quantity}")
             if "quantity_change" in intent_data:
                 # ± 증감값
                 new_quantity = current_quantity + intent_data["quantity_change"]
@@ -312,7 +312,7 @@ class CartModifyProcessor(BaseProcessor):
             cart[target_index] = target_item
             session["cart"] = cart
             result = self.session_manager._save_session(session_id, session)
-            print(f"[장바구니 수정] 수량 변경 세션 저장 결과: {result}")
+            # print(f"[장바구니 수정] 수량 변경 세션 저장 결과: {result}")
             
             return self._build_response(
                 intent_data, text, language, screen_state, store_id, session,

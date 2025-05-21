@@ -58,7 +58,7 @@ class IntentRecognizer:
         result = self._parse_llm_response(response, store_id, session)
         
         # 디버깅 정보
-        print(f"[의도 인식] 입력: '{text}', 인식 결과: {result}")
+        # print(f"[의도 인식] 입력: '{text}', 인식 결과: {result}")
         if self._is_cart_view_intent(text, language):
             return {
                 "intent_type": IntentType.CART_VIEW,
@@ -299,7 +299,7 @@ class IntentRecognizer:
         session: Dict[str, Any] | None = None) -> Dict[str, Any]:
         """LLM 응답 파싱"""
         try:
-            print(f"파싱할 LLM 응답: {response}")  # 디버깅용
+            # print(f"파싱할 LLM 응답: {response}")  # 디버깅용
             # JSON 블록 추출
             json_pattern = r'```(?:json)?\s*([\s\S]*?)```'
             match = re.search(json_pattern, response)
@@ -316,7 +316,7 @@ class IntentRecognizer:
                 else:
                     json_str = response.strip()
             
-            print(f"파싱된 JSON 문자열: {json_str}")  # 디버깅용
+            # print(f"파싱된 JSON 문자열: {json_str}")  # 디버깅용
             
             # JSON 파싱
             result = json.loads(json_str)
@@ -402,8 +402,8 @@ class IntentRecognizer:
             
             
         except Exception as e:
-            print(f"LLM 응답 파싱 오류: {e}")
-            print(f"원본 응답: {response}")
+            # print(f"LLM 응답 파싱 오류: {e}")
+            # print(f"원본 응답: {response}")
             
             # 기본 응답
             return {

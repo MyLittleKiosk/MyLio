@@ -24,7 +24,7 @@ class MySQLConnector:
             self.connection = pymysql.connect(**self.config)
             return True
         except Exception as e:
-            print(f"MySQL 연결 오류: {e}")
+            # print(f"MySQL 연결 오류: {e}")
             return False
     
     def disconnect(self) -> None:
@@ -44,9 +44,9 @@ class MySQLConnector:
                 result = cursor.fetchall()
                 return result
         except Exception as e:
-            print(f"쿼리 실행 오류: {e}")
-            print(f"실행 쿼리: {query}")
-            print(f"파라미터: {params}")
+            # print(f"쿼리 실행 오류: {e}")
+            # print(f"실행 쿼리: {query}")
+            # print(f"파라미터: {params}")
             # 연결이 끊어진 경우 재연결 시도
             if "MySQL server has gone away" in str(e):
                 self.connect()
@@ -63,9 +63,9 @@ class MySQLConnector:
                 self.connection.commit()
                 return affected_rows
         except Exception as e:
-            print(f"업데이트 쿼리 실행 오류: {e}")
-            print(f"실행 쿼리: {query}")
-            print(f"파라미터: {params}")
+            # print(f"업데이트 쿼리 실행 오류: {e}")
+            # print(f"실행 쿼리: {query}")
+            # print(f"파라미터: {params}")
             # 연결이 끊어진 경우 재연결 시도
             if "MySQL server has gone away" in str(e):
                 self.connect()
