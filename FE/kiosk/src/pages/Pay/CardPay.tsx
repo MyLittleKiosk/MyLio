@@ -12,11 +12,13 @@ const CardPay = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       sessionStorage.setItem('cartItem', JSON.stringify(order.cart));
-      postSuccess({
-        orderId: order.sessionId || '',
-        pgToken: null,
-        payMethod: payMethod || '',
-      });
+      if (order.payment !== 'PAY') {
+        postSuccess({
+          orderId: order.sessionId || '',
+          pgToken: null,
+          payMethod: payMethod || '',
+        });
+      }
       navigate('/success');
     }, 3000);
     return () => {
