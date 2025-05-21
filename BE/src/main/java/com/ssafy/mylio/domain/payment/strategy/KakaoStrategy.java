@@ -1,4 +1,4 @@
-package com.ssafy.mylio.domain.payment.service;
+package com.ssafy.mylio.domain.payment.strategy;
 
 import com.ssafy.mylio.domain.order.service.OrderService;
 import com.ssafy.mylio.domain.payment.dto.request.KakaoPayApproveRequestDto;
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -20,12 +20,10 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-
-@Service
+@Component
 @RequiredArgsConstructor
 @Slf4j
-public class KakaoPayService implements PayService {
-
+public class KakaoStrategy implements PayStrategy{
     @Value("${app.domain.url}")
     private String BASE_URL;
 
@@ -44,6 +42,7 @@ public class KakaoPayService implements PayService {
     private static final String CID = "TC0ONETIME";
 
     private final OrderService orderService;
+
 
     @Override
     public Mono<ReadyResponseDto> readyToPay(Integer userId, PayRequestDto payRequestDto){
