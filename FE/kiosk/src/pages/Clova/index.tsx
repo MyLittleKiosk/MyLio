@@ -5,7 +5,6 @@ import { ClovaResponse } from '@/types/clova';
 import { AxiosError } from 'axios';
 import { useState } from 'react';
 import { useAudioRecord } from '@/hooks/useAudioRecord';
-import Example from '@/components/Chat/SmartRecordButton/example';
 
 /**
  * Clova 테스트 페이지
@@ -181,7 +180,6 @@ const ClovaPage = () => {
               <h2 className='text-lg font-medium mb-4'>
                 새로운 방식 (자동 감지)
               </h2>
-              <Example />
             </div>
           </div>
 

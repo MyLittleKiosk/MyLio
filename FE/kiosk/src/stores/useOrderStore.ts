@@ -18,7 +18,10 @@ const useOrderStore = create<OrderStore>((set) => ({
     payment: null,
     storeId: null,
   },
-  setOrder: (order: OrderResponse) => set({ order }),
+  setOrder: (orderResponse: OrderResponse) => {
+    set({ order: orderResponse });
+    console.log('order', orderResponse);
+  },
   resetOrder: () =>
     set({
       order: {
