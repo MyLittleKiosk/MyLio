@@ -7,8 +7,8 @@ import { useLogout, useRefresh } from '@/service/queries/user';
 import useOrderStore from '@/stores/useOrderStore';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const OrderLayout = () => {
   const { pathname } = useLocation();
@@ -18,7 +18,7 @@ const OrderLayout = () => {
   const { mutate: logout } = useLogout();
   const { mutate: refresh } = useRefresh();
   const navigate = useNavigate();
-  const inputRef = useRef<HTMLInputElement>(null);
+  // const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const kioskId = localStorage.getItem('kioskId');
@@ -74,9 +74,9 @@ const OrderLayout = () => {
     onSuccess: handleLogout,
   });
 
-  function testHandleRecognitionResult() {
-    handleRecognitionResult(inputRef.current?.value || '');
-  }
+  // function testHandleRecognitionResult() {
+  //   handleRecognitionResult(inputRef.current?.value || '');
+  // }
 
   const [isLargeFont, setIsLargeFont] = useState(false);
 
