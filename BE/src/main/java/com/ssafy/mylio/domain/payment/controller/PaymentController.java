@@ -5,8 +5,6 @@ import com.ssafy.mylio.domain.payment.dto.request.PayRequestDto;
 import com.ssafy.mylio.domain.payment.dto.response.ApproveResponseDto;
 import com.ssafy.mylio.domain.payment.dto.response.ReadyResponseDto;
 import com.ssafy.mylio.domain.payment.entity.PaymentMethod;
-import com.ssafy.mylio.domain.payment.service.PayService;
-import com.ssafy.mylio.domain.payment.service.PaymentFacadeService;
 import com.ssafy.mylio.domain.payment.service.PaymentService;
 import com.ssafy.mylio.global.common.response.CommonResponse;
 import com.ssafy.mylio.global.error.code.ErrorCode;

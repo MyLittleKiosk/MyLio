@@ -1,7 +1,6 @@
 package com.ssafy.mylio.domain.payment.strategy;
 
 import com.ssafy.mylio.domain.payment.entity.PaymentMethod;
-import com.ssafy.mylio.global.common.constants.PayType;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
