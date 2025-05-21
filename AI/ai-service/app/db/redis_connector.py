@@ -27,5 +27,5 @@ class RedisConnector:
         try:
             return self.client.ping()
         except Exception as e:
-            print(f"Redis 연결 오류: {e}")
+            # print(f"Redis 연결 오류: {e}")
             return False

@@ -58,7 +58,7 @@ class IntentRecognizer:
         result = self._parse_llm_response(response, store_id, session)
         
         # 디버깅 정보
-        print(f"[의도 인식] 입력: '{text}', 인식 결과: {result}")
+        # print(f"[의도 인식] 입력: '{text}', 인식 결과: {result}")
         if self._is_cart_view_intent(text, language):
             return {
                 "intent_type": IntentType.CART_VIEW,
@@ -299,7 +299,7 @@ class IntentRecognizer:
         session: Dict[str, Any] | None = None) -> Dict[str, Any]:
         """LLM 응답 파싱"""
         try:
-            print(f"파싱할 LLM 응답: {response}")  # 디버깅용
+            # print(f"파싱할 LLM 응답: {response}")  # 디버깅용
             # JSON 블록 추출
             json_pattern = r'```(?:json)?\s*([\s\S]*?)```'
             match = re.search(json_pattern, response)
@@ -316,7 +316,7 @@ class IntentRecognizer:
                 else:
                     json_str = response.strip()
             
-            print(f"파싱된 JSON 문자열: {json_str}")  # 디버깅용
+            # print(f"파싱된 JSON 문자열: {json_str}")  # 디버깅용
             
             # JSON 파싱
             result = json.loads(json_str)
@@ -402,8 +402,8 @@ class IntentRecognizer:
             
             
         except Exception as e:
-            print(f"LLM 응답 파싱 오류: {e}")
-            print(f"원본 응답: {response}")
+            # print(f"LLM 응답 파싱 오류: {e}")
+            # print(f"원본 응답: {response}")
             
             # 기본 응답
             return {
@@ -619,6 +619,143 @@ class IntentRecognizer:
         return {
             # 주문 예제
             "order": [
+                {
+                    "input": "아메리카노 아이스로 얼음 많이 샷 추가해서 큰거로 다섯잔 줘 카페라떼 뜨거운걸로 주고 샷 추가해서 작은걸로 두잔 줘 딸기라떼 작은거 하나 초코라떼 큰거 하나 아이스티 작은거 하나 줘",
+                    "output": {
+                        "intent_type": "ORDER",
+                        "confidence": 0.9,
+                        "menus": [
+                        {
+                            "menu_id": 101,
+                            "menu_name": "아메리카노",
+                            "quantity": 5,
+                            "options": [
+                            {
+                                "option_id": 102,
+                                "option_name": "온도",
+                                "option_detail_id": 1005,
+                                "option_value": "Ice"
+                            },
+                            {
+                                "option_id": 103,
+                                "option_name": "얼음량",
+                                "option_detail_id": 1006,
+                                "option_value": "얼음 많이"
+                            },
+                            {
+                                "option_id": 105,
+                                "option_name": "샷옵션",
+                                "option_detail_id": 1017,
+                                "option_value": "샷 1개 추가"
+                            },
+                            {
+                                "option_id": 101,
+                                "option_name": "사이즈",
+                                "option_detail_id": 1003,
+                                "option_value": "L"
+                            }
+                            ]
+                        },
+                        {
+                            "menu_id": 102,
+                            "menu_name": "카페라떼",
+                            "quantity": 2,
+                            "options": [
+                            {
+                                "option_id": 102,
+                                "option_name": "온도",
+                                "option_detail_id": 1004,
+                                "option_value": "Hot"
+                            },
+                            {
+                                "option_id": 105,
+                                "option_name": "샷옵션",
+                                "option_detail_id": 1017,
+                                "option_value": "샷 1개 추가"
+                            },
+                            {
+                                "option_id": 101,
+                                "option_name": "사이즈",
+                                "option_detail_id": 1001,
+                                "option_value": "S"
+                            }
+                            ]
+                        },
+                        {
+                            "menu_id": 111,
+                            "menu_name": "딸기라떼",
+                            "quantity": 1,
+                            "options": [
+                            {
+                                "option_id": 101,
+                                "option_name": "사이즈",
+                                "option_detail_id": 1001,
+                                "option_value": "S"
+                            }
+                            ]
+                        },
+                        {
+                            "menu_id": 109,
+                            "menu_name": "초코라떼",
+                            "quantity": 1,
+                            "options": [
+                            {
+                                "option_id": 101,
+                                "option_name": "사이즈",
+                                "option_detail_id": 1003,
+                                "option_value": "L"
+                            }
+                            ]
+                        },
+                        {
+                            "menu_id": 113,
+                            "menu_name": "복숭아 아이스티",
+                            "quantity": 1,
+                            "options": [
+                            {
+                                "option_id": 101,
+                                "option_name": "사이즈",
+                                "option_detail_id": 1001,
+                                "option_value": "S"
+                            }
+                            ]
+                        }
+                        ],
+                        "post_text": "아메리카노 아이스로 얼음 많이 샷 추가해서 큰거로 다섯잔, 카페라떼 뜨거운걸로 샷 추가해서 작은걸로 두잔, 딸기라떼 작은거 하나, 초코라떼 큰거 하나, 아이스티 작은거 하나",
+                        "reply": "아메리카노 다섯 잔 중 하나는 샷 추가 맞으신가요? 사이즈는 어떻게 해드릴까요?"
+                    }
+                },
+                {
+                    "input": "아이스 아메리카노 작은거 하나 주시고 결제는 카카오페이로 할게요",
+                    "output": {
+                        "intent_type": "ORDER",
+                        "confidence": 0.9,
+                        "menus": [
+                        {
+                            "menu_id": 101,
+                            "menu_name": "아메리카노",
+                            "quantity": 1,
+                            "options": [
+                            {
+                                "option_id": 102,
+                                "option_name": "온도",
+                                "option_detail_id": 1005,
+                                "option_value": "Ice"
+                            },
+                            {
+                                "option_id": 101,
+                                "option_name": "사이즈",
+                                "option_detail_id": 1001,
+                                "option_value": "S"
+                            }
+                            ]
+                        }
+                        ],
+                        "payment_method": "PAY",
+                        "post_text": "아이스 아메리카노 작은거 하나 주시고 결제는 카카오페이로 할게요",
+                        "reply": "아이스 아메리카노 작은 사이즈로 하나 주문하셨습니다. 결제는 카카오페이로 진행할게요."
+                    }
+                },
                 {
                     "input": "아바라 하나 주세요",  # 특수 케이스 추가
                     "output": {
@@ -888,6 +1025,29 @@ class IntentRecognizer:
             
             # 검색 예제
             "search": [
+                {
+                    "input": "메뉴 중에 우유 없는 메뉴 보여줘",
+                    "output": {
+                        "intent_type": "SEARCH",
+                        "confidence": 0.9,
+                        "search_query": "우유 없는 메뉴",
+                        "menus": [
+                        {"menu_id": 101, "menu_name": "아메리카노"},
+                        {"menu_id": 107, "menu_name": "콜드브루"},
+                        {"menu_id": 113, "menu_name": "복숭아 아이스티"},
+                        {"menu_id": 114, "menu_name": "페퍼민트"},
+                        {"menu_id": 115, "menu_name": "히비스커스"},
+                        {"menu_id": 116, "menu_name": "녹차"},
+                        {"menu_id": 117, "menu_name": "얼그레이"},
+                        {"menu_id": 118, "menu_name": "루이보스"},
+                        {"menu_id": 119, "menu_name": "한라봉차"},
+                        {"menu_id": 120, "menu_name": "자몽 에이드"},
+                        {"menu_id": 121, "menu_name": "레몬 에이드"}
+                        ],
+                        "post_text": "메뉴 중에 우유 없는 메뉴 보여줘",
+                        "reply": "우유가 들어가지 않은 메뉴를 안내해드릴게요."
+                    }
+                },
                 {
                     "input": "전체 메뉴 보여줘",
                     "output": {

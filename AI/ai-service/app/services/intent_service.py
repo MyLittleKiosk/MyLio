@@ -59,12 +59,12 @@ class IntentService:
         try:
             # 언어 검증 및 기본값 설정 (추가)
             if language not in [Language.KR, Language.EN, Language.JP, Language.CN]:
-                print(f"[요청 처리] 지원하지 않는 언어: {language}, 기본값(KR)으로 설정")
+                # print(f"[요청 처리] 지원하지 않는 언어: {language}, 기본값(KR)으로 설정")
                 language = Language.KR
             
-            print(f"[요청 처리 시작] 세션 ID: {session_id}, 텍스트: '{text}', 화면 상태: {screen_state}, 언어: {language}")
+            # print(f"[요청 처리 시작] 세션 ID: {session_id}, 텍스트: '{text}', 화면 상태: {screen_state}, 언어: {language}")
 
-            print(f"[요청 처리 시작] 세션 ID: {session_id}, 텍스트: '{text}', 화면 상태: {screen_state}")
+            # print(f"[요청 처리 시작] 세션 ID: {session_id}, 텍스트: '{text}', 화면 상태: {screen_state}")
 
             # 1. 세션 확보
             session_id, session = self._ensure_session(session_id)
@@ -75,11 +75,11 @@ class IntentService:
                 self.session_manager._save_session(session_id, session)
             
             # 현재 장바구니 상태 출력
-            print(f"[요청 처리] 세션 ID: {session_id}, 장바구니 항목 수: {len(session.get('cart', []))}")
+            # print(f"[요청 처리] 세션 ID: {session_id}, 장바구니 항목 수: {len(session.get('cart', []))}")
             
             # "결제" 관련 키워드 직접 처리 추가
             # if self._is_payment_request(text, language):
-            #     print("[요청 처리] 결제 요청 키워드 감지, PaymentProcessor로 직접 처리")
+            #     # print("[요청 처리] 결제 요청 키워드 감지, PaymentProcessor로 직접 처리")
             #     intent_data = {
             #         "intent_type": IntentType.PAYMENT,
             #         "confidence": 0.95,
@@ -91,7 +91,7 @@ class IntentService:
                 
             #     # 응답 후 세션 다시 가져와서 상태 출력
             #     updated_session = self.session_manager.get_session(session_id)
-            #     print(f"[요청 처리] 결제 요청 처리 후 장바구니: {len(updated_session.get('cart', []))}")
+            #     # print(f"[요청 처리] 결제 요청 처리 후 장바구니: {len(updated_session.get('cart', []))}")
                 
             #     # 응답에 장바구니 보강
             #     if "data" in response and "cart" in response["data"]:
@@ -102,7 +102,7 @@ class IntentService:
             #     return response
             # CONFIRM 화면에서의 확인 응답 특별 처리
             if screen_state == ScreenState.CONFIRM and self._is_confirmation_response(text, language):
-                print("[요청 처리] CONFIRM 화면에서 확인 응답 감지, PaymentProcessor로 직접 처리")
+                # print("[요청 처리] CONFIRM 화면에서 확인 응답 감지, PaymentProcessor로 직접 처리")
                 # 직접 결제 처리기로 처리
                 intent_data = {
                     "intent_type": IntentType.PAYMENT,
@@ -115,7 +115,7 @@ class IntentService:
                 
                 # 응답 후 세션 다시 가져와서 상태 출력
                 updated_session = self.session_manager.get_session(session_id)
-                print(f"[요청 처리] 확인 응답 처리 후 장바구니: {len(updated_session.get('cart', []))}")
+                # print(f"[요청 처리] 확인 응답 처리 후 장바구니: {len(updated_session.get('cart', []))}")
                 
                 # 응답에 장바구니 보강
                 if "data" in response and "cart" in response["data"]:
@@ -127,25 +127,25 @@ class IntentService:
             
             # 2. 컨텍스트 기반 옵션 선택 흐름 처리
             if session.get("last_state") and session["last_state"].get("pending_option"):
-                print("[요청 처리] 이전 대화 기반 옵션 선택 흐름 진입")
-                print(f"[요청 처리] pending_option: {session['last_state']['pending_option'].get('option_name')}")
+                # print("[요청 처리] 이전 대화 기반 옵션 선택 흐름 진입")
+                # print(f"[요청 처리] pending_option: {session['last_state']['pending_option'].get('option_name')}")
                 
                 response = self.order_processor.process_option_selection(text, language, screen_state, store_id, session)
                 
                 # 응답 후 세션 다시 가져와서 상태 출력
                 updated_session = self.session_manager.get_session(session_id)
-                print(f"[요청 처리] 옵션 처리 후 장바구니: {len(updated_session.get('cart', []))}")
+                # print(f"[요청 처리] 옵션 처리 후 장바구니: {len(updated_session.get('cart', []))}")
                 
                 # 메뉴 처리 후 대기열 확인 및 상태 디버깅
-                print(f"[대기열 처리 확인] 대기열 존재 여부: {'order_queue' in updated_session}")
+                # print(f"[대기열 처리 확인] 대기열 존재 여부: {'order_queue' in updated_session}")
                 if 'order_queue' in updated_session:
                     queue_size = len(updated_session['order_queue'])
-                    print(f"[대기열 처리 확인] 대기열 크기: {queue_size}")
+                    # print(f"[대기열 처리 확인] 대기열 크기: {queue_size}")
                     if queue_size > 0:
                         first_menu = updated_session['order_queue'][0]
                         menu_name = first_menu.get('name_kr', '') or first_menu.get('menu_name', '') or first_menu.get('name', '')
-                        print(f"[대기열 처리 확인] 다음 메뉴: {menu_name}")
-                        print(f"[대기열 처리 확인] 이제 다음 메뉴 처리 시작할 수 있음: {menu_name}")
+                        # print(f"[대기열 처리 확인] 다음 메뉴: {menu_name}")
+                        # print(f"[대기열 처리 확인] 이제 다음 메뉴 처리 시작할 수 있음: {menu_name}")
                         
                         # 여기서 직접 다음 메뉴 처리를 시작할 수도 있음 (그러나 UX 측면에서는 사용자가 제어할 수 있도록 함)
                 else:
@@ -162,13 +162,13 @@ class IntentService:
                 return self._start_queued_menu_processing(next_menu, text, language, screen_state, store_id, session)
             
             # 3. 의도 인식 - 통합 의도 인식기 사용
-            print("[요청 처리] 신규 의도 인식 시작")
+            # print("[요청 처리] 신규 의도 인식 시작")
             intent_data = self.intent_recognizer.recognize_intent(text, language, screen_state, store_id, session)
-            print(f"[요청 처리] 인식된 의도: {intent_data.get('intent_type')}, 신뢰도: {intent_data.get('confidence')}")
+            # print(f"[요청 처리] 인식된 의도: {intent_data.get('intent_type')}, 신뢰도: {intent_data.get('confidence')}")
             
             # 4. 의도에 따른 프로세서 선택 및 처리
             processor = self.processor_factory.get_processor(intent_data["intent_type"])
-            print(f"[요청 처리] 선택된 프로세서: {processor.__class__.__name__}")
+            # print(f"[요청 처리] 선택된 프로세서: {processor.__class__.__name__}")
             # 혹시라도 클래스가 넘어오면 즉석 인스턴스화
             if isinstance(processor, type):
                 processor = processor(
@@ -180,21 +180,21 @@ class IntentService:
             
             # 프로세서 처리 후 세션 다시 가져와서 상태 출력
             updated_session = self.session_manager.get_session(session_id)
-            print(f"[요청 처리] 프로세서 처리 후 장바구니: {len(updated_session.get('cart', []))}")
+            # print(f"[요청 처리] 프로세서 처리 후 장바구니: {len(updated_session.get('cart', []))}")
             
             # 중요: 응답에 장바구니 보강 - 세션에서 최신 장바구니 정보를 가져와 응답에 추가
             if "data" in response:
                 # 여기가 가장 중요한 변경: 항상 최신 장바구니 정보를 가져와서 응답에 포함
                 latest_cart = self.session_manager.get_cart(session_id)
                 response["data"]["cart"] = latest_cart
-                print(f"[응답 보강] 최종 장바구니 항목 수: {len(latest_cart)}")
+                # print(f"[응답 보강] 최종 장바구니 항목 수: {len(latest_cart)}")
             
             # 5. 대화 기록 저장
             self.session_manager.add_to_history(session_id, text, response)
             
             return response
         except Exception as e:
-            print(f"[요청 처리 오류] {e}")
+            # print(f"[요청 처리 오류] {e}")
             import traceback
             traceback.print_exc()
             
@@ -222,7 +222,7 @@ class IntentService:
         if not session_id:
             # 세션 ID가 없으면 새로 생성
             session_id = self.session_manager.create_session()
-            print(f"[요청 처리] 새 세션 생성: {session_id}")
+            # print(f"[요청 처리] 새 세션 생성: {session_id}")
         else:
             # 기존 세션이 없으면 외부 ID로 생성
             if not self.session_manager.get_session(session_id):
@@ -275,7 +275,7 @@ class IntentService:
 
     def _start_queued_menu_processing(self, menu_data: Dict[str, Any], text: str, language: str, screen_state: str, store_id: int, session: Dict[str, Any]) -> Dict[str, Any]:
         """대기열에서 첫 번째 메뉴를 처리 시작"""
-        print(f"[대기열 처리] 시작: 메뉴={menu_data.get('menu_name', '')}")
+        # print(f"[대기열 처리] 시작: 메뉴={menu_data.get('menu_name', '')}")
         session_id = session.get("id", "")
         
         # 메뉴 정보 가져오기
@@ -284,7 +284,7 @@ class IntentService:
         # 메뉴 검색
         full_menu = self.menu_service.find_menu_by_name(menu_name, store_id)
         if not full_menu:
-            print(f"[대기열 처리] 메뉴 찾기 실패: {menu_name}")
+            # print(f"[대기열 처리] 메뉴 찾기 실패: {menu_name}")
             
             # 대기열에서 현재 메뉴 제거
             #self.session_manager.remove_from_order_queue(session_id)
@@ -336,7 +336,7 @@ class IntentService:
         
         # 필수 옵션이 누락된 경우
         if menu_status == ResponseStatus.MISSING_REQUIRED_OPTIONS:
-            print("[대기열 처리] 필수 옵션 누락")
+            # print("[대기열 처리] 필수 옵션 누락")
             # 다음 필수 옵션 가져오기
             next_option = option_handler.get_next_required_option(full_menu)
             
@@ -383,7 +383,7 @@ class IntentService:
         
         # 장바구니에 추가 가능한 경우
         elif menu_status == ResponseStatus.READY_TO_ADD_CART:
-            print("[대기열 처리] 장바구니 추가 가능")
+            # print("[대기열 처리] 장바구니 추가 가능")
             # 장바구니에 추가
             self.session_manager.add_to_cart(session_id, full_menu)
             
