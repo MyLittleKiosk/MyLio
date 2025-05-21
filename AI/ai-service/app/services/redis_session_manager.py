@@ -81,7 +81,7 @@ class RedisSessionManager:
             
             return session_dict
         except Exception as e:
-            print(f"세션 데이터 파싱 오류: {e}")
+            # print(f"세션 데이터 파싱 오류: {e}")
             return None
     
     def update_session(self, session_id: str, session_data: Dict[str, Any]) -> bool:
@@ -107,7 +107,7 @@ class RedisSessionManager:
             # 세션 가져오기
             session = self.get_session(session_id)
             if not session:
-                print(f"[카트 추가 실패] 세션 없음: {session_id}")
+                # print(f"[카트 추가 실패] 세션 없음: {session_id}")
                 return False
             
             # 장바구니 초기화
@@ -141,7 +141,7 @@ class RedisSessionManager:
                         cart_item["selected_options"].append(_build_selected_option(option))
 
             # 장바구니에 추가
-            print(f"[카트 추가] 카트 아이템: {cart_item}")
+            # print(f"[카트 추가] 카트 아이템: {cart_item}")
             session["cart"].append(cart_item)
             
             # 세션 저장
@@ -152,28 +152,28 @@ class RedisSessionManager:
             if updated_session and "cart" in updated_session:
                 current_count = len(updated_session["cart"])
                 if current_count > previous_count:
-                    print(f"[카트 추가 성공] 이전: {previous_count}, 현재: {current_count}")
+                    # print(f"[카트 추가 성공] 이전: {previous_count}, 현재: {current_count}")
                     return True
                 else:
-                    print(f"[카트 추가 실패] 항목 수가 증가하지 않음. 이전: {previous_count}, 현재: {current_count}")
+                    # print(f"[카트 추가 실패] 항목 수가 증가하지 않음. 이전: {previous_count}, 현재: {current_count}")
                     return False
             
             return success
         except Exception as e:
-            print(f"[카트 추가 실패] 예외 발생: {str(e)}")
+            # print(f"[카트 추가 실패] 예외 발생: {str(e)}")
             return False
     
     def get_cart(self, session_id: str) -> List[Dict[str, Any]]:
         """장바구니 조회"""
         session = self.get_session(session_id)
-        print(f"[장바구니 조회] 세션 ID: {session_id}, 세션 존재 여부: {session is not None}")
+        # print(f"[장바구니 조회] 세션 ID: {session_id}, 세션 존재 여부: {session is not None}")
         
         if not session:
-            print(f"[장바구니 조회 실패] 세션 없음: {session_id}")
+            # print(f"[장바구니 조회 실패] 세션 없음: {session_id}")
             return []
         
         cart = session.get("cart", [])
-        print(f"[장바구니 조회 결과] 세션 ID: {session_id}, 항목 수: {len(cart)}, 항목: {[item.get('name') for item in cart]}")
+        # print(f"[장바구니 조회 결과] 세션 ID: {session_id}, 항목 수: {len(cart)}, 항목: {[item.get('name') for item in cart]}")
         
         return cart
     
@@ -204,8 +204,8 @@ class RedisSessionManager:
         session["history"].append(history_entry)
         
         # 디버깅 로그
-        print(f"[대화 기록] 추가됨 - 사용자: '{user_input}', 응답: '{system_response.get('data', {}).get('reply', '')}'")
-        print(f"[세션 상태] 업데이트 후 - last_state: {session.get('last_state', {})}")
+        # print(f"[대화 기록] 추가됨 - 사용자: '{user_input}', 응답: '{system_response.get('data', {}).get('reply', '')}'")
+        # print(f"[세션 상태] 업데이트 후 - last_state: {session.get('last_state', {})}")
         
         # 세션 저장
         self._save_session(session_id, session)
@@ -227,7 +227,7 @@ class RedisSessionManager:
     def _save_session(self, session_id: str, session_data: Dict[str, Any]) -> bool:
         """세션 데이터를 Redis에 저장 (검증 강화)"""
         if not session_id:
-            print("[오류] 세션 저장 실패: 세션 ID가 없습니다.")
+            # print("[오류] 세션 저장 실패: 세션 ID가 없습니다.")
             return False
         
         # 세션 ID 일관성 확보
@@ -263,7 +263,7 @@ class RedisSessionManager:
             try:
                 session_json = json.dumps(sanitized)
             except Exception as json_error:
-                print(f"[세션 저장] JSON 변환 실패: {json_error}")
+                # print(f"[세션 저장] JSON 변환 실패: {json_error}")
                 
                 # 최소 필수 데이터만 저장
                 minimal_data = {
@@ -281,13 +281,13 @@ class RedisSessionManager:
             # Redis에 저장 (TTL 설정)
             result = self.redis.setex(session_key, self.timeout, session_json)
             if not result:
-                print(f"[오류] Redis 저장 실패: {session_id}")
+                # print(f"[오류] Redis 저장 실패: {session_id}")
                 return False
             
             # 저장 결과 검증
             stored_data = self.redis.get(session_key)
             if not stored_data:
-                print(f"[오류] 저장 검증 실패: 저장 직후 데이터를 읽을 수 없음. (ID: {session_id})")
+                # print(f"[오류] 저장 검증 실패: 저장 직후 데이터를 읽을 수 없음. (ID: {session_id})")
                 return False
             
             # 장바구니 및 대기열 특별 검증
@@ -295,7 +295,7 @@ class RedisSessionManager:
                 try:
                     stored_data = self.redis.get(session_key)
                     if not stored_data:
-                        print(f"[오류] 저장 검증 실패: 저장 직후 데이터를 읽을 수 없음. (ID: {session_id})")
+                        # print(f"[오류] 저장 검증 실패: 저장 직후 데이터를 읽을 수 없음. (ID: {session_id})")
                         return False
                         
                     stored_json = json.loads(stored_data)
@@ -303,7 +303,7 @@ class RedisSessionManager:
                     # 장바구니 검증
                     if "cart" in session_data and session_data["cart"]:
                         if "cart" not in stored_json:
-                            print(f"[오류] 장바구니 데이터 손실: 원본에는 있으나 저장된 데이터에 없음")
+                            # print(f"[오류] 장바구니 데이터 손실: 원본에는 있으나 저장된 데이터에 없음")
                             # 다시 저장 시도
                             self.redis.setex(session_key, self.timeout, session_json)
                             return True  # 재시도 후 성공으로 처리
@@ -314,7 +314,7 @@ class RedisSessionManager:
                     # 대기열 검증
                     if "order_queue" in session_data and session_data["order_queue"]:
                         if "order_queue" not in stored_json:
-                            print(f"[오류] 대기열 데이터 손실: 원본에는 있으나 저장된 데이터에 없음")
+                            # print(f"[오류] 대기열 데이터 손실: 원본에는 있으나 저장된 데이터에 없음")
                             # 대기열 정보만 다시 저장 (중요)
                             queue_only = {"order_queue": session_data["order_queue"]}
                             queue_json = json.dumps(convert_decimal(queue_only))
@@ -322,13 +322,13 @@ class RedisSessionManager:
                             return True  # 재시도 후 성공으로 처리
                 
                 except Exception as e:
-                    print(f"[경고] 저장 후 검증 중 오류: {e}")
+                    # print(f"[경고] 저장 후 검증 중 오류: {e}")
                     return True  # 검증 중 오류가 있어도 성공으로 처리
             
             return True
                 
         except Exception as e:
-            print(f"[세션 저장 오류] {e}")
+            # print(f"[세션 저장 오류] {e}")
             import traceback
             traceback.print_exc()
             return False
@@ -595,11 +595,11 @@ class RedisSessionManager:
             if hasattr(self, '_session_cache') and session_id in self._session_cache:
                 del self._session_cache[session_id]
             
-            print(f"[세션 삭제] 세션 ID: {session_id}, 결과: {deleted > 0}")
+            # print(f"[세션 삭제] 세션 ID: {session_id}, 결과: {deleted > 0}")
             return deleted > 0
         
         except Exception as e:
-            print(f"[세션 삭제 오류] 세션 ID: {session_id}, 오류: {e}")
+            # print(f"[세션 삭제 오류] 세션 ID: {session_id}, 오류: {e}")
             return False
 
     def cleanup_expired_sessions(self, max_idle_time_minutes: int = 60) -> int:
@@ -640,14 +640,14 @@ class RedisSessionManager:
                 
                 except Exception as e:
                     # 개별 세션 처리 중 오류 무시하고 계속 진행
-                    print(f"[세션 정리 중 오류] 키: {key}, 오류: {e}")
+                    # print(f"[세션 정리 중 오류] 키: {key}, 오류: {e}")
                     continue
             
-            print(f"[세션 정리 완료] 삭제된 세션 수: {deleted_count}")
+            # print(f"[세션 정리 완료] 삭제된 세션 수: {deleted_count}")
             return deleted_count
         
         except Exception as e:
-            print(f"[세션 정리 오류] {e}")
+            # print(f"[세션 정리 오류] {e}")
             return 0
 
     def get_all_sessions_info(self) -> Dict[str, Any]:
@@ -691,7 +691,7 @@ class RedisSessionManager:
                 
                 except Exception as e:
                     # 개별 세션 처리 중 오류 무시하고 계속 진행
-                    print(f"[세션 정보 수집 중 오류] 키: {key}, 오류: {e}")
+                    # print(f"[세션 정보 수집 중 오류] 키: {key}, 오류: {e}")
                     continue
             
             # 평균 세션 크기 계산
@@ -707,7 +707,7 @@ class RedisSessionManager:
             }
         
         except Exception as e:
-            print(f"[세션 정보 수집 오류] {e}")
+            # print(f"[세션 정보 수집 오류] {e}")
             return {
                 "error": str(e),
                 "total_sessions": 0,
@@ -734,7 +734,7 @@ class RedisSessionManager:
                     # 사이즈가 기준보다 크면 삭제
                     if size_kb > max_size_kb:
                         session_id = key.decode('utf-8').replace(self.prefix, "")
-                        print(f"[큰 세션 발견] 세션 ID: {session_id}, 크기: {size_kb:.2f} KB")
+                        # print(f"[큰 세션 발견] 세션 ID: {session_id}, 크기: {size_kb:.2f} KB")
                         
                         # 가능하면 세션을 정리하고 다시 저장 (완전 삭제 대신)
                         try:
@@ -751,7 +751,7 @@ class RedisSessionManager:
                             # 다시 저장
                             minimal_data = json.dumps(minimal_session)
                             self.redis.setex(key, self.timeout, minimal_data)
-                            print(f"[세션 최소화] 세션 ID: {session_id}, 새 크기: {len(minimal_data) / 1024:.2f} KB")
+                            # print(f"[세션 최소화] 세션 ID: {session_id}, 새 크기: {len(minimal_data) / 1024:.2f} KB")
                             deleted_count += 1
                         except:
                             # 정리 실패 시 완전 삭제
@@ -760,14 +760,14 @@ class RedisSessionManager:
                 
                 except Exception as e:
                     # 개별 세션 처리 중 오류 무시하고 계속 진행
-                    print(f"[세션 정리 중 오류] 키: {key}, 오류: {e}")
+                    # print(f"[세션 정리 중 오류] 키: {key}, 오류: {e}")
                     continue
             
-            print(f"[큰 세션 정리 완료] 처리된 세션 수: {deleted_count}")
+            # print(f"[큰 세션 정리 완료] 처리된 세션 수: {deleted_count}")
             return deleted_count
         
         except Exception as e:
-            print(f"[세션 정리 오류] {e}")
+            # print(f"[세션 정리 오류] {e}")
             return 0
 
     def set_session_timeout(self, session_id: str, timeout_seconds: int = None) -> bool:
@@ -792,7 +792,7 @@ class RedisSessionManager:
             return True
         
         except Exception as e:
-            print(f"[세션 타임아웃 설정 오류] 세션 ID: {session_id}, 오류: {e}")
+            # print(f"[세션 타임아웃 설정 오류] 세션 ID: {session_id}, 오류: {e}")
             return False
 
     def add_to_order_queue(self, session_id: str, menus: List[Dict[str, Any]]) -> bool:
@@ -817,12 +817,12 @@ class RedisSessionManager:
         queue_exists = session and "order_queue" in session and session["order_queue"]
         
         if not queue_exists:
-            print(f"[대기열 조회] 세션 ID: {session_id}, 대기열 비어있음")
+            # print(f"[대기열 조회] 세션 ID: {session_id}, 대기열 비어있음")
             return None
         
         # 첫 번째 메뉴 가져오기 (pop하지 않고 peek만)
         first_menu = session["order_queue"][0]
-        print(f"[대기열 조회] 세션 ID: {session_id}, 다음 메뉴: {first_menu.get('name_kr', '') or first_menu.get('menu_name', '') or first_menu.get('name', '')}")
+        # print(f"[대기열 조회] 세션 ID: {session_id}, 다음 메뉴: {first_menu.get('name_kr', '') or first_menu.get('menu_name', '') or first_menu.get('name', '')}")
         return first_menu
 
     def remove_from_order_queue(self, session_id: str) -> bool:
@@ -831,24 +831,24 @@ class RedisSessionManager:
         queue_exists = session and "order_queue" in session and session["order_queue"]
         
         if not queue_exists:
-            print(f"[대기열 제거] 세션 ID: {session_id}, 대기열 비어있음")
+            # print(f"[대기열 제거] 세션 ID: {session_id}, 대기열 비어있음")
             return False
         
         # 제거 전 메뉴 확인
         first_menu = session["order_queue"][0]
         menu_name = first_menu.get('name_kr', '') or first_menu.get('menu_name', '') or first_menu.get('name', '')
-        print(f"[대기열 제거] 세션 ID: {session_id}, 제거할 메뉴: {menu_name}")
+        # print(f"[대기열 제거] 세션 ID: {session_id}, 제거할 메뉴: {menu_name}")
         
         # 첫 번째 메뉴 제거
         session["order_queue"].pop(0)
-        print(f"[대기열 제거] 세션 ID: {session_id}, 제거 후 크기: {len(session['order_queue'])}")
+        # print(f"[대기열 제거] 세션 ID: {session_id}, 제거 후 크기: {len(session['order_queue'])}")
         
         # 세션 저장 및 결과 확인
         result = self._save_session(session_id, session)
         # 저장 후 세션 다시 확인하여 변경 사항이 반영되었는지 검증
         updated_session = self.get_session(session_id)
         updated_queue_size = len(updated_session.get("order_queue", [])) if updated_session and "order_queue" in updated_session else 0
-        print(f"[대기열 제거 검증] 세션 ID: {session_id}, 저장 후 대기열 크기: {updated_queue_size}")
+        # print(f"[대기열 제거 검증] 세션 ID: {session_id}, 저장 후 대기열 크기: {updated_queue_size}")
         
         return result
     
@@ -861,13 +861,13 @@ class RedisSessionManager:
     def update_session_field(self, session_id: str, field: str, value: Any) -> bool:
         """세션의 특정 필드만 업데이트"""
         if not session_id:
-            print(f"[오류] 세션 ID가 없음: 필드 {field} 업데이트 실패")
+            # print(f"[오류] 세션 ID가 없음: 필드 {field} 업데이트 실패")
             return False
         
         # 기존 세션 가져오기
         session = self.get_session(session_id)
         if not session:
-            print(f"[오류] 세션을 찾을 수 없음: {session_id}, 필드 {field} 업데이트 실패")
+            # print(f"[오류] 세션을 찾을 수 없음: {session_id}, 필드 {field} 업데이트 실패")
             return False
         
         # 필드 업데이트
