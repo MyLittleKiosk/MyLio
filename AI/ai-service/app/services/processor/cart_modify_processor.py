@@ -363,44 +363,58 @@ class CartModifyProcessor(BaseProcessor):
                         menu_info: Dict[str, Any],
                         target_item: Dict[str, Any],
                         new_options: List[Dict[str, Any]]):
-        # 기존 선택 옵션 초기화
-        target_item["selected_options"] = []
-        base_price = menu_info["price"]
-        extras_sum = 0
+        """
+        menu_info: 메뉴 컨텍스트
+        target_item: 장바구니 항목 dict
+        new_options: LLM이 준 [{'option_name','option_value',…}, …]
+        """
+        # 1) 기존 선택 옵션 복사
+        existing = target_item.get("selected_options", []).copy()
 
+        # 2) 메뉴 메타에서 기본 가격 가져오기
+        base_price = menu_info["price"]
+
+        # 3) 새로 적용할 옵션별 처리
         for opt in new_options:
-            name = opt["option_name"].lower()
+            name  = opt["option_name"].lower()
             value = opt["option_value"].lower()
 
-            # 1) Option 메타 찾기
-            opt_meta = next(
-                (o for o in menu_info["options"]
-                if o["option_name"].lower() == name),
-                None
-            )
+            # a) Option 메타 찾기
+            opt_meta = next((o for o in menu_info["options"]
+                            if o["option_name"].lower() == name), None)
             if not opt_meta:
                 raise ValueError(f"알 수 없는 옵션명: {opt['option_name']}")
 
-            # 2) OptionDetail 찾기
-            detail = next(
-                (d for d in opt_meta["option_details"]
-                if d["value"].lower() == value),
-                None
-            )
+            # b) OptionDetail 찾기
+            detail = next((d for d in opt_meta["option_details"]
+                        if d["value"].lower() == value), None)
             if not detail:
                 raise ValueError(
                     f"옵션 '{opt['option_name']}'에 '{opt['option_value']}' 값이 없습니다."
                 )
 
-            # 3) 선택 옵션 추가
-            target_item["selected_options"].append({
-                "option_id":     opt_meta["option_id"],
-                "option_name":   opt_meta["option_name"],
-                "selected_id":   detail["id"],
-                "option_details":[detail],
-            })
-            extras_sum += detail.get("additional_price", 0)
+            # c) 같은 옵션명은 기존 리스트에서 제거
+            existing = [
+                o for o in existing
+                if o["option_name"].lower() != name
+            ]
 
-        # 4) 가격 재계산
+            # d) 새 옵션 항목 추가
+            existing.append({
+                "option_id":       opt_meta["option_id"],
+                "option_name":     opt_meta["option_name"],
+                "selected_id":     detail["id"],
+                "option_details": [detail],
+            })
+
+        # 4) 기존에는 없던 다른 옵션들은 그대로 살리고, existing이 최종 리스트
+        target_item["selected_options"] = existing
+
+        # 5) 가격 재계산: 기본가 + 모든 선택된 옵션의 추가금 합
+        extras = sum(
+            d["additional_price"]
+            for opt in existing
+            for d in opt["option_details"]
+        )
         target_item["base_price"]  = base_price
-        target_item["total_price"] = base_price + extras_sum
+        target_item["total_price"] = base_price + extras
