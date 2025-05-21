@@ -12,7 +12,7 @@ const CardPay = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       sessionStorage.setItem('cartItem', JSON.stringify(order.cart));
-      if (order.payment !== 'PAY') {
+      if (order.payment !== 'PAY' && payMethod !== 'PAY') {
         postSuccess({
           orderId: order.sessionId || '',
           pgToken: null,
