@@ -1,12 +1,12 @@
 import RecordButton, { RecordButtonRef } from '@/components/Chat/RecordButton';
 import clsx from 'clsx';
-import { useMemo, useState, useRef, useEffect } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import Item from '@/pages/OrderLayout/Item';
 import useOrderStore from '@/stores/useOrderStore';
 import { useOrderRequest } from '@/service/queries/order';
-import PitchDetector, {
-  PitchDetectorRef,
-} from '@/components/Chat/PitchDetector';
+// import PitchDetector, {
+//   PitchDetectorRef,
+// } from '@/components/Chat/PitchDetector';
 const FOOTER_PATHS = [
   '/kiosk/search',
   '/kiosk',
@@ -27,14 +27,14 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
   const order = useOrderStore((state) => state.order);
   const { mutate } = useOrderRequest();
   const recordButtonRef = useRef<RecordButtonRef>(null);
-  const pitchDetectorRef = useRef<PitchDetectorRef>(null);
+  // const pitchDetectorRef = useRef<PitchDetectorRef>(null);
 
   // order가 변경될 때마다 PitchDetector 초기화
-  useEffect(() => {
-    if (pitchDetectorRef.current) {
-      pitchDetectorRef.current.reset();
-    }
-  }, [order]);
+  // useEffect(() => {
+  //   if (pitchDetectorRef.current) {
+  //     pitchDetectorRef.current.reset();
+  //   }
+  // }, [order]);
 
   const cartList = useMemo(() => {
     if (order.cart.length === 0) {
@@ -137,7 +137,7 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
           </button>
         </div>
       )}
-      {recordingMethod === 'pitch' && (
+      {/* {recordingMethod === 'pitch' && (
         <PitchDetector
           ref={pitchDetectorRef}
           onRecognitionResult={handleRecognitionResult}
@@ -162,7 +162,7 @@ const Footer = ({ handleRecognitionResult, pathname }: FooterProps) => {
             recordButtonRef.current?.updatePreBuffer(buffer);
           }}
         />
-      )}
+      )} */}
       <RecordButton
         ref={recordButtonRef}
         onRecognitionResult={handleRecognitionResult}
