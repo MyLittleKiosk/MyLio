@@ -265,13 +265,13 @@ class CartModifyProcessor(BaseProcessor):
         elif action_type == "QUANTITY":
             # 현재 수량
             current_quantity = target_item.get("quantity", 1)
-            num = intent_data["quantity_change"] or intent_data["quantity"]
+            print(f"현재 수량 : {current_quantity}")
             if "quantity_change" in intent_data:
                 # ± 증감값
-                new_quantity = intent_data["quantity_change"]
-            elif "quantity" in intent_data:
+                new_quantity = current_quantity + intent_data["quantity_change"]
+            elif "new_quantity" in intent_data:
                 # 절대값
-                new_quantity = intent_data["quantity"]
+                new_quantity = intent_data["new_quantity"]
             else:
                 reply = llm_reply or "변경할 수량을 명확히 말씀해주세요."
                 return self._build_response(
@@ -279,7 +279,14 @@ class CartModifyProcessor(BaseProcessor):
                     ResponseStatus.UNKNOWN, reply=reply, new_screen_state=ScreenState.CONFIRM
                 )
             
-             # 실제 업데이트
+             
+            if new_quantity <= 0:
+                reply = "수량은 1개 이상이어야 합니다."
+                return self._build_response(
+                    intent_data, text, language, screen_state, store_id, session,
+                    ResponseStatus.UNKNOWN, reply=reply, new_screen_state=ScreenState.CONFIRM
+                )
+            # 실제 업데이트
             if new_quantity == current_quantity:
                 reply = llm_reply or "이미 해당 수량으로 설정되어 있어요."
             else:

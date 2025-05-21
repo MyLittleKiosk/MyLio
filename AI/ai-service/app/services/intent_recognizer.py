@@ -88,12 +88,27 @@ class IntentRecognizer:
 
             # ② 수량 변경
             if self._is_cart_quantity_update_intent(text, language):
+                menu_name = self._extract_menu_name_from_cart(text, session, language) or ""
+    
+                # 1) 절대값 의도 검사 ('…개로', '…잔으로' 등의 패턴)
+                new_qty = self._extract_new_quantity(text, language)
+                if new_qty is not None:
+                    return {
+                        **result,
+                        "intent_type": IntentType.CART_MODIFY,
+                        "action_type": "QUANTITY",
+                        "menu_name": menu_name,
+                        "new_quantity": new_qty,       # 절대값
+                    }
+                
+                # 2) 절대값이 아니라면 기존 로직대로 증감량 추출
+                qty_change = self._extract_quantity_change(text, language)
                 return {
                     **result,
                     "intent_type": IntentType.CART_MODIFY,
                     "action_type": "QUANTITY",
-                    "menu_name": self._extract_menu_name_from_cart(text, session, language) or "",
-                    "quantity_change": self._extract_quantity_change(text, language),
+                    "menu_name": menu_name,
+                    "quantity_change": qty_change,  # 증감량
                 }
 
             # ③ 옵션 변경(UPDATE) — LLM 파싱 결과에 담긴 new_options를 그대로 살려 보냅니다.
@@ -1335,6 +1350,65 @@ class IntentRecognizer:
                 
         # 기본값: 추가는 1, 감소는 -1
         return -1 if decrease else 1
+
+    def _extract_new_quantity(self, text: str, language: str) -> Optional[int]:
+        """
+        '…개로', '…잔으로', '…개만큼', '…잔만큼', '…개만큼만', '…개로만', 
+        혹은 영어 'to X', 'set X', 'change to X' 패턴에서 절대값 수량을 추출.
+        """
+        text_lower = text.lower().strip()
+        
+        # 1) 한국어: 숫자 단어 매핑
+        kor_mapping = {
+            "한": 1, "하나": 1, "한개": 1, "한잔": 1,
+            "두": 2, "둘": 2, "두개": 2, "두잔": 2,
+            "세": 3, "셋": 3, "세개": 3, "세잔": 3,
+            "네": 4, "넷": 4, "네개": 4, "네잔": 4,
+            "다섯": 5, "다섯개": 5, "다섯잔": 5
+        }
+        
+        # 2) 절대 패턴 우선 매칭: 숫자 단어 + (개|잔) + (로|만큼)
+        #    ex) "두개로", "3잔만큼", "1개로만", "네잔만큼만"
+        kor_pattern = re.compile(
+            rf"({'|'.join(map(re.escape, kor_mapping.keys()))}|\d+)(?:개|잔)?(?:로|만큼)\b"
+        )
+        m = kor_pattern.search(text_lower)
+        if m:
+            token = m.group(1)
+            # 숫자 단어인지, 숫자 문자열인지 구분
+            if token.isdigit():
+                return int(token)
+            return kor_mapping.get(token, None)
+
+        # 3) 숫자+단위 없이 '…개만큼만', '…개로만' 같은 패턴
+        kor_simple_pattern = re.compile(r"(\d+)(?:개|잔)?만큼\b")
+        m2 = kor_simple_pattern.search(text_lower)
+        if m2:
+            return int(m2.group(1))
+
+        # 4) 영어: "to 2", "set to 3", "change to 4", "make it 5"
+        #    ex) "change to 2", "set to three"
+        #    숫자 단어 매핑 (영어)
+        eng_word_mapping = {
+            "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
+            "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10
+        }
+        # 먼저 문장 내 숫자 단어 직접 매핑
+        for word, num in eng_word_mapping.items():
+            # 단어 경계로 매핑
+            if re.search(rf"\b{word}\b", text_lower):
+                # 'to one', 'to two' 등의 패턴인지 확인
+                if re.search(rf"(to\s+{word}|set\s+to\s+{word}|change\s+to\s+{word})", text_lower):
+                    return num
+        
+        # 숫자+문자열 'to 3', 'to 10'
+        eng_digit_pattern = re.compile(r"\bto\s+(\d+)\b")
+        m3 = eng_digit_pattern.search(text_lower)
+        if m3:
+            return int(m3.group(1))
+
+        # 5) fallback: 절대 패턴이 없으면 None 반환
+        return None
         
     def _extract_menu_name_from_cart(self, text: str, session: Dict[str, Any], language: str) -> Optional[str]:
         """장바구니 수정 요청에서 메뉴 이름 추출"""
