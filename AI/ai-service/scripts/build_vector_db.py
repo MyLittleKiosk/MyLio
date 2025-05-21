@@ -16,7 +16,7 @@ from app.services.menu_service import MenuService
 
 def main():
     """메뉴 데이터로 벡터 DB 구축"""
-    print("벡터 DB 구축 시작")
+    # print("벡터 DB 구축 시작")
     start_time = time.time()
     
     # 메뉴 서비스 초기화
@@ -45,7 +45,7 @@ def main():
     
     end_time = time.time()
     
-    # print(f"벡터 DB 구축 완료: {menu_count}개 메뉴, 소요 시간: {end_time - start_time:.2f}초")
+    # # print(f"벡터 DB 구축 완료: {menu_count}개 메뉴, 소요 시간: {end_time - start_time:.2f}초")
 
 if __name__ == "__main__":
     main()

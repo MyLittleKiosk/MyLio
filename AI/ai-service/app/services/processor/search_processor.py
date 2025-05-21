@@ -79,13 +79,13 @@ class SearchProcessor(BaseProcessor):
                 }
             }
             
-            print(f"[검색 처리] 검색 결과 수: {len(cleaned_results)}")
-            print(f"[검색 처리] 응답: {json.dumps(response, ensure_ascii=False)}")
+            # print(f"[검색 처리] 검색 결과 수: {len(cleaned_results)}")
+            # print(f"[검색 처리] 응답: {json.dumps(response, ensure_ascii=False)}")
             
             return response
             
         except Exception as e:
-            print(f"[검색 처리 오류] {e}")
+            # print(f"[검색 처리 오류] {e}")
             import traceback
             traceback.print_exc()
             
@@ -159,7 +159,7 @@ class SearchProcessor(BaseProcessor):
             return result
             
         except Exception as e:
-            print(f"[벡터 DB] 쿼리 분석 오류: {e}")
+            # print(f"[벡터 DB] 쿼리 분석 오류: {e}")
             
             # 오류 발생 시 기본 분석 결과 제공
             is_decaf = self._is_decaf_search(query)

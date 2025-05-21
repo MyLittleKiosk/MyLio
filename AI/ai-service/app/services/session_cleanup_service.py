@@ -25,7 +25,7 @@ class SessionCleanupService:
     def start_scheduler(self) -> bool:
         """세션 정리 스케줄러 시작"""
         if self.running:
-            print("[세션 정리] 스케줄러가 이미 실행 중입니다.")
+            # print("[세션 정리] 스케줄러가 이미 실행 중입니다.")
             return False
         
         # 스케줄 설정
@@ -44,20 +44,20 @@ class SessionCleanupService:
         self.scheduler_thread.daemon = True  # 메인 스레드 종료 시 함께 종료
         self.scheduler_thread.start()
         
-        print("[세션 정리] 스케줄러가 시작되었습니다.")
+        # print("[세션 정리] 스케줄러가 시작되었습니다.")
         return True
     
     def stop_scheduler(self) -> bool:
         """세션 정리 스케줄러 중지"""
         if not self.running:
-            print("[세션 정리] 스케줄러가 실행 중이 아닙니다.")
+            # print("[세션 정리] 스케줄러가 실행 중이 아닙니다.")
             return False
         
         self.running = False
         if self.scheduler_thread:
             self.scheduler_thread.join(timeout=1.0)
         
-        print("[세션 정리] 스케줄러가 중지되었습니다.")
+        # print("[세션 정리] 스케줄러가 중지되었습니다.")
         return True
     
     def _run_scheduler(self) -> None:
@@ -69,7 +69,7 @@ class SessionCleanupService:
     def cleanup_expired_sessions(self, max_idle_time_minutes: int = 60) -> int:
         """만료된 세션 정리 (스케줄러에서 호출)"""
         try:
-            print(f"[세션 정리] 만료된 세션 정리 시작 (최대 유휴 시간: {max_idle_time_minutes}분)")
+            # print(f"[세션 정리] 만료된 세션 정리 시작 (최대 유휴 시간: {max_idle_time_minutes}분)")
             
             # 세션 정리 실행
             cleaned = self.session_manager.cleanup_expired_sessions(max_idle_time_minutes)
@@ -79,18 +79,18 @@ class SessionCleanupService:
             self.cleanup_stats["total_cleaned"] += cleaned
             self.cleanup_stats["last_cleaned"] = cleaned
             
-            print(f"[세션 정리] 완료: {cleaned}개 세션 정리됨")
+            # print(f"[세션 정리] 완료: {cleaned}개 세션 정리됨")
             return cleaned
         
         except Exception as e:
-            print(f"[세션 정리] 오류: {e}")
+            # print(f"[세션 정리] 오류: {e}")
             self.cleanup_stats["error_count"] += 1
             return 0
     
     def cleanup_large_sessions(self, max_size_kb: int = 100) -> int:
         """큰 세션 정리 (스케줄러에서 호출)"""
         try:
-            print(f"[세션 정리] 큰 세션 정리 시작 (최대 크기: {max_size_kb}KB)")
+            # print(f"[세션 정리] 큰 세션 정리 시작 (최대 크기: {max_size_kb}KB)")
             
             # 큰 세션 정리 실행
             cleaned = self.session_manager.cleanup_large_sessions(max_size_kb)
@@ -100,11 +100,11 @@ class SessionCleanupService:
             self.cleanup_stats["total_cleaned"] += cleaned
             self.cleanup_stats["last_cleaned"] = cleaned
             
-            print(f"[세션 정리] 완료: {cleaned}개 큰 세션 정리됨")
+            # print(f"[세션 정리] 완료: {cleaned}개 큰 세션 정리됨")
             return cleaned
         
         except Exception as e:
-            print(f"[세션 정리] 오류: {e}")
+            # print(f"[세션 정리] 오류: {e}")
             self.cleanup_stats["error_count"] += 1
             return 0
     
