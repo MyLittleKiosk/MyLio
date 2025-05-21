@@ -7,8 +7,8 @@ import { useLogout, useRefresh } from '@/service/queries/user';
 import useOrderStore from '@/stores/useOrderStore';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const OrderLayout = () => {
   const { pathname } = useLocation();
@@ -18,7 +18,7 @@ const OrderLayout = () => {
   const { mutate: logout } = useLogout();
   const { mutate: refresh } = useRefresh();
   const navigate = useNavigate();
-  // const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const kioskId = localStorage.getItem('kioskId');
@@ -74,9 +74,9 @@ const OrderLayout = () => {
     onSuccess: handleLogout,
   });
 
-  // function testHandleRecognitionResult() {
-  //   handleRecognitionResult(inputRef.current?.value || '');
-  // }
+  function testHandleRecognitionResult() {
+    handleRecognitionResult(inputRef.current?.value || '');
+  }
 
   const [isLargeFont, setIsLargeFont] = useState(false);
 
@@ -128,7 +128,7 @@ const OrderLayout = () => {
         className='fixed top-0 right-0 w-20 h-20 z-20 cursor-pointer'
         onClick={handleTopRightClick}
       />
-      {/* <div className='flex justify-center items-center z-10 fixed top-0 left-0 w-full h-[100px] flex-wrap'>
+      <div className='flex justify-center items-center z-10 fixed top-0 left-0 w-full h-[100px] flex-wrap'>
         <ul className='flex justify-center items-center gap-4 rounded-xl p-4'>
           <li>
             <Link to='/kiosk'>홈</Link>
@@ -166,7 +166,7 @@ const OrderLayout = () => {
             </form>
           </div>
         </div>
-      </div> */}
+      </div>
       <header
         className={clsx(
           'flex justify-center items-center relative',
