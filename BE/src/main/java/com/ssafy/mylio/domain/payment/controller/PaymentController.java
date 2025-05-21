@@ -7,6 +7,7 @@ import com.ssafy.mylio.domain.payment.dto.response.ReadyResponseDto;
 import com.ssafy.mylio.domain.payment.entity.PaymentMethod;
 import com.ssafy.mylio.domain.payment.service.PayService;
 import com.ssafy.mylio.domain.payment.service.PaymentFacadeService;
+import com.ssafy.mylio.domain.payment.service.PaymentService;
 import com.ssafy.mylio.global.common.response.CommonResponse;
 import com.ssafy.mylio.global.error.code.ErrorCode;
 import com.ssafy.mylio.global.security.auth.UserPrincipal;
@@ -27,22 +28,17 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
 
     private final AuthenticationUtil authenticationUtil;
-    private final PaymentFacadeService paymentFacadeService;
-
+    private final PaymentService paymentService;
 
     @PostMapping("/ready")
     public ResponseEntity<CommonResponse<ReadyResponseDto>> readyToPay(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestBody PayRequestDto payRequestDto) {
+            @RequestBody PayRequestDto payRequestDto,
+            @RequestParam("pay_method") String payMethod
+        ) {
 
         Integer userId = authenticationUtil.getCurrentUserId(userPrincipal);
-
-        // 리액티브하게 서비스를 찾습니다
-        PayService service = paymentFacadeService.resolve(PaymentMethod.PAY).block();
-
-        // 찾은 서비스로 결제 준비를 시작합니다
-        ReadyResponseDto response = service.readyToPay(userId, payRequestDto).block();
-
+        ReadyResponseDto response = paymentService.readyToPay(userId, payRequestDto, PaymentMethod.fromCode(payMethod)).block();
         return CommonResponse.ok(response);
     }
 
@@ -50,16 +46,14 @@ public class PaymentController {
     @Operation(summary = "카카오페이 결제 성공", description = "카카오페이 결제 성공")
     public ResponseEntity<CommonResponse<ApproveResponseDto>> paySuccess(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestBody KakaoPayApproveRequestDto kakaoDto) {
+            @RequestBody KakaoPayApproveRequestDto kakaoDto,
+            @RequestParam("pay_method") String payMethod
+    ) {
 
         Integer userId = authenticationUtil.getCurrentUserId(userPrincipal);
         Integer storeId = authenticationUtil.getCurrntStoreId(userPrincipal);
 
-        // 리액티브 서비스 조회 후 block
-        PayService service = paymentFacadeService.resolve(PaymentMethod.PAY).block();
-
-        // 결제 승인 처리 후 block
-        ApproveResponseDto response = service.approveToPay(kakaoDto, userId, storeId).block();
+        ApproveResponseDto response = paymentService.approveToPay(kakaoDto, userId, storeId, PaymentMethod.fromCode(payMethod)).block();
         return CommonResponse.ok(response);
     }
 
