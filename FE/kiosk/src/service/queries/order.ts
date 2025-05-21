@@ -7,14 +7,19 @@ import useOrderStore from '@/stores/useOrderStore';
 import { PayRequest } from '@/types/kakaoPay';
 
 export function useOrderRequest() {
-  const { setOrder } = useOrderStore();
+  const { setOrder, order } = useOrderStore();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (order: OrderRequest) => postOrder(order),
     onSuccess: async (data) => {
+      console.log('Order Request Success:', data);
       const state = data.data.screenState;
       setOrder(data.data);
+      console.log('Updated order data:', data.data);
       navigate(`/kiosk${parseState(state)}`);
+    },
+    onError: (error) => {
+      console.error('Order Request Error:', error);
     },
   });
 }

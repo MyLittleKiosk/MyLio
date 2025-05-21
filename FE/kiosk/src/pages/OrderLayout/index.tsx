@@ -35,6 +35,10 @@ const OrderLayout = () => {
 
   function handleRecognitionResult(text: string) {
     setUserChat(text);
+    console.log('Recognition Result:', text);
+    console.log('Current Order State:', order);
+
+    // order 상태를 직접 업데이트하지 않고 API 요청만 보냄
     orderRequest({
       text: text,
       screenState: order.screenState,
