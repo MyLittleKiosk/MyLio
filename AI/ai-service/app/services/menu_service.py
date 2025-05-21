@@ -78,7 +78,7 @@ class MenuService:
         if not menus:
             return
         
-        print(f"메뉴 옵션 로드 시작: store_id={store_id}")
+        # print(f"메뉴 옵션 로드 시작: store_id={store_id}")
         
         # 메뉴와 옵션 매핑 정보 조회 - DISTINCT 추가
         query = """
@@ -94,7 +94,7 @@ class MenuService:
         if not option_maps:
             return
         
-        print(f"조회된 옵션 매핑 수: {len(option_maps)}")
+        # print(f"조회된 옵션 매핑 수: {len(option_maps)}")
         
         # 각 메뉴별로 추가된 옵션 ID 추적
         added_options = {menu_id: set() for menu_id in menus.keys()}
@@ -109,7 +109,7 @@ class MenuService:
             
             # 이미 추가된 옵션인지 확인
             if menu_id in added_options and option_id in added_options[menu_id]:
-                print(f"중복 옵션 스킵: menu_id={menu_id}, option_id={option_id}")
+                # print(f"중복 옵션 스킵: menu_id={menu_id}, option_id={option_id}")
                 continue
             
             # 옵션 추가 기록

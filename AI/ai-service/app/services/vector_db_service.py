@@ -28,7 +28,7 @@
 #         self.chroma_host = os.getenv("CHROMA_HOST", "http://localhost:8000")
 #         self.collection_name = os.getenv("COLLECTION_NAME", "menu_collection")
         
-#         print(f"[벡터 DB] 초기화: 호스트={self.chroma_host}, 컬렉션={self.collection_name}")
+#         # print(f"[벡터 DB] 초기화: 호스트={self.chroma_host}, 컬렉션={self.collection_name}")
         
 #         # URL에서 호스트와 포트 추출
 #         import urllib.parse
@@ -46,14 +46,14 @@
 #         try:
 #             # 새로운 방식으로 먼저 시도
 #             self.client = chromadb.HttpClient(host=host, port=port)
-#             print(f"[벡터 DB] ChromaDB 클라이언트 초기화 성공 (host={host}, port={port})")
+#             # print(f"[벡터 DB] ChromaDB 클라이언트 초기화 성공 (host={host}, port={port})")
 #         except TypeError:
 #             # 구버전 호환성을 위한 시도
 #             try:
 #                 self.client = chromadb.HttpClient(url=self.chroma_host)
-#                 print(f"[벡터 DB] ChromaDB 클라이언트 초기화 성공 (url={self.chroma_host})")
+#                 # print(f"[벡터 DB] ChromaDB 클라이언트 초기화 성공 (url={self.chroma_host})")
 #             except Exception as e:
-#                 print(f"[벡터 DB] ChromaDB 클라이언트 초기화 실패: {e}")
+#                 # print(f"[벡터 DB] ChromaDB 클라이언트 초기화 실패: {e}")
 #                 self.client = None
         
 #         # 컬렉션 초기화 (이미 존재하는지 확인)
@@ -64,7 +64,7 @@
 #         try:
 #             # 클라이언트가 없으면 컬렉션을 초기화할 수 없음
 #             if self.client is None:
-#                 print("[벡터 DB] 클라이언트가 초기화되지 않아 컬렉션을 초기화할 수 없습니다.")
+#                 # print("[벡터 DB] 클라이언트가 초기화되지 않아 컬렉션을 초기화할 수 없습니다.")
 #                 self.collection = None
 #                 return
 
@@ -76,18 +76,18 @@
 #                 # 컬렉션이 있으면 가져오기
 #                 self.collection = self.client.get_collection(name=self.collection_name)
 #                 count = self.collection.count()
-#                 print(f"[벡터 DB] 기존 컬렉션 로드됨: {self.collection_name}, 항목 수: {count}")
+#                 # print(f"[벡터 DB] 기존 컬렉션 로드됨: {self.collection_name}, 항목 수: {count}")
 #             else:
-#                 print(f"[벡터 DB] 컬렉션이 존재하지 않음: {self.collection_name}, 새로 생성합니다.")
+#                 # print(f"[벡터 DB] 컬렉션이 존재하지 않음: {self.collection_name}, 새로 생성합니다.")
 #                 # 컬렉션 생성
 #                 try:
 #                     self.collection = self.client.create_collection(name=self.collection_name)
-#                     print(f"[벡터 DB] 새 컬렉션 생성됨: {self.collection_name}")
+#                     # print(f"[벡터 DB] 새 컬렉션 생성됨: {self.collection_name}")
 #                 except Exception as create_error:
-#                     print(f"[벡터 DB] 컬렉션 생성 실패: {create_error}")
+#                     # print(f"[벡터 DB] 컬렉션 생성 실패: {create_error}")
 #                     self.collection = None
 #         except Exception as e:
-#             print(f"[벡터 DB] 컬렉션 초기화 확인 중 오류: {e}")
+#             # print(f"[벡터 DB] 컬렉션 초기화 확인 중 오류: {e}")
 #             import traceback
 #             traceback.print_exc()
 #             self.collection = None
@@ -96,20 +96,20 @@
 #         """메뉴 데이터로 벡터 DB 초기화"""
 #         # 컬렉션이 초기화되지 않았으면 초기화 실패
 #         if self.collection is None:
-#             print("[벡터 DB] 컬렉션이 초기화되지 않아 메뉴 데이터를 로드할 수 없습니다.")
+#             # print("[벡터 DB] 컬렉션이 초기화되지 않아 메뉴 데이터를 로드할 수 없습니다.")
 #             return 0
 
 #         start_time = time.time()
-#         print("[벡터 DB] 메뉴 데이터로 벡터 DB 초기화 시작")
+#         # print("[벡터 DB] 메뉴 데이터로 벡터 DB 초기화 시작")
 #         """메뉴 데이터로 벡터 DB 초기화"""
 #         start_time = time.time()
-#         print("[벡터 DB] 메뉴 데이터로 벡터 DB 초기화 시작")
+#         # print("[벡터 DB] 메뉴 데이터로 벡터 DB 초기화 시작")
         
 #         # 기존 데이터 삭제
 #         try:
 #             count = self.collection.count()
 #             if count > 0:
-#                 print(f"[벡터 DB] 기존 {count}개 문서 삭제")
+#                 # print(f"[벡터 DB] 기존 {count}개 문서 삭제")
 #                 self.collection.delete()
 #                 # 컬렉션 재생성
 #                 self.collection = self.client.create_collection(
@@ -117,7 +117,7 @@
 #                     embedding_function=self.openai_ef
 #                 )
 #         except Exception as e:
-#             print(f"[벡터 DB] 기존 데이터 삭제 오류: {e}")
+#             # print(f"[벡터 DB] 기존 데이터 삭제 오류: {e}")
         
 #         # 문서, 메타데이터, ID 리스트
 #         documents = []
@@ -127,7 +127,7 @@
 #         # 매장별 메뉴 로드 및 문서 생성
 #         for store_id in store_ids:
 #             store_menus = menu_service.get_store_menus(store_id)
-#             print(f"[벡터 DB] 매장 ID {store_id}: {len(store_menus)} 메뉴 로드됨")
+#             # print(f"[벡터 DB] 매장 ID {store_id}: {len(store_menus)} 메뉴 로드됨")
             
 #             # ChromaDB 문서 생성
 #             for menu_id, menu in store_menus.items():
@@ -182,7 +182,7 @@
         
 #         end_time = time.time()
 #         total_count = self.collection.count()
-#         print(f"[벡터 DB] 초기화 완료: {total_count}개 문서, 소요 시간: {end_time - start_time:.2f}초")
+#         # print(f"[벡터 DB] 초기화 완료: {total_count}개 문서, 소요 시간: {end_time - start_time:.2f}초")
         
 #         return total_count
     
@@ -383,11 +383,11 @@
 #                         "text": results["documents"][0][idx] if "documents" in results else ""
 #                     })
             
-#             print(f"[벡터 DB] 검색 완료: 쿼리='{query}', 결과={len(formatted_results)}개, 소요 시간={query_time:.3f}초")
+#             # print(f"[벡터 DB] 검색 완료: 쿼리='{query}', 결과={len(formatted_results)}개, 소요 시간={query_time:.3f}초")
 #             return formatted_results
             
 #         except Exception as e:
-#             print(f"[벡터 DB] 검색 오류: {e}")
+#             # print(f"[벡터 DB] 검색 오류: {e}")
 #             import traceback
 #             traceback.print_exc()
 #             return []
@@ -402,7 +402,7 @@
 #                 "chroma_host": self.chroma_host
 #             }
 #         except Exception as e:
-#             print(f"[벡터 DB] 통계 조회 오류: {e}")
+#             # print(f"[벡터 DB] 통계 조회 오류: {e}")
 #             return {
 #                 "collection_name": self.collection_name,
 #                 "error": str(e),

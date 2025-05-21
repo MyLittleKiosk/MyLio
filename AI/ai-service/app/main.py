@@ -56,7 +56,7 @@ def get_response_service():
 
 def get_session_manager():
     if not hasattr(app.state, "session_manager") or app.state.session_manager is None:
-        print("[경고] Redis 세션 매니저가 존재하지 않아서 생성합니다.")
+        # print("[경고] Redis 세션 매니저가 존재하지 않아서 생성합니다.")
         app.state.session_manager = RedisSessionManager()
     return app.state.session_manager
 
@@ -75,7 +75,7 @@ def get_intent_service(
 # 초기화 이벤트
 @app.on_event("startup")
 async def startup_event():
-    print("음성 키오스크 API 서비스가 시작되었습니다. (Redis 세션 관리 활성화)")
+    # print("음성 키오스크 API 서비스가 시작되었습니다. (Redis 세션 관리 활성화)")
 
     # 벡터 DB 초기화 (메뉴 서비스 필요)
     try:
@@ -106,10 +106,10 @@ async def startup_event():
         
         # 메뉴 데이터로 벡터 DB 초기화
         # document_count = vector_db_service.initialize_from_menus(menu_service, store_ids)
-        # print(f"[앱 시작] 벡터 DB 초기화 완료: {document_count}개 메뉴 데이터")
+        # # print(f"[앱 시작] 벡터 DB 초기화 완료: {document_count}개 메뉴 데이터")
         
     except Exception as e:
-        print(f"[앱 시작] 벡터 DB 초기화 오류: {e}")
+        # print(f"[앱 시작] 벡터 DB 초기화 오류: {e}")
         import traceback
         traceback.print_exc()
     
@@ -118,7 +118,7 @@ async def startup_event():
     
     # Redis 연결 상태 확인
     if app.state.session_manager.redis.ping():
-        print("Redis 서버에 성공적으로 연결되었습니다.")
+        # print("Redis 서버에 성공적으로 연결되었습니다.")
         
         # Redis 세션 정리 스케줄러 초기화 및 시작
         try:
@@ -168,8 +168,8 @@ async def startup_event():
                         except:
                             continue
                     
-                    if cleaned_count > 0:
-                        print(f"[세션 정리] {cleaned_count}개 만료된 세션 정리 완료 (전체 {total_sessions}개 중)")
+                    # if cleaned_count > 0:
+                    #     print(f"[세션 정리] {cleaned_count}개 만료된 세션 정리 완료 (전체 {total_sessions}개 중)")
                     
                     # 큰 세션 정리 (100KB 이상)
                     large_cleaned = 0
@@ -205,8 +205,8 @@ async def startup_event():
                         except:
                             continue
                     
-                    if large_cleaned > 0:
-                        print(f"[세션 정리] {large_cleaned}개 큰 세션 최적화 완료")
+                    # if large_cleaned > 0:
+                        # print(f"[세션 정리] {large_cleaned}개 큰 세션 최적화 완료")
                 
                 except Exception as e:
                     print(f"[세션 정리] 오류 발생: {e}")
@@ -229,7 +229,7 @@ async def startup_event():
             app.state.cleanup_thread = threading.Thread(target=run_scheduler, daemon=True)
             app.state.cleanup_thread.start()
             
-            print("[앱 시작] Redis 세션 정리 스케줄러가 시작되었습니다.")
+            # print("[앱 시작] Redis 세션 정리 스케줄러가 시작되었습니다.")
             
             # 시작 시 한 번 실행
             cleanup_expired_sessions()
@@ -249,7 +249,7 @@ async def shutdown_event():
         if hasattr(app.state, "cleanup_thread") and app.state.cleanup_thread:
             app.state.cleanup_thread.join(timeout=1.0)
     
-    print("음성 키오스크 API 서비스가 종료되었습니다.")
+    # print("음성 키오스크 API 서비스가 종료되었습니다.")
 
 # # 화면 상태 목록 조회 엔드포인트
 # @app.get("/ai/screen-states")
@@ -303,8 +303,8 @@ async def recognize_intent(
     
     except Exception as e:
         import traceback
-        print(f"음성 입력 처리 중 오류 발생: {str(e)}")
-        print(traceback.format_exc())
+        # print(f"음성 입력 처리 중 오류 발생: {str(e)}")
+        # print(traceback.format_exc())
         
         raise HTTPException(
             status_code=500,
@@ -472,8 +472,8 @@ async def test_recognize_intent(
     
     except Exception as e:
         import traceback
-        print(f"테스트 요청 처리 중 오류 발생: {str(e)}")
-        print(traceback.format_exc())
+        # print(f"테스트 요청 처리 중 오류 발생: {str(e)}")
+        # print(traceback.format_exc())
         
         raise HTTPException(
             status_code=500,
@@ -485,7 +485,7 @@ async def test_recognize_intent(
 
 @app.on_event("startup")
 async def startup_event():
-    print("음성 키오스크 API 서비스가 시작되었습니다. (Redis 세션 관리 활성화)")
+    # print("음성 키오스크 API 서비스가 시작되었습니다. (Redis 세션 관리 활성화)")
 
     # 벡터 DB 초기화 (메뉴 서비스 필요)
     try:
@@ -516,10 +516,10 @@ async def startup_event():
         
         # 메뉴 데이터로 벡터 DB 초기화
         # document_count = vector_db_service.initialize_from_menus(menu_service, store_ids)
-        # print(f"[앱 시작] 벡터 DB 초기화 완료: {document_count}개 메뉴 데이터")
+        # # print(f"[앱 시작] 벡터 DB 초기화 완료: {document_count}개 메뉴 데이터")
         
     except Exception as e:
-        print(f"[앱 시작] 벡터 DB 초기화 오류: {e}")
+        # print(f"[앱 시작] 벡터 DB 초기화 오류: {e}")
         import traceback
         traceback.print_exc()
     
@@ -528,7 +528,7 @@ async def startup_event():
     
     # Redis 연결 상태 확인
     if app.state.session_manager.redis.ping():
-        print("Redis 서버에 성공적으로 연결되었습니다.")
+        # print("Redis 서버에 성공적으로 연결되었습니다.")
         
         # Redis 세션 정리 스케줄러 초기화 및 시작
         try:
@@ -578,8 +578,8 @@ async def startup_event():
                         except:
                             continue
                     
-                    if cleaned_count > 0:
-                        print(f"[세션 정리] {cleaned_count}개 만료된 세션 정리 완료 (전체 {total_sessions}개 중)")
+                    # if cleaned_count > 0:
+                        # print(f"[세션 정리] {cleaned_count}개 만료된 세션 정리 완료 (전체 {total_sessions}개 중)")
                     
                     # 큰 세션 정리 (100KB 이상)
                     large_cleaned = 0
@@ -615,8 +615,8 @@ async def startup_event():
                         except:
                             continue
                     
-                    if large_cleaned > 0:
-                        print(f"[세션 정리] {large_cleaned}개 큰 세션 최적화 완료")
+                    # if large_cleaned > 0:
+                        # print(f"[세션 정리] {large_cleaned}개 큰 세션 최적화 완료")
                 
                 except Exception as e:
                     print(f"[세션 정리] 오류 발생: {e}")
@@ -639,7 +639,7 @@ async def startup_event():
             app.state.cleanup_thread = threading.Thread(target=run_scheduler, daemon=True)
             app.state.cleanup_thread.start()
             
-            print("[앱 시작] Redis 세션 정리 스케줄러가 시작되었습니다.")
+            # print("[앱 시작] Redis 세션 정리 스케줄러가 시작되었습니다.")
             
             # 시작 시 한 번 실행
             cleanup_expired_sessions()
@@ -659,7 +659,7 @@ async def shutdown_event():
         if hasattr(app.state, "cleanup_thread") and app.state.cleanup_thread:
             app.state.cleanup_thread.join(timeout=1.0)
     
-    print("음성 키오스크 API 서비스가 종료되었습니다.")
+    # print("음성 키오스크 API 서비스가 종료되었습니다.")
 
 # 세션 정리 관련 API 추가
 @app.post("/admin/sessions/cleanup")

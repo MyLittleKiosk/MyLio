@@ -22,7 +22,7 @@ class OrderProcessor(BaseProcessor):
     
     def process(self, intent_data: Dict[str, Any], text: str, language: str, screen_state: str, store_id: int, session: Dict[str, Any]) -> Dict[str, Any]:
         """주문 의도 처리"""
-        print(f"[주문 처리] 시작: 텍스트='{text}', 화면 상태={screen_state}")
+        # print(f"[주문 처리] 시작: 텍스트='{text}', 화면 상태={screen_state}")
         
         # 진행중인 메뉴가 있을 때 또 ORDER가 올 경우 새 메뉴 queue에 저장
         if (
@@ -56,7 +56,7 @@ class OrderProcessor(BaseProcessor):
         
         # 취소 요청 처리
         if self._is_cancellation_request(text, language):
-            print("[주문 처리] 취소 요청 감지")
+            # print("[주문 처리] 취소 요청 감지")
             # 현재 메뉴 선택 상태 및 대기열 초기화
             session["last_state"] = {}
             if "order_queue" in session:
@@ -75,7 +75,7 @@ class OrderProcessor(BaseProcessor):
         
         # LLM 인식 메뉴 목록 확인
         if "menus" not in intent_data or not intent_data["menus"]:
-            print("[주문 처리] 인식된 메뉴 없음")
+            # print("[주문 처리] 인식된 메뉴 없음")
             
             # 응답 컨텍스트 구성
             context = {
@@ -101,24 +101,24 @@ class OrderProcessor(BaseProcessor):
         for menu_data in intent_data["menus"]:
             # 메뉴 정보 조회
             menu_name = menu_data.get("menu_name", "")
-            print(f"[주문 처리] 메뉴 처리: {menu_name}")
+            # print(f"[주문 처리] 메뉴 처리: {menu_name}")
             
             full_menu = self.menu_service.find_menu_by_name(menu_name, store_id)
             
             if not full_menu:
-                print(f"[주문 처리] 메뉴 정보 조회 실패: {menu_name}")
+                # print(f"[주문 처리] 메뉴 정보 조회 실패: {menu_name}")
                 continue
             
             # 디버깅 추가 - 메뉴 정보 확인
-            print(f"[주문 처리] 메뉴 정보 조회 결과: {full_menu}")
+            # print(f"[주문 처리] 메뉴 정보 조회 결과: {full_menu}")
             
             # 메뉴 기본 정보 확인
             if "menu_id" not in full_menu or not full_menu.get("id"):
-                print(f"[주문 처리] 메뉴 ID 누락, 메뉴 이름 정확도 확인 필요: {menu_name}")
+                # print(f"[주문 처리] 메뉴 ID 누락, 메뉴 이름 정확도 확인 필요: {menu_name}")
                 # 여기서 메뉴 이름 유사도 검색 시도 (유사 이름 매칭)
                 similar_menu = self.menu_service.find_similar_menu(menu_name, store_id)
                 if similar_menu:
-                    print(f"[주문 처리] 유사 메뉴 발견: {similar_menu.get('name_kr')}")
+                    # print(f"[주문 처리] 유사 메뉴 발견: {similar_menu.get('name_kr')}")
                     full_menu = similar_menu
                 else:
                     continue
@@ -137,45 +137,45 @@ class OrderProcessor(BaseProcessor):
             
             # 필수 옵션이 누락된 경우: 옵션 선택이 필요한 메뉴 목록에 추가
             if menu_status == ResponseStatus.MISSING_REQUIRED_OPTIONS:
-                print(f"[주문 처리] 메뉴 {menu_name}의 필수 옵션 누락, 옵션 선택 필요 목록에 추가")
+                # print(f"[주문 처리] 메뉴 {menu_name}의 필수 옵션 누락, 옵션 선택 필요 목록에 추가")
                 pending_option_menus.append(full_menu)
             
             # 장바구니에 추가 가능한 경우: 바로 장바구니에 추가
             elif menu_status == ResponseStatus.READY_TO_ADD_CART:
-                print(f"[주문 처리] 메뉴 {menu_name} 장바구니에 바로 추가")
+                # print(f"[주문 처리] 메뉴 {menu_name} 장바구니에 바로 추가")
                 ready_to_add_menus.append(full_menu)
                 self.session_manager.add_to_cart(session_id, full_menu)
         
         # paymennt_method가 있다면 세션에 저장
         if intent_data.get("payment_method"):
-            print(f"[받아온 payment가 있는가 ]{intent_data.get('payment_method')}")
+            # print(f"[받아온 payment가 있는가 ]{intent_data.get('payment_method')}")
             
             self.session_manager.set_session_value(session_id,"payment_method", intent_data["payment_method"])
-            print(f"[바로 제대로 저장되었는지 확인 ]{self.session_manager.get_session_value(session_id,'payment_method')}")
+            # print(f"[바로 제대로 저장되었는지 확인 ]{self.session_manager.get_session_value(session_id,'payment_method')}")
         
         # 옵션 선택이 필요한 메뉴가 있는 경우
         if pending_option_menus:
-            print(f"[주문 처리] 옵션 선택이 필요한 메뉴 {len(pending_option_menus)}개 있음")
+            # print(f"[주문 처리] 옵션 선택이 필요한 메뉴 {len(pending_option_menus)}개 있음")
             
             # 첫 번째 메뉴 처리 시작
             first_pending_menu = pending_option_menus[0]
             
             # 추가 메뉴가 있는 경우 대기열에 추가 (첫 번째 메뉴 제외)
             if len(pending_option_menus) > 1:
-                print(f"[주문 처리] 추가 메뉴 {len(pending_option_menus)-1}개 대기열에 추가")
-                print(f"[주문 처리] 대기열에 추가하는 메뉴: {pending_option_menus[1:]}")
-                print("추가메뉴는 따로 다시 추가하기")
+                # print(f"[주문 처리] 추가 메뉴 {len(pending_option_menus)-1}개 대기열에 추가")
+                # print(f"[주문 처리] 대기열에 추가하는 메뉴: {pending_option_menus[1:]}")
+                # print("추가메뉴는 따로 다시 추가하기")
                 self.session_manager.add_to_order_queue(session_id, pending_option_menus[1:])
 
                 # 🔻 **딱 한 번** 최신 세션을 가져와 session 에 할당
                 session = self.session_manager.get_session(session_id)   
 
                 # 디버깅
-                if "order_queue" in session:
-                    print(f"[주문 처리] 대기열 추가 후 크기: {len(session['order_queue'])}")
-                    for idx, menu in enumerate(session['order_queue']):
-                        print(f"[주문 처리] 대기열 아이템 {idx}: "
-                            f"{menu.get('name_kr', '') or menu.get('menu_name', '')}")
+                # if "order_queue" in session:
+                #     # print(f"[주문 처리] 대기열 추가 후 크기: {len(session['order_queue'])}")
+                #     for idx, menu in enumerate(session['order_queue']):
+                #         # print(f"[주문 처리] 대기열 아이템 {idx}: "
+                #             # f"{menu.get('name_kr', '') or menu.get('menu_name', '')}")
             
             # 다음 필수 옵션 가져오기
             next_option = self.option_handler.get_next_required_option(first_pending_menu)
@@ -259,13 +259,13 @@ class OrderProcessor(BaseProcessor):
         
         # 모든 메뉴가 장바구니에 바로 추가된 경우
         elif ready_to_add_menus:
-            print(f"[주문 처리] 모든 메뉴 {len(ready_to_add_menus)}개가 장바구니에 추가됨")
+            # print(f"[주문 처리] 모든 메뉴 {len(ready_to_add_menus)}개가 장바구니에 추가됨")
             
             session = self.session_manager.get_session(session_id)   # ★ 추가
             # payment_method가 있다면 confirm으로이동
             payment_method = self.session_manager.get_session_value(session_id,
                                                         "payment_method")
-            print(f"[첫번째 더하기 payment 확인 {payment_method}")
+            # print(f"[첫번째 더하기 payment 확인 {payment_method}")
             if payment_method:
                 payment_proc = PaymentProcessor(self.response_generator,
                                                 self.menu_service,
@@ -310,7 +310,7 @@ class OrderProcessor(BaseProcessor):
     
     def process_option_selection(self, text: str, language: str, screen_state: str, store_id: int, session: Dict[str, Any]) -> Dict[str, Any]:
         """옵션 선택 처리"""
-        print(f"[옵션 선택 처리] 시작: 텍스트='{text}', 화면 상태={screen_state}")
+        # print(f"[옵션 선택 처리] 시작: 텍스트='{text}', 화면 상태={screen_state}")
              
         session_id = session.get("id", "")   
 
@@ -327,7 +327,7 @@ class OrderProcessor(BaseProcessor):
                 store_id=store_id,
                 session=session                  # 현재 세션 그대로
             )
-            print("[LLM RESULT]\n", json.dumps(llm_result, ensure_ascii=False, indent=2))
+            # print("[LLM RESULT]\n", json.dumps(llm_result, ensure_ascii=False, indent=2))
             if llm_result.get("intent_type") == IntentType.ORDER:
                 # 1) 새 메뉴 queue 에 push
                 self._queue_new_menu(session_id, llm_result.get("menus", []))
@@ -356,7 +356,7 @@ class OrderProcessor(BaseProcessor):
                     reply=reply_msg
                 )
         except Exception as e:
-            print("[LLM ERROR]", e)                 # ← 어떤 예외인지 찍기
+            # print("[LLM ERROR]", e)                 # ← 어떤 예외인지 찍기
             traceback.print_exc()                   # ← 스택 트레이스
             llm_result = {}                         # 안전하게 무시
 
@@ -378,7 +378,7 @@ class OrderProcessor(BaseProcessor):
         
         # 취소 요청 처리
         if self._is_cancellation_request(text, language):
-            print("[옵션 선택 처리] 취소 요청 감지")
+            # print("[옵션 선택 처리] 취소 요청 감지")
             # 현재 메뉴 선택 상태 및 대기열 초기화
             session["last_state"] = {}
             if "order_queue" in session:
@@ -391,7 +391,7 @@ class OrderProcessor(BaseProcessor):
             return self._generate_cancellation_response(text, language, screen_state, store_id, session)
 
         if not menu or not pending_option:
-            print("[옵션 선택 처리] 진행 중인 메뉴 또는 옵션 정보 없음")
+            # print("[옵션 선택 처리] 진행 중인 메뉴 또는 옵션 정보 없음")
             
             # 의도 데이터 구성
             intent_data = {
@@ -413,7 +413,7 @@ class OrderProcessor(BaseProcessor):
         if selected_option:
             new_id = selected_option["option_details"][0]["id"]
             new_value = selected_option["option_details"][0]["value"]
-            print(f"[LLM 옵션 선택 로그] LLM이 인식한 옵션: {selected_option['option_name']}={new_value}(ID:{new_id})")
+            # print(f"[LLM 옵션 선택 로그] LLM이 인식한 옵션: {selected_option['option_name']}={new_value}(ID:{new_id})")
 
             # ⚠️ 이미 같은 값(Ice → Ice 등)이면 덮어쓰지 않는다
             if pending_option.get("selected_id") == new_id:
@@ -434,12 +434,12 @@ class OrderProcessor(BaseProcessor):
         
         # LLM을 통해 텍스트 분석 - 다양한 옵션 추출 시도
         # 텍스트에서 키워드 기반 검색
-        print(f"[옵션 추출 시작] 텍스트: '{text}'")
+        # print(f"[옵션 추출 시작] 텍스트: '{text}'")
         all_options_identified = []  # 인식된 모든 옵션을 수집
 
         for keyword_type, keywords in keyword_option_map.items():
             if any(kw in text.lower() for kw in keywords):
-                print(f"[옵션 키워드 발견] 키워드 유형: {keyword_type}, 텍스트: '{text}'")
+                # print(f"[옵션 키워드 발견] 키워드 유형: {keyword_type}, 텍스트: '{text}'")
                 for option in menu_options:
                     option_name = option.get("option_name", "").lower()
                     # 키워드 유형에 맞는 옵션 찾기
@@ -461,10 +461,10 @@ class OrderProcessor(BaseProcessor):
                             option_details = option_match.get('option_details', [{}])[0]
                             option_value = option_details.get('value', '')
                             option_id = option_details.get('id', '')
-                            print(f"[LLM 옵션 선택 로그] LLM이 인식한 추가 옵션: {current_option.get('option_name')}={option_value}(ID:{option_id})")
+                            # print(f"[LLM 옵션 선택 로그] LLM이 인식한 추가 옵션: {current_option.get('option_name')}={option_value}(ID:{option_id})")
                             all_options_identified.append(f"{current_option.get('option_name')}={option_value}")
                             
-                            print(f"[옵션 선택 처리] 추가 옵션 선택 성공: {current_option.get('option_name')}={option_match.get('option_details', [{}])[0].get('value', '')}")
+                            # print(f"[옵션 선택 처리] 추가 옵션 선택 성공: {current_option.get('option_name')}={option_match.get('option_details', [{}])[0].get('value', '')}")
                             self.option_handler.option_matcher.apply_option_to_menu(menu, option_match)
                             all_selected_options.append(option_match)
         
@@ -479,9 +479,9 @@ class OrderProcessor(BaseProcessor):
         
             opt_match = self.option_handler.process_option_selection(text, opt, menu)
             if opt_match:
-                print(f"[옵션 선택 처리] 추가 옵션 선택 성공: "
-                    f"{opt.get('option_name')}="
-                    f"{opt_match['option_details'][0]['value']}")
+                # print(f"[옵션 선택 처리] 추가 옵션 선택 성공: "
+                    # f"{opt.get('option_name')}="
+                    # f"{opt_match['option_details'][0]['value']}")
                 self.option_handler.option_matcher.apply_option_to_menu(menu, opt_match)
                 all_selected_options.append(opt_match)
                 
@@ -498,7 +498,7 @@ class OrderProcessor(BaseProcessor):
             next_option = self.option_handler.get_next_required_option(menu)
             
             if next_option:
-                print(f"[옵션 선택 처리] 다음 필수 옵션: {next_option.get('option_name')}")
+                # print(f"[옵션 선택 처리] 다음 필수 옵션: {next_option.get('option_name')}")
                 
                 # 세션에 메뉴 및 다음 옵션 정보 저장
                 session["last_state"]["menu"] = copy.deepcopy(menu)  # 안전하게 복사
@@ -526,7 +526,7 @@ class OrderProcessor(BaseProcessor):
                 )
         
         # 모든 필수 옵션 선택 완료 - 장바구니에 추가
-        print("[옵션 선택 처리] 모든 필수 옵션 선택 완료")
+        # print("[옵션 선택 처리] 모든 필수 옵션 선택 완료")
         
         # 선택된 옵션 목록 정리
         selected_options_list = []
@@ -551,7 +551,7 @@ class OrderProcessor(BaseProcessor):
                         "option_details": option_details
                     })
 
-        print(f"[옵션 선택 처리] 선택된 옵션 목록: {selected_options_list}")
+        # print(f"[옵션 선택 처리] 선택된 옵션 목록: {selected_options_list}")
 
         # 장바구니에 추가할 메뉴 데이터 준비
         # base_price와 menu_id가 제대로 설정되어 있는지 확인
@@ -561,7 +561,7 @@ class OrderProcessor(BaseProcessor):
             original_menu = self.menu_service.find_menu_by_id(menu.get("menu_id") or menu.get("id"), store_id)
             if original_menu:
                 base_price = original_menu.get("price", 0)
-                print(f"[옵션 선택 처리] 원본 메뉴에서 가격 복구: {base_price}")
+                # print(f"[옵션 선택 처리] 원본 메뉴에서 가격 복구: {base_price}")
         
         # 총 가격 계산 (base_price + 옵션 추가 가격)
         total_price = base_price
@@ -589,7 +589,7 @@ class OrderProcessor(BaseProcessor):
                 
                 # 샷 옵션 적용
                 if shot_detail:
-                    print(f"[옵션 선택 처리] 샷 추가 옵션 추가: {shot_detail.get('value')}")
+                    # print(f"[옵션 선택 처리] 샷 추가 옵션 추가: {shot_detail.get('value')}")
                     
                     # 옵션 정보 구성
                     selected_shot_option = {
@@ -615,16 +615,16 @@ class OrderProcessor(BaseProcessor):
                     # 총 가격 업데이트
                     total_price += shot_detail.get("additional_price", 0)
                     
-                    print(f"[옵션 선택 처리] 샷 옵션 적용 후 가격: {total_price}")
+                    # print(f"[옵션 선택 처리] 샷 옵션 적용 후 가격: {total_price}")
                     
                     # 인식된 옵션 목록에 추가
                     all_options_identified.append(f"{shot_option.get('option_name')}={shot_detail.get('value')}")
         
         # 인식된 모든 옵션 요약 표시
-        if all_options_identified:
-            print(f"[옵션 인식 요약] 사용자 입력 '{text}'에서 인식된 모든 옵션: {', '.join(all_options_identified)}")
+        # if all_options_identified:
+            # print(f"[옵션 인식 요약] 사용자 입력 '{text}'에서 인식된 모든 옵션: {', '.join(all_options_identified)}")
         
-        print(f"[옵션 선택 처리] 최종 메뉴 가격: base_price={base_price}, total_price={total_price}")
+        # print(f"[옵션 선택 처리] 최종 메뉴 가격: base_price={base_price}, total_price={total_price}")
         
         cart_menu = {
             "menu_id": menu.get("menu_id") or menu.get("id"),
@@ -639,7 +639,7 @@ class OrderProcessor(BaseProcessor):
         
         # 디버깅 - 필수 정보 확인
         if not cart_menu.get("menu_id") or not cart_menu.get("name"):
-            print(f"[경고] 불완전한 메뉴 정보: menu_id={cart_menu.get('menu_id')}, name={cart_menu.get('name')}")
+            # print(f"[경고] 불완전한 메뉴 정보: menu_id={cart_menu.get('menu_id')}, name={cart_menu.get('name')}")
             # 세션에서 메뉴 이름 확인 시도
             if "pending_option_menus" in session.get("last_state", {}):
                 pending_menus = session["last_state"]["pending_option_menus"]
@@ -652,10 +652,10 @@ class OrderProcessor(BaseProcessor):
                     if not cart_menu.get("base_price") or cart_menu.get("base_price") == 0:
                         cart_menu["base_price"] = first_menu.get("price", 0)
 
-        print(f"[옵션 선택 처리] 장바구니 추가 메뉴: {cart_menu}")
+        # print(f"[옵션 선택 처리] 장바구니 추가 메뉴: {cart_menu}")
         self.session_manager.add_to_cart(session_id, cart_menu)
         # add to cart 뒤 대기열 바로 pop 하기
-        print("2번 remove 호출했던 자리. order_processer.py 624")
+        # print("2번 remove 호출했던 자리. order_processer.py 624")
         # 2) 다음 메뉴 미리 가져오기  (pop 하지 않음)
         next_menu = self.session_manager.get_next_queued_menu(session_id)
 
@@ -681,7 +681,7 @@ class OrderProcessor(BaseProcessor):
         #payment method가 있으면 confirm화면으로 이동
         payment_method = self.session_manager.get_session_value(session_id, "payment_method")
       
-        print(f"[두번째 더하기 payment 확인 {payment_method} ")
+        # print(f"[두번째 더하기 payment 확인 {payment_method} ")
         if payment_method:
             session["payment_method"] = payment_method
 
@@ -711,8 +711,8 @@ class OrderProcessor(BaseProcessor):
     
     def _start_menu_processing(self, menu_data: Dict[str, Any], text: str, language: str, store_id: int, session: Dict[str, Any]) -> Dict[str, Any]:
         """메뉴 처리 시작"""
-        print(f"[메뉴 처리 시작] 메뉴: {menu_data.get('menu_name', '') or menu_data.get('name_kr', '') or menu_data.get('name', '')}")
-        print(f"[메뉴 처리 디버그] 처리할 메뉴 데이터: {menu_data}")
+        # print(f"[메뉴 처리 시작] 메뉴: {menu_data.get('menu_name', '') or menu_data.get('name_kr', '') or menu_data.get('name', '')}")
+        # print(f"[메뉴 처리 디버그] 처리할 메뉴 데이터: {menu_data}")
         
         # 세션 ID 가져오기
         session_id = session.get("id", "")
@@ -728,10 +728,10 @@ class OrderProcessor(BaseProcessor):
         full_menu = self.menu_service.find_menu_by_name(menu_name, store_id)
         
         if not full_menu:
-            print(f"[메뉴 처리 시작] 메뉴 정보 조회 실패: {menu_name}")
+            # print(f"[메뉴 처리 시작] 메뉴 정보 조회 실패: {menu_name}")
             
             # 다음 메뉴가 있는지 확인
-            print("3번 remove 호출함. order_processer.py 729")
+            # print("3번 remove 호출함. order_processer.py 729")
             self.session_manager.remove_from_order_queue(session_id)
             next_menu = self.session_manager.get_next_queued_menu(session_id)
             
@@ -773,7 +773,7 @@ class OrderProcessor(BaseProcessor):
         
         # 필수 옵션이 누락된 경우: 옵션 선택 단계로 진행
         if menu_status == ResponseStatus.MISSING_REQUIRED_OPTIONS:
-            print("[메뉴 처리 시작] 필수 옵션 누락 감지")
+            # print("[메뉴 처리 시작] 필수 옵션 누락 감지")
             # 다음 필수 옵션 가져오기
             next_option = self.option_handler.get_next_required_option(full_menu)
             
@@ -815,7 +815,7 @@ class OrderProcessor(BaseProcessor):
         
         # 장바구니에 추가 가능한 경우
         elif menu_status == ResponseStatus.READY_TO_ADD_CART:
-            print("[메뉴 처리 시작] 장바구니 추가 가능")
+            # print("[메뉴 처리 시작] 장바구니 추가 가능")
 
             # 1) 카트에 담기
             self.session_manager.add_to_cart(session_id, full_menu)
@@ -838,17 +838,17 @@ class OrderProcessor(BaseProcessor):
             # 7) 다음 메뉴 확인
             next_menu = self.session_manager.get_next_queued_menu(session_id)
             if next_menu:
-                print(f"[메뉴 처리 시작] 대기열에 다음 메뉴 존재: "
-                    f"{next_menu.get('name_kr') or next_menu.get('menu_name') or next_menu.get('name')}")
+                # print(f"[메뉴 처리 시작] 대기열에 다음 메뉴 존재: "
+                    # f"{next_menu.get('name_kr') or next_menu.get('menu_name') or next_menu.get('name')}")
                 return self._start_menu_processing(next_menu, text, language, store_id, session)
 
             # 모든 메뉴 처리 완료
-            print("[메뉴 처리 시작] 모든 메뉴 처리 완료")
+            # print("[메뉴 처리 시작] 모든 메뉴 처리 완료")
             
             # payment_method가 있다면 confirm으로이동
             payment_method = self.session_manager.get_session_value(session_id,
                                                         "payment_method")
-            print(f"[세번째 더하기 payment 확인 {payment_method}")
+            # print(f"[세번째 더하기 payment 확인 {payment_method}")
             if payment_method:
                 payment_proc = PaymentProcessor(self.response_generator,
                                                 self.menu_service,
@@ -898,7 +898,7 @@ class OrderProcessor(BaseProcessor):
         if "options" not in menu or not menu["options"]:
             return None
         
-        print(f"옵션 매칭 시도: 이름={option_name}, 값={option_value}")
+        # print(f"옵션 매칭 시도: 이름={option_name}, 값={option_value}")
         
         # 옵션 이름 정규화 - 공백 제거 및 소문자 변환
         normalized_option_name = option_name.lower().replace(' ', '')
@@ -908,14 +908,14 @@ class OrderProcessor(BaseProcessor):
             
             # 부분 일치 검사 (정확히 일치하지 않아도 됨)
             if normalized_option_name in option_name_kr or option_name_kr in normalized_option_name:
-                print(f"옵션 이름 매칭 성공: {option.get('option_name')}")
+                # print(f"옵션 이름 매칭 성공: {option.get('option_name')}")
                 
                 # 옵션 ID가 제공된 경우 직접 매칭 시도
                 if option_detail_id:
-                    print(f"옵션 ID 직접 매칭 시도: option_detail_id={option_detail_id}")
+                    # print(f"옵션 ID 직접 매칭 시도: option_detail_id={option_detail_id}")
                     for detail in option.get("option_details", []):
                         if detail.get("id") == option_detail_id:
-                            print(f"옵션 ID 매칭 성공: id={option_detail_id}, value={detail.get('value')}")
+                            # print(f"옵션 ID 매칭 성공: id={option_detail_id}, value={detail.get('value')}")
                             return {
                                 "option_id": option.get("option_id"),
                                 "option_name": option.get("option_name"),
@@ -1020,19 +1020,19 @@ class OrderProcessor(BaseProcessor):
         try:
             # 직접 장바구니 조회 API 사용 (session에 의존하지 않음)
             updated_cart = self.session_manager.get_cart(session_id)
-            print(f"[응답 구성] 카트 API 조회 결과 - 항목 수: {len(updated_cart)}")
+            # print(f"[응답 구성] 카트 API 조회 결과 - 항목 수: {len(updated_cart)}")
         except Exception as e:
             print(f"[응답 구성] 장바구니 조회 오류: {str(e)}")
         
         # 장바구니 항목이 없는 경우 세션의 장바구니 정보 확인 (백업)
         if not updated_cart and session and "cart" in session:
             updated_cart = session.get("cart", [])
-            print(f"[응답 구성] 세션 카트 백업 사용 - 항목 수: {len(updated_cart)}")
+            # print(f"[응답 구성] 세션 카트 백업 사용 - 항목 수: {len(updated_cart)}")
         
         # 로그에 카트 내용 기록 (디버깅용)
         if updated_cart:
             cart_items = [f"{item.get('name')} x{item.get('quantity')}" for item in updated_cart]
-            print(f"[응답 구성] 장바구니 구성: {', '.join(cart_items)}")
+            # print(f"[응답 구성] 장바구니 구성: {', '.join(cart_items)}")
 
         # contents가 있는 경우 불필요한 정보 제거
         cleaned_contents = []
@@ -1106,7 +1106,7 @@ class OrderProcessor(BaseProcessor):
                         cleaned_contents.append(cleaned_item)
         
         # 콘솔에 최종 장바구니 디버깅 정보 출력
-        print(f"[응답 보강] 최종 장바구니 항목 수: {len(updated_cart)}")
+        # print(f"[응답 보강] 최종 장바구니 항목 수: {len(updated_cart)}")
         
         response = {
             "intent_type": intent_data.get("intent_type", IntentType.UNKNOWN),
@@ -1309,6 +1309,6 @@ class OrderProcessor(BaseProcessor):
 
         q = self.session_manager.get_next_queued_menu(session_id)
         size = len(self.session_manager.get_session(session_id).get("order_queue", []))
-        print(f"[order_queue] PUSH 완료 – 첫 아이템: "
-              f"{q.get('menu_name') if q else None}, "
-              f"queue 크기: {size}")
+        # print(f"[order_queue] PUSH 완료 – 첫 아이템: "
+            #   f"{q.get('menu_name') if q else None}, "
+            #   f"queue 크기: {size}")
