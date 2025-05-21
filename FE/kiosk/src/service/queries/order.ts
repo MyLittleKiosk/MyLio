@@ -7,7 +7,7 @@ import useOrderStore from '@/stores/useOrderStore';
 import { PayRequest } from '@/types/kakaoPay';
 
 export function useOrderRequest() {
-  const { setOrder, order } = useOrderStore();
+  const { setOrder } = useOrderStore();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (order: OrderRequest) => postOrder(order),

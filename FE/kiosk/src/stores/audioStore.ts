@@ -176,7 +176,7 @@ const audioStore = create<AudioState>((set, get) => ({
       }
 
       // 오디오 컨텍스트 정리
-      if (_refs.audioCtx) {
+      if (_refs.audioCtx && _refs.audioCtx.state !== 'closed') {
         await _refs.audioCtx.close();
       }
 
