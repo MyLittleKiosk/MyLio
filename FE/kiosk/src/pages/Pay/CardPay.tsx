@@ -8,7 +8,7 @@ const CardPay = () => {
   const { order } = useOrderStore();
   const { mutate: postSuccess } = usePostSuccess();
   const [searchParams] = useSearchParams();
-  const payMethod = searchParams.get('pay_method');
+  const payMethod = searchParams.get('pay_method') || order.payment;
   useEffect(() => {
     const timeout = setTimeout(() => {
       sessionStorage.setItem('cartItem', JSON.stringify(order.cart));
