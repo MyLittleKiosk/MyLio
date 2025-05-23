@@ -1,5 +1,4 @@
 import { DEFAULT_COMMENT } from '@/datas/COMMENT';
-import useConsecutiveClick from '@/hooks/useConsecutiveClick';
 import Main from '@/pages/Main';
 import Footer from '@/pages/OrderLayout/Footer';
 import { useOrderRequest } from '@/service/queries/order';
@@ -13,7 +12,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 const OrderLayout = () => {
   const { pathname } = useLocation();
   const [userChat, setUserChat] = useState<string>('');
-  const { order, resetOrder } = useOrderStore();
+  const { order, resetOrder, setOrder } = useOrderStore();
   const { mutate: orderRequest, isPending } = useOrderRequest();
   const { mutate: logout } = useLogout();
   const { mutate: refresh } = useRefresh();
@@ -66,13 +65,24 @@ const OrderLayout = () => {
     window.location.reload();
   }
 
-  const handleTopLeftClick = useConsecutiveClick({
-    onSuccess: handleSessionReset,
-  });
+  function handleTopLeftClick() {
+    handleSessionReset();
+  }
 
-  const handleTopRightClick = useConsecutiveClick({
-    onSuccess: handleLogout,
-  });
+  function handleTopRightClick() {
+    handleLogout();
+  }
+
+  function handleCartClick() {
+    if (order.cart.length > 0) {
+      handleRecognitionResult('장바구니 보여줘');
+    } else {
+      setOrder({
+        ...order,
+        reply: '장바구니가 비어있습니다.',
+      });
+    }
+  }
 
   // function testHandleRecognitionResult() {
   //   handleRecognitionResult(inputRef.current?.value || '');
@@ -132,6 +142,21 @@ const OrderLayout = () => {
             )}
           >
             {isLargeFont ? '작은 글자' : '큰 글자'}
+          </span>
+        </button>
+        <button
+          onClick={handleCartClick}
+          className='flex flex-col items-start justify-center w-full rounded-lg'
+        >
+          <span
+            className={clsx(
+              'w-[200px] font-preSemiBold  bg-white border-2 rounded-full p-1',
+              isLargeFont
+                ? 'border-content text-content text-xs'
+                : 'border-primary text-primary text-lg'
+            )}
+          >
+            장바구니
           </span>
         </button>
       </div>
