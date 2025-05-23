@@ -6,9 +6,11 @@ import { useNavigate } from 'react-router-dom';
 const SelectPay = () => {
   const { order, setOrder } = useOrderStore();
   const navigate = useNavigate();
-  const totalPrice = order.contents.reduce(
-    (acc, curr) => acc + curr.totalPrice,
-    0
+  const totalPrice = formatNumber(
+    order.contents.reduce(
+      (acc, curr) => acc + curr.totalPrice * curr.quantity,
+      0
+    )
   );
 
   const handlePayMethodClick = (id: string) => {
@@ -43,7 +45,7 @@ const SelectPay = () => {
         <div className='border border-gray-200 rounded-md px-8 py-6 flex items-center gap-4 bg-white shadow'>
           <span className='font-preBold text-lg'>총 결제 금액</span>
           <span className='text-blue-500 font-preBold text-lg'>
-            {formatNumber(totalPrice)}원
+            {totalPrice}원
           </span>
         </div>
       </div>

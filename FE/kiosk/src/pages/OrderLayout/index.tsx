@@ -8,10 +8,14 @@ import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import MUTE from '@/assets/icons/mute.svg';
+import UNMUTE from '@/assets/icons/unmute.svg';
+import useKioskStore from '@/stores/useKioskStore';
 
 const OrderLayout = () => {
   const { pathname } = useLocation();
   const [userChat, setUserChat] = useState<string>('');
+  const { isMute, setIsMute } = useKioskStore();
   const { order, resetOrder, setOrder } = useOrderStore();
   const { mutate: orderRequest, isPending } = useOrderRequest();
   const { mutate: logout } = useLogout();
@@ -160,11 +164,19 @@ const OrderLayout = () => {
           </span>
         </button>
       </div>
+      <div className='flex flex-col items-center justify-center fixed top-0 right-1 z-20'>
+        <img
+          className='w-10 h-10 mt-1'
+          src={isMute ? MUTE : UNMUTE}
+          alt='mute'
+          onClick={() => setIsMute(!isMute)}
+        />
+        <div
+          className=' w-10 h-10 z-20 cursor-pointer'
+          onClick={handleTopRightClick}
+        />
+      </div>
 
-      <div
-        className='fixed top-0 right-0 w-20 h-20 z-20 cursor-pointer'
-        onClick={handleTopRightClick}
-      />
       <header
         className={clsx(
           'flex justify-center items-center relative',
